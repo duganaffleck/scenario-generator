@@ -75,6 +75,23 @@ ${selectedModifiers.map(mod => `• ${mod}`).join('\n')}`
       ? "- Include bystander or family witness input in the case."
       : "- Do not include any bystander or witness elements.";
 
+    const scenarioDirectives = `
+- Reference ALS PCS 2025 (PCP/PCP-IV) and BLS PCS 2023 for all care decisions.
+- Apply the following BLS PCS directives when relevant:
+${blsStandards}
+
+- Apply the following ALS PCS (PCP/IV) directives when relevant:
+${alsStandards}
+
+- Format both SAMPLE and OPQRST responses as clearly labeled bullet points
+- Include bystander and patient speech, and at least two red herrings
+- Expand all sections with realistic detail
+- Ensure strong internal consistency between presentation, history, vitals, and treatment
+- Include dynamic vitals that reflect improvement or deterioration
+- Always include a 'teachableBlurb' summarizing 2–3 key learning points for instructors to emphasize
+- Ensure the GRS anchors are always the correct 7 categories with anchors
+`.trim();
+
     const generationPrompt = `
 - Base the case complexity and skill depth on the semester: ${semester}
 - Adjust scenario based on these parameters:
@@ -86,7 +103,7 @@ ${focusInstruction}
 ${complicationsInstruction}
 ${bystanderInstruction}
 - Today's date is: ${today}
-    `.trim();
+`.trim();
 
     const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
@@ -96,7 +113,7 @@ ${bystanderInstruction}
       max_tokens: 4096,
       messages: [
         { role: 'system', content: profile },
-        { role: 'user', content: `${fewShots}\n\n${generationPrompt}` }
+        { role: 'user', content: `${fewShots}\n\n${scenarioDirectives}\n\n${generationPrompt}` }
       ]
     });
 
