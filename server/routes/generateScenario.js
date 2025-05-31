@@ -92,18 +92,45 @@ ${alsStandards}
 - Ensure the GRS anchors are always the correct 7 categories with anchors
 `.trim();
 
-    const generationPrompt = `
-- Base the case complexity and skill depth on the semester: ${semester}
-- Adjust scenario based on these parameters:
-    - Complexity: ${complexity}
-    - Environment: ${environment}
-    - Scenario Type: ${type}
-    - Learning Focus: ${focus}
+  const generationPrompt = `
+Generate a detailed paramedic scenario using the following fields. ALL of these fields must be included in the output:
+
+- title
+- callInformation
+- patientDemographics
+- patientPresentation
+- incidentNarrative
+- opqrst
+- sampleHistory
+- medications
+- allergies
+- pastMedicalHistory
+- physicalExam
+- vitalSigns (firstSet, secondSet)
+- simulationSetup
+- caseProgression (withProperTreatment and withoutProperTreatment)
+- expectedTreatment
+- teachableBlurb (summarize 2–3 learning points)
+- grsAnchors (7 domains: sceneManagement, patientAssessment, historyGathering, decisionMaking, proceduralSkill, resourceUtilization, communication — each domain must have levels 1, 3, 5, and 7, each with 2–3 detailed anchor examples)
+- vocationalLearningOutcomes (at least 3)
+- selfReflectionPrompts (at least 4)
+- modifiersUsed (if complications were added)
+
+Scenario modifiers must be fully integrated and reflected in incidentNarrative, callInformation, caseProgression, and grsAnchors.
+
+Match the following scenario parameters:
+- Semester: ${semester}
+- Type: ${type}
+- Environment: ${environment}
+- Complexity: ${complexity}
+- Learning Focus: ${focus}
+
 ${focusInstruction}
 ${complicationsInstruction}
 ${bystanderInstruction}
-- Today's date is: ${today}
+Today's date is ${today}.
 `.trim();
+
 
     const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
