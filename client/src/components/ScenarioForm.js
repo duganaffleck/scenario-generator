@@ -147,16 +147,18 @@ const ScenarioForm = () => {
     setError("");
     setScenario(null);
 
-    try {
-      const baseURL = process.env.REACT_APP_API_BASE_URL || "http://localhost:10000";
-      const fullPayload = { ...formData, modifierCategories };
-      const response = await axios.post(`${baseURL}/api/scenario`, fullPayload);
-      setScenario(response.data);
-    } catch (err) {
-      setError("Scenario generation failed. Please check backend server.");
-    } finally {
-      setLoading(false);
-    }
+ const baseURL = process.env.REACT_APP_API_BASE_URL || "http://localhost:10000";
+
+try {
+  const fullPayload = { ...formData, modifierCategories };
+  const response = await axios.post(`${baseURL}/api/generate-scenario`, fullPayload);
+  setScenario(response.data);
+} catch (err) {
+  setError("Scenario generation failed. Please check backend server.");
+} finally {
+  setLoading(false);
+}
+
   };
 
   const exportToPDF = () => {
