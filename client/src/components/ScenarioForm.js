@@ -56,13 +56,13 @@ const ScenarioForm = () => {
     environment: "Urban",
     complexity: "Moderate",
     focus: "Assessment",
-    includeComplications: true,
-    includeBystanders: true
+    includeComplications: false,
+    includeBystanders: false
   });
 
   const [modifierCategories, setModifierCategories] = useState(
     MODIFIER_CATEGORIES.reduce((acc, key) => {
-      acc[key] = true;
+      acc[key] = false;
       return acc;
     }, {})
   );
@@ -70,7 +70,7 @@ const ScenarioForm = () => {
   const [scenario, setScenario] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [darkMode, setDarkMode] = useState(true);
+  const [darkMode, setDarkMode] = useState(false);
   const [collapsedSections, setCollapsedSections] = useState({});
   const [fontSizeLarge, setFontSizeLarge] = useState(false);
 
