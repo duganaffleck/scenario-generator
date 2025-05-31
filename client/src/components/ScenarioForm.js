@@ -147,7 +147,7 @@ const ScenarioForm = () => {
     setError("");
     setScenario(null);
 
- const baseURL = process.env.REACT_APP_API_BASE_URL || "http://localhost:10000";
+const baseURL = process.env.REACT_APP_API_BASE_URL || "http://localhost:10000";
 
 try {
   const fullPayload = { ...formData, modifierCategories };
