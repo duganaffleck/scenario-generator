@@ -75,26 +75,7 @@ ${selectedModifiers.map(mod => `• ${mod}`).join('\n')}`
       ? "- Include bystander or family witness input in the case."
       : "- Do not include any bystander or witness elements.";
 
-    const systemPrompt = `
-You are a scenario generator AI. Your role is to produce immersive, clinically relevant paramedic scenarios aligned with Ontario’s 2023 BLS PCS and 2025 ALS PCS for PCP/PCP-IV paramedics. These scenarios are for Primary Care Paramedic (PCP) students and must follow a structured educational format.
-
-Return only a fully valid JSON object that includes ALL of the following fields, with detailed and realistic content:
-
-"title", "callInformation", "patientDemographics", "patientPresentation",
-"incidentNarrative", "opqrst", "sampleHistory", "medications",
-"allergies", "pastMedicalHistory", "physicalExam", "vitalSigns",
-"caseProgression", "expectedTreatment", "teachableBlurb", "grsAnchors",
-"vocationalLearningOutcomes", "modifiersUsed", "selfReflectionPrompts"
-
-All properties must be double-quoted. No markdown or commentary. The response must be complete and parsable.
-
-- Reference ALS PCS 2025 (PCP/PCP-IV) and BLS PCS 2023 for all care decisions.
-- Apply the following BLS PCS directives when relevant:
-${blsStandards}
-
-- Apply the following ALS PCS (PCP/IV) directives when relevant:
-${alsStandards}
-
+    const generationPrompt = `
 - Base the case complexity and skill depth on the semester: ${semester}
 - Adjust scenario based on these parameters:
     - Complexity: ${complexity}
@@ -104,13 +85,6 @@ ${alsStandards}
 ${focusInstruction}
 ${complicationsInstruction}
 ${bystanderInstruction}
-- Format both SAMPLE and OPQRST responses as clearly labeled bullet points
-- Include bystander and patient speech, and at least two red herrings
-- Expand all sections with realistic detail
-- Ensure strong internal consistency between presentation, history, vitals, and treatment
-- Include dynamic vitals that reflect improvement or deterioration
-- Always include a 'teachableBlurb' summarizing 2–3 key learning points for instructors to emphasize
-- Ensure the GRS anchors are always the correct 7 categories with anchors
 - Today's date is: ${today}
     `.trim();
 
@@ -121,8 +95,8 @@ ${bystanderInstruction}
       temperature: 1.0,
       max_tokens: 4096,
       messages: [
-        { role: 'system', content: systemPrompt },
-        { role: 'user', content: fewShots }
+        { role: 'system', content: profile },
+        { role: 'user', content: `${fewShots}\n\n${generationPrompt}` }
       ]
     });
 

@@ -10,6 +10,7 @@ General Instructions:
 - Introduce at least two red herrings or moments of ambiguity per case.
 
 Directive Compliance – BLS PCS 2023:
+
 Oxygen Therapy:
 - Do not give oxygen if SpO₂ ≥94%, waveform is good, and no signs of hypoxia.
 - Administer if SpO₂ <94% OR if cyanosis, altered LOC, poor perfusion, or respiratory distress are present.
@@ -19,4 +20,136 @@ Vital Signs:
 - Always collect: HR, RR, BP, SpO₂, GCS, skin condition, pupils (if relevant), BGL (if AMS/seizure/stroke/diabetes), temperature (if infection/exposure), and ETCO₂ (if available and relevant).
 
 Spinal Motion Restriction (SMR):
-- Apply SMR if any
+- Apply SMR if any mechanism, signs, or symptoms suggest spinal injury per BLS PCS.
+
+---
+
+Output Format:
+Respond ONLY with a single valid JSON object using this exact structure:
+
+{
+  "title": "",
+  "callInformation": {
+    "type": "",
+    "location": "",
+    "time": "",
+    "dispatchCode": "",
+    "dispatchNotes": [],
+    "hazardsOrFlags": [],
+    "crewNotes": ""
+  },
+  "patientDemographics": {
+    "name": "",
+    "sex": "",
+    "age": 0,
+    "height": "",
+    "weight": "",
+    "appearance": ""
+  },
+  "patientPresentation": "",
+  "incidentNarrative": "",
+  "opqrst": {
+    "onset": "",
+    "provocation": "",
+    "quality": "",
+    "radiation": "",
+    "severity": "",
+    "time": ""
+  },
+  "sampleHistory": {
+    "signsSymptoms": "",
+    "allergies": "",
+    "medications": "",
+    "pastMedicalHistory": "",
+    "lastOralIntake": "",
+    "eventsLeadingUp": ""
+  },
+  "physicalExam": {
+    "general": "",
+    "headNeck": "",
+    "chest": "",
+    "abdomen": "",
+    "extremities": ""
+  },
+  "vitalSigns": {
+    "firstSet": {
+      "HR": "",
+      "RR": "",
+      "BP": "",
+      "SpO2": "",
+      "ETCO2": "",
+      "Temp": "",
+      "GCS": "",
+      "BGL": ""
+    },
+    "secondSet": {
+      "HR": "",
+      "RR": "",
+      "BP": "",
+      "SpO2": "",
+      "ETCO2": "",
+      "Temp": "",
+      "GCS": "",
+      "BGL": ""
+    }
+  },
+  "simulationSetup": {
+    "requiredEquipment": []
+  },
+  "caseProgression": {
+    "withProperTreatment": "",
+    "withoutProperTreatment": ""
+  },
+  "expectedTreatment": "",
+  "globalRatingScale": {
+    "sceneManagement": {
+      "1": "", "3": "", "5": "", "7": ""
+    },
+    "patientAssessment": {
+      "1": "", "3": "", "5": "", "7": ""
+    },
+    "historyGathering": {
+      "1": "", "3": "", "5": "", "7": ""
+    },
+    "decisionMaking": {
+      "1": "", "3": "", "5": "", "7": ""
+    },
+    "proceduralSkill": {
+      "1": "", "3": "", "5": "", "7": ""
+    },
+    "resourceUtilization": {
+      "1": "", "3": "", "5": "", "7": ""
+    },
+    "communication": {
+      "1": "", "3": "", "5": "", "7": ""
+    }
+  },
+  "selfReflectiveJournaling": [
+    "",
+    "",
+    "",
+    ""
+  ],
+  "vocationalLearningOutcomes": [
+    "",
+    "",
+    ""
+  ],
+  "learningObjectives": [
+    "",
+    "",
+    ""
+  ]
+}
+
+---
+
+Formatting Rules:
+- DO NOT include anything outside the JSON object.
+- DO NOT skip, rename, or rearrange fields.
+- All GRS domains must contain 1, 3, 5, and 7 anchors — with **3+ scenario-specific sentences** per score level.
+- Vitals should show **change over time** (first vs. second set).
+- Case progression must clearly describe the patient's improvement with proper treatment and deterioration without it.
+- Use bullet lists for logical arrays (e.g., dispatchNotes, equipment).
+- Medications must align with Ontario ALS PCS — no unauthorized drugs or interventions.
+
