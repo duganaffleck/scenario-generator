@@ -1,157 +1,182 @@
-const renderContent = (data) => {
-  if (Array.isArray(data)) {
-    return (
-      <ul style={{ paddingLeft: "1rem", marginTop: "0.5rem" }}>
-        {data.map((item, index) => (
-          <li key={index}>{renderContent(item)}</li>
-        ))}
-      </ul>
-    );
-  }
-  if (typeof data === "object" && data !== null) {
-    return (
-      <ul style={{ paddingLeft: "1rem", marginTop: "0.5rem" }}>
-        {Object.entries(data).map(([key, value], index) => (
-          <li key={index}>
-            <strong>{formatLabel(key)}:</strong> {renderContent(value)}
-          </li>
-        ))}
-      </ul>
-    );
-  }
-  return <span>{String(data)}</span>;
-};
+import React from "react";
+import jsPDF from "jspdf";
+import { GRSAccordion } from "./GRSAccordion";
+import { formatFieldValue, formatLabel, TITLE_MAP, styles } from "../utils";
 
-const renderSection = (title, content) => {
-  if (title === "grsAnchors" && typeof content === "object") {
-    return (
-      <div style={styles(darkMode, fontSizeLarge).card}>
-        <h3 style={styles(darkMode, fontSizeLarge).cardTitle}>📊 GRS Anchors</h3>
-        <GRSAccordion grsAnchors={content} />
-      </div>
-    );
-  }
-
-  if (title === "caseProgression" && typeof content === "object") {
-    return (
-      <div style={styles(darkMode, fontSizeLarge).card}>
-        <h3 style={styles(darkMode, fontSizeLarge).cardTitle}>🔄 Case Progression</h3>
-        <div style={{ marginBottom: "0.5rem" }}>
-          <strong>🟢 With Correct Treatment:</strong>
-          {renderContent(content.withProperCare)}
-        </div>
-        <div>
-          <strong>🔴 With Incorrect or No Treatment:</strong>
-          {renderContent(content.withoutProperCare)}
-        </div>
-      </div>
-    );
-  }
-
-  const emojiMap = {
-    scenarioIntro: "🎬 Scenario Intro",
-    teachableBlurb: "🧠 Teachable Blurb",
-    learningObjectives: "🎯 Learning Objectives",
-    vocationalLearningOutcomes: "🎓 Vocational Learning Outcomes",
-    selfReflectiveQuestions: "🪞 Self-Reflective Questions",
-  };
-
-  return (
-    <div style={styles(darkMode, fontSizeLarge).card}>
-      <h3 style={styles(darkMode, fontSizeLarge).cardTitle}>
-        {emojiMap[title] || TITLE_MAP[title] || formatLabel(title)}
-      </h3>
-      {renderContent(content)}
-    </div>
-  );
-};
-
-const exportToPDF = () => {
-  const doc = new jsPDF();
-  doc.setFontSize(12);
-  doc.text(`Scenario: ${scenario.title}`, 10, 10);
-  let y = 20;
-
-  const addTextBlock = (label, text) => {
-    doc.setFont(undefined, "bold");
-    doc.text(`${label}:`, 10, y);
-    y += 6;
-    doc.setFont(undefined, "normal");
-
-    const lines = doc.splitTextToSize(text, 180);
-    doc.text(lines, 10, y);
-    y += lines.length * 6;
-
-    if (y > 270) {
-      doc.addPage();
-      y = 20;
+function ScenarioForm({ scenario, darkMode, fontSizeLarge }) {
+  const renderContent = (data) => {
+    if (Array.isArray(data)) {
+      return (
+        <ul style={{ paddingLeft: "1rem", marginTop: "0.5rem" }}>
+          {data.map((item, index) => (
+            <li key={index}>{renderContent(item)}</li>
+          ))}
+        </ul>
+      );
     }
+    if (typeof data === "object" && data !== null) {
+      return (
+        <ul style={{ paddingLeft: "1rem", marginTop: "0.5rem" }}>
+          {Object.entries(data).map(([key, value], index) => (
+            <li key={index}>
+              <strong>{formatLabel(key)}:</strong> {renderContent(value)}
+            </li>
+          ))}
+        </ul>
+      );
+    }
+    return <span>{String(data)}</span>;
   };
 
-  Object.entries(scenario).forEach(([key, value]) => {
-    if (!value) return;
+  const renderSection = (title, content) => {
+    if (!content) return null;
 
-    if (key === "grsAnchors" && typeof value === "object") {
+    if (title === "grsAnchors" && typeof content === "object") {
+      return (
+        <div style={styles(darkMode, fontSizeLarge).card} key={title}>
+          <h3 style={styles(darkMode, fontSizeLarge).cardTitle}>📊 GRS Anchors</h3>
+          <GRSAccordion grsAnchors={content} />
+        </div>
+      );
+    }
+
+    if (title === "caseProgression" && typeof content === "object") {
+      return (
+        <div style={styles(darkMode, fontSizeLarge).card} key={title}>
+          <h3 style={styles(darkMode, fontSizeLarge).cardTitle}>🔄 Case Progression</h3>
+          <div style={{ marginBottom: "0.5rem" }}>
+            <strong>🟢 With Correct Treatment:</strong>
+            {renderContent(content.withProperCare)}
+          </div>
+          <div>
+            <strong>🔴 With Incorrect or No Treatment:</strong>
+            {renderContent(content.withoutProperCare)}
+          </div>
+        </div>
+      );
+    }
+
+    const emojiMap = {
+      scenarioIntro: "🎬 Scenario Intro",
+      teachableBlurb: "🧠 Teachable Blurb",
+      learningObjectives: "🎯 Learning Objectives",
+      vocationalLearningOutcomes: "🎓 Vocational Learning Outcomes",
+      selfReflectiveQuestions: "🪞 Self-Reflective Questions",
+    };
+
+    return (
+      <div style={styles(darkMode, fontSizeLarge).card} key={title}>
+        <h3 style={styles(darkMode, fontSizeLarge).cardTitle}>
+          {emojiMap[title] || TITLE_MAP[title] || formatLabel(title)}
+        </h3>
+        {renderContent(content)}
+      </div>
+    );
+  };
+
+  const exportToPDF = () => {
+    const doc = new jsPDF();
+    doc.setFontSize(12);
+    doc.text(`Scenario: ${scenario.title}`, 10, 10);
+    let y = 20;
+
+    const addTextBlock = (label, text) => {
       doc.setFont(undefined, "bold");
-      doc.text("📊 GRS Anchors", 10, y);
-      y += 8;
+      doc.text(`${label}:`, 10, y);
+      y += 6;
+      doc.setFont(undefined, "normal");
 
-      Object.entries(value).forEach(([domain, scores]) => {
+      const lines = doc.splitTextToSize(text, 180);
+      doc.text(lines, 10, y);
+      y += lines.length * 6;
+
+      if (y > 270) {
+        doc.addPage();
+        y = 20;
+      }
+    };
+
+    Object.entries(scenario).forEach(([key, value]) => {
+      if (!value) return;
+
+      if (key === "grsAnchors" && typeof value === "object") {
         doc.setFont(undefined, "bold");
-        doc.text(`- ${formatLabel(domain)}`, 12, y);
-        y += 6;
-        Object.entries(scores).forEach(([score, descList]) => {
-          descList.forEach((desc) => {
-            const lines = doc.splitTextToSize(`${score}: ${desc}`, 175);
-            lines.forEach((line) => {
-              doc.setFont(undefined, "normal");
-              doc.text(`• ${line}`, 14, y);
-              y += 6;
-              if (y > 270) {
-                doc.addPage();
-                y = 20;
-              }
+        doc.text("📊 GRS Anchors", 10, y);
+        y += 8;
+
+        Object.entries(value).forEach(([domain, scores]) => {
+          doc.setFont(undefined, "bold");
+          doc.text(`- ${formatLabel(domain)}`, 12, y);
+          y += 6;
+          Object.entries(scores).forEach(([score, descList]) => {
+            descList.forEach((desc) => {
+              const lines = doc.splitTextToSize(`${score}: ${desc}`, 175);
+              lines.forEach((line) => {
+                doc.setFont(undefined, "normal");
+                doc.text(`• ${line}`, 14, y);
+                y += 6;
+                if (y > 270) {
+                  doc.addPage();
+                  y = 20;
+                }
+              });
             });
           });
         });
-      });
-      y += 6;
-    }
-
-    else if (key === "caseProgression" && typeof value === "object") {
-      doc.setFont(undefined, "bold");
-      doc.text("🔄 Case Progression", 10, y);
-      y += 8;
-
-      ["withProperCare", "withoutProperCare"].forEach((pathKey) => {
-        const label = pathKey === "withProperCare" ? "🟢 With Correct Treatment" : "🔴 Without or Incorrect Treatment";
-        doc.setFont(undefined, "bold");
-        doc.text(`${label}:`, 12, y);
         y += 6;
+      }
 
-        const lines = doc.splitTextToSize(formatFieldValue(value[pathKey]), 175);
-        doc.setFont(undefined, "normal");
-        lines.forEach((line) => {
-          doc.text(`• ${line}`, 14, y);
+      else if (key === "caseProgression" && typeof value === "object") {
+        doc.setFont(undefined, "bold");
+        doc.text("🔄 Case Progression", 10, y);
+        y += 8;
+
+        ["withProperCare", "withoutProperCare"].forEach((pathKey) => {
+          const label = pathKey === "withProperCare"
+            ? "🟢 With Correct Treatment"
+            : "🔴 Without or Incorrect Treatment";
+          doc.setFont(undefined, "bold");
+          doc.text(`${label}:`, 12, y);
           y += 6;
-          if (y > 270) {
-            doc.addPage();
-            y = 20;
-          }
+
+          const lines = doc.splitTextToSize(formatFieldValue(value[pathKey]), 175);
+          doc.setFont(undefined, "normal");
+          lines.forEach((line) => {
+            doc.text(`• ${line}`, 14, y);
+            y += 6;
+            if (y > 270) {
+              doc.addPage();
+              y = 20;
+            }
+          });
+          y += 4;
         });
-        y += 4;
-      });
-    }
+      }
 
-    else {
-      addTextBlock(TITLE_MAP[key] || formatLabel(key), formatFieldValue(value));
-    }
-  });
+      else {
+        addTextBlock(TITLE_MAP[key] || formatLabel(key), formatFieldValue(value));
+      }
+    });
 
-  doc.save("scenario.pdf");
-};
+    doc.save("scenario.pdf");
+  };
 
-const SECTION_GROUPS = {
+  return (
+    <div style={{ padding: "1rem" }}>
+      <div style={{ textAlign: "right", marginBottom: "1rem" }}>
+        <button onClick={exportToPDF}>Export to PDF</button>
+      </div>
+      {Object.entries(SECTION_GROUPS).map(([groupLabel, fields]) => (
+        <div key={groupLabel} style={{ marginBottom: "2rem" }}>
+          <h2 style={styles(darkMode, fontSizeLarge).sectionHeader}>{groupLabel}</h2>
+          {fields.map((field) => renderSection(field, scenario[field]))}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+export const SECTION_GROUPS = {
   "📍 Scene Info": ["title", "scenarioIntro", "callInformation", "incidentNarrative"],
   " Patient Info": ["patientDemographics", "patientPresentation", "opqrst", "sample"],
   "🎭 Scenario Modifiers": ["modifiersUsed"],
@@ -171,3 +196,5 @@ const SECTION_GROUPS = {
     "grsAnchors"
   ]
 };
+
+export default ScenarioForm;

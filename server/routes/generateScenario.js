@@ -85,7 +85,7 @@ ${alsStandards}
 
 - Format both SAMPLE and OPQRST responses as clearly labeled bullet points
 - Include bystander and patient speech, and at least two red herrings
-- Expand all sections with realistic detail
+
 - Ensure strong internal consistency between presentation, history, vitals, and treatment
 - Include dynamic vitals that reflect improvement or deterioration
 - Write a short introductory hook (1–2 sentences) before the scenario begins. This should hint at atmosphere or urgency without giving away diagnosis. Store this as 'scenarioIntro'.
@@ -102,6 +102,11 @@ Generate a detailed paramedic scenario using the following fields. ALL of these 
 - callInformation
 - patientDemographics
 - patientPresentation
+- Describe posture, position, facial expression, and skin signs
+  - Include one or two red herrings (e.g., misleading complaints or humorous quotes)
+  - Bold key clinical findings (e.g., **diaphoretic**, **slurred speech**)
+  - Include at least one patient quote
+  - Keep tone immersive and instructive
 - incidentNarrative
 - opqrst
 - sampleHistory
