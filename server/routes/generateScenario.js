@@ -1,3 +1,5 @@
+// File: server/routes/generateScenario.js
+
 import express from 'express';
 import OpenAI from 'openai';
 import fs from 'fs/promises';
@@ -9,6 +11,14 @@ const router = express.Router();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Handle CORS preflight
+router.options('/', (req, res) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type');
+  res.sendStatus(204);
+});
+
 function getSelectedModifiers(modifiersObj, selectedCategories, countPerCategory = 1) {
   return Object.entries(modifiersObj)
     .filter(([category]) => selectedCategories[category])
@@ -19,7 +29,7 @@ function getSelectedModifiers(modifiersObj, selectedCategories, countPerCategory
 }
 
 const requiredScenarioFields = [
-  "title", "scenarioIntro", "callInformation", "patientDemographics", "patientPresentation",
+  "title", "callInformation", "patientDemographics", "patientPresentation",
   "incidentNarrative", "opqrst", "sampleHistory", "medications",
   "allergies", "pastMedicalHistory", "physicalExam", "vitalSigns",
   "caseProgression", "expectedTreatment", "teachableBlurb", "grsAnchors",
@@ -27,6 +37,8 @@ const requiredScenarioFields = [
 ];
 
 router.post('/', async (req, res) => {
+  res.header('Access-Control-Allow-Origin', '*');
+
   const {
     semester,
     type,
@@ -85,7 +97,7 @@ ${alsStandards}
 
 - Format both SAMPLE and OPQRST responses as clearly labeled bullet points
 - Include bystander and patient speech, and at least two red herrings
-
+- Expand all sections with realistic detail
 - Ensure strong internal consistency between presentation, history, vitals, and treatment
 - Include dynamic vitals that reflect improvement or deterioration
 - Write a short introductory hook (1–2 sentences) before the scenario begins. This should hint at atmosphere or urgency without giving away diagnosis. Store this as 'scenarioIntro'.
@@ -98,15 +110,9 @@ ${alsStandards}
 Generate a detailed paramedic scenario using the following fields. ALL of these fields must be included in the output:
 
 - title
-- scenarioIntro
 - callInformation
 - patientDemographics
 - patientPresentation
-- Describe posture, position, facial expression, and skin signs
-  - Include one or two red herrings (e.g., misleading complaints or humorous quotes)
-  - Bold key clinical findings (e.g., **diaphoretic**, **slurred speech**)
-  - Include at least one patient quote
-  - Keep tone immersive and instructive
 - incidentNarrative
 - opqrst
 - sampleHistory
@@ -156,7 +162,7 @@ Today's date is ${today}.
     console.log("=== RAW RESPONSE ===");
     console.log(rawResponse);
 
-    rawResponse = rawResponse.replace(/```(json)?/g, "").trim();
+    rawResponse = rawResponse.replace(/\s*```(json)?\s*/g, "").trim();
 
     try {
       const repaired = jsonrepair(rawResponse);
