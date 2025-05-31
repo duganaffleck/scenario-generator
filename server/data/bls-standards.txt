@@ -1,0 +1,82 @@
+# Ontario Basic Life Support Patient Care Standards (BLS PCS v3.4 – 2023) Key Directives and Thresholds for Paramedic Scenario Generation
+
+## Oxygen Administration (BLS PCS)
+- Do NOT administer oxygen if the patient has an SpO₂ of 94% or greater AND shows no signs of hypoxia.
+- Initiate oxygen therapy if:
+  - SpO₂ is below 94%
+  - OR signs of hypoxia or respiratory distress are present (cyanosis, altered mental status, poor perfusion, shock, or poor waveform).
+- Titrate oxygen to maintain an SpO₂ of 92–96% unless otherwise directed.
+- Use appropriate delivery method (nasal cannula, non-rebreather, BVM) based on severity and directive.
+
+## Vital Signs Required
+- All patients must have full vitals taken unless unsafe or impractical:
+  - Heart Rate (HR)
+  - Respiratory Rate (RR)
+  - Blood Pressure (BP)
+  - SpO₂
+  - Glasgow Coma Scale (GCS)
+  - Skin condition (color, moisture, temperature)
+  - Pupils (if neurological concern, trauma, or head injury)
+  - Blood Glucose Level (if AMS, seizure, stroke, or suspected diabetes)
+  - ETCO₂ (if airway adjuncts, ventilation, or ALS monitor available)
+  - Temperature (if infection, fever, sepsis, or environmental emergency suspected)
+
+## Spinal Motion Restriction (SMR) Standard
+- Apply SMR if the patient has:
+  - GCS <15
+  - Spine pain or tenderness
+  - Neurological deficits (numbness, weakness, paralysis)
+  - Distracting injury (e.g., long bone fracture)
+  - Dangerous mechanism of injury:
+    - Fall >3 feet or 5 stairs
+    - Axial load (diving)
+    - Rollover MVC
+    - Ejection from vehicle
+    - High-speed collision
+- Do NOT use spinal boards for transport.
+- Use stretcher with head blocks and 3-strap immobilization.
+- Document SMR application, criteria met, and patient response.
+
+## Blood Glucose Testing
+- Required in the following presentations:
+  - Altered mental status (GCS <15)
+  - Suspected diabetic emergency
+  - Seizure
+  - Suspected stroke or TIA
+- Must document BGL value and time taken.
+- Use glucometer per local service protocol.
+
+## Refusal of Service Criteria
+- Paramedics may permit refusal only if patient has:
+  - Capacity (alert, oriented, able to understand and communicate decision)
+  - No emergent condition requiring intervention
+  - Informed of risks and consequences
+  - Documented consent and assessment
+- Must offer transport and fully explain risks of refusal.
+- Document:
+  - Patient’s decision-making capacity
+  - Risks explained and understood
+  - Final decision and alternative options offered
+
+## Transport Decision Rules
+- Immediate transport advised if:
+  - Patient is unresponsive
+  - Actively seizing
+  - Has airway compromise or needs assisted ventilation
+  - Hemodynamically unstable or in shock
+  - Has massive external hemorrhage
+  - Presents with major trauma or penetrating injuries
+  - Stroke symptoms within window for thrombolysis
+
+## Scene Safety and PPE Requirements
+- Scene safety must be confirmed before patient contact.
+- Paramedics must:
+  - Identify environmental, chemical, biological, or behavioral hazards
+  - Wear appropriate PPE for respiratory, bleeding, or contamination risk
+  - Request fire or police assistance when safety or access is compromised
+  - Maintain personal and team safety as the top priority
+
+## Additional BLS Expectations
+- Reassessment is required every 5–10 minutes or after any intervention.
+- Ensure ongoing documentation of patient response, vitals, and treatment.
+- Use appropriate communication protocols with allied agencies and hospitals.

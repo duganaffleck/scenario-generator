@@ -1,0 +1,38 @@
+# =========================
+# Node.js / Express Backend
+# =========================
+node_modules/
+.env
+.env.*.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+
+# Build outputs
+dist/
+build/
+coverage/
+
+# OS & editor files
+.DS_Store
+Thumbs.db
+
+# =========================
+# React Frontend
+# =========================
+# Ignore the frontend build if deployed separately
+**/build/
+*.cache
+
+# VSCode settings
+.vscode/
+.history/
+
+# JetBrains IDEs (WebStorm, IntelliJ)
+.idea/
+
+# Misc
+*.local
+*.env
+*.swp

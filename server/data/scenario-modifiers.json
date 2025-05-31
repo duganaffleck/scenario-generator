@@ -1,0 +1,37 @@
+{
+  "environmentalComplications": [
+    "Power outage occurs mid-scenario, no lights available.",
+    "Scene is located on an icy driveway; crew slips on approach.",
+    "Apartment filled with smoke from burnt food — minor visibility issues.",
+    "Extreme heat causes equipment to overheat and become unreliable.",
+    "Loud construction noise nearby makes communication difficult."
+  ],
+  "interpersonalChaos": [
+    "A family member insists on riding in the ambulance and begins shouting.",
+    "A neighbour is yelling accusations about the patient’s drug use.",
+    "The patient’s partner becomes combative and blocks access.",
+    "Police arrive and begin questioning crew mid-assessment.",
+    "A bystander begins filming and refusing to stop."
+  ],
+  "equipmentIssues": [
+    "BP cuff tears during inflation — no initial blood pressure obtained.",
+    "Defibrillator pads won’t adhere due to moisture.",
+    "Glucometer displays 'error' three times in a row.",
+    "Oxygen tank runs empty partway through scenario.",
+    "BVM has no facepiece attached — requires improvisation."
+  ],
+  "ethicalDilemmas": [
+    "Patient refuses treatment despite clear signs of critical illness.",
+    "A family member asks you to withhold information from the patient.",
+    "Language barrier — patient can’t consent and no interpreter available.",
+    "Advanced directive is unclear — conflicting family opinions.",
+    "Patient requests pain relief that’s outside your scope to provide."
+  ],
+  "unexpectedPatientBehavior": [
+    "Patient suddenly becomes combative during assessment.",
+    "Patient attempts to walk away from scene despite injury.",
+    "Patient becomes emotionally withdrawn and stops answering questions.",
+    "Patient begins to vomit violently mid-assessment.",
+    "Patient has seizure-like activity with no prior warning."
+  ]
+}

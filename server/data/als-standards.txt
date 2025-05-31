@@ -1,0 +1,178 @@
+ALS PCS — PCP & PCP-IV DIRECTIVES (2025)
+Source: ALS PCS v5.4 (April 2025)
+Scope: Primary Care Paramedic + PCP-IV Certified
+
+────────────────────────────────────────
+1. Bronchoconstriction (PCP)
+────────────────────────────────────────
+Indications:
+- Respiratory distress with suspected bronchoconstriction (e.g., asthma, COPD)
+
+Treatment:
+- Salbutamol MDI 800 mcg (8 puffs) q5–15 min PRN
+  OR
+- Salbutamol Neb 5 mg if no MDI available
+- Epinephrine IM 0.01 mg/kg (max 0.5 mg) if severe + asthma
+
+Contraindications:
+- Allergy to salbutamol or epinephrine
+
+────────────────────────────────────────
+2. Hypoglycemia (PCP + PCP-IV)
+────────────────────────────────────────
+Indications:
+- Altered LOC with BGL < 4.0 mmol/L
+
+Treatment:
+- Oral glucose 25–50 g if alert and able to swallow
+- D10W IV (PCP-IV): 0.2 g/kg (2 mL/kg) up to 10 g (100 mL)
+- Glucagon IM 1 mg if no IV access
+
+Contraindications:
+- Allergy
+- Glucagon contraindicated in pheochromocytoma
+
+────────────────────────────────────────
+3. Cardiac Ischemia (PCP + PCP-IV)
+────────────────────────────────────────
+Indications:
+- Suspected cardiac chest pain
+
+Treatment:
+- ASA 160–162 mg PO once
+- Nitroglycerin SL (PCP-IV): 0.3–0.6 mg q5 min, max 6 doses
+
+Conditions:
+- HR 60–159 bpm
+- SBP ≥ 100 mmHg
+- No ED medications in past 48 hrs
+
+Contraindications:
+- Hypotension, bradycardia, tachycardia, ED drug use
+
+────────────────────────────────────────
+4. Medical Cardiac Arrest (PCP)
+────────────────────────────────────────
+Indications:
+- Non-traumatic cardiac arrest
+
+Treatment:
+- High-quality CPR + Defibrillation (AED or Manual)
+- Apply Medical TOR if:
+  • Arrest not witnessed by EMS
+  • No ROSC
+  • No shocks delivered
+
+Transport if:
+- No ROSC after 3 analyses
+
+────────────────────────────────────────
+5. ROSC – Return of Spontaneous Circulation (PCP)
+────────────────────────────────────────
+Treatment:
+- Oxygen to SpO₂ 94–98%
+- Avoid hyperventilation
+- Monitor vitals closely
+- Prepare for re-arrest
+- 12-lead ECG if available
+
+────────────────────────────────────────
+6. CPAP (PCP-Certified)
+────────────────────────────────────────
+Indications:
+- Severe SOB (COPD, CHF, pulmonary edema)
+
+Treatment:
+- Start at 5 cmH₂O, titrate to max 10 cmH₂O
+
+Contraindications:
+- GCS < Alert
+- Vomiting
+- Facial trauma
+- Hypotension
+
+────────────────────────────────────────
+7. Allergic Reaction / Anaphylaxis (PCP + PCP-IV)
+────────────────────────────────────────
+Treatment:
+- Epinephrine IM 0.01 mg/kg (max 0.5 mg) q5–15 min ×2
+- Diphenhydramine (PCP-IV): 25–50 mg IM or IV
+
+Contraindications:
+- None for epinephrine in anaphylaxis
+
+────────────────────────────────────────
+8. Nausea / Vomiting (PCP-IV)
+────────────────────────────────────────
+Treatment:
+- Dimenhydrinate 25–50 mg IV or IM q4h PRN
+
+Contraindications:
+- Allergy
+- Glaucoma
+
+────────────────────────────────────────
+9. Pain Management (PCP-IV)
+────────────────────────────────────────
+Indications:
+- Moderate to severe pain
+
+Treatment:
+- Acetaminophen 960–1000 mg PO
+- Ibuprofen 400 mg PO
+- Ketorolac 10–15 mg IM/IV if NPO or cannot tolerate oral
+
+Contraindications:
+- NSAID allergy, renal failure, bleeding, pregnancy
+- Do not combine ibuprofen and ketorolac
+
+────────────────────────────────────────
+10. Seizures (PCP)
+────────────────────────────────────────
+Treatment:
+- Ensure scene safety
+- Airway and oxygen support
+- BGL check
+- Monitor postictal phase
+- Midazolam only with delegation or patch
+
+────────────────────────────────────────
+11. Stroke / TIA (PCP)
+────────────────────────────────────────
+Indications:
+- Acute neurologic deficits < 4.5 hours since onset
+
+Treatment:
+- FAST / BE-FAST screening
+- Apply Stroke Bypass Protocol
+- Confirm BGL > 3.0 mmol/L
+- Expedite transport, minimize scene time
+
+────────────────────────────────────────
+12. TOR & DNR (PCP)
+────────────────────────────────────────
+Treatment:
+- Apply Medical TOR as per directive
+- Confirm and honor valid DNR forms
+- Document clearly
+
+────────────────────────────────────────
+13. TXA – Tranexamic Acid (PCP-IV)
+────────────────────────────────────────
+Indications:
+- Blunt or penetrating trauma with signs of hemorrhagic shock (e.g., SBP < 90 mmHg, HR > 110 bpm)
+- Suspected significant internal or external bleeding
+- Injury occurred within the past 3 hours
+
+Treatment:
+- TXA 1 g IV/IO over 10 minutes (infusion or slow push)
+- May dilute in 100 mL NS/D5W or administer via pump
+
+Contraindications:
+- Known allergy to TXA
+- Traumatic arrest
+- Isolated head injury
+- More than 3 hours since injury
+
+Notes:
+- Must be used in conjunction with hemorrhage control and rapid transport
