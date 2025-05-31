@@ -26,7 +26,7 @@ const requiredScenarioFields = [
   "vocationalLearningOutcomes", "modifiersUsed", "selfReflectionPrompts"
 ];
 
-router.post('/', async (req, res) => {
+router.post('/api/scenario', async (req, res) => {
   const {
     semester,
     type,
@@ -131,7 +131,6 @@ ${bystanderInstruction}
     console.log("=== RAW RESPONSE ===");
     console.log(rawResponse);
 
-    // Clean stray formatting characters (e.g., triple backticks)
     rawResponse = rawResponse.replace(/```(json)?/g, "").trim();
 
     try {
