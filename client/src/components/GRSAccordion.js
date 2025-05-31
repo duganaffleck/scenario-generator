@@ -1,32 +1,24 @@
-// File: src/components/GRSAccordion.js
+// GRSAccordion.js
 import React from "react";
 
-const GRSAccordion = ({ grsAnchors }) => {
-  if (!grsAnchors || typeof grsAnchors !== "object") return null;
-
+export function GRSAccordion({ grsAnchors }) {
   return (
-    <div className="space-y-4">
+    <div>
       {Object.entries(grsAnchors).map(([domain, scores]) => (
-        <details key={domain} className="border rounded-xl p-3 bg-white dark:bg-gray-900 shadow-sm">
-          <summary className="font-semibold text-lg cursor-pointer">
-            {domain}
-          </summary>
-          <div className="pl-4 pt-2">
-            {Object.entries(scores).map(([score, examples]) => (
-              <div key={score} className="mb-2">
-                <span className="font-bold">Score {score}:</span>
-                <ul className="list-disc list-inside ml-4 text-sm">
-                  {examples.map((ex, idx) => (
-                    <li key={idx}>{ex}</li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
-        </details>
+        <div key={domain} style={{ marginBottom: "1rem" }}>
+          <h4>{domain}</h4>
+          {Object.entries(scores).map(([score, descriptions]) => (
+            <div key={score} style={{ marginLeft: "1rem" }}>
+              <strong>Score {score}</strong>
+              <ul>
+                {descriptions.map((desc, i) => (
+                  <li key={i}>{desc}</li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
       ))}
     </div>
   );
-};
-
-export default GRSAccordion;
+}

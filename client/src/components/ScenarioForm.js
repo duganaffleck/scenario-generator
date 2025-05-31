@@ -1,6 +1,7 @@
 import React from "react";
 import jsPDF from "jspdf";
 import { GRSAccordion } from "./GRSAccordion";
+
 import { formatFieldValue, formatLabel, TITLE_MAP, styles } from "../utils";
 
 function ScenarioForm({ scenario, darkMode, fontSizeLarge }) {
