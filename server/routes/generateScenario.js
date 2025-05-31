@@ -19,7 +19,7 @@ function getSelectedModifiers(modifiersObj, selectedCategories, countPerCategory
 }
 
 const requiredScenarioFields = [
-  "title", "callInformation", "patientDemographics", "patientPresentation",
+  "title", "scenarioIntro", "callInformation", "patientDemographics", "patientPresentation",
   "incidentNarrative", "opqrst", "sampleHistory", "medications",
   "allergies", "pastMedicalHistory", "physicalExam", "vitalSigns",
   "caseProgression", "expectedTreatment", "teachableBlurb", "grsAnchors",
@@ -88,14 +88,17 @@ ${alsStandards}
 - Expand all sections with realistic detail
 - Ensure strong internal consistency between presentation, history, vitals, and treatment
 - Include dynamic vitals that reflect improvement or deterioration
+- Write a short introductory hook (1–2 sentences) before the scenario begins. This should hint at atmosphere or urgency without giving away diagnosis. Store this as 'scenarioIntro'.
+
 - Always include a 'teachableBlurb' summarizing 2–3 key learning points for instructors to emphasize
 - Ensure the GRS anchors are always the correct 7 categories with anchors
 `.trim();
 
-  const generationPrompt = `
+    const generationPrompt = `
 Generate a detailed paramedic scenario using the following fields. ALL of these fields must be included in the output:
 
 - title
+- scenarioIntro
 - callInformation
 - patientDemographics
 - patientPresentation
@@ -130,7 +133,6 @@ ${complicationsInstruction}
 ${bystanderInstruction}
 Today's date is ${today}.
 `.trim();
-
 
     const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 

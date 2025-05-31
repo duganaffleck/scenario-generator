@@ -49,6 +49,7 @@ const renderSection = (title, content) => {
   }
 
   const emojiMap = {
+    scenarioIntro: "🎬 Scenario Intro",
     teachableBlurb: "🧠 Teachable Blurb",
     learningObjectives: "🎯 Learning Objectives",
     vocationalLearningOutcomes: "🎓 Vocational Learning Outcomes",
@@ -151,7 +152,7 @@ const exportToPDF = () => {
 };
 
 const SECTION_GROUPS = {
-  "📍 Scene Info": ["title", "callInformation", "incidentNarrative"],
+  "📍 Scene Info": ["title", "scenarioIntro", "callInformation", "incidentNarrative"],
   " Patient Info": ["patientDemographics", "patientPresentation", "opqrst", "sample"],
   "🎭 Scenario Modifiers": ["modifiersUsed"],
   " Assessment": ["physicalExam", "vitalSigns"],
