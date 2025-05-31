@@ -1,10 +1,12 @@
 import React from "react";
 import jsPDF from "jspdf";
 import { GRSAccordion } from "./GRSAccordion";
-
 import { formatFieldValue, formatLabel, TITLE_MAP, styles } from "../utils";
 
 function ScenarioForm({ scenario, darkMode, fontSizeLarge }) {
+  if (!scenario || typeof scenario !== "object") {
+  return <div style={{ color: "red", padding: "2rem" }}>Invalid or missing scenario data.</div>;
+}
   const renderContent = (data) => {
     if (Array.isArray(data)) {
       return (
