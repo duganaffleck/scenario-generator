@@ -26,7 +26,7 @@ const requiredScenarioFields = [
   "vocationalLearningOutcomes", "modifiersUsed", "selfReflectionPrompts"
 ];
 
-router.post('/api/scenario', async (req, res) => {
+router.post('/', async (req, res) => {
   const {
     semester,
     type,
