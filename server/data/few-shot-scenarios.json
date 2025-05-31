@@ -85,7 +85,7 @@
       "withoutProperTreatment": "Patient becomes hypotensive and agitated if moved roughly..."
     },
     "expectedTreatment": "BLS pelvic stabilization, gentle handling, rapid transport. ALS: fluid bolus and analgesia if authorized.",
-    "globalRatingScale": {
+    "grsAnchors": {
       "sceneManagement": { "1": "...", "3": "...", "5": "...", "7": "..." },
       "patientAssessment": { "1": "...", "3": "...", "5": "...", "7": "..." },
       "historyGathering": { "1": "...", "3": "...", "5": "...", "7": "..." },
@@ -194,7 +194,7 @@
       "withoutProperTreatment": "Risk of recurrent seizure and parental panic increases."
     },
     "expectedTreatment": "Monitor airway, recovery position, gentle cooling with damp cloths, reassure parents, transport.",
-    "globalRatingScale": {
+    "grsAnchors": {
       "sceneManagement": { "1": "...", "3": "...", "5": "...", "7": "..." },
       "patientAssessment": { "1": "...", "3": "...", "5": "...", "7": "..." },
       "historyGathering": { "1": "...", "3": "...", "5": "...", "7": "..." },
@@ -308,7 +308,7 @@
       "withoutProperTreatment": "Patient deteriorates rapidly into worsening shock, vomiting, and decreased GCS."
     },
     "expectedTreatment": "PCP: Scene control, cooling, airway protection, monitor vitals, rapid transport. ALS: IV NS bolus, monitor for worsening acidosis.",
-    "globalRatingScale": {
+    "grsAnchors": {
       "sceneManagement": { "1": "...", "3": "...", "5": "...", "7": "..." },
       "patientAssessment": { "1": "...", "3": "...", "5": "...", "7": "..." },
       "historyGathering": { "1": "...", "3": "...", "5": "...", "7": "..." },
