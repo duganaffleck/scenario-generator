@@ -33,7 +33,7 @@ const requiredScenarioFields = [
   "incidentNarrative", "opqrst", "sampleHistory", "medications",
   "allergies", "pastMedicalHistory", "physicalExam", "vitalSigns",
   "caseProgression", "expectedTreatment", "teachableBlurb", "grsAnchors",
-  "vocationalLearningOutcomes", "modifiersUsed", "selfReflectionPrompts"
+  "vocationalLearningOutcomes", "modifiersUsed", "selfReflectionPrompts", "teachersPoints"
 ];
 
 router.post('/', async (req, res) => {
@@ -101,9 +101,18 @@ ${alsStandards}
 - Ensure strong internal consistency between presentation, history, vitals, and treatment
 - Include dynamic vitals that reflect improvement or deterioration
 - Write a short introductory hook (1–2 sentences) before the scenario begins. This should hint at atmosphere or urgency without giving away diagnosis. Store this as 'scenarioIntro'.
-
+- All narrative sections (scenarioIntro, patientPresentation, callInformation, caseProgression) should reflect the tone of instructor Dugan:
+  - Playful but deliberate
+  - Heavy with purpose
+  - Smart, direct, and educational
+  - Include teaching-style phrases that feel like a senior paramedic guiding a student
+- Include a field titled 'teachersPoints' — a single-paragraph tip, insight, or mic-drop moment from the instructor to the student.
+- This should sound like a senior paramedic teaching a junior. Tone: direct, insightful, occasionally witty.
+- This section should be instructional — not motivational fluff.
 - Always include a 'teachableBlurb' summarizing 2–3 key learning points for instructors to emphasize
 - Ensure the GRS anchors are always the correct 7 categories with anchors
+Include a "teachersPoints" field: a one-paragraph tip, warning, or lesson from the instructor to the student. This should be voiced like a senior paramedic speaking to a junior. Keep it educational, witty, or stern — never vague.
+
 `.trim();
 
     const generationPrompt = `

@@ -177,7 +177,15 @@ const ScenarioForm = () => {
         y = 20;
       }
     });
+if (scenario.teachersPoints) {
+  doc.setFont(undefined, "bold");
+  doc.text("Teacher's Points:", 10, y);
+  y += 6;
+  doc.setFont(undefined, "normal");
 
+  const lines = doc.splitTextToSize(scenario.teachersPoints, 180);
+  doc.text(lines, 10, y);
+}
     doc.save("scenario.pdf");
   };
 
@@ -297,6 +305,20 @@ const ScenarioForm = () => {
                 keys.map((key) => scenario[key] && renderSection(key, scenario[key]))}
             </div>
           ))}
+            {/* Teacher's Points Section */}
+  {scenario.teachersPoints && (
+    <div style={{ 
+      backgroundColor: darkMode ? "#facc15" : "#fef9c3",
+      color: "#1e293b",
+      padding: "1rem",
+      borderRadius: "12px",
+      border: "1px solid #eab308",
+      marginTop: "1rem"
+    }}>
+      <h3 style={{ marginBottom: "0.5rem", fontSize: fontSizeLarge ? "1.2rem" : "1rem" }}>🧠 Teacher's Points</h3>
+      <p style={{ fontStyle: "italic" }}>{scenario.teachersPoints}</p>
+    </div>
+  )}
         </div>
       )}
     </div>
