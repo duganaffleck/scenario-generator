@@ -22,7 +22,7 @@
     "weight": "110 lbs",
     "appearance": "Pale, frail, and visibly uncomfortable; lying on her left side"
   },
-  "patientPresentation": "Marjorie lies on the hallway carpet, curled slightly, clutching her left hip. Her face is tense, and she winces with the slightest movement. She’s alert but nervous, answering quietly. (🟨 This is where you pause. Take in the surroundings. Her position tells a story — don’t rush past it.)",
+  "patientPresentation": "Marjorie lies on the hallway carpet, curled slightly, clutching her left hip. Her face is tense, and she winces with the slightest movement. She’s alert but nervous, answering quietly. (💡 This is where you pause. Take in the surroundings. Her position tells a story — don’t rush past it.)",
   "incidentNarrative": "The daughter reports hearing a 'thump' around 07:45. Found her mother on the ground complaining of hip pain. She didn’t see the fall. Patient was trying to make her way to the bathroom alone. No loss of consciousness reported.",
   "opqrst": {
     "onset": "Sudden — during attempt to walk to bathroom",
@@ -76,8 +76,8 @@
     }
   },
 
-  "caseProgression": "If the crew recognizes signs of a pelvic fracture and limits movement, Marjorie remains stable, albeit in pain. Gentle handling and pelvic stabilization improve her comfort. (🟨 Notice what gets worse first — that’s your early warning. Movement without support rapidly worsens pain and risk.)\n\nIf movement is attempted without stabilization or if lifting is done improperly, pain increases, and Marjorie becomes more anxious and tachycardic. Delays in transport or failure to identify the fracture worsen her status en route.",
-  "expectedTreatment": "Primary goals include pain mitigation, pelvic stabilization, and safe extrication. Consider pelvic binding, scoop or vacuum mattress, and rapid transport with caution due to anticoagulant use. Monitor vitals and reassess frequently. (🟨 Even if ALS is 15 minutes out, don’t freeze. BLS doesn’t mean Basic Thinking — stabilize what you can and move thoughtfully.)",
+  "caseProgression": "If the crew recognizes signs of a pelvic fracture and limits movement, Marjorie remains stable, albeit in pain. Gentle handling and pelvic stabilization improve her comfort. (💡 Notice what gets worse first — that’s your early warning. Movement without support rapidly worsens pain and risk.)\n\nIf movement is attempted without stabilization or if lifting is done improperly, pain increases, and Marjorie becomes more anxious and tachycardic. Delays in transport or failure to identify the fracture worsen her status en route.",
+  "expectedTreatment": "Primary goals include pain mitigation, pelvic stabilization, and safe extrication. Consider pelvic binding, scoop or vacuum mattress, and rapid transport with caution due to anticoagulant use. Monitor vitals and reassess frequently. (💡 Even if ALS is 15 minutes out, don’t freeze. BLS doesn’t mean Basic Thinking — stabilize what you can and move thoughtfully.)",
  
   "vocationalLearningOutcomes": [
     "VLO 1: Perform complete patient assessments and integrate findings into care plans",
@@ -160,7 +160,7 @@
     "weight": "30 lbs",
     "appearance": "Lethargic toddler lying on a mat, flushed cheeks, slow to respond to voices"
   },
-  "patientPresentation": "Liam is limp but breathing spontaneously. His eyes open slowly when his name is called, and he cries weakly when moved. He’s warm to touch, with flushed cheeks and dry lips. (🟨 This is your cue to pause. Look beyond the fear — what do his breathing and responsiveness really tell you?)",
+  "patientPresentation": "Liam is limp but breathing spontaneously. His eyes open slowly when his name is called, and he cries weakly when moved. He’s warm to touch, with flushed cheeks and dry lips. (💡 This is your cue to pause. Look beyond the fear — what do his breathing and responsiveness really tell you?)",
   "incidentNarrative": "Daycare staff state Liam was playing quietly after lunch when he suddenly stiffened, then began shaking for about 45–60 seconds. He was placed safely on his side. After the seizure stopped, he was drowsy and hot to the touch. Staff report he’d had a runny nose and mild cough earlier but no known diagnosis.",
   "opqrst": {
     "onset": "Seizure started abruptly, during quiet play",
@@ -209,8 +209,8 @@
     }
   },
 
-  "caseProgression": "With calm reassurance and continued observation, Liam becomes more alert. Cooling measures and monitoring stabilize his vitals. (🟨 Notice how responsiveness improves — it’s not always about action, but watchful waiting.)\n\nIf providers panic or over-treat (e.g., aggressive oxygen when not needed, unnecessary medications), the situation becomes more chaotic. Increased caregiver anxiety, potential hyperoxia, or uncoordinated interventions may escalate stress without benefit.",
-  "expectedTreatment": "This is a BLS case of observation, not intervention. Reassure caregivers, maintain airway, monitor vitals, and initiate passive cooling. Consider transport for further assessment. (🟨 Just because you can act doesn’t mean you should. Sometimes clinical excellence is restraint, not reaction.)",
+  "caseProgression": "With calm reassurance and continued observation, Liam becomes more alert. Cooling measures and monitoring stabilize his vitals. (💡 Notice how responsiveness improves — it’s not always about action, but watchful waiting.)\n\nIf providers panic or over-treat (e.g., aggressive oxygen when not needed, unnecessary medications), the situation becomes more chaotic. Increased caregiver anxiety, potential hyperoxia, or uncoordinated interventions may escalate stress without benefit.",
+  "expectedTreatment": "This is a BLS case of observation, not intervention. Reassure caregivers, maintain airway, monitor vitals, and initiate passive cooling. Consider transport for further assessment. (💡 Just because you can act doesn’t mean you should. Sometimes clinical excellence is restraint, not reaction.)",
   
   "vocationalLearningOutcomes": [
     "VLO 1: Conduct assessments and interpret pediatric patient presentations",
@@ -292,7 +292,7 @@
     "weight": "145 lbs",
     "appearance": "Clammy, visibly unwell, disoriented and slurring his words, seated against a bookshelf"
   },
-  "patientPresentation": "Dante is slumped on the floor, mumbling incoherently with flushed cheeks and a shallow breathing pattern. There’s a distinct fruity odour on his breath. He startles when you speak, then vomits into a nearby garbage bin. (🟨 Pause here — this is the kind of scene that speaks before the patient does. What clues are in the air, literally?)",
+  "patientPresentation": "Dante is slumped on the floor, mumbling incoherently with flushed cheeks and a shallow breathing pattern. There’s a distinct fruity odour on his breath. He startles when you speak, then vomits into a nearby garbage bin. (💡 Pause here — this is the kind of scene that speaks before the patient does. What clues are in the air, literally?)",
   "incidentNarrative": "Library staff found Dante sitting awkwardly on the floor with a textbook open. He appeared dazed, was sweating heavily, and couldn’t answer basic questions. When they approached, he became combative, then vomited. A friend mentioned he has ‘some kind of diabetes’ but wasn’t sure which type or what meds he takes.",
   "opqrst": {
     "onset": "Gradual confusion worsening over the day",
@@ -344,8 +344,8 @@
     }
   },
 
-  "caseProgression": "If the crew recognizes DKA and supports Dante with calm positioning, passive airway protection, and monitoring, his condition stabilizes enough for ALS handoff. (🟨 Watch the breathing — that fast, deep pattern is a pathophysiology flag waving right at you.)\n\nIf crews assume this is hypoglycemia and administer glucose or miss the hyperglycemia signs, his mental status declines. Vomiting worsens, and airway protection becomes a concern. Inappropriate interventions delay proper care.",
-  "expectedTreatment": "This is a hold-and-observe BLS call. Do not administer glucose. Protect the airway, monitor vitals, prepare for ALS IV/transport. Provide supportive care and prepare for possible vomiting or LOC. (🟨 The temptation to act is strong — but wisdom means restraint. Knowing when *not* to treat is part of being excellent.)",
+  "caseProgression": "If the crew recognizes DKA and supports Dante with calm positioning, passive airway protection, and monitoring, his condition stabilizes enough for ALS handoff. (💡 Watch the breathing — that fast, deep pattern is a pathophysiology flag waving right at you.)\n\nIf crews assume this is hypoglycemia and administer glucose or miss the hyperglycemia signs, his mental status declines. Vomiting worsens, and airway protection becomes a concern. Inappropriate interventions delay proper care.",
+  "expectedTreatment": "This is a hold-and-observe BLS call. Do not administer glucose. Protect the airway, monitor vitals, prepare for ALS IV/transport. Provide supportive care and prepare for possible vomiting or LOC. ( The temptation to act is strong — but wisdom means restraint. Knowing when *not* to treat is part of being excellent.)",
   
   "vocationalLearningOutcomes": [
     "VLO 1: Recognize and assess diabetic emergencies in young adults",

@@ -10,18 +10,10 @@ const SEMESTERS = ["2", "3", "4"];
 const ENVIRONMENTS = ["Urban", "Rural", "Wilderness", "Industrial", "Home", "Public Space"];
 const COMPLEXITIES = ["Simple", "Moderate", "Complex"];
 const LEARNING_FOCI = ["Balanced", "Assessment", "Decision Making", "Pathophysiology", "Communication", "Procedures"];
-const MODIFIER_CATEGORIES = [
-  "environmentalComplications",
-  "interpersonalChaos",
-  "equipmentIssues",
-  "ethicalDilemmas",
-  "unexpectedPatientBehavior"
-];
 
 const SECTION_GROUPS = {
   "Scene Info": ["title", "callInformation", "incidentNarrative"],
   "Patient Info": ["patientDemographics", "patientPresentation", "opqrst", "sample"],
-  "Scenario Modifiers": ["modifiersUsed"],
   "Assessment": ["physicalExam", "vitalSigns"],
   "Clinical Reasoning": ["caseProgression", "differentialDiagnosis", "expectedTreatment", "protocolNotes", "scenarioRationale"],
   "Education": ["learningObjectives", "vocationalLearningOutcomes", "selfReflectiveQuestions", "grsAnchors"]
@@ -55,17 +47,8 @@ const ScenarioForm = () => {
     type: "Medical",
     environment: "Urban",
     complexity: "Moderate",
-    focus: "Assessment",
-    includeComplications: false,
-    includeBystanders: false
+    focus: "Assessment"
   });
-
-  const [modifierCategories, setModifierCategories] = useState(
-    MODIFIER_CATEGORIES.reduce((acc, key) => {
-      acc[key] = false;
-      return acc;
-    }, {})
-  );
 
   const [scenario, setScenario] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -94,14 +77,6 @@ const ScenarioForm = () => {
     setFormData((prev) => ({
       ...prev,
       [name]: type === "checkbox" ? checked : value
-    }));
-  };
-
-  const handleCategoryChange = (e) => {
-    const { name, checked } = e.target;
-    setModifierCategories((prev) => ({
-      ...prev,
-      [name]: checked
     }));
   };
 
@@ -145,8 +120,7 @@ const ScenarioForm = () => {
     const baseURL = process.env.REACT_APP_API_BASE_URL || "http://localhost:10000";
 
     try {
-      const fullPayload = { ...formData, modifierCategories };
-      const response = await axios.post(`${baseURL}/api/generate-scenario`, fullPayload);
+      const response = await axios.post(`${baseURL}/api/generate-scenario`, formData);
       setScenario(response.data);
     } catch (err) {
       setError("Scenario generation failed. Please check backend server.");
@@ -162,7 +136,7 @@ const ScenarioForm = () => {
     let y = 20;
 
     Object.entries(scenario).forEach(([key, value]) => {
-      if (key === "teachersPoints") return; // omit teacher's points here
+      if (key === "teachersPoints") return;
       const label = capitalizeFirstLetter(key);
       doc.setFont(undefined, "bold");
       doc.text(`${label}:`, 10, y);
@@ -180,7 +154,6 @@ const ScenarioForm = () => {
       }
     });
 
-    // Add Teacher's Points at the end
     if (scenario.teachersPoints) {
       doc.setFont(undefined, "bold");
       doc.text("Teacher's Points:", 10, y);
@@ -268,32 +241,6 @@ const ScenarioForm = () => {
             </select>
           </div>
         ))}
-
-        <div style={styles(darkMode, fontSizeLarge).fieldRow}>
-          <label>
-            <input type="checkbox" name="includeComplications" checked={formData.includeComplications} onChange={handleChange} />
-            Include Complications
-          </label>
-          <label>
-            <input type="checkbox" name="includeBystanders" checked={formData.includeBystanders} onChange={handleChange} />
-            Include Bystanders
-          </label>
-        </div>
-
-        <div style={styles(darkMode, fontSizeLarge).fieldRow}>
-          <strong>Scenario Modifiers:</strong>
-          {MODIFIER_CATEGORIES.map((cat) => (
-            <label key={cat}>
-              <input
-                type="checkbox"
-                name={cat}
-                checked={modifierCategories[cat]}
-                onChange={handleCategoryChange}
-              />
-              {formatLabel(cat.replace(/([A-Z])/g, ' $1'))}
-            </label>
-          ))}
-        </div>
       </div>
 
       {error && <p style={styles(darkMode, fontSizeLarge).error}>{error}</p>}
@@ -307,7 +254,6 @@ const ScenarioForm = () => {
                 {collapsedSections[groupName] ? "▶️" : "🔽"} {groupName}
               </h2>
 
-              {/* Inject Teacher's Points ONLY above Education group */}
               {groupName === "Education" && scenario.teachersPoints && (
                 <div style={{
                   backgroundColor: darkMode ? "#facc15" : "#fef9c3",
