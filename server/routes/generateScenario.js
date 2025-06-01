@@ -145,7 +145,15 @@ Include a "teachersPoints" field: a one-paragraph tip, warning, or lesson from t
 - GRS anchors should reflect readiness for independent practice. A score of 5 = graduation-level confidence and capability.
 `;
     }
+let teachingCueInstruction = "";
 
+if (semester === "2") {
+  teachingCueInstruction = `- Embed 4–6 short, instructional cues across 'patientPresentation', 'caseProgression', and 'expectedTreatment'. Examples: "Pause and take in the scene," or "This is where students often hesitate."`;
+} else if (semester === "3") {
+  teachingCueInstruction = `- Include 2–3 short instructional cues across the scenario. These should feel like a mentor's voice guiding reasoning, without over-explaining.`;
+} else if (semester === "4") {
+  teachingCueInstruction = `- Limit instructional cues to 0–1 across the scenario. Only include them when absolutely critical for understanding.`;
+}
     const generationPrompt = `
 ${semesterInstructions}
 Generate a detailed paramedic scenario using the following fields. ALL of these fields must be included in the output:
@@ -183,6 +191,7 @@ Match the following scenario parameters:
 ${focusInstruction}
 ${complicationsInstruction}
 ${bystanderInstruction}
+${teachingCueInstruction}
 Today's date is ${today}.
 `.trim();
 
