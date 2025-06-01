@@ -199,7 +199,7 @@ Generate a detailed paramedic scenario using the following fields. ALL of these 
 - caseProgression (withProperTreatment and withoutProperTreatment)
 - expectedTreatment
 - teachersPoints (one-paragraph instructor message to student)
-- grsAnchors (7 domains: sceneManagement, patientAssessment, historyGathering, decisionMaking, proceduralSkill, resourceUtilization, communication — each domain must have levels 1, 3, 5, and 7, each with 2–3 detailed anchor examples)
+- grsAnchors (7 domains: situationalAwareness, patientAssessment, historyGathering, decisionMaking, proceduralSkill, resourceUtilization, communication — each domain must have levels 1, 3, 5, and 7, each with 2–3 detailed anchor examples)
 - vocationalLearningOutcomes (at least 3)
 - selfReflectionPrompts (at least 4)
 - modifiersUsed (if complications were added)

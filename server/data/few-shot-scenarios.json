@@ -85,7 +85,7 @@
     "VLO 5: Communicate clearly and effectively with patients, families, and healthcare professionals"
   ],
   "globalRatingScale": {
-    "sceneManagement": {
+    "SituaionalAwareness": {
       "1": "Did not secure scene or assess for stair hazards; ignored safety concerns.",
       "3": "Secured basic space but missed hazards like tight cornering and floor obstructions.",
       "5": "Managed scene well with awareness of space and safe lifting strategies.",
@@ -218,7 +218,7 @@
     "VLO 6: Communicate appropriately with children, guardians, and bystanders"
   },
   "globalRatingScale": {
-    "sceneManagement": {
+    "situationalAwareness": {
       "1": "Ignored chaotic environment; allowed crowding and confusion.",
       "3": "Tried to control space but allowed daycare staff to over-intervene.",
       "5": "Created a calm space, prioritized safety and patient privacy.",
@@ -353,7 +353,7 @@
     "VLO 4: Manage scene, patient, and crew communication with calm and clarity"
   },
   "globalRatingScale": {
-    "sceneManagement": {
+    "situationalAwareness": {
       "1": "Did not control scene; unsafe positioning near students.",
       "3": "Crowd managed, but didn't assess escape route or lighting.",
       "5": "Cleared immediate area and ensured safe access for transport.",
