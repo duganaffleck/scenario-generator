@@ -3,7 +3,7 @@
     "title": "Elderly Fall with Suspected Pelvic Fracture",
     "callInformation": {
       "type": "Trauma",
-      "location": "Private residence – carpeted bedroom, second floor",
+      "location": "Private residence \u2013 carpeted bedroom, second floor",
       "time": "08:15",
       "dispatchCode": "17-B-2",
       "dispatchNotes": [
@@ -86,19 +86,166 @@
     },
     "expectedTreatment": "BLS pelvic stabilization, gentle handling, rapid transport. ALS: fluid bolus and analgesia if authorized.",
     "grsAnchors": {
-      "sceneManagement": { "1": "...", "3": "...", "5": "...", "7": "..." },
-      "patientAssessment": { "1": "...", "3": "...", "5": "...", "7": "..." },
-      "historyGathering": { "1": "...", "3": "...", "5": "...", "7": "..." },
-      "decisionMaking": { "1": "...", "3": "...", "5": "...", "7": "..." },
-      "proceduralSkill": { "1": "...", "3": "...", "5": "...", "7": "..." },
-      "resourceUtilization": { "1": "...", "3": "...", "5": "...", "7": "..." },
-      "communication": { "1": "...", "3": "...", "5": "...", "7": "..." }
+      "sceneManagement": {
+        "1": [
+          "Fails to identify scene hazards or delays securing the environment.",
+          "Neglects vital assessments like BGL or temperature despite clear indicators.",
+          "Misses critical history elements (e.g., insulin use, seizure duration)."
+        ],
+        "3": [
+          "Recognizes basic hazards but does not address them effectively.",
+          "Incomplete patient assessment \u2013 misses secondary findings or scene details.",
+          "History gathered is superficial, missing key timelines or medication relevance."
+        ],
+        "5": [
+          "Controls the scene and addresses risks while initiating care.",
+          "Performs complete primary and secondary survey tailored to case.",
+          "Obtains focused, relevant history that influences care decisions."
+        ],
+        "7": [
+          "Anticipates scene challenges and preemptively plans mitigation.",
+          "Uses assessment findings to predict deterioration and guide proactive care.",
+          "Elicits nuanced historical clues (e.g., family insight, medication patterns) that deepen understanding."
+        ]
+      },
+      "patientAssessment": {
+        "1": [
+          "Fails to identify scene hazards or delays securing the environment.",
+          "Neglects vital assessments like BGL or temperature despite clear indicators.",
+          "Misses critical history elements (e.g., insulin use, seizure duration)."
+        ],
+        "3": [
+          "Recognizes basic hazards but does not address them effectively.",
+          "Incomplete patient assessment \u2013 misses secondary findings or scene details.",
+          "History gathered is superficial, missing key timelines or medication relevance."
+        ],
+        "5": [
+          "Controls the scene and addresses risks while initiating care.",
+          "Performs complete primary and secondary survey tailored to case.",
+          "Obtains focused, relevant history that influences care decisions."
+        ],
+        "7": [
+          "Anticipates scene challenges and preemptively plans mitigation.",
+          "Uses assessment findings to predict deterioration and guide proactive care.",
+          "Elicits nuanced historical clues (e.g., family insight, medication patterns) that deepen understanding."
+        ]
+      },
+      "historyGathering": {
+        "1": [
+          "Fails to identify scene hazards or delays securing the environment.",
+          "Neglects vital assessments like BGL or temperature despite clear indicators.",
+          "Misses critical history elements (e.g., insulin use, seizure duration)."
+        ],
+        "3": [
+          "Recognizes basic hazards but does not address them effectively.",
+          "Incomplete patient assessment \u2013 misses secondary findings or scene details.",
+          "History gathered is superficial, missing key timelines or medication relevance."
+        ],
+        "5": [
+          "Controls the scene and addresses risks while initiating care.",
+          "Performs complete primary and secondary survey tailored to case.",
+          "Obtains focused, relevant history that influences care decisions."
+        ],
+        "7": [
+          "Anticipates scene challenges and preemptively plans mitigation.",
+          "Uses assessment findings to predict deterioration and guide proactive care.",
+          "Elicits nuanced historical clues (e.g., family insight, medication patterns) that deepen understanding."
+        ]
+      },
+      "decisionMaking": {
+        "1": [
+          "Fails to identify scene hazards or delays securing the environment.",
+          "Neglects vital assessments like BGL or temperature despite clear indicators.",
+          "Misses critical history elements (e.g., insulin use, seizure duration)."
+        ],
+        "3": [
+          "Recognizes basic hazards but does not address them effectively.",
+          "Incomplete patient assessment \u2013 misses secondary findings or scene details.",
+          "History gathered is superficial, missing key timelines or medication relevance."
+        ],
+        "5": [
+          "Controls the scene and addresses risks while initiating care.",
+          "Performs complete primary and secondary survey tailored to case.",
+          "Obtains focused, relevant history that influences care decisions."
+        ],
+        "7": [
+          "Anticipates scene challenges and preemptively plans mitigation.",
+          "Uses assessment findings to predict deterioration and guide proactive care.",
+          "Elicits nuanced historical clues (e.g., family insight, medication patterns) that deepen understanding."
+        ]
+      },
+      "proceduralSkill": {
+        "1": [
+          "Fails to identify scene hazards or delays securing the environment.",
+          "Neglects vital assessments like BGL or temperature despite clear indicators.",
+          "Misses critical history elements (e.g., insulin use, seizure duration)."
+        ],
+        "3": [
+          "Recognizes basic hazards but does not address them effectively.",
+          "Incomplete patient assessment \u2013 misses secondary findings or scene details.",
+          "History gathered is superficial, missing key timelines or medication relevance."
+        ],
+        "5": [
+          "Controls the scene and addresses risks while initiating care.",
+          "Performs complete primary and secondary survey tailored to case.",
+          "Obtains focused, relevant history that influences care decisions."
+        ],
+        "7": [
+          "Anticipates scene challenges and preemptively plans mitigation.",
+          "Uses assessment findings to predict deterioration and guide proactive care.",
+          "Elicits nuanced historical clues (e.g., family insight, medication patterns) that deepen understanding."
+        ]
+      },
+      "resourceUtilization": {
+        "1": [
+          "Fails to identify scene hazards or delays securing the environment.",
+          "Neglects vital assessments like BGL or temperature despite clear indicators.",
+          "Misses critical history elements (e.g., insulin use, seizure duration)."
+        ],
+        "3": [
+          "Recognizes basic hazards but does not address them effectively.",
+          "Incomplete patient assessment \u2013 misses secondary findings or scene details.",
+          "History gathered is superficial, missing key timelines or medication relevance."
+        ],
+        "5": [
+          "Controls the scene and addresses risks while initiating care.",
+          "Performs complete primary and secondary survey tailored to case.",
+          "Obtains focused, relevant history that influences care decisions."
+        ],
+        "7": [
+          "Anticipates scene challenges and preemptively plans mitigation.",
+          "Uses assessment findings to predict deterioration and guide proactive care.",
+          "Elicits nuanced historical clues (e.g., family insight, medication patterns) that deepen understanding."
+        ]
+      },
+      "communication": {
+        "1": [
+          "Fails to identify scene hazards or delays securing the environment.",
+          "Neglects vital assessments like BGL or temperature despite clear indicators.",
+          "Misses critical history elements (e.g., insulin use, seizure duration)."
+        ],
+        "3": [
+          "Recognizes basic hazards but does not address them effectively.",
+          "Incomplete patient assessment \u2013 misses secondary findings or scene details.",
+          "History gathered is superficial, missing key timelines or medication relevance."
+        ],
+        "5": [
+          "Controls the scene and addresses risks while initiating care.",
+          "Performs complete primary and secondary survey tailored to case.",
+          "Obtains focused, relevant history that influences care decisions."
+        ],
+        "7": [
+          "Anticipates scene challenges and preemptively plans mitigation.",
+          "Uses assessment findings to predict deterioration and guide proactive care.",
+          "Elicits nuanced historical clues (e.g., family insight, medication patterns) that deepen understanding."
+        ]
+      }
     },
     "selfReflectiveJournaling": [
       "What were the risks of moving this patient without proper immobilization?",
       "How did I ensure clinical suspicion matched physical findings?",
       "What communication techniques were effective in reducing patient anxiety?",
-      "If I had ALS scope, would my treatment plan differ — and why?"
+      "If I had ALS scope, would my treatment plan differ \u2014 and why?"
     ],
     "vocationalLearningOutcomes": [
       "VLO 1: Communicate effectively and compassionately with patients and families",
@@ -115,8 +262,8 @@
   {
     "title": "Young Child with Febrile Seizure",
     "callInformation": {
-      "type": "Medical – Pediatric",
-      "location": "Suburban home – living room floor",
+      "type": "Medical \u2013 Pediatric",
+      "location": "Suburban home \u2013 living room floor",
       "time": "17:20",
       "dispatchCode": "32-A-1",
       "dispatchNotes": [
@@ -195,13 +342,160 @@
     },
     "expectedTreatment": "Monitor airway, recovery position, gentle cooling with damp cloths, reassure parents, transport.",
     "grsAnchors": {
-      "sceneManagement": { "1": "...", "3": "...", "5": "...", "7": "..." },
-      "patientAssessment": { "1": "...", "3": "...", "5": "...", "7": "..." },
-      "historyGathering": { "1": "...", "3": "...", "5": "...", "7": "..." },
-      "decisionMaking": { "1": "...", "3": "...", "5": "...", "7": "..." },
-      "proceduralSkill": { "1": "...", "3": "...", "5": "...", "7": "..." },
-      "resourceUtilization": { "1": "...", "3": "...", "5": "...", "7": "..." },
-      "communication": { "1": "...", "3": "...", "5": "...", "7": "..." }
+      "sceneManagement": {
+        "1": [
+          "Fails to identify scene hazards or delays securing the environment.",
+          "Neglects vital assessments like BGL or temperature despite clear indicators.",
+          "Misses critical history elements (e.g., insulin use, seizure duration)."
+        ],
+        "3": [
+          "Recognizes basic hazards but does not address them effectively.",
+          "Incomplete patient assessment \u2013 misses secondary findings or scene details.",
+          "History gathered is superficial, missing key timelines or medication relevance."
+        ],
+        "5": [
+          "Controls the scene and addresses risks while initiating care.",
+          "Performs complete primary and secondary survey tailored to case.",
+          "Obtains focused, relevant history that influences care decisions."
+        ],
+        "7": [
+          "Anticipates scene challenges and preemptively plans mitigation.",
+          "Uses assessment findings to predict deterioration and guide proactive care.",
+          "Elicits nuanced historical clues (e.g., family insight, medication patterns) that deepen understanding."
+        ]
+      },
+      "patientAssessment": {
+        "1": [
+          "Fails to identify scene hazards or delays securing the environment.",
+          "Neglects vital assessments like BGL or temperature despite clear indicators.",
+          "Misses critical history elements (e.g., insulin use, seizure duration)."
+        ],
+        "3": [
+          "Recognizes basic hazards but does not address them effectively.",
+          "Incomplete patient assessment \u2013 misses secondary findings or scene details.",
+          "History gathered is superficial, missing key timelines or medication relevance."
+        ],
+        "5": [
+          "Controls the scene and addresses risks while initiating care.",
+          "Performs complete primary and secondary survey tailored to case.",
+          "Obtains focused, relevant history that influences care decisions."
+        ],
+        "7": [
+          "Anticipates scene challenges and preemptively plans mitigation.",
+          "Uses assessment findings to predict deterioration and guide proactive care.",
+          "Elicits nuanced historical clues (e.g., family insight, medication patterns) that deepen understanding."
+        ]
+      },
+      "historyGathering": {
+        "1": [
+          "Fails to identify scene hazards or delays securing the environment.",
+          "Neglects vital assessments like BGL or temperature despite clear indicators.",
+          "Misses critical history elements (e.g., insulin use, seizure duration)."
+        ],
+        "3": [
+          "Recognizes basic hazards but does not address them effectively.",
+          "Incomplete patient assessment \u2013 misses secondary findings or scene details.",
+          "History gathered is superficial, missing key timelines or medication relevance."
+        ],
+        "5": [
+          "Controls the scene and addresses risks while initiating care.",
+          "Performs complete primary and secondary survey tailored to case.",
+          "Obtains focused, relevant history that influences care decisions."
+        ],
+        "7": [
+          "Anticipates scene challenges and preemptively plans mitigation.",
+          "Uses assessment findings to predict deterioration and guide proactive care.",
+          "Elicits nuanced historical clues (e.g., family insight, medication patterns) that deepen understanding."
+        ]
+      },
+      "decisionMaking": {
+        "1": [
+          "Fails to identify scene hazards or delays securing the environment.",
+          "Neglects vital assessments like BGL or temperature despite clear indicators.",
+          "Misses critical history elements (e.g., insulin use, seizure duration)."
+        ],
+        "3": [
+          "Recognizes basic hazards but does not address them effectively.",
+          "Incomplete patient assessment \u2013 misses secondary findings or scene details.",
+          "History gathered is superficial, missing key timelines or medication relevance."
+        ],
+        "5": [
+          "Controls the scene and addresses risks while initiating care.",
+          "Performs complete primary and secondary survey tailored to case.",
+          "Obtains focused, relevant history that influences care decisions."
+        ],
+        "7": [
+          "Anticipates scene challenges and preemptively plans mitigation.",
+          "Uses assessment findings to predict deterioration and guide proactive care.",
+          "Elicits nuanced historical clues (e.g., family insight, medication patterns) that deepen understanding."
+        ]
+      },
+      "proceduralSkill": {
+        "1": [
+          "Fails to identify scene hazards or delays securing the environment.",
+          "Neglects vital assessments like BGL or temperature despite clear indicators.",
+          "Misses critical history elements (e.g., insulin use, seizure duration)."
+        ],
+        "3": [
+          "Recognizes basic hazards but does not address them effectively.",
+          "Incomplete patient assessment \u2013 misses secondary findings or scene details.",
+          "History gathered is superficial, missing key timelines or medication relevance."
+        ],
+        "5": [
+          "Controls the scene and addresses risks while initiating care.",
+          "Performs complete primary and secondary survey tailored to case.",
+          "Obtains focused, relevant history that influences care decisions."
+        ],
+        "7": [
+          "Anticipates scene challenges and preemptively plans mitigation.",
+          "Uses assessment findings to predict deterioration and guide proactive care.",
+          "Elicits nuanced historical clues (e.g., family insight, medication patterns) that deepen understanding."
+        ]
+      },
+      "resourceUtilization": {
+        "1": [
+          "Fails to identify scene hazards or delays securing the environment.",
+          "Neglects vital assessments like BGL or temperature despite clear indicators.",
+          "Misses critical history elements (e.g., insulin use, seizure duration)."
+        ],
+        "3": [
+          "Recognizes basic hazards but does not address them effectively.",
+          "Incomplete patient assessment \u2013 misses secondary findings or scene details.",
+          "History gathered is superficial, missing key timelines or medication relevance."
+        ],
+        "5": [
+          "Controls the scene and addresses risks while initiating care.",
+          "Performs complete primary and secondary survey tailored to case.",
+          "Obtains focused, relevant history that influences care decisions."
+        ],
+        "7": [
+          "Anticipates scene challenges and preemptively plans mitigation.",
+          "Uses assessment findings to predict deterioration and guide proactive care.",
+          "Elicits nuanced historical clues (e.g., family insight, medication patterns) that deepen understanding."
+        ]
+      },
+      "communication": {
+        "1": [
+          "Fails to identify scene hazards or delays securing the environment.",
+          "Neglects vital assessments like BGL or temperature despite clear indicators.",
+          "Misses critical history elements (e.g., insulin use, seizure duration)."
+        ],
+        "3": [
+          "Recognizes basic hazards but does not address them effectively.",
+          "Incomplete patient assessment \u2013 misses secondary findings or scene details.",
+          "History gathered is superficial, missing key timelines or medication relevance."
+        ],
+        "5": [
+          "Controls the scene and addresses risks while initiating care.",
+          "Performs complete primary and secondary survey tailored to case.",
+          "Obtains focused, relevant history that influences care decisions."
+        ],
+        "7": [
+          "Anticipates scene challenges and preemptively plans mitigation.",
+          "Uses assessment findings to predict deterioration and guide proactive care.",
+          "Elicits nuanced historical clues (e.g., family insight, medication patterns) that deepen understanding."
+        ]
+      }
     },
     "selfReflectiveJournaling": [
       "How did I assess this pediatric patient?",
@@ -224,7 +518,7 @@
   {
     "title": "DKA in a Young Adult at a Music Festival",
     "callInformation": {
-      "type": "Medical – Diabetic Emergency",
+      "type": "Medical \u2013 Diabetic Emergency",
       "location": "Outdoor music festival, near food truck area",
       "time": "16:50",
       "dispatchCode": "13-D-1",
@@ -249,7 +543,7 @@
       "appearance": "Confused, pale, diaphoretic, Kussmaul respirations"
     },
     "patientPresentation": "Liam is breathing heavily, struggling to focus. He's sweating, clutching his stomach, and intermittently vomiting. He has a medical alert bracelet for type 1 diabetes.",
-    "incidentNarrative": "Liam began feeling nauseous around noon and skipped lunch. He hasn’t taken insulin since morning. Friends report he's been urinating frequently and acting ‘off’ for a few hours. No alcohol or drugs reported.",
+    "incidentNarrative": "Liam began feeling nauseous around noon and skipped lunch. He hasn\u2019t taken insulin since morning. Friends report he's been urinating frequently and acting \u2018off\u2019 for a few hours. No alcohol or drugs reported.",
     "opqrst": {
       "onset": "Started earlier today",
       "provocation": "Worsened with exertion and heat",
@@ -261,7 +555,7 @@
     "sampleHistory": {
       "signsSymptoms": "Confusion, vomiting, deep breathing, fruity breath",
       "allergies": "None",
-      "medications": "Insulin – long-acting (basal) and rapid (bolus)",
+      "medications": "Insulin \u2013 long-acting (basal) and rapid (bolus)",
       "pastMedicalHistory": "Type 1 diabetes x5 years",
       "lastOralIntake": "Water only since breakfast",
       "eventsLeadingUp": "Missed insulin, extreme heat, skipped food"
@@ -309,17 +603,164 @@
     },
     "expectedTreatment": "PCP: Scene control, cooling, airway protection, monitor vitals, rapid transport. ALS: IV NS bolus, monitor for worsening acidosis.",
     "grsAnchors": {
-      "sceneManagement": { "1": "...", "3": "...", "5": "...", "7": "..." },
-      "patientAssessment": { "1": "...", "3": "...", "5": "...", "7": "..." },
-      "historyGathering": { "1": "...", "3": "...", "5": "...", "7": "..." },
-      "decisionMaking": { "1": "...", "3": "...", "5": "...", "7": "..." },
-      "proceduralSkill": { "1": "...", "3": "...", "5": "...", "7": "..." },
-      "resourceUtilization": { "1": "...", "3": "...", "5": "...", "7": "..." },
-      "communication": { "1": "...", "3": "...", "5": "...", "7": "..." }
+      "sceneManagement": {
+        "1": [
+          "Fails to identify scene hazards or delays securing the environment.",
+          "Neglects vital assessments like BGL or temperature despite clear indicators.",
+          "Misses critical history elements (e.g., insulin use, seizure duration)."
+        ],
+        "3": [
+          "Recognizes basic hazards but does not address them effectively.",
+          "Incomplete patient assessment \u2013 misses secondary findings or scene details.",
+          "History gathered is superficial, missing key timelines or medication relevance."
+        ],
+        "5": [
+          "Controls the scene and addresses risks while initiating care.",
+          "Performs complete primary and secondary survey tailored to case.",
+          "Obtains focused, relevant history that influences care decisions."
+        ],
+        "7": [
+          "Anticipates scene challenges and preemptively plans mitigation.",
+          "Uses assessment findings to predict deterioration and guide proactive care.",
+          "Elicits nuanced historical clues (e.g., family insight, medication patterns) that deepen understanding."
+        ]
+      },
+      "patientAssessment": {
+        "1": [
+          "Fails to identify scene hazards or delays securing the environment.",
+          "Neglects vital assessments like BGL or temperature despite clear indicators.",
+          "Misses critical history elements (e.g., insulin use, seizure duration)."
+        ],
+        "3": [
+          "Recognizes basic hazards but does not address them effectively.",
+          "Incomplete patient assessment \u2013 misses secondary findings or scene details.",
+          "History gathered is superficial, missing key timelines or medication relevance."
+        ],
+        "5": [
+          "Controls the scene and addresses risks while initiating care.",
+          "Performs complete primary and secondary survey tailored to case.",
+          "Obtains focused, relevant history that influences care decisions."
+        ],
+        "7": [
+          "Anticipates scene challenges and preemptively plans mitigation.",
+          "Uses assessment findings to predict deterioration and guide proactive care.",
+          "Elicits nuanced historical clues (e.g., family insight, medication patterns) that deepen understanding."
+        ]
+      },
+      "historyGathering": {
+        "1": [
+          "Fails to identify scene hazards or delays securing the environment.",
+          "Neglects vital assessments like BGL or temperature despite clear indicators.",
+          "Misses critical history elements (e.g., insulin use, seizure duration)."
+        ],
+        "3": [
+          "Recognizes basic hazards but does not address them effectively.",
+          "Incomplete patient assessment \u2013 misses secondary findings or scene details.",
+          "History gathered is superficial, missing key timelines or medication relevance."
+        ],
+        "5": [
+          "Controls the scene and addresses risks while initiating care.",
+          "Performs complete primary and secondary survey tailored to case.",
+          "Obtains focused, relevant history that influences care decisions."
+        ],
+        "7": [
+          "Anticipates scene challenges and preemptively plans mitigation.",
+          "Uses assessment findings to predict deterioration and guide proactive care.",
+          "Elicits nuanced historical clues (e.g., family insight, medication patterns) that deepen understanding."
+        ]
+      },
+      "decisionMaking": {
+        "1": [
+          "Fails to identify scene hazards or delays securing the environment.",
+          "Neglects vital assessments like BGL or temperature despite clear indicators.",
+          "Misses critical history elements (e.g., insulin use, seizure duration)."
+        ],
+        "3": [
+          "Recognizes basic hazards but does not address them effectively.",
+          "Incomplete patient assessment \u2013 misses secondary findings or scene details.",
+          "History gathered is superficial, missing key timelines or medication relevance."
+        ],
+        "5": [
+          "Controls the scene and addresses risks while initiating care.",
+          "Performs complete primary and secondary survey tailored to case.",
+          "Obtains focused, relevant history that influences care decisions."
+        ],
+        "7": [
+          "Anticipates scene challenges and preemptively plans mitigation.",
+          "Uses assessment findings to predict deterioration and guide proactive care.",
+          "Elicits nuanced historical clues (e.g., family insight, medication patterns) that deepen understanding."
+        ]
+      },
+      "proceduralSkill": {
+        "1": [
+          "Fails to identify scene hazards or delays securing the environment.",
+          "Neglects vital assessments like BGL or temperature despite clear indicators.",
+          "Misses critical history elements (e.g., insulin use, seizure duration)."
+        ],
+        "3": [
+          "Recognizes basic hazards but does not address them effectively.",
+          "Incomplete patient assessment \u2013 misses secondary findings or scene details.",
+          "History gathered is superficial, missing key timelines or medication relevance."
+        ],
+        "5": [
+          "Controls the scene and addresses risks while initiating care.",
+          "Performs complete primary and secondary survey tailored to case.",
+          "Obtains focused, relevant history that influences care decisions."
+        ],
+        "7": [
+          "Anticipates scene challenges and preemptively plans mitigation.",
+          "Uses assessment findings to predict deterioration and guide proactive care.",
+          "Elicits nuanced historical clues (e.g., family insight, medication patterns) that deepen understanding."
+        ]
+      },
+      "resourceUtilization": {
+        "1": [
+          "Fails to identify scene hazards or delays securing the environment.",
+          "Neglects vital assessments like BGL or temperature despite clear indicators.",
+          "Misses critical history elements (e.g., insulin use, seizure duration)."
+        ],
+        "3": [
+          "Recognizes basic hazards but does not address them effectively.",
+          "Incomplete patient assessment \u2013 misses secondary findings or scene details.",
+          "History gathered is superficial, missing key timelines or medication relevance."
+        ],
+        "5": [
+          "Controls the scene and addresses risks while initiating care.",
+          "Performs complete primary and secondary survey tailored to case.",
+          "Obtains focused, relevant history that influences care decisions."
+        ],
+        "7": [
+          "Anticipates scene challenges and preemptively plans mitigation.",
+          "Uses assessment findings to predict deterioration and guide proactive care.",
+          "Elicits nuanced historical clues (e.g., family insight, medication patterns) that deepen understanding."
+        ]
+      },
+      "communication": {
+        "1": [
+          "Fails to identify scene hazards or delays securing the environment.",
+          "Neglects vital assessments like BGL or temperature despite clear indicators.",
+          "Misses critical history elements (e.g., insulin use, seizure duration)."
+        ],
+        "3": [
+          "Recognizes basic hazards but does not address them effectively.",
+          "Incomplete patient assessment \u2013 misses secondary findings or scene details.",
+          "History gathered is superficial, missing key timelines or medication relevance."
+        ],
+        "5": [
+          "Controls the scene and addresses risks while initiating care.",
+          "Performs complete primary and secondary survey tailored to case.",
+          "Obtains focused, relevant history that influences care decisions."
+        ],
+        "7": [
+          "Anticipates scene challenges and preemptively plans mitigation.",
+          "Uses assessment findings to predict deterioration and guide proactive care.",
+          "Elicits nuanced historical clues (e.g., family insight, medication patterns) that deepen understanding."
+        ]
+      }
     },
     "selfReflectiveJournaling": [
       "What led me to suspect DKA in this setting?",
-      "How did I interpret and respond to vital signs like BGL and ETCO₂?",
+      "How did I interpret and respond to vital signs like BGL and ETCO\u2082?",
       "How would I adjust treatment based on worsening LOC?",
       "What role did heat/environment play in my differential?"
     ],
@@ -333,6 +774,8 @@
       "Integrate scene and patient findings into transport urgency",
       "Differentiate between heat-related and diabetic emergencies"
     ],
-    "modifiersUsed": ["Environmental complications"]
+    "modifiersUsed": [
+      "Environmental complications"
+    ]
   }
 ]

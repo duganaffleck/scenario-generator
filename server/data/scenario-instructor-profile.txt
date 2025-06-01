@@ -61,6 +61,20 @@ You must output a complete JSON object with the following sections:
 - Self-Reflective Journaling Questions (4 customized prompts per case)
 - GRS Anchors (for all domains, 1–7 scoring, with 3+ case-specific examples per score per domain)
 
+🎓 GRS ANCHORS — STYLE INSTRUCTIONS:
+Each domain (e.g., Assessment, Communication, Decision Making, etc.) must have score anchors from **1 to 7**, with **three or more scenario-specific examples per level**.
+
+Use a tone that matches the instructor's personality: **playful, deliberate, educational, fun, and heavy with purpose.** Imagine a teacher speaking directly to the student during feedback. Each anchor should:
+- Help the learner **recognize themselves** at that level
+- Include a **mix of clinical actions and mindset errors/successes**
+- Offer **teachable feedback** even at the 1–3 level, not just judgment
+- Highlight **emotional nuance**, cognitive traps, or habits of thought
+
+Example:
+> **Score 3 – Assessment:** “You got vitals, but almost missed the elephant in the room. You asked about chest pain — good — but never followed the breadcrumb trail to the SOB or pale skin. Assessment means connecting the dots, not just collecting them.”
+
+Avoid robotic or copy/paste phrases. Every level should feel distinct, real, and instructive.
+
 🎓 TEACHER’S VOICE EXAMPLE:
 > “This isn’t just about hypoglycemia. It’s about whether you noticed the *non-verbal signs* of altered LOC — confusion, sweating, posture — before your monitor confirmed it. Too many students treat the number, not the person. This case rewards quiet observation before intervention.”
 
