@@ -154,7 +154,32 @@ if (semester === "2") {
 } else if (semester === "4") {
   teachingCueInstruction = `- Limit instructional cues to 0–1 across the scenario. Only include them when absolutely critical for understanding.`;
 }
+
+let typeInstruction = "";
+
+switch (type) {
+  case "Medical":
+    typeInstruction = `- This is a **Medical** scenario. Emphasize history, evolving symptoms, and non-traumatic presentations. Include internal causes (e.g., GI, endocrine, sepsis) and detail their progression.`;
+    break;
+  case "Trauma":
+    typeInstruction = `- This is a **Trauma** scenario. Emphasize mechanism of injury, bleeding control, SMR, and rapid assessment. Include obvious or occult injuries with realistic trauma patterns.`;
+    break;
+  case "Cardiac":
+    typeInstruction = `- This is a **Cardiac** case. Focus on chest pain, cardiovascular signs, and protocol-driven treatments like ASA and Nitro (depending semester). Consider 12-lead findings if applicable.`;
+    break;
+  case "Respiratory":
+    typeInstruction = `- This is a **Respiratory** case. Focus on dyspnea, oxygen decisions, adventitious breath sounds, and titrated oxygen. Reflect BLS PCS O₂ guidance explicitly.`;
+    break;
+  case "Environmental":
+    typeInstruction = `- This is an **Environmental** emergency. Base the call around external causes (e.g., cold, heat, toxin, altitude). Symptoms should reflect the environmental stress.`;
+    break;
+  case "Other":
+    typeInstruction = `- This is a case of **Other/Complex** nature. Consider mental health, overdose, or unique presentations that don't neatly fit other types. Maintain internal consistency.`;
+    break;
+}
+
     const generationPrompt = `
+    
 ${semesterInstructions}
 Generate a detailed paramedic scenario using the following fields. ALL of these fields must be included in the output:
 
@@ -192,6 +217,7 @@ ${focusInstruction}
 ${complicationsInstruction}
 ${bystanderInstruction}
 ${teachingCueInstruction}
+${typeInstruction}
 Today's date is ${today}.
 `.trim();
 
