@@ -296,6 +296,20 @@ if (scenario.teachersPoints) {
 
       {scenario && (
         <div style={styles(darkMode, fontSizeLarge).outputBox}>
+          {/* Teacher's Points Section */}
+{scenario.teachersPoints && (
+  <div style={{
+    backgroundColor: darkMode ? "#facc15" : "#fef9c3",
+    color: "#1e293b",
+    padding: "1rem",
+    borderRadius: "12px",
+    border: "1px solid #eab308",
+    marginBottom: "1rem"
+  }}>
+    <h3 style={{ marginBottom: "0.5rem", fontSize: fontSizeLarge ? "1.2rem" : "1rem" }}>🧠 Teacher's Points</h3>
+    <p style={{ fontStyle: "italic" }}>{scenario.teachersPoints}</p>
+  </div>
+)}
           {Object.entries(SECTION_GROUPS).map(([groupName, keys]) => (
             <div key={groupName}>
               <h2 style={styles(darkMode, fontSizeLarge).sectionHeading} onClick={() => toggleSection(groupName)}>
@@ -305,20 +319,7 @@ if (scenario.teachersPoints) {
                 keys.map((key) => scenario[key] && renderSection(key, scenario[key]))}
             </div>
           ))}
-            {/* Teacher's Points Section */}
-  {scenario.teachersPoints && (
-    <div style={{ 
-      backgroundColor: darkMode ? "#facc15" : "#fef9c3",
-      color: "#1e293b",
-      padding: "1rem",
-      borderRadius: "12px",
-      border: "1px solid #eab308",
-      marginTop: "1rem"
-    }}>
-      <h3 style={{ marginBottom: "0.5rem", fontSize: fontSizeLarge ? "1.2rem" : "1rem" }}>🧠 Teacher's Points</h3>
-      <p style={{ fontStyle: "italic" }}>{scenario.teachersPoints}</p>
-    </div>
-  )}
+   
         </div>
       )}
     </div>
