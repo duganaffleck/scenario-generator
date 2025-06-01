@@ -224,7 +224,7 @@ switch (complexity) {
   default:
     complexityInstruction = "";
 }
-let focusInstruction = "";
+let focusPriorityDomain = "";
 
 switch (focus) {
   case "Assessment":
@@ -275,7 +275,7 @@ Generate a detailed paramedic scenario using the following fields. ALL of these 
   - Use a warm, wise, and mentor-like tone to guide performance.
   - Anchor content must reflect the specific scenario’s challenges (e.g., environment, complexity, case progression).
   - DO NOT skip levels or use vague placeholders like "not competent" or "very good". Be specific, educational, and clear.
-- Prioritize the domain that aligns with the selected `focus`. When writing `grsAnchors`, that domain should have the richest and most detailed anchor examples. Aim for:
+- Prioritize the domain that aligns with the selected focus. When writing grsAnchors, that domain should have the richest and most detailed anchor examples. Aim for:
   - More vivid or nuanced student behaviors
   - Slightly longer anchor lists (4+ examples instead of 3, if token space allows)
   - Embedded Layer 1 cues where appropriate
@@ -304,7 +304,7 @@ Match the following scenario parameters:
 - Complexity: ${complexityInstruction}
 - Learning Focus: ${focusInstruction}
 
-${focusInstruction}
+
 ${complicationsInstruction}
 ${bystanderInstruction}
 ${teachingCueInstruction}
