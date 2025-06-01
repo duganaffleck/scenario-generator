@@ -32,7 +32,7 @@ const requiredScenarioFields = [
   "title", "callInformation", "patientDemographics", "patientPresentation",
   "incidentNarrative", "opqrst", "sampleHistory", "medications",
   "allergies", "pastMedicalHistory", "physicalExam", "vitalSigns",
-  "caseProgression", "expectedTreatment", "teachableBlurb", "grsAnchors",
+  "caseProgression", "expectedTreatment", "grsAnchors",
   "vocationalLearningOutcomes", "modifiersUsed", "selfReflectionPrompts", "teachersPoints"
 ];
 
@@ -77,7 +77,7 @@ router.post('/', async (req, res) => {
       ? `- Integrate the following scenario modifiers across the scenario. They must:
 1. Appear explicitly in 'incidentNarrative' or 'callInformation'.
 2. Influence 'caseProgression', scene dynamics, or treatment.
-3. Be represented in 'teachableBlurb' or GRS anchors.
+3. Be represented in 'teachersPoints' or GRS anchors.
 4. Be unavoidable to solve the case properly.
 
 ${selectedModifiers.map(mod => `• ${mod}`).join('\n')}`
@@ -106,10 +106,8 @@ ${alsStandards}
   - Heavy with purpose
   - Smart, direct, and educational
   - Include teaching-style phrases that feel like a senior paramedic guiding a student
-- Include a field titled 'teachersPoints' — a single-paragraph tip, insight, or mic-drop moment from the instructor to the student.
 - This should sound like a senior paramedic teaching a junior. Tone: direct, insightful, occasionally witty.
 - This section should be instructional — not motivational fluff.
-- Always include a 'teachableBlurb' summarizing 2–3 key learning points for instructors to emphasize
 - Ensure the GRS anchors are always the correct 7 categories with anchors
 Include a "teachersPoints" field: a one-paragraph tip, warning, or lesson from the instructor to the student. This should be voiced like a senior paramedic speaking to a junior. Keep it educational, witty, or stern — never vague.
 
@@ -133,7 +131,7 @@ Generate a detailed paramedic scenario using the following fields. ALL of these 
 - simulationSetup
 - caseProgression (withProperTreatment and withoutProperTreatment)
 - expectedTreatment
-- teachableBlurb (summarize 2–3 learning points)
+- teachersPoints (one-paragraph instructor message to student)
 - grsAnchors (7 domains: sceneManagement, patientAssessment, historyGathering, decisionMaking, proceduralSkill, resourceUtilization, communication — each domain must have levels 1, 3, 5, and 7, each with 2–3 detailed anchor examples)
 - vocationalLearningOutcomes (at least 3)
 - selfReflectionPrompts (at least 4)

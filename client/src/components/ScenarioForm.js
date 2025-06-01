@@ -23,7 +23,7 @@ const SECTION_GROUPS = {
   "Patient Info": ["patientDemographics", "patientPresentation", "opqrst", "sample"],
   "Scenario Modifiers": ["modifiersUsed"],
   "Assessment": ["physicalExam", "vitalSigns"],
-  "Clinical Reasoning": ["caseProgression", "differentialDiagnosis", "expectedTreatment", "protocolNotes", "teachableBlurb", "scenarioRationale"],
+  "Clinical Reasoning": ["caseProgression", "differentialDiagnosis", "expectedTreatment", "protocolNotes", "teachersPoints", "scenarioRationale"],
   "Education": ["learningObjectives", "vocationalLearningOutcomes", "selfReflectiveQuestions", "grsAnchors"]
 };
 
@@ -45,7 +45,7 @@ const TITLE_MAP = {
   protocolNotes: "Protocol Notes",
   vocationalLearningOutcomes: "Vocational Learning Outcomes (VLOs)",
   learningObjectives: "Learning Objectives",
-  teachableBlurb: "Teachable Blurb",
+  teachersPoints: "Teacher's Points",
   scenarioRationale: "Scenario Rationale & Teaching Tips"
 };
 

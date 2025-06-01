@@ -1,9 +1,10 @@
 [
   {
     "title": "Elderly Fall with Suspected Pelvic Fracture",
+    "scenarioIntro": "🧠 **Teacher’s Points**: This case emphasizes gentle handling, strong scene awareness, and trauma suspicion in the elderly. Pelvic fractures are notoriously unstable—students must understand the hidden risk of retroperitoneal bleeding. Look for how they manage this quiet crisis: do they communicate clearly, stabilize effectively, and think through extrication options? It’s less about cool skills and more about thoughtful, patient-centered care. A good takeaway: 'Not all trauma is loud.'",
     "callInformation": {
       "type": "Trauma",
-      "location": "Private residence \u2013 carpeted bedroom, second floor",
+      "location": "Private residence – carpeted bedroom, second floor",
       "time": "08:15",
       "dispatchCode": "17-B-2",
       "dispatchNotes": [
@@ -25,8 +26,8 @@
       "weight": "105 lbs",
       "appearance": "Pale, frail, in obvious pain, unable to move lower limbs, lying supine beside the bed"
     },
-    "patientPresentation": "Margaret is visibly distressed, clutching her lower abdomen and groaning with each movement attempt...",
-    "incidentNarrative": "Margaret's daughter called 911 after finding her mother on the bedroom floor...",
+    "patientPresentation": "Margaret is visibly distressed, clutching her lower abdomen and groaning with each movement attempt.",
+    "incidentNarrative": "Margaret’s daughter called 911 after finding her mother on the bedroom floor. Margaret attempted to get to the bathroom overnight and lost her balance. She’s been lying there since early morning, alert but in pain.",
     "opqrst": {
       "onset": "30 minutes ago",
       "provocation": "Movement worsens the pain",
@@ -38,7 +39,7 @@
     "sampleHistory": {
       "signsSymptoms": "Pelvic pain, dizziness",
       "allergies": "None",
-      "medications": "Ramipril, ASA 81mg",
+      "medications": "Ramipril (for blood pressure), ASA 81mg (preventative for cardiac risk)",
       "pastMedicalHistory": "Hypertension, osteopenia, prior fall",
       "lastOralIntake": "Tea and toast at 06:30",
       "eventsLeadingUp": "Dizzy on way to bathroom and fell"
@@ -72,180 +73,61 @@
         "BGL": "5.1"
       }
     },
-    "simulationSetup": {
-      "requiredEquipment": [
-        "Scoop stretcher or sheet wrap",
-        "Lifelike mannequin",
-        "Bedroom scene props",
-        "Stair chair"
-      ]
-    },
+ 
     "caseProgression": {
-      "withProperTreatment": "Patient remains stable and cooperative...",
-      "withoutProperTreatment": "Patient becomes hypotensive and agitated if moved roughly..."
+      "withProperTreatment": "Patient remains stable and cooperative. Scene is controlled, scoop is used appropriately, and she is extricated gently with minimal further pain. Vitals remain relatively steady.",
+      "withoutProperTreatment": "Patient becomes hypotensive and agitated if moved roughly. Incorrect lifting increases pain and risk. Poor scene control leads to delays or unsafe stair navigation."
     },
-    "expectedTreatment": "BLS pelvic stabilization, gentle handling, rapid transport. ALS: fluid bolus and analgesia if authorized.",
+    "expectedTreatment": "BLS: Pelvic stabilization using scoop or improvised method, gentle handling, minimize movement. Transport rapidly. ALS: Monitor for hypotension, IV bolus, pain management if authorized.",
     "grsAnchors": {
       "sceneManagement": {
-        "1": [
-          "Fails to identify scene hazards or delays securing the environment.",
-          "Neglects vital assessments like BGL or temperature despite clear indicators.",
-          "Misses critical history elements (e.g., insulin use, seizure duration)."
-        ],
-        "3": [
-          "Recognizes basic hazards but does not address them effectively.",
-          "Incomplete patient assessment \u2013 misses secondary findings or scene details.",
-          "History gathered is superficial, missing key timelines or medication relevance."
-        ],
-        "5": [
-          "Controls the scene and addresses risks while initiating care.",
-          "Performs complete primary and secondary survey tailored to case.",
-          "Obtains focused, relevant history that influences care decisions."
-        ],
-        "7": [
-          "Anticipates scene challenges and preemptively plans mitigation.",
-          "Uses assessment findings to predict deterioration and guide proactive care.",
-          "Elicits nuanced historical clues (e.g., family insight, medication patterns) that deepen understanding."
-        ]
+        "1": "Ignored scene hazards and failed to secure the environment before approaching Margaret.",
+        "3": "Identified clutter but did not adjust approach or mitigate risks during scene entry.",
+        "5": "Scoped and adapted to the cluttered scene, cleared a safe work area, and planned safe stair extrication.",
+        "7": "Pre-planned stair navigation, repositioned environment safely, involved daughter without compromising care."
       },
       "patientAssessment": {
-        "1": [
-          "Fails to identify scene hazards or delays securing the environment.",
-          "Neglects vital assessments like BGL or temperature despite clear indicators.",
-          "Misses critical history elements (e.g., insulin use, seizure duration)."
-        ],
-        "3": [
-          "Recognizes basic hazards but does not address them effectively.",
-          "Incomplete patient assessment \u2013 misses secondary findings or scene details.",
-          "History gathered is superficial, missing key timelines or medication relevance."
-        ],
-        "5": [
-          "Controls the scene and addresses risks while initiating care.",
-          "Performs complete primary and secondary survey tailored to case.",
-          "Obtains focused, relevant history that influences care decisions."
-        ],
-        "7": [
-          "Anticipates scene challenges and preemptively plans mitigation.",
-          "Uses assessment findings to predict deterioration and guide proactive care.",
-          "Elicits nuanced historical clues (e.g., family insight, medication patterns) that deepen understanding."
-        ]
+        "1": "Skipped structured trauma check. Missed signs of pelvic fracture.",
+        "3": "Identified pain but missed key signs like leg shortening or instability.",
+        "5": "Performed full trauma assessment. Identified pelvic pain and leg discrepancy.",
+        "7": "Integrated MOI with presentation. Verbally suspected pelvic fracture early and adjusted exam approach accordingly."
       },
       "historyGathering": {
-        "1": [
-          "Fails to identify scene hazards or delays securing the environment.",
-          "Neglects vital assessments like BGL or temperature despite clear indicators.",
-          "Misses critical history elements (e.g., insulin use, seizure duration)."
-        ],
-        "3": [
-          "Recognizes basic hazards but does not address them effectively.",
-          "Incomplete patient assessment \u2013 misses secondary findings or scene details.",
-          "History gathered is superficial, missing key timelines or medication relevance."
-        ],
-        "5": [
-          "Controls the scene and addresses risks while initiating care.",
-          "Performs complete primary and secondary survey tailored to case.",
-          "Obtains focused, relevant history that influences care decisions."
-        ],
-        "7": [
-          "Anticipates scene challenges and preemptively plans mitigation.",
-          "Uses assessment findings to predict deterioration and guide proactive care.",
-          "Elicits nuanced historical clues (e.g., family insight, medication patterns) that deepen understanding."
-        ]
+        "1": "No SAMPLE taken. Did not ask daughter for details.",
+        "3": "Got some history, but missed key timing or medication details.",
+        "5": "Complete SAMPLE taken. Confirmed medication use, fall timeline, and relevant medical history.",
+        "7": "Engaged daughter empathetically, extracted clear timeline, and used history to direct decision making."
       },
       "decisionMaking": {
-        "1": [
-          "Fails to identify scene hazards or delays securing the environment.",
-          "Neglects vital assessments like BGL or temperature despite clear indicators.",
-          "Misses critical history elements (e.g., insulin use, seizure duration)."
-        ],
-        "3": [
-          "Recognizes basic hazards but does not address them effectively.",
-          "Incomplete patient assessment \u2013 misses secondary findings or scene details.",
-          "History gathered is superficial, missing key timelines or medication relevance."
-        ],
-        "5": [
-          "Controls the scene and addresses risks while initiating care.",
-          "Performs complete primary and secondary survey tailored to case.",
-          "Obtains focused, relevant history that influences care decisions."
-        ],
-        "7": [
-          "Anticipates scene challenges and preemptively plans mitigation.",
-          "Uses assessment findings to predict deterioration and guide proactive care.",
-          "Elicits nuanced historical clues (e.g., family insight, medication patterns) that deepen understanding."
-        ]
+        "1": "Moved patient without stabilization or rationale.",
+        "3": "Debated movement, but failed to act decisively or with rationale.",
+        "5": "Chose scoop stretcher with pelvic precautions. Explained movement plan.",
+        "7": "Balanced SMR, pelvic trauma risk, and frailty in a thoughtful and well-reasoned plan."
       },
       "proceduralSkill": {
-        "1": [
-          "Fails to identify scene hazards or delays securing the environment.",
-          "Neglects vital assessments like BGL or temperature despite clear indicators.",
-          "Misses critical history elements (e.g., insulin use, seizure duration)."
-        ],
-        "3": [
-          "Recognizes basic hazards but does not address them effectively.",
-          "Incomplete patient assessment \u2013 misses secondary findings or scene details.",
-          "History gathered is superficial, missing key timelines or medication relevance."
-        ],
-        "5": [
-          "Controls the scene and addresses risks while initiating care.",
-          "Performs complete primary and secondary survey tailored to case.",
-          "Obtains focused, relevant history that influences care decisions."
-        ],
-        "7": [
-          "Anticipates scene challenges and preemptively plans mitigation.",
-          "Uses assessment findings to predict deterioration and guide proactive care.",
-          "Elicits nuanced historical clues (e.g., family insight, medication patterns) that deepen understanding."
-        ]
+        "1": "Movement was unsafe, painful, or disorganized.",
+        "3": "Movement achieved but lacked coordination or clear communication.",
+        "5": "Gentle, deliberate movement with stabilization. Clear crew coordination.",
+        "7": "Directed movement with precision and control. Adapted scoop and stair chair usage smoothly."
       },
       "resourceUtilization": {
-        "1": [
-          "Fails to identify scene hazards or delays securing the environment.",
-          "Neglects vital assessments like BGL or temperature despite clear indicators.",
-          "Misses critical history elements (e.g., insulin use, seizure duration)."
-        ],
-        "3": [
-          "Recognizes basic hazards but does not address them effectively.",
-          "Incomplete patient assessment \u2013 misses secondary findings or scene details.",
-          "History gathered is superficial, missing key timelines or medication relevance."
-        ],
-        "5": [
-          "Controls the scene and addresses risks while initiating care.",
-          "Performs complete primary and secondary survey tailored to case.",
-          "Obtains focused, relevant history that influences care decisions."
-        ],
-        "7": [
-          "Anticipates scene challenges and preemptively plans mitigation.",
-          "Uses assessment findings to predict deterioration and guide proactive care.",
-          "Elicits nuanced historical clues (e.g., family insight, medication patterns) that deepen understanding."
-        ]
+        "1": "Failed to use team, tools, or scene effectively.",
+        "3": "Used some equipment, but poorly timed or executed.",
+        "5": "Appropriate use of scoop, stair chair, and partner. Scene managed efficiently.",
+        "7": "Thoughtfully involved all scene resources and preloaded stair strategy for seamless transition."
       },
       "communication": {
-        "1": [
-          "Fails to identify scene hazards or delays securing the environment.",
-          "Neglects vital assessments like BGL or temperature despite clear indicators.",
-          "Misses critical history elements (e.g., insulin use, seizure duration)."
-        ],
-        "3": [
-          "Recognizes basic hazards but does not address them effectively.",
-          "Incomplete patient assessment \u2013 misses secondary findings or scene details.",
-          "History gathered is superficial, missing key timelines or medication relevance."
-        ],
-        "5": [
-          "Controls the scene and addresses risks while initiating care.",
-          "Performs complete primary and secondary survey tailored to case.",
-          "Obtains focused, relevant history that influences care decisions."
-        ],
-        "7": [
-          "Anticipates scene challenges and preemptively plans mitigation.",
-          "Uses assessment findings to predict deterioration and guide proactive care.",
-          "Elicits nuanced historical clues (e.g., family insight, medication patterns) that deepen understanding."
-        ]
+        "1": "Dismissive or abrupt with patient and daughter.",
+        "3": "Basic explanation given but missed emotional needs.",
+        "5": "Calm, professional, patient-focused language throughout.",
+        "7": "Used clear, plain language. Validated daughter’s concerns and de-escalated emotional tension."
       }
     },
     "selfReflectiveJournaling": [
-      "What were the risks of moving this patient without proper immobilization?",
-      "How did I ensure clinical suspicion matched physical findings?",
-      "What communication techniques were effective in reducing patient anxiety?",
-      "If I had ALS scope, would my treatment plan differ \u2014 and why?"
+      "What clues helped me suspect a pelvic fracture?",
+      "Did my extrication plan minimize movement and pain?",
+      "How did I involve the family while maintaining control?",
+      "What role did environment play in the safety of care?"
     ],
     "vocationalLearningOutcomes": [
       "VLO 1: Communicate effectively and compassionately with patients and families",
@@ -258,524 +140,289 @@
       "Safe packaging and stairwell extrication"
     ],
     "modifiersUsed": []
-  },
-  {
-    "title": "Young Child with Febrile Seizure",
-    "callInformation": {
-      "type": "Medical \u2013 Pediatric",
-      "location": "Suburban home \u2013 living room floor",
-      "time": "17:20",
-      "dispatchCode": "32-A-1",
-      "dispatchNotes": [
-        "3 y/o female post-seizure",
-        "Mother on scene, child lethargic",
-        "No trauma or bleeding noted"
-      ],
-      "hazardsOrFlags": [],
-      "crewNotes": "Mother is tearful but cooperative. Child is postictal."
-    },
-    "patientDemographics": {
-      "name": "Olivia Chen",
-      "age": 3,
-      "sex": "female",
-      "height": "95 cm",
-      "weight": "13 kg",
-      "appearance": "Flushed, postictal, responsive but drowsy"
-    },
-    "patientPresentation": "Olivia is breathing rapidly but evenly, eyes open intermittently, clinging to mother. No signs of trauma.",
-    "incidentNarrative": "Seizure occurred 15 minutes ago, lasted 90 seconds. Fever noted all day. Parents gave Tylenol but it did not reduce fever.",
-    "opqrst": {
-      "onset": "15 minutes ago",
-      "provocation": "Fever",
-      "quality": "Generalized tonic-clonic",
-      "radiation": "N/A",
-      "severity": "Unrated",
-      "time": "Lasted 90 seconds"
-    },
-    "sampleHistory": {
-      "signsSymptoms": "Seizure, lethargy, flushed",
-      "allergies": "None",
-      "medications": "Children's Tylenol today",
-      "pastMedicalHistory": "No seizure history. Recent ear infection.",
-      "lastOralIntake": "Apple juice and crackers at 14:00",
-      "eventsLeadingUp": "Increasing fever and sleepiness"
-    },
-    "physicalExam": {
-      "general": "Drowsy, postictal, flushed",
-      "headNeck": "No signs of trauma, no neck stiffness",
-      "chest": "Breathing rapid, lungs clear",
-      "abdomen": "Soft, non-tender",
-      "extremities": "Moving all limbs equally"
-    },
-    "vitalSigns": {
-      "firstSet": {
-        "HR": "138",
-        "RR": "32",
-        "BP": "88/50",
-        "SpO2": "97%",
-        "ETCO2": "36",
-        "Temp": "39.4",
-        "GCS": "12",
-        "BGL": "5.4"
-      },
-      "secondSet": {
-        "HR": "126",
-        "RR": "28",
-        "BP": "90/52",
-        "SpO2": "98%",
-        "ETCO2": "38",
-        "Temp": "38.9",
-        "GCS": "14",
-        "BGL": "5.3"
-      }
-    },
-    "simulationSetup": {
-      "requiredEquipment": [
-        "Pediatric mannequin",
-        "Caregiver actor",
-        "Towels, thermometer, scene props"
-      ]
-    },
-    "caseProgression": {
-      "withProperTreatment": "Olivia becomes more alert, vitals stabilize.",
-      "withoutProperTreatment": "Risk of recurrent seizure and parental panic increases."
-    },
-    "expectedTreatment": "Monitor airway, recovery position, gentle cooling with damp cloths, reassure parents, transport.",
-    "grsAnchors": {
-      "sceneManagement": {
-        "1": [
-          "Fails to identify scene hazards or delays securing the environment.",
-          "Neglects vital assessments like BGL or temperature despite clear indicators.",
-          "Misses critical history elements (e.g., insulin use, seizure duration)."
-        ],
-        "3": [
-          "Recognizes basic hazards but does not address them effectively.",
-          "Incomplete patient assessment \u2013 misses secondary findings or scene details.",
-          "History gathered is superficial, missing key timelines or medication relevance."
-        ],
-        "5": [
-          "Controls the scene and addresses risks while initiating care.",
-          "Performs complete primary and secondary survey tailored to case.",
-          "Obtains focused, relevant history that influences care decisions."
-        ],
-        "7": [
-          "Anticipates scene challenges and preemptively plans mitigation.",
-          "Uses assessment findings to predict deterioration and guide proactive care.",
-          "Elicits nuanced historical clues (e.g., family insight, medication patterns) that deepen understanding."
-        ]
-      },
-      "patientAssessment": {
-        "1": [
-          "Fails to identify scene hazards or delays securing the environment.",
-          "Neglects vital assessments like BGL or temperature despite clear indicators.",
-          "Misses critical history elements (e.g., insulin use, seizure duration)."
-        ],
-        "3": [
-          "Recognizes basic hazards but does not address them effectively.",
-          "Incomplete patient assessment \u2013 misses secondary findings or scene details.",
-          "History gathered is superficial, missing key timelines or medication relevance."
-        ],
-        "5": [
-          "Controls the scene and addresses risks while initiating care.",
-          "Performs complete primary and secondary survey tailored to case.",
-          "Obtains focused, relevant history that influences care decisions."
-        ],
-        "7": [
-          "Anticipates scene challenges and preemptively plans mitigation.",
-          "Uses assessment findings to predict deterioration and guide proactive care.",
-          "Elicits nuanced historical clues (e.g., family insight, medication patterns) that deepen understanding."
-        ]
-      },
-      "historyGathering": {
-        "1": [
-          "Fails to identify scene hazards or delays securing the environment.",
-          "Neglects vital assessments like BGL or temperature despite clear indicators.",
-          "Misses critical history elements (e.g., insulin use, seizure duration)."
-        ],
-        "3": [
-          "Recognizes basic hazards but does not address them effectively.",
-          "Incomplete patient assessment \u2013 misses secondary findings or scene details.",
-          "History gathered is superficial, missing key timelines or medication relevance."
-        ],
-        "5": [
-          "Controls the scene and addresses risks while initiating care.",
-          "Performs complete primary and secondary survey tailored to case.",
-          "Obtains focused, relevant history that influences care decisions."
-        ],
-        "7": [
-          "Anticipates scene challenges and preemptively plans mitigation.",
-          "Uses assessment findings to predict deterioration and guide proactive care.",
-          "Elicits nuanced historical clues (e.g., family insight, medication patterns) that deepen understanding."
-        ]
-      },
-      "decisionMaking": {
-        "1": [
-          "Fails to identify scene hazards or delays securing the environment.",
-          "Neglects vital assessments like BGL or temperature despite clear indicators.",
-          "Misses critical history elements (e.g., insulin use, seizure duration)."
-        ],
-        "3": [
-          "Recognizes basic hazards but does not address them effectively.",
-          "Incomplete patient assessment \u2013 misses secondary findings or scene details.",
-          "History gathered is superficial, missing key timelines or medication relevance."
-        ],
-        "5": [
-          "Controls the scene and addresses risks while initiating care.",
-          "Performs complete primary and secondary survey tailored to case.",
-          "Obtains focused, relevant history that influences care decisions."
-        ],
-        "7": [
-          "Anticipates scene challenges and preemptively plans mitigation.",
-          "Uses assessment findings to predict deterioration and guide proactive care.",
-          "Elicits nuanced historical clues (e.g., family insight, medication patterns) that deepen understanding."
-        ]
-      },
-      "proceduralSkill": {
-        "1": [
-          "Fails to identify scene hazards or delays securing the environment.",
-          "Neglects vital assessments like BGL or temperature despite clear indicators.",
-          "Misses critical history elements (e.g., insulin use, seizure duration)."
-        ],
-        "3": [
-          "Recognizes basic hazards but does not address them effectively.",
-          "Incomplete patient assessment \u2013 misses secondary findings or scene details.",
-          "History gathered is superficial, missing key timelines or medication relevance."
-        ],
-        "5": [
-          "Controls the scene and addresses risks while initiating care.",
-          "Performs complete primary and secondary survey tailored to case.",
-          "Obtains focused, relevant history that influences care decisions."
-        ],
-        "7": [
-          "Anticipates scene challenges and preemptively plans mitigation.",
-          "Uses assessment findings to predict deterioration and guide proactive care.",
-          "Elicits nuanced historical clues (e.g., family insight, medication patterns) that deepen understanding."
-        ]
-      },
-      "resourceUtilization": {
-        "1": [
-          "Fails to identify scene hazards or delays securing the environment.",
-          "Neglects vital assessments like BGL or temperature despite clear indicators.",
-          "Misses critical history elements (e.g., insulin use, seizure duration)."
-        ],
-        "3": [
-          "Recognizes basic hazards but does not address them effectively.",
-          "Incomplete patient assessment \u2013 misses secondary findings or scene details.",
-          "History gathered is superficial, missing key timelines or medication relevance."
-        ],
-        "5": [
-          "Controls the scene and addresses risks while initiating care.",
-          "Performs complete primary and secondary survey tailored to case.",
-          "Obtains focused, relevant history that influences care decisions."
-        ],
-        "7": [
-          "Anticipates scene challenges and preemptively plans mitigation.",
-          "Uses assessment findings to predict deterioration and guide proactive care.",
-          "Elicits nuanced historical clues (e.g., family insight, medication patterns) that deepen understanding."
-        ]
-      },
-      "communication": {
-        "1": [
-          "Fails to identify scene hazards or delays securing the environment.",
-          "Neglects vital assessments like BGL or temperature despite clear indicators.",
-          "Misses critical history elements (e.g., insulin use, seizure duration)."
-        ],
-        "3": [
-          "Recognizes basic hazards but does not address them effectively.",
-          "Incomplete patient assessment \u2013 misses secondary findings or scene details.",
-          "History gathered is superficial, missing key timelines or medication relevance."
-        ],
-        "5": [
-          "Controls the scene and addresses risks while initiating care.",
-          "Performs complete primary and secondary survey tailored to case.",
-          "Obtains focused, relevant history that influences care decisions."
-        ],
-        "7": [
-          "Anticipates scene challenges and preemptively plans mitigation.",
-          "Uses assessment findings to predict deterioration and guide proactive care.",
-          "Elicits nuanced historical clues (e.g., family insight, medication patterns) that deepen understanding."
-        ]
-      }
-    },
-    "selfReflectiveJournaling": [
-      "How did I assess this pediatric patient?",
-      "What clues pointed to a febrile seizure?",
-      "How did I calm the scene and parents?",
-      "How might I prepare for a second seizure?"
-    ],
-    "vocationalLearningOutcomes": [
-      "VLO 1: Pediatric BLS assessment",
-      "VLO 4: Caregiver communication",
-      "VLO 7: AMS/seizure protocol application"
-    ],
-    "learningObjectives": [
-      "Postictal pediatric management",
-      "Cooling strategies and airway monitoring",
-      "Caregiver reassurance under pressure"
-    ],
-    "modifiersUsed": []
-  },
-  {
-    "title": "DKA in a Young Adult at a Music Festival",
-    "callInformation": {
-      "type": "Medical \u2013 Diabetic Emergency",
-      "location": "Outdoor music festival, near food truck area",
-      "time": "16:50",
-      "dispatchCode": "13-D-1",
-      "dispatchNotes": [
-        "21 y/o male confused, vomiting, deep breathing",
-        "Bystander states patient smells fruity",
-        "Patient has diabetes"
-      ],
-      "hazardsOrFlags": [
-        "Large crowd",
-        "Hot weather",
-        "Noise interference"
-      ],
-      "crewNotes": "Patient seated on ground, EMS access available via rear gate"
-    },
-    "patientDemographics": {
-      "name": "Liam Carter",
-      "age": 21,
-      "sex": "male",
-      "height": "6'0\"",
-      "weight": "165 lbs",
-      "appearance": "Confused, pale, diaphoretic, Kussmaul respirations"
-    },
-    "patientPresentation": "Liam is breathing heavily, struggling to focus. He's sweating, clutching his stomach, and intermittently vomiting. He has a medical alert bracelet for type 1 diabetes.",
-    "incidentNarrative": "Liam began feeling nauseous around noon and skipped lunch. He hasn\u2019t taken insulin since morning. Friends report he's been urinating frequently and acting \u2018off\u2019 for a few hours. No alcohol or drugs reported.",
-    "opqrst": {
-      "onset": "Started earlier today",
-      "provocation": "Worsened with exertion and heat",
-      "quality": "Abdominal cramping, nausea",
-      "radiation": "None",
-      "severity": "7/10",
-      "time": "Progressively worsening since noon"
-    },
-    "sampleHistory": {
-      "signsSymptoms": "Confusion, vomiting, deep breathing, fruity breath",
-      "allergies": "None",
-      "medications": "Insulin \u2013 long-acting (basal) and rapid (bolus)",
-      "pastMedicalHistory": "Type 1 diabetes x5 years",
-      "lastOralIntake": "Water only since breakfast",
-      "eventsLeadingUp": "Missed insulin, extreme heat, skipped food"
-    },
-    "physicalExam": {
-      "general": "Confused, diaphoretic, dry lips",
-      "headNeck": "AOx2, pupils equal/reactive",
-      "chest": "Kussmaul respirations, lungs clear",
-      "abdomen": "Mild diffuse tenderness",
-      "extremities": "Cap refill >3 sec, cool peripheries"
-    },
-    "vitalSigns": {
-      "firstSet": {
-        "HR": "128",
-        "RR": "30",
-        "BP": "98/60",
-        "SpO2": "97%",
-        "ETCO2": "21",
-        "Temp": "37.8",
-        "GCS": "13",
-        "BGL": "27.4"
-      },
-      "secondSet": {
-        "HR": "132",
-        "RR": "32",
-        "BP": "92/56",
-        "SpO2": "96%",
-        "ETCO2": "18",
-        "Temp": "38.1",
-        "GCS": "12",
-        "BGL": "28.2"
-      }
-    },
-    "simulationSetup": {
-      "requiredEquipment": [
-        "Festival backdrop with noise/heat",
-        "Diabetic ID bracelet",
-        "Trash bin with emesis",
-        "Insulin pens/props"
-      ]
-    },
-    "caseProgression": {
-      "withProperTreatment": "Patient improves slightly with fluid and cooling. Transport initiated early.",
-      "withoutProperTreatment": "Patient deteriorates rapidly into worsening shock, vomiting, and decreased GCS."
-    },
-    "expectedTreatment": "PCP: Scene control, cooling, airway protection, monitor vitals, rapid transport. ALS: IV NS bolus, monitor for worsening acidosis.",
-    "grsAnchors": {
-      "sceneManagement": {
-        "1": [
-          "Fails to identify scene hazards or delays securing the environment.",
-          "Neglects vital assessments like BGL or temperature despite clear indicators.",
-          "Misses critical history elements (e.g., insulin use, seizure duration)."
-        ],
-        "3": [
-          "Recognizes basic hazards but does not address them effectively.",
-          "Incomplete patient assessment \u2013 misses secondary findings or scene details.",
-          "History gathered is superficial, missing key timelines or medication relevance."
-        ],
-        "5": [
-          "Controls the scene and addresses risks while initiating care.",
-          "Performs complete primary and secondary survey tailored to case.",
-          "Obtains focused, relevant history that influences care decisions."
-        ],
-        "7": [
-          "Anticipates scene challenges and preemptively plans mitigation.",
-          "Uses assessment findings to predict deterioration and guide proactive care.",
-          "Elicits nuanced historical clues (e.g., family insight, medication patterns) that deepen understanding."
-        ]
-      },
-      "patientAssessment": {
-        "1": [
-          "Fails to identify scene hazards or delays securing the environment.",
-          "Neglects vital assessments like BGL or temperature despite clear indicators.",
-          "Misses critical history elements (e.g., insulin use, seizure duration)."
-        ],
-        "3": [
-          "Recognizes basic hazards but does not address them effectively.",
-          "Incomplete patient assessment \u2013 misses secondary findings or scene details.",
-          "History gathered is superficial, missing key timelines or medication relevance."
-        ],
-        "5": [
-          "Controls the scene and addresses risks while initiating care.",
-          "Performs complete primary and secondary survey tailored to case.",
-          "Obtains focused, relevant history that influences care decisions."
-        ],
-        "7": [
-          "Anticipates scene challenges and preemptively plans mitigation.",
-          "Uses assessment findings to predict deterioration and guide proactive care.",
-          "Elicits nuanced historical clues (e.g., family insight, medication patterns) that deepen understanding."
-        ]
-      },
-      "historyGathering": {
-        "1": [
-          "Fails to identify scene hazards or delays securing the environment.",
-          "Neglects vital assessments like BGL or temperature despite clear indicators.",
-          "Misses critical history elements (e.g., insulin use, seizure duration)."
-        ],
-        "3": [
-          "Recognizes basic hazards but does not address them effectively.",
-          "Incomplete patient assessment \u2013 misses secondary findings or scene details.",
-          "History gathered is superficial, missing key timelines or medication relevance."
-        ],
-        "5": [
-          "Controls the scene and addresses risks while initiating care.",
-          "Performs complete primary and secondary survey tailored to case.",
-          "Obtains focused, relevant history that influences care decisions."
-        ],
-        "7": [
-          "Anticipates scene challenges and preemptively plans mitigation.",
-          "Uses assessment findings to predict deterioration and guide proactive care.",
-          "Elicits nuanced historical clues (e.g., family insight, medication patterns) that deepen understanding."
-        ]
-      },
-      "decisionMaking": {
-        "1": [
-          "Fails to identify scene hazards or delays securing the environment.",
-          "Neglects vital assessments like BGL or temperature despite clear indicators.",
-          "Misses critical history elements (e.g., insulin use, seizure duration)."
-        ],
-        "3": [
-          "Recognizes basic hazards but does not address them effectively.",
-          "Incomplete patient assessment \u2013 misses secondary findings or scene details.",
-          "History gathered is superficial, missing key timelines or medication relevance."
-        ],
-        "5": [
-          "Controls the scene and addresses risks while initiating care.",
-          "Performs complete primary and secondary survey tailored to case.",
-          "Obtains focused, relevant history that influences care decisions."
-        ],
-        "7": [
-          "Anticipates scene challenges and preemptively plans mitigation.",
-          "Uses assessment findings to predict deterioration and guide proactive care.",
-          "Elicits nuanced historical clues (e.g., family insight, medication patterns) that deepen understanding."
-        ]
-      },
-      "proceduralSkill": {
-        "1": [
-          "Fails to identify scene hazards or delays securing the environment.",
-          "Neglects vital assessments like BGL or temperature despite clear indicators.",
-          "Misses critical history elements (e.g., insulin use, seizure duration)."
-        ],
-        "3": [
-          "Recognizes basic hazards but does not address them effectively.",
-          "Incomplete patient assessment \u2013 misses secondary findings or scene details.",
-          "History gathered is superficial, missing key timelines or medication relevance."
-        ],
-        "5": [
-          "Controls the scene and addresses risks while initiating care.",
-          "Performs complete primary and secondary survey tailored to case.",
-          "Obtains focused, relevant history that influences care decisions."
-        ],
-        "7": [
-          "Anticipates scene challenges and preemptively plans mitigation.",
-          "Uses assessment findings to predict deterioration and guide proactive care.",
-          "Elicits nuanced historical clues (e.g., family insight, medication patterns) that deepen understanding."
-        ]
-      },
-      "resourceUtilization": {
-        "1": [
-          "Fails to identify scene hazards or delays securing the environment.",
-          "Neglects vital assessments like BGL or temperature despite clear indicators.",
-          "Misses critical history elements (e.g., insulin use, seizure duration)."
-        ],
-        "3": [
-          "Recognizes basic hazards but does not address them effectively.",
-          "Incomplete patient assessment \u2013 misses secondary findings or scene details.",
-          "History gathered is superficial, missing key timelines or medication relevance."
-        ],
-        "5": [
-          "Controls the scene and addresses risks while initiating care.",
-          "Performs complete primary and secondary survey tailored to case.",
-          "Obtains focused, relevant history that influences care decisions."
-        ],
-        "7": [
-          "Anticipates scene challenges and preemptively plans mitigation.",
-          "Uses assessment findings to predict deterioration and guide proactive care.",
-          "Elicits nuanced historical clues (e.g., family insight, medication patterns) that deepen understanding."
-        ]
-      },
-      "communication": {
-        "1": [
-          "Fails to identify scene hazards or delays securing the environment.",
-          "Neglects vital assessments like BGL or temperature despite clear indicators.",
-          "Misses critical history elements (e.g., insulin use, seizure duration)."
-        ],
-        "3": [
-          "Recognizes basic hazards but does not address them effectively.",
-          "Incomplete patient assessment \u2013 misses secondary findings or scene details.",
-          "History gathered is superficial, missing key timelines or medication relevance."
-        ],
-        "5": [
-          "Controls the scene and addresses risks while initiating care.",
-          "Performs complete primary and secondary survey tailored to case.",
-          "Obtains focused, relevant history that influences care decisions."
-        ],
-        "7": [
-          "Anticipates scene challenges and preemptively plans mitigation.",
-          "Uses assessment findings to predict deterioration and guide proactive care.",
-          "Elicits nuanced historical clues (e.g., family insight, medication patterns) that deepen understanding."
-        ]
-      }
-    },
-    "selfReflectiveJournaling": [
-      "What led me to suspect DKA in this setting?",
-      "How did I interpret and respond to vital signs like BGL and ETCO\u2082?",
-      "How would I adjust treatment based on worsening LOC?",
-      "What role did heat/environment play in my differential?"
-    ],
-    "vocationalLearningOutcomes": [
-      "VLO 3: Apply clinical judgment and diagnostic reasoning",
-      "VLO 5: Provide care in varied, dynamic environments",
-      "VLO 6: Respond to emergent diabetic conditions appropriately"
-    ],
-    "learningObjectives": [
-      "Recognize DKA in a prehospital setting",
-      "Integrate scene and patient findings into transport urgency",
-      "Differentiate between heat-related and diabetic emergencies"
-    ],
-    "modifiersUsed": [
-      "Environmental complications"
-    ]
   }
 ]
+{
+  "title": "Toddler Seizure After Fever Spikes at Daycare",
+  "scenarioIntro": "🧠 **Teacher’s Points**: Pediatric calls are tough — not because they’re complicated, but because they’re emotionally loud. This one tests your ability to calm the room, scan for danger, and act deliberately. Students often panic at the sight of seizing kids. We want them to remember: protect the airway, observe carefully, gather history from rattled caregivers, and avoid unnecessary interventions. Don’t get sucked into chaos — become the calm center of the storm.",
+  "callInformation": {
+    "type": "Neurological (Seizure)",
+    "location": "Daycare facility — bright and noisy playroom",
+    "time": "10:12",
+    "dispatchCode": "12-C-1",
+    "dispatchNotes": [
+      "18-month-old actively seizing",
+      "Staff reports fever and sudden collapse",
+      "Seizure ongoing for 3 minutes"
+    ],
+    "hazardsOrFlags": [
+      "Loud, chaotic scene with children",
+      "Panicked daycare staff"
+    ],
+    "crewNotes": "Staff already attempted to cool child with damp cloths. Seizure resolving on arrival."
+  },
+  "patientDemographics": {
+    "name": "Olivia Chen",
+    "sex": "female",
+    "age": 1.5,
+    "height": "75 cm",
+    "weight": "11 kg",
+    "appearance": "Postictal, warm to touch, being held by a panicked daycare worker"
+  },
+  "patientPresentation": "Olivia is limp, drowsy, breathing shallow but regular. She cries weakly when stimulated but quickly tires.",
+  "incidentNarrative": "Daycare staff report Olivia was playing normally when she began crying, became unresponsive, and seized for approximately 2–3 minutes. She had a mild fever earlier in the week but no recent seizures or known health issues.",
+  "opqrst": {
+    "onset": "Sudden",
+    "provocation": "None observed",
+    "quality": "Tonic-clonic movement",
+    "radiation": "Full body",
+    "severity": "N/A",
+    "time": "Lasted ~3 minutes, now postictal"
+  },
+  "sampleHistory": {
+    "signsSymptoms": "Fever, seizure",
+    "allergies": "None known",
+    "medications": "Acetaminophen PRN",
+    "pastMedicalHistory": "Normal development, no seizures prior",
+    "lastOralIntake": "Milk at 08:30",
+    "eventsLeadingUp": "Was warm this morning, no medication given yet"
+  },
+  "physicalExam": {
+    "general": "Floppy but responsive to pain, flushed skin",
+    "headNeck": "Fontanelle flat, no trauma",
+    "chest": "Clear",
+    "abdomen": "Soft, non-tender",
+    "extremities": "Moves all limbs weakly"
+  },
+  "vitalSigns": {
+    "firstSet": {
+      "HR": "162",
+      "RR": "32",
+      "BP": "Not taken",
+      "SpO2": "97%",
+      "ETCO2": "N/A",
+      "Temp": "39.1",
+      "GCS": "10 (E3 V2 M5)",
+      "BGL": "6.1"
+    },
+    "secondSet": {
+      "HR": "148",
+      "RR": "28",
+      "BP": "90/54",
+      "SpO2": "98%",
+      "ETCO2": "N/A",
+      "Temp": "38.6",
+      "GCS": "12 (E4 V3 M5)",
+      "BGL": "6.3"
+    }
+  },
+
+  "caseProgression": {
+    "withProperTreatment": "Olivia slowly regains alertness. Temp decreases with passive cooling. Staff reassured. Transport is smooth with vitals improving slightly.",
+    "withoutProperTreatment": "Increased agitation from staff delays transport. Patient becomes more irritable or lethargic. No history is obtained. Unsafe handling or unnecessary interventions cause distress."
+  },
+  "expectedTreatment": "BLS: Protect airway during seizure, passive cooling, transport. ALS: Monitor vitals, possible medication if seizure prolonged. No glucose needed if normoglycemic and GCS improving.",
+  "grsAnchors": {
+    "sceneManagement": {
+      "1": "Failed to control scene. Chaos worsened.",
+      "3": "Eventually took control, but tension remained high.",
+      "5": "Calmed scene quickly, assigned roles, cleared space for patient care.",
+      "7": "Managed environment and emotional tone. Anticipated needs and led with clarity."
+    },
+    "patientAssessment": {
+      "1": "Skipped primary. Missed GCS or temp.",
+      "3": "Incomplete assessment. Missed signs of postictal state.",
+      "5": "Full head-to-toe peds exam. GCS tracked. Temp and BGL done.",
+      "7": "Fluid, confident peds exam. Tracked GCS trends. Connected vitals to febrile seizure logic."
+    },
+    "historyGathering": {
+      "1": "No history obtained. Ignored staff.",
+      "3": "Rushed SAMPLE with errors.",
+      "5": "Clear SAMPLE from daycare staff. Asked follow-ups.",
+      "7": "Engaged caregivers skillfully, used history to rule out complex causes."
+    },
+    "decisionMaking": {
+      "1": "Uncoordinated, unsure what to do.",
+      "3": "Followed protocol but lacked rationale.",
+      "5": "Knew seizure likely febrile. Avoided unnecessary interventions.",
+      "7": "Integrated history, vitals, and environment into a clear, reasoned decision tree."
+    },
+    "proceduralSkill": {
+      "1": "Rough handling, unnecessary O₂ or IV.",
+      "3": "Basic procedures done awkwardly.",
+      "5": "Good BVM technique. Passive cooling used properly.",
+      "7": "Used procedures judiciously. Calm hands, right interventions, minimal fuss."
+    },
+    "resourceUtilization": {
+      "1": "Ignored partner and staff.",
+      "3": "Involved others but poorly coordinated.",
+      "5": "Used partner well. Staff included when appropriate.",
+      "7": "Anticipated needs, delegated roles. Crew worked as a team."
+    },
+    "communication": {
+      "1": "Cold or chaotic. Made staff more anxious.",
+      "3": "Gave some info but not reassuring.",
+      "5": "Clear, age-appropriate, confident with staff.",
+      "7": "Reframed panic into clarity. Spoke with care and composure."
+    }
+  },
+  "selfReflectiveJournaling": [
+    "How did I balance speed with thoroughness?",
+    "What helped me control the emotional tone of the scene?",
+    "Did I rule out other causes of seizure beyond fever?",
+    "How did I handle communication with non-parent caregivers?"
+  ],
+  "vocationalLearningOutcomes": [
+    "VLO 1: Demonstrate effective pediatric care in high-stress situations",
+    "VLO 3: Apply clinical reasoning to neurological emergencies",
+    "VLO 5: Use communication and scene control strategies"
+  ],
+  "learningObjectives": [
+    "Recognize and manage febrile seizures",
+    "Communicate effectively in a pediatric setting",
+    "Apply appropriate assessment techniques to a postictal child"
+  ],
+  "modifiersUsed": []
+}
+{
+  "title": "Slurring, Sick, and Smells Like Fruit: DKA at the Gas Station",
+  "scenarioIntro": "🧠 **Teacher’s Points**: This is a classic DKA — but only if you connect the dots. If you’re distracted by the slurred speech and vomiting, you might chase a stroke or food poisoning. The key teaching here is pattern recognition *plus* restraint. The vitals, the smell, the meds list — they all whisper 'DKA' if you’re listening. Don’t just chase symptoms — step back, scan for the story, and let the pathophysiology tell you what’s wrong.",
+  "callInformation": {
+    "type": "Medical — Altered LOC",
+    "location": "Convenience store parking lot, urban setting",
+    "time": "18:40",
+    "dispatchCode": "31-C-1",
+    "dispatchNotes": [
+      "Caller reports young male slurring speech and vomiting",
+      "Possible intoxication or diabetic issue",
+      "Patient leaning against a wall, confused"
+    ],
+    "hazardsOrFlags": [
+      "Busy urban parking lot",
+      "Bystanders assuming overdose"
+    ],
+    "crewNotes": "No needle marks seen. Wallet nearby shows diabetic alert card."
+  },
+  "patientDemographics": {
+    "name": "Jordan Wells",
+    "sex": "male",
+    "age": 24,
+    "height": "5'10\"",
+    "weight": "160 lbs",
+    "appearance": "Sweaty, breathing rapidly, confused, sitting on curb with legs stretched out"
+  },
+  "patientPresentation": "Jordan is alert but disoriented, answers slowly, slurred speech. His breath has a fruity odor. He appears exhausted, complains of abdominal pain, and vomited twice before your arrival.",
+  "incidentNarrative": "Jordan left work early feeling nauseous and lightheaded. He didn’t take his insulin today, saying he hadn’t eaten much. He started vomiting mid-afternoon and came to the store to get Gatorade before sitting down and collapsing.",
+  "opqrst": {
+    "onset": "Progressively worse over the day",
+    "provocation": "Movement worsens nausea",
+    "quality": "Abdominal pain, general malaise",
+    "radiation": "No radiation",
+    "severity": "Moderate to severe discomfort",
+    "time": "Began around noon, worsening since"
+  },
+  "sampleHistory": {
+    "signsSymptoms": "Nausea, vomiting, fatigue, fruity breath",
+    "allergies": "None known",
+    "medications": "Insulin (long-acting, short-acting)",
+    "pastMedicalHistory": "Type 1 diabetes since age 10",
+    "lastOralIntake": "Half a granola bar, ~7am",
+    "eventsLeadingUp": "Skipped insulin dose due to low appetite; developed worsening symptoms"
+  },
+  "physicalExam": {
+    "general": "Sick-looking, alert but slow to respond",
+    "headNeck": "No trauma, PERRL",
+    "chest": "Rapid, deep respirations (Kussmaul)",
+    "abdomen": "Mild tenderness, soft",
+    "extremities": "Cool, no edema"
+  },
+  "vitalSigns": {
+    "firstSet": {
+      "HR": "118",
+      "RR": "28",
+      "BP": "102/66",
+      "SpO2": "97%",
+      "ETCO2": "22 mmHg",
+      "Temp": "37.0",
+      "GCS": "14 (E4 V4 M6)",
+      "BGL": "25.3 mmol/L"
+    },
+    "secondSet": {
+      "HR": "124",
+      "RR": "30",
+      "BP": "98/60",
+      "SpO2": "96%",
+      "ETCO2": "20 mmHg",
+      "Temp": "37.3",
+      "GCS": "13 (E4 V3 M6)",
+      "BGL": "24.7 mmol/L"
+    }
+  },
+ 
+  "caseProgression": {
+    "withProperTreatment": "Patient remains stable, responsive. ETCO₂ trend and BGL recognized as DKA indicators. Transport initiated promptly with supportive care. ALS consulted early.",
+    "withoutProperTreatment": "Patient vomits again, becomes more lethargic. Crew mistakenly treats for hypoglycemia, worsening confusion. ETCO₂ ignored. Delayed transport leads to deterioration en route."
+  },
+  "expectedTreatment": "BLS: High suspicion of DKA, no glucose given due to high BGL. Monitor vitals, O₂ only if SpO₂ < 94%, position of comfort, prepare for ALS backup. ALS: IV fluids if in scope, early hospital notification.",
+  "grsAnchors": {
+    "sceneManagement": {
+      "1": "Ignored bystanders, failed to assess safety. No public shielding.",
+      "3": "Scene safe but didn't engage with confused public. Delayed start.",
+      "5": "Managed public perception, created a private working space.",
+      "7": "Turned chaotic scene into a learning opportunity for bystanders. Calm, respectful authority."
+    },
+    "patientAssessment": {
+      "1": "No ETCO₂, no BGL, missed fruity breath.",
+      "3": "Vitals and BGL done, but missed key cues like Kussmaul breathing.",
+      "5": "Identified abnormal vitals, Kussmaul pattern, and used ETCO₂.",
+      "7": "Tied ETCO₂ + Kussmaul to acid-base status. Used assessment to shape narrative, not checklist."
+    },
+    "historyGathering": {
+      "1": "No history obtained.",
+      "3": "Rushed SAMPLE with confusion from patient.",
+      "5": "Got solid SAMPLE, used diabetic card to verify background.",
+      "7": "Used questions to uncover missed insulin, poor intake, and DKA triggers."
+    },
+    "decisionMaking": {
+      "1": "Assumed overdose, gave glucose reflexively.",
+      "3": "Unsure what to do with high BGL.",
+      "5": "Recognized DKA based on pattern. Avoided glucose. Early transport.",
+      "7": "Anticipated deterioration. Made hospital contact. Planned for ALS escalation."
+    },
+    "proceduralSkill": {
+      "1": "Poor technique, misread monitor.",
+      "3": "BGL taken, but fumbled with monitor or ETCO₂.",
+      "5": "Clean BGL, ETCO₂, vitals. No unnecessary O₂.",
+      "7": "Confident, efficient, no wasted motion. Skills used only when appropriate."
+    },
+    "resourceUtilization": {
+      "1": "Worked alone, partner idle.",
+      "3": "Used partner but not proactively.",
+      "5": "Partner assigned clear tasks. Teamwork evident.",
+      "7": "Delegated like a leader. Called for ALS early. Briefed team continuously."
+    },
+    "communication": {
+      "1": "Dismissive or vague. Confused patient further.",
+      "3": "Gave basic info, didn’t explain rationale.",
+      "5": "Spoke clearly. Explained working diagnosis. Reassured patient.",
+      "7": "Taught the patient about DKA during transport. Built trust through transparency and tone."
+    }
+  },
+  "selfReflectiveJournaling": [
+    "Did I recognize the red flags of DKA early enough?",
+    "What role did ETCO₂ and respiratory pattern play in my clinical reasoning?",
+    "How confident was I in *not* treating with glucose?",
+    "How did I ensure I wasn’t biased by bystander assumptions (e.g., 'he’s just high')?"
+  ],
+  "vocationalLearningOutcomes": [
+    "VLO 2: Apply patient assessment findings to complex medical conditions",
+    "VLO 3: Integrate diagnostic data into clinical decision-making",
+    "VLO 6: Demonstrate leadership and team communication in emergency care"
+  ],
+  "learningObjectives": [
+    "Identify signs of diabetic ketoacidosis in the prehospital setting",
+    "Use ETCO₂ trends to guide differential thinking",
+    "Avoid common treatment errors in altered diabetic patients"
+  ],
+  "modifiersUsed": []
+}
