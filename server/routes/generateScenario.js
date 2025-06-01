@@ -209,6 +209,21 @@ switch (environment) {
     environmentInstruction = "";
 }
 
+let complexityInstruction = "";
+
+switch (complexity) {
+  case "Simple":
+    complexityInstruction = `- This is a **Simple** scenario. Keep the clinical picture focused and the cues clear. One primary problem, minimal distraction. Use this to reinforce fundamentals: assessment, communication, and one clean decision. Layer 1 should highlight staying sharp even when things *look* easy.`;
+    break;
+  case "Moderate":
+    complexityInstruction = `- This is a **Moderate** case. Introduce some ambiguity or competing priorities. Maybe the history is partial, or symptoms evolve mid-call. There should be enough to challenge clinical reasoning without overwhelming. Use Layer 1 to encourage pattern recognition and structured re-evaluation.`;
+    break;
+  case "Complex":
+    complexityInstruction = `- This is a **Complex** scenario. Include multiple problems (e.g., polypharmacy, co-morbidities, scene dynamics) or confounding elements (e.g., misleading history, emotional bystanders, limited access). Build in at least two clinical decision points and require deeper synthesis. Layer 1 cues should emphasize keeping composure, avoiding tunnel vision, and managing chaos.`;
+    break;
+  default:
+    complexityInstruction = "";
+}
     const generationPrompt = `
     
 ${semesterInstructions}
@@ -242,7 +257,7 @@ Match the following scenario parameters:
 - Semester: ${semester}
 - Type: ${type}
 - Environment: ${environmentInstruction}
-- Complexity: ${complexity}
+- Complexity: ${complexityInstruction}
 - Learning Focus: ${focus}
 
 ${focusInstruction}
