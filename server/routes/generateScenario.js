@@ -184,6 +184,30 @@ switch (type) {
     break;
 }
 
+let environmentInstruction = "";
+
+switch (environment) {
+  case "Urban":
+    environmentInstruction = `- This is an **Urban** setting. Emphasize crowd density, tight access points, traffic delays, and bystander interaction. Think elevators, stairwells, apartment lobbies, and impatient onlookers. Embed Layer 1 cues about staying focused in noisy, chaotic environments.`;
+    break;
+  case "Rural":
+    environmentInstruction = `- This is a **Rural** setting. Highlight long transport times, sparse backup, variable cell coverage, and improvised solutions. Mention terrain, long laneways, or farm structures. Layer 1 teaching should nod to autonomy and decision-making under isolation.`;
+    break;
+  case "Wilderness":
+    environmentInstruction = `- This is a **Wilderness** scenario. Focus on remoteness, scene access difficulty (e.g., trails, campsites), and the need for improvised stabilization. Include environmental threats (heat, cold, animals) and patient extrication. Teach resilience and outdoor-specific hazards.`;
+    break;
+  case "Industrial":
+    environmentInstruction = `- This is an **Industrial** environment. Address hazards like machinery, confined spaces, chemical exposure, and high noise. Consider patient PPE, EMS access issues, and potential delays for decontamination or scene control. Add Layer 1 insights on risk balancing and assertive communication.`;
+    break;
+  case "Home":
+    environmentInstruction = `- This is a **Home** environment. Bring in cramped spaces, emotional family members, or pet interference. Focus on subtle scene clues, domestic hazards, and privacy concerns. Embed Layer 1 cues about empathic rapport and navigating family dynamics.`;
+    break;
+  case "Public Space":
+    environmentInstruction = `- This is a **Public Space** scenario. Think food courts, parks, gyms, or busy streets. Crowd control, noise, limited privacy, and rapid escalation are common. Use Layer 1 remarks on crowd diffusion, quick assessment, and protecting patient dignity in public.`;
+    break;
+  default:
+    environmentInstruction = "";
+}
 
     const generationPrompt = `
     
@@ -217,7 +241,7 @@ Match the following scenario parameters:
 - The scenario TYPE must be obvious and cleanly match the category selected. Do NOT blur boundaries. Example: Asthma = Respiratory. Sepsis = Medical. Chest pain = Cardiac. Trauma = External Injury.
 - Semester: ${semester}
 - Type: ${type}
-- Environment: ${environment}
+- Environment: ${environmentInstruction}
 - Complexity: ${complexity}
 - Learning Focus: ${focus}
 
