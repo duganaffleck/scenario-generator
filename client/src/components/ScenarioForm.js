@@ -23,7 +23,7 @@ const SECTION_GROUPS = {
   "Patient Info": ["patientDemographics", "patientPresentation", "opqrst", "sample"],
   "Scenario Modifiers": ["modifiersUsed"],
   "Assessment": ["physicalExam", "vitalSigns"],
-  "Clinical Reasoning": ["caseProgression", "differentialDiagnosis", "expectedTreatment", "protocolNotes", "teachersPoints", "scenarioRationale"],
+  "Clinical Reasoning": ["caseProgression", "differentialDiagnosis", "expectedTreatment", "protocolNotes", "scenarioRationale"],
   "Education": ["learningObjectives", "vocationalLearningOutcomes", "selfReflectiveQuestions", "grsAnchors"]
 };
 
@@ -126,6 +126,7 @@ const ScenarioForm = () => {
     }
     return `• ${fieldValue}`;
   };
+
   const formatLabel = (label) =>
     label.replace(/([a-z])([A-Z])/g, "$1 $2").replace(/^./, (str) => str.toUpperCase());
 
@@ -161,6 +162,7 @@ const ScenarioForm = () => {
     let y = 20;
 
     Object.entries(scenario).forEach(([key, value]) => {
+      if (key === "teachersPoints") return; // omit teacher's points here
       const label = capitalizeFirstLetter(key);
       doc.setFont(undefined, "bold");
       doc.text(`${label}:`, 10, y);
@@ -177,15 +179,18 @@ const ScenarioForm = () => {
         y = 20;
       }
     });
-if (scenario.teachersPoints) {
-  doc.setFont(undefined, "bold");
-  doc.text("Teacher's Points:", 10, y);
-  y += 6;
-  doc.setFont(undefined, "normal");
 
-  const lines = doc.splitTextToSize(scenario.teachersPoints, 180);
-  doc.text(lines, 10, y);
-}
+    // Add Teacher's Points at the end
+    if (scenario.teachersPoints) {
+      doc.setFont(undefined, "bold");
+      doc.text("Teacher's Points:", 10, y);
+      y += 6;
+      doc.setFont(undefined, "normal");
+
+      const lines = doc.splitTextToSize(scenario.teachersPoints, 180);
+      doc.text(lines, 10, y);
+    }
+
     doc.save("scenario.pdf");
   };
 
@@ -296,30 +301,33 @@ if (scenario.teachersPoints) {
 
       {scenario && (
         <div style={styles(darkMode, fontSizeLarge).outputBox}>
-          {/* Teacher's Points Section */}
-{scenario.teachersPoints && (
-  <div style={{
-    backgroundColor: darkMode ? "#facc15" : "#fef9c3",
-    color: "#1e293b",
-    padding: "1rem",
-    borderRadius: "12px",
-    border: "1px solid #eab308",
-    marginBottom: "1rem"
-  }}>
-    <h3 style={{ marginBottom: "0.5rem", fontSize: fontSizeLarge ? "1.2rem" : "1rem" }}>🧠 Teacher's Points</h3>
-    <p style={{ fontStyle: "italic" }}>{scenario.teachersPoints}</p>
-  </div>
-)}
           {Object.entries(SECTION_GROUPS).map(([groupName, keys]) => (
             <div key={groupName}>
               <h2 style={styles(darkMode, fontSizeLarge).sectionHeading} onClick={() => toggleSection(groupName)}>
                 {collapsedSections[groupName] ? "▶️" : "🔽"} {groupName}
               </h2>
+
+              {/* Inject Teacher's Points ONLY above Education group */}
+              {groupName === "Education" && scenario.teachersPoints && (
+                <div style={{
+                  backgroundColor: darkMode ? "#facc15" : "#fef9c3",
+                  color: "#1e293b",
+                  padding: "1rem",
+                  borderRadius: "12px",
+                  border: "1px solid #eab308",
+                  marginBottom: "1rem"
+                }}>
+                  <h3 style={{ marginBottom: "0.5rem", fontSize: fontSizeLarge ? "1.2rem" : "1rem" }}>🧠 Teacher's Points</h3>
+                  <p style={{ fontStyle: "italic" }}>{scenario.teachersPoints}</p>
+                </div>
+              )}
+
               {!collapsedSections[groupName] &&
-                keys.map((key) => scenario[key] && renderSection(key, scenario[key]))}
+                keys
+                  .filter((key) => key !== "teachersPoints")
+                  .map((key) => scenario[key] && renderSection(key, scenario[key]))}
             </div>
           ))}
-   
         </div>
       )}
     </div>

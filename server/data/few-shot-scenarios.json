@@ -1,428 +1,405 @@
-[
-  {
-    "title": "Elderly Fall with Suspected Pelvic Fracture",
-    "scenarioIntro": "🧠 **Teacher’s Points**: This case emphasizes gentle handling, strong scene awareness, and trauma suspicion in the elderly. Pelvic fractures are notoriously unstable—students must understand the hidden risk of retroperitoneal bleeding. Look for how they manage this quiet crisis: do they communicate clearly, stabilize effectively, and think through extrication options? It’s less about cool skills and more about thoughtful, patient-centered care. A good takeaway: 'Not all trauma is loud.'",
-    "callInformation": {
-      "type": "Trauma",
-      "location": "Private residence – carpeted bedroom, second floor",
-      "time": "08:15",
-      "dispatchCode": "17-B-2",
-      "dispatchNotes": [
-        "84 y/o female fell overnight",
-        "Caller unsure if patient lost consciousness",
-        "Patient complaining of severe hip pain"
-      ],
-      "hazardsOrFlags": [
-        "Cluttered bedroom",
-        "Stairs to second floor"
-      ],
-      "crewNotes": "Patient is alert but unable to move. Daughter on scene."
-    },
-    "patientDemographics": {
-      "name": "Margaret Bennett",
-      "sex": "female",
-      "age": 84,
-      "height": "5'2\"",
-      "weight": "105 lbs",
-      "appearance": "Pale, frail, in obvious pain, unable to move lower limbs, lying supine beside the bed"
-    },
-    "patientPresentation": "Margaret is visibly distressed, clutching her lower abdomen and groaning with each movement attempt.",
-    "incidentNarrative": "Margaret’s daughter called 911 after finding her mother on the bedroom floor. Margaret attempted to get to the bathroom overnight and lost her balance. She’s been lying there since early morning, alert but in pain.",
-    "opqrst": {
-      "onset": "30 minutes ago",
-      "provocation": "Movement worsens the pain",
-      "quality": "Sharp, aching",
-      "radiation": "Pain radiates down both legs",
-      "severity": "8/10",
-      "time": "Constant since the fall"
-    },
-    "sampleHistory": {
-      "signsSymptoms": "Pelvic pain, dizziness",
-      "allergies": "None",
-      "medications": "Ramipril (for blood pressure), ASA 81mg (preventative for cardiac risk)",
-      "pastMedicalHistory": "Hypertension, osteopenia, prior fall",
-      "lastOralIntake": "Tea and toast at 06:30",
-      "eventsLeadingUp": "Dizzy on way to bathroom and fell"
-    },
-    "physicalExam": {
-      "general": "Pale, anxious",
-      "headNeck": "No trauma",
-      "chest": "Clear bilaterally",
-      "abdomen": "Tender over pelvis",
-      "extremities": "External rotation, left leg short"
-    },
-    "vitalSigns": {
-      "firstSet": {
-        "HR": "104",
-        "RR": "20",
-        "BP": "92/60",
-        "SpO2": "96%",
-        "ETCO2": "38",
-        "Temp": "36.4",
-        "GCS": "15",
-        "BGL": "5.2"
-      },
-      "secondSet": {
-        "HR": "112",
-        "RR": "24",
-        "BP": "86/58",
-        "SpO2": "95%",
-        "ETCO2": "40",
-        "Temp": "36.1",
-        "GCS": "15",
-        "BGL": "5.1"
-      }
-    },
- 
-    "caseProgression": {
-      "withProperTreatment": "Patient remains stable and cooperative. Scene is controlled, scoop is used appropriately, and she is extricated gently with minimal further pain. Vitals remain relatively steady.",
-      "withoutProperTreatment": "Patient becomes hypotensive and agitated if moved roughly. Incorrect lifting increases pain and risk. Poor scene control leads to delays or unsafe stair navigation."
-    },
-    "expectedTreatment": "BLS: Pelvic stabilization using scoop or improvised method, gentle handling, minimize movement. Transport rapidly. ALS: Monitor for hypotension, IV bolus, pain management if authorized.",
-    "grsAnchors": {
-      "sceneManagement": {
-        "1": "Ignored scene hazards and failed to secure the environment before approaching Margaret.",
-        "3": "Identified clutter but did not adjust approach or mitigate risks during scene entry.",
-        "5": "Scoped and adapted to the cluttered scene, cleared a safe work area, and planned safe stair extrication.",
-        "7": "Pre-planned stair navigation, repositioned environment safely, involved daughter without compromising care."
-      },
-      "patientAssessment": {
-        "1": "Skipped structured trauma check. Missed signs of pelvic fracture.",
-        "3": "Identified pain but missed key signs like leg shortening or instability.",
-        "5": "Performed full trauma assessment. Identified pelvic pain and leg discrepancy.",
-        "7": "Integrated MOI with presentation. Verbally suspected pelvic fracture early and adjusted exam approach accordingly."
-      },
-      "historyGathering": {
-        "1": "No SAMPLE taken. Did not ask daughter for details.",
-        "3": "Got some history, but missed key timing or medication details.",
-        "5": "Complete SAMPLE taken. Confirmed medication use, fall timeline, and relevant medical history.",
-        "7": "Engaged daughter empathetically, extracted clear timeline, and used history to direct decision making."
-      },
-      "decisionMaking": {
-        "1": "Moved patient without stabilization or rationale.",
-        "3": "Debated movement, but failed to act decisively or with rationale.",
-        "5": "Chose scoop stretcher with pelvic precautions. Explained movement plan.",
-        "7": "Balanced SMR, pelvic trauma risk, and frailty in a thoughtful and well-reasoned plan."
-      },
-      "proceduralSkill": {
-        "1": "Movement was unsafe, painful, or disorganized.",
-        "3": "Movement achieved but lacked coordination or clear communication.",
-        "5": "Gentle, deliberate movement with stabilization. Clear crew coordination.",
-        "7": "Directed movement with precision and control. Adapted scoop and stair chair usage smoothly."
-      },
-      "resourceUtilization": {
-        "1": "Failed to use team, tools, or scene effectively.",
-        "3": "Used some equipment, but poorly timed or executed.",
-        "5": "Appropriate use of scoop, stair chair, and partner. Scene managed efficiently.",
-        "7": "Thoughtfully involved all scene resources and preloaded stair strategy for seamless transition."
-      },
-      "communication": {
-        "1": "Dismissive or abrupt with patient and daughter.",
-        "3": "Basic explanation given but missed emotional needs.",
-        "5": "Calm, professional, patient-focused language throughout.",
-        "7": "Used clear, plain language. Validated daughter’s concerns and de-escalated emotional tension."
-      }
-    },
-    "selfReflectiveJournaling": [
-      "What clues helped me suspect a pelvic fracture?",
-      "Did my extrication plan minimize movement and pain?",
-      "How did I involve the family while maintaining control?",
-      "What role did environment play in the safety of care?"
-    ],
-    "vocationalLearningOutcomes": [
-      "VLO 1: Communicate effectively and compassionately with patients and families",
-      "VLO 3: Apply assessment and critical thinking",
-      "VLO 5: Perform patient care procedures per standards"
-    ],
-    "learningObjectives": [
-      "Thorough geriatric trauma assessment",
-      "Pelvic fracture recognition and stabilization",
-      "Safe packaging and stairwell extrication"
-    ],
-    "modifiersUsed": []
-  }
-]
 {
-  "title": "Toddler Seizure After Fever Spikes at Daycare",
-  "scenarioIntro": "🧠 **Teacher’s Points**: Pediatric calls are tough — not because they’re complicated, but because they’re emotionally loud. This one tests your ability to calm the room, scan for danger, and act deliberately. Students often panic at the sight of seizing kids. We want them to remember: protect the airway, observe carefully, gather history from rattled caregivers, and avoid unnecessary interventions. Don’t get sucked into chaos — become the calm center of the storm.",
+  "title": "Elderly Fall With Suspected Pelvic Fracture",
+  "scenarioIntro": "A quiet hallway becomes the scene of a painful mystery: what starts as a simple lift assist quickly reveals deeper complexity. This case asks you to pause, observe, and think critically before moving forward.",
   "callInformation": {
-    "type": "Neurological (Seizure)",
-    "location": "Daycare facility — bright and noisy playroom",
-    "time": "10:12",
-    "dispatchCode": "12-C-1",
+    "type": "Trauma",
+    "location": "Private Residence - Carpeted Hallway",
+    "time": "08:15",
+    "dispatchCode": "17-A-2",
     "dispatchNotes": [
-      "18-month-old actively seizing",
-      "Staff reports fever and sudden collapse",
-      "Seizure ongoing for 3 minutes"
+      "82 y/o female fell in hallway, can't get up",
+      "Reports hip pain and inability to move",
+      "Caller is daughter, unsure if patient hit her head"
     ],
-    "hazardsOrFlags": [
-      "Loud, chaotic scene with children",
-      "Panicked daycare staff"
-    ],
-    "crewNotes": "Staff already attempted to cool child with damp cloths. Seizure resolving on arrival."
+    "hazardsOrFlags": ["Tight space", "Staircase nearby", "Possible need for lifting assistance"],
+    "crewNotes": "BLS crew on scene; ALS 15 minutes out. Prepare for extrication support."
   },
   "patientDemographics": {
-    "name": "Olivia Chen",
-    "sex": "female",
-    "age": 1.5,
-    "height": "75 cm",
-    "weight": "11 kg",
-    "appearance": "Postictal, warm to touch, being held by a panicked daycare worker"
+    "name": "Marjorie Ellison",
+    "sex": "Female",
+    "age": 82,
+    "height": "5'3\"",
+    "weight": "110 lbs",
+    "appearance": "Pale, frail, and visibly uncomfortable; lying on her left side"
   },
-  "patientPresentation": "Olivia is limp, drowsy, breathing shallow but regular. She cries weakly when stimulated but quickly tires.",
-  "incidentNarrative": "Daycare staff report Olivia was playing normally when she began crying, became unresponsive, and seized for approximately 2–3 minutes. She had a mild fever earlier in the week but no recent seizures or known health issues.",
+  "patientPresentation": "Marjorie lies on the hallway carpet, curled slightly, clutching her left hip. Her face is tense, and she winces with the slightest movement. She’s alert but nervous, answering quietly. (🟨 This is where you pause. Take in the surroundings. Her position tells a story — don’t rush past it.)",
+  "incidentNarrative": "The daughter reports hearing a 'thump' around 07:45. Found her mother on the ground complaining of hip pain. She didn’t see the fall. Patient was trying to make her way to the bathroom alone. No loss of consciousness reported.",
   "opqrst": {
-    "onset": "Sudden",
-    "provocation": "None observed",
-    "quality": "Tonic-clonic movement",
-    "radiation": "Full body",
-    "severity": "N/A",
-    "time": "Lasted ~3 minutes, now postictal"
+    "onset": "Sudden — during attempt to walk to bathroom",
+    "provocation": "Movement worsens the pain",
+    "quality": "Sharp and deep",
+    "radiation": "Confined to left hip",
+    "severity": "8/10 when trying to move",
+    "time": "30 minutes ago"
   },
   "sampleHistory": {
-    "signsSymptoms": "Fever, seizure",
-    "allergies": "None known",
-    "medications": "Acetaminophen PRN",
-    "pastMedicalHistory": "Normal development, no seizures prior",
-    "lastOralIntake": "Milk at 08:30",
-    "eventsLeadingUp": "Was warm this morning, no medication given yet"
+    "signsAndSymptoms": "Left hip pain, no head strike or dizziness reported",
+    "allergies": "Penicillin",
+    "medications": [
+      "Warfarin (anticoagulant)",
+      "Amlodipine (calcium channel blocker for hypertension)",
+      "Calcium + Vitamin D"
+    ],
+    "pastMedicalHistory": "Hypertension, atrial fibrillation, osteoporosis",
+    "lastOralIntake": "Tea and toast at 06:30",
+    "eventsLeadingUp": "Attempted to walk unassisted to the bathroom"
   },
   "physicalExam": {
-    "general": "Floppy but responsive to pain, flushed skin",
-    "headNeck": "Fontanelle flat, no trauma",
-    "chest": "Clear",
+    "generalAppearance": "Thin, elderly female in mild distress, unable to reposition herself",
+    "headNeck": "No bruising or lacerations noted",
+    "chest": "Clear breath sounds bilaterally",
     "abdomen": "Soft, non-tender",
-    "extremities": "Moves all limbs weakly"
+    "pelvis": "Tender to palpation, minimal movement attempted",
+    "extremities": "Left leg appears shortened and externally rotated",
+    "neurological": "AOx3, no deficits noted"
   },
   "vitalSigns": {
     "firstSet": {
-      "HR": "162",
-      "RR": "32",
-      "BP": "Not taken",
-      "SpO2": "97%",
-      "ETCO2": "N/A",
-      "Temp": "39.1",
-      "GCS": "10 (E3 V2 M5)",
-      "BGL": "6.1"
+      "HR": "102",
+      "RR": "20",
+      "BP": "138/84",
+      "SpO2": "96% RA",
+      "ETCO2": "38 mmHg",
+      "Temp": "36.3°C",
+      "GCS": "15",
+      "BGL": "5.6 mmol/L"
     },
     "secondSet": {
-      "HR": "148",
-      "RR": "28",
-      "BP": "90/54",
-      "SpO2": "98%",
-      "ETCO2": "N/A",
-      "Temp": "38.6",
-      "GCS": "12 (E4 V3 M5)",
-      "BGL": "6.3"
+      "HR": "108",
+      "RR": "22",
+      "BP": "132/80",
+      "SpO2": "96% RA",
+      "ETCO2": "37 mmHg",
+      "Temp": "36.4°C",
+      "GCS": "15",
+      "BGL": "5.7 mmol/L"
     }
   },
 
-  "caseProgression": {
-    "withProperTreatment": "Olivia slowly regains alertness. Temp decreases with passive cooling. Staff reassured. Transport is smooth with vitals improving slightly.",
-    "withoutProperTreatment": "Increased agitation from staff delays transport. Patient becomes more irritable or lethargic. No history is obtained. Unsafe handling or unnecessary interventions cause distress."
-  },
-  "expectedTreatment": "BLS: Protect airway during seizure, passive cooling, transport. ALS: Monitor vitals, possible medication if seizure prolonged. No glucose needed if normoglycemic and GCS improving.",
-  "grsAnchors": {
+  "caseProgression": "If the crew recognizes signs of a pelvic fracture and limits movement, Marjorie remains stable, albeit in pain. Gentle handling and pelvic stabilization improve her comfort. (🟨 Notice what gets worse first — that’s your early warning. Movement without support rapidly worsens pain and risk.)\n\nIf movement is attempted without stabilization or if lifting is done improperly, pain increases, and Marjorie becomes more anxious and tachycardic. Delays in transport or failure to identify the fracture worsen her status en route.",
+  "expectedTreatment": "Primary goals include pain mitigation, pelvic stabilization, and safe extrication. Consider pelvic binding, scoop or vacuum mattress, and rapid transport with caution due to anticoagulant use. Monitor vitals and reassess frequently. (🟨 Even if ALS is 15 minutes out, don’t freeze. BLS doesn’t mean Basic Thinking — stabilize what you can and move thoughtfully.)",
+ 
+  "vocationalLearningOutcomes": [
+    "VLO 1: Perform complete patient assessments and integrate findings into care plans",
+    "VLO 3: Demonstrate knowledge of anatomy, pathophysiology, and pharmacology relevant to emergency care",
+    "VLO 5: Communicate clearly and effectively with patients, families, and healthcare professionals"
+  ],
+  "globalRatingScale": {
     "sceneManagement": {
-      "1": "Failed to control scene. Chaos worsened.",
-      "3": "Eventually took control, but tension remained high.",
-      "5": "Calmed scene quickly, assigned roles, cleared space for patient care.",
-      "7": "Managed environment and emotional tone. Anticipated needs and led with clarity."
+      "1": "Did not secure scene or assess for stair hazards; ignored safety concerns.",
+      "3": "Secured basic space but missed hazards like tight cornering and floor obstructions.",
+      "5": "Managed scene well with awareness of space and safe lifting strategies.",
+      "7": "Anticipated challenges, prepped path, and coached partner on safest maneuvering."
     },
     "patientAssessment": {
-      "1": "Skipped primary. Missed GCS or temp.",
-      "3": "Incomplete assessment. Missed signs of postictal state.",
-      "5": "Full head-to-toe peds exam. GCS tracked. Temp and BGL done.",
-      "7": "Fluid, confident peds exam. Tracked GCS trends. Connected vitals to febrile seizure logic."
+      "1": "No focused assessment of pelvis; failed to notice leg rotation.",
+      "3": "Identified pain but missed critical fracture cues.",
+      "5": "Identified mechanism and signs of pelvic injury; cautious handling.",
+      "7": "Integrated scene clues, history, and physical findings into an elegant clinical hypothesis."
     },
     "historyGathering": {
-      "1": "No history obtained. Ignored staff.",
-      "3": "Rushed SAMPLE with errors.",
-      "5": "Clear SAMPLE from daycare staff. Asked follow-ups.",
-      "7": "Engaged caregivers skillfully, used history to rule out complex causes."
+      "1": "Rushed through SAMPLE; missed key anticoagulant risk.",
+      "3": "Collected basics but didn’t explore pre-event mobility.",
+      "5": "Explored past medical history and incident narrative thoroughly.",
+      "7": "Skillfully layered daughter’s account with patient’s narrative, revealing root causes and prevention tips."
     },
-    "decisionMaking": {
-      "1": "Uncoordinated, unsure what to do.",
-      "3": "Followed protocol but lacked rationale.",
-      "5": "Knew seizure likely febrile. Avoided unnecessary interventions.",
-      "7": "Integrated history, vitals, and environment into a clear, reasoned decision tree."
+    "clinicalDecisionMaking": {
+      "1": "Moved patient before assessing pelvic injury.",
+      "3": "Hesitated to treat despite clear indicators.",
+      "5": "Made thoughtful stabilization and transport decisions based on findings.",
+      "7": "Demonstrated sound prioritization and reasoning, anticipating downstream complications."
     },
     "proceduralSkill": {
-      "1": "Rough handling, unnecessary O₂ or IV.",
-      "3": "Basic procedures done awkwardly.",
-      "5": "Good BVM technique. Passive cooling used properly.",
-      "7": "Used procedures judiciously. Calm hands, right interventions, minimal fuss."
+      "1": "Attempted lift with no binder or support.",
+      "3": "Applied binder incorrectly or without reassessing vitals.",
+      "5": "Applied pelvic binder correctly with minimal movement.",
+      "7": "Handled with minimal discomfort and flawless technique — binder, scoop, communication all integrated."
     },
     "resourceUtilization": {
-      "1": "Ignored partner and staff.",
-      "3": "Involved others but poorly coordinated.",
-      "5": "Used partner well. Staff included when appropriate.",
-      "7": "Anticipated needs, delegated roles. Crew worked as a team."
+      "1": "Failed to request ALS despite anticoagulant concern.",
+      "3": "Requested ALS but didn’t plan around timing.",
+      "5": "Used resources well — called for ALS, planned transport.",
+      "7": "Actively coordinated with dispatch, prepared landing zone or transfer for optimal continuity."
     },
     "communication": {
-      "1": "Cold or chaotic. Made staff more anxious.",
-      "3": "Gave some info but not reassuring.",
-      "5": "Clear, age-appropriate, confident with staff.",
-      "7": "Reframed panic into clarity. Spoke with care and composure."
+      "1": "Spoke around the patient, not to her.",
+      "3": "Basic communication, didn’t comfort or explain steps.",
+      "5": "Communicated clearly, ensured patient and daughter understood.",
+      "7": "Built trust, provided updates, coached her calmly through each step with compassion."
     }
   },
-  "selfReflectiveJournaling": [
-    "How did I balance speed with thoroughness?",
-    "What helped me control the emotional tone of the scene?",
-    "Did I rule out other causes of seizure beyond fever?",
-    "How did I handle communication with non-parent caregivers?"
-  ],
-  "vocationalLearningOutcomes": [
-    "VLO 1: Demonstrate effective pediatric care in high-stress situations",
-    "VLO 3: Apply clinical reasoning to neurological emergencies",
-    "VLO 5: Use communication and scene control strategies"
-  ],
-  "learningObjectives": [
-    "Recognize and manage febrile seizures",
-    "Communicate effectively in a pediatric setting",
-    "Apply appropriate assessment techniques to a postictal child"
-  ],
-  "modifiersUsed": []
+  "selfReflectionPrompts": [
+    "What assumptions did I make when I saw the patient's position? Were they accurate?",
+    "How did I adapt my communication to suit Marjorie’s needs?",
+    "Did I prioritize stabilization appropriately? What would I do differently next time?",
+    "What part of this case challenged my decision-making the most, and why?"
+  ]
 }
 {
-  "title": "Slurring, Sick, and Smells Like Fruit: DKA at the Gas Station",
-  "scenarioIntro": "🧠 **Teacher’s Points**: This is a classic DKA — but only if you connect the dots. If you’re distracted by the slurred speech and vomiting, you might chase a stroke or food poisoning. The key teaching here is pattern recognition *plus* restraint. The vitals, the smell, the meds list — they all whisper 'DKA' if you’re listening. Don’t just chase symptoms — step back, scan for the story, and let the pathophysiology tell you what’s wrong.",
+  "title": "Pediatric Febrile Seizure at Daycare",
+  "scenarioIntro": "In a place of play, panic sets in. A child’s sudden seizure challenges not just your clinical skills, but your calm. This case is about slowing down to listen — to caregivers, to vitals, and to what’s not being said.",
   "callInformation": {
-    "type": "Medical — Altered LOC",
-    "location": "Convenience store parking lot, urban setting",
-    "time": "18:40",
-    "dispatchCode": "31-C-1",
+    "type": "Medical – Neurological",
+    "location": "Local daycare facility",
+    "time": "13:47",
+    "dispatchCode": "12-D-1",
     "dispatchNotes": [
-      "Caller reports young male slurring speech and vomiting",
-      "Possible intoxication or diabetic issue",
-      "Patient leaning against a wall, confused"
+      "3 y/o male had seizure lasting ~1 minute",
+      "Child is now postictal and febrile",
+      "Daycare staff concerned and anxious",
+      "Parents en route"
     ],
-    "hazardsOrFlags": [
-      "Busy urban parking lot",
-      "Bystanders assuming overdose"
-    ],
-    "crewNotes": "No needle marks seen. Wallet nearby shows diabetic alert card."
+    "hazardsOrFlags": ["Crowded environment", "Emotional bystanders", "Delayed parental consent"],
+    "crewNotes": "BLS crew on scene. ALS 10 minutes out. Pediatric protocols applicable. Keep caregivers informed."
   },
   "patientDemographics": {
-    "name": "Jordan Wells",
-    "sex": "male",
-    "age": 24,
-    "height": "5'10\"",
-    "weight": "160 lbs",
-    "appearance": "Sweaty, breathing rapidly, confused, sitting on curb with legs stretched out"
+    "name": "Liam Wong",
+    "sex": "Male",
+    "age": 3,
+    "height": "3'1\"",
+    "weight": "30 lbs",
+    "appearance": "Lethargic toddler lying on a mat, flushed cheeks, slow to respond to voices"
   },
-  "patientPresentation": "Jordan is alert but disoriented, answers slowly, slurred speech. His breath has a fruity odor. He appears exhausted, complains of abdominal pain, and vomited twice before your arrival.",
-  "incidentNarrative": "Jordan left work early feeling nauseous and lightheaded. He didn’t take his insulin today, saying he hadn’t eaten much. He started vomiting mid-afternoon and came to the store to get Gatorade before sitting down and collapsing.",
+  "patientPresentation": "Liam is limp but breathing spontaneously. His eyes open slowly when his name is called, and he cries weakly when moved. He’s warm to touch, with flushed cheeks and dry lips. (🟨 This is your cue to pause. Look beyond the fear — what do his breathing and responsiveness really tell you?)",
+  "incidentNarrative": "Daycare staff state Liam was playing quietly after lunch when he suddenly stiffened, then began shaking for about 45–60 seconds. He was placed safely on his side. After the seizure stopped, he was drowsy and hot to the touch. Staff report he’d had a runny nose and mild cough earlier but no known diagnosis.",
   "opqrst": {
-    "onset": "Progressively worse over the day",
-    "provocation": "Movement worsens nausea",
-    "quality": "Abdominal pain, general malaise",
-    "radiation": "No radiation",
-    "severity": "Moderate to severe discomfort",
-    "time": "Began around noon, worsening since"
+    "onset": "Seizure started abruptly, during quiet play",
+    "provocation": "None observed",
+    "quality": "Tonic-clonic movement lasting <1 min",
+    "radiation": "Not applicable",
+    "severity": "Seizure ended spontaneously; currently postictal",
+    "time": "~10 minutes ago"
   },
   "sampleHistory": {
-    "signsSymptoms": "Nausea, vomiting, fatigue, fruity breath",
+    "signsAndSymptoms": "Seizure, drowsiness, fever, mild respiratory symptoms",
     "allergies": "None known",
-    "medications": "Insulin (long-acting, short-acting)",
-    "pastMedicalHistory": "Type 1 diabetes since age 10",
-    "lastOralIntake": "Half a granola bar, ~7am",
-    "eventsLeadingUp": "Skipped insulin dose due to low appetite; developed worsening symptoms"
+    "medications": "None reported",
+    "pastMedicalHistory": "No seizures previously; full-term birth; routine vaccinations",
+    "lastOralIntake": "Lunch at ~12:30 (grilled cheese, apple slices, water)",
+    "eventsLeadingUp": "Low-grade illness reported earlier; developed seizure at daycare"
   },
   "physicalExam": {
-    "general": "Sick-looking, alert but slow to respond",
-    "headNeck": "No trauma, PERRL",
-    "chest": "Rapid, deep respirations (Kussmaul)",
-    "abdomen": "Mild tenderness, soft",
-    "extremities": "Cool, no edema"
+    "generalAppearance": "Flushed, drowsy toddler; opens eyes to voice; whimpering at movement",
+    "headNeck": "No trauma, pupils equal and reactive",
+    "chest": "Breath sounds clear, no retractions or grunting",
+    "abdomen": "Soft, non-tender",
+    "extremities": "No signs of injury or deformity",
+    "neurological": "Postictal but responsive to voice; localized movement present"
   },
   "vitalSigns": {
     "firstSet": {
-      "HR": "118",
+      "HR": "144",
       "RR": "28",
-      "BP": "102/66",
-      "SpO2": "97%",
-      "ETCO2": "22 mmHg",
-      "Temp": "37.0",
-      "GCS": "14 (E4 V4 M6)",
-      "BGL": "25.3 mmol/L"
+      "BP": "92/58",
+      "SpO2": "98% RA",
+      "ETCO2": "34 mmHg",
+      "Temp": "39.2°C",
+      "GCS": "13 (E3 V4 M6)",
+      "BGL": "5.4 mmol/L"
     },
     "secondSet": {
-      "HR": "124",
-      "RR": "30",
-      "BP": "98/60",
-      "SpO2": "96%",
-      "ETCO2": "20 mmHg",
-      "Temp": "37.3",
-      "GCS": "13 (E4 V3 M6)",
-      "BGL": "24.7 mmol/L"
+      "HR": "138",
+      "RR": "26",
+      "BP": "94/60",
+      "SpO2": "98% RA",
+      "ETCO2": "35 mmHg",
+      "Temp": "38.8°C",
+      "GCS": "14",
+      "BGL": "5.3 mmol/L"
     }
   },
- 
-  "caseProgression": {
-    "withProperTreatment": "Patient remains stable, responsive. ETCO₂ trend and BGL recognized as DKA indicators. Transport initiated promptly with supportive care. ALS consulted early.",
-    "withoutProperTreatment": "Patient vomits again, becomes more lethargic. Crew mistakenly treats for hypoglycemia, worsening confusion. ETCO₂ ignored. Delayed transport leads to deterioration en route."
+
+  "caseProgression": "With calm reassurance and continued observation, Liam becomes more alert. Cooling measures and monitoring stabilize his vitals. (🟨 Notice how responsiveness improves — it’s not always about action, but watchful waiting.)\n\nIf providers panic or over-treat (e.g., aggressive oxygen when not needed, unnecessary medications), the situation becomes more chaotic. Increased caregiver anxiety, potential hyperoxia, or uncoordinated interventions may escalate stress without benefit.",
+  "expectedTreatment": "This is a BLS case of observation, not intervention. Reassure caregivers, maintain airway, monitor vitals, and initiate passive cooling. Consider transport for further assessment. (🟨 Just because you can act doesn’t mean you should. Sometimes clinical excellence is restraint, not reaction.)",
+  
+  "vocationalLearningOutcomes": [
+    "VLO 1: Conduct assessments and interpret pediatric patient presentations",
+    "VLO 3: Apply pathophysiological principles to guide decision-making",
+    "VLO 6: Communicate appropriately with children, guardians, and bystanders"
   },
-  "expectedTreatment": "BLS: High suspicion of DKA, no glucose given due to high BGL. Monitor vitals, O₂ only if SpO₂ < 94%, position of comfort, prepare for ALS backup. ALS: IV fluids if in scope, early hospital notification.",
-  "grsAnchors": {
+  "globalRatingScale": {
     "sceneManagement": {
-      "1": "Ignored bystanders, failed to assess safety. No public shielding.",
-      "3": "Scene safe but didn't engage with confused public. Delayed start.",
-      "5": "Managed public perception, created a private working space.",
-      "7": "Turned chaotic scene into a learning opportunity for bystanders. Calm, respectful authority."
+      "1": "Ignored chaotic environment; allowed crowding and confusion.",
+      "3": "Tried to control space but allowed daycare staff to over-intervene.",
+      "5": "Created a calm space, prioritized safety and patient privacy.",
+      "7": "Took control gently, reassured all parties, and made the space feel safe."
     },
     "patientAssessment": {
-      "1": "No ETCO₂, no BGL, missed fruity breath.",
-      "3": "Vitals and BGL done, but missed key cues like Kussmaul breathing.",
-      "5": "Identified abnormal vitals, Kussmaul pattern, and used ETCO₂.",
-      "7": "Tied ETCO₂ + Kussmaul to acid-base status. Used assessment to shape narrative, not checklist."
+      "1": "Failed to assess vitals or recognize postictal state.",
+      "3": "Took vitals but didn’t correlate with seizure recovery.",
+      "5": "Identified febrile seizure and performed appropriate assessments.",
+      "7": "Recognized seizure type, recovery trajectory, and subtle risks."
     },
     "historyGathering": {
-      "1": "No history obtained.",
-      "3": "Rushed SAMPLE with confusion from patient.",
-      "5": "Got solid SAMPLE, used diabetic card to verify background.",
-      "7": "Used questions to uncover missed insulin, poor intake, and DKA triggers."
+      "1": "Missed key details about illness or seizure length.",
+      "3": "Got surface-level info, didn’t ask about prior episodes or illness timeline.",
+      "5": "Collected thorough SAMPLE/OPQRST with daycare input.",
+      "7": "Cross-validated staff observations and revealed fever pattern context."
     },
-    "decisionMaking": {
-      "1": "Assumed overdose, gave glucose reflexively.",
-      "3": "Unsure what to do with high BGL.",
-      "5": "Recognized DKA based on pattern. Avoided glucose. Early transport.",
-      "7": "Anticipated deterioration. Made hospital contact. Planned for ALS escalation."
+    "clinicalDecisionMaking": {
+      "1": "Rushed to treat without reason; confused postictal for active emergency.",
+      "3": "Unsure whether to transport or wait.",
+      "5": "Recognized need for monitoring, cooling, and reassessment.",
+      "7": "Made calm, wise choices; avoided over-treatment while staying proactive."
     },
     "proceduralSkill": {
-      "1": "Poor technique, misread monitor.",
-      "3": "BGL taken, but fumbled with monitor or ETCO₂.",
-      "5": "Clean BGL, ETCO₂, vitals. No unnecessary O₂.",
-      "7": "Confident, efficient, no wasted motion. Skills used only when appropriate."
+      "1": "Applied O₂ without indication; confused pediatric airway needs.",
+      "3": "Used basic tools but fumbled sizes or priorities.",
+      "5": "Applied monitoring and basic cooling techniques properly.",
+      "7": "Handled vitals and reassessment like a pro; child-friendly and precise."
     },
     "resourceUtilization": {
-      "1": "Worked alone, partner idle.",
-      "3": "Used partner but not proactively.",
-      "5": "Partner assigned clear tasks. Teamwork evident.",
-      "7": "Delegated like a leader. Called for ALS early. Briefed team continuously."
+      "1": "Did not notify ALS or dispatch; failed to prepare for parental arrival.",
+      "3": "Notified ALS late or didn’t use team efficiently.",
+      "5": "Coordinated with partner and daycare well.",
+      "7": "Planned parent handoff, kept daycare looped in, and prepped for ALS support or refusal."
     },
     "communication": {
-      "1": "Dismissive or vague. Confused patient further.",
-      "3": "Gave basic info, didn’t explain rationale.",
-      "5": "Spoke clearly. Explained working diagnosis. Reassured patient.",
-      "7": "Taught the patient about DKA during transport. Built trust through transparency and tone."
+      "1": "Failed to reassure or explain to staff or child.",
+      "3": "Used medical jargon or spoke over caregivers.",
+      "5": "Spoke clearly and calmly to staff, explained seizure and care plan.",
+      "7": "Built trust with all adults present, calmed nerves, and used age-appropriate language with Liam."
     }
   },
-  "selfReflectiveJournaling": [
-    "Did I recognize the red flags of DKA early enough?",
-    "What role did ETCO₂ and respiratory pattern play in my clinical reasoning?",
-    "How confident was I in *not* treating with glucose?",
-    "How did I ensure I wasn’t biased by bystander assumptions (e.g., 'he’s just high')?"
-  ],
+  "selfReflectionPrompts": [
+    "How did I manage my own stress or instinct to intervene?",
+    "Did I fully understand the difference between febrile seizures and other seizure types?",
+    "How well did I listen to the caregivers — both what they said and what they didn’t?",
+    "What part of this call reinforced the importance of clinical restraint?"
+  ]
+}
+{
+  "title": "DKA in a Young Adult at the Campus Library",
+  "scenarioIntro": "It’s quiet in the stacks — until it isn’t. A student’s slurred speech and fruity breath offer a clue, but do you recognize it before it’s too late? This case rewards slow, methodical thinking and textbook-to-real-life integration.",
+  "callInformation": {
+    "type": "Medical – Diabetic Emergency",
+    "location": "University library, second floor study area",
+    "time": "16:12",
+    "dispatchCode": "13-D-1",
+    "dispatchNotes": [
+      "20 y/o male, confused and vomiting",
+      "Reported fruity-smelling breath",
+      "Staff concerned he’s ‘not making sense’"
+    ],
+    "hazardsOrFlags": ["Quiet academic environment", "Stairs with limited elevator access", "Crowded with students"],
+    "crewNotes": "BLS on scene, ALS 12 minutes out. Student ID found; staff unsure of medical history. Library staff waiting at entrance."
+  },
+  "patientDemographics": {
+    "name": "Dante Reyes",
+    "sex": "Male",
+    "age": 20,
+    "height": "5'10\"",
+    "weight": "145 lbs",
+    "appearance": "Clammy, visibly unwell, disoriented and slurring his words, seated against a bookshelf"
+  },
+  "patientPresentation": "Dante is slumped on the floor, mumbling incoherently with flushed cheeks and a shallow breathing pattern. There’s a distinct fruity odour on his breath. He startles when you speak, then vomits into a nearby garbage bin. (🟨 Pause here — this is the kind of scene that speaks before the patient does. What clues are in the air, literally?)",
+  "incidentNarrative": "Library staff found Dante sitting awkwardly on the floor with a textbook open. He appeared dazed, was sweating heavily, and couldn’t answer basic questions. When they approached, he became combative, then vomited. A friend mentioned he has ‘some kind of diabetes’ but wasn’t sure which type or what meds he takes.",
+  "opqrst": {
+    "onset": "Gradual confusion worsening over the day",
+    "provocation": "No clear trigger; worsens with exertion",
+    "quality": "Nausea, abdominal pain, confusion",
+    "radiation": "Pain stays in abdomen",
+    "severity": "Severe disorientation, 8/10 nausea",
+    "time": "Began this morning, worsened throughout the day"
+  },
+  "sampleHistory": {
+    "signsAndSymptoms": "Vomiting, confusion, fruity breath, Kussmaul respirations",
+    "allergies": "None known",
+    "medications": [
+      "Insulin glargine (long-acting insulin)",
+      "Insulin lispro (rapid-acting insulin, reportedly missed dose)"
+    ],
+    "pastMedicalHistory": "Type 1 Diabetes diagnosed at age 13",
+    "lastOralIntake": "Energy drink and granola bar around noon",
+    "eventsLeadingUp": "Skipped insulin dose this morning; felt progressively worse over the day"
+  },
+  "physicalExam": {
+    "generalAppearance": "Sweaty, pale, visibly confused",
+    "headNeck": "Dry lips, no head trauma noted",
+    "chest": "Fast, deep (Kussmaul) respirations, clear sounds",
+    "abdomen": "Tender on palpation",
+    "extremities": "Cool, slight tremor",
+    "neurological": "AOx1; responds inconsistently to questions"
+  },
+  "vitalSigns": {
+    "firstSet": {
+      "HR": "122",
+      "RR": "28",
+      "BP": "100/64",
+      "SpO2": "97% RA",
+      "ETCO2": "22 mmHg",
+      "Temp": "37.5°C",
+      "GCS": "13 (E4 V3 M6)",
+      "BGL": "23.4 mmol/L"
+    },
+    "secondSet": {
+      "HR": "128",
+      "RR": "30",
+      "BP": "96/60",
+      "SpO2": "97% RA",
+      "ETCO2": "20 mmHg",
+      "Temp": "37.6°C",
+      "GCS": "12",
+      "BGL": "23.0 mmol/L"
+    }
+  },
+
+  "caseProgression": "If the crew recognizes DKA and supports Dante with calm positioning, passive airway protection, and monitoring, his condition stabilizes enough for ALS handoff. (🟨 Watch the breathing — that fast, deep pattern is a pathophysiology flag waving right at you.)\n\nIf crews assume this is hypoglycemia and administer glucose or miss the hyperglycemia signs, his mental status declines. Vomiting worsens, and airway protection becomes a concern. Inappropriate interventions delay proper care.",
+  "expectedTreatment": "This is a hold-and-observe BLS call. Do not administer glucose. Protect the airway, monitor vitals, prepare for ALS IV/transport. Provide supportive care and prepare for possible vomiting or LOC. (🟨 The temptation to act is strong — but wisdom means restraint. Knowing when *not* to treat is part of being excellent.)",
+  
   "vocationalLearningOutcomes": [
-    "VLO 2: Apply patient assessment findings to complex medical conditions",
-    "VLO 3: Integrate diagnostic data into clinical decision-making",
-    "VLO 6: Demonstrate leadership and team communication in emergency care"
-  ],
-  "learningObjectives": [
-    "Identify signs of diabetic ketoacidosis in the prehospital setting",
-    "Use ETCO₂ trends to guide differential thinking",
-    "Avoid common treatment errors in altered diabetic patients"
-  ],
-  "modifiersUsed": []
+    "VLO 1: Recognize and assess diabetic emergencies in young adults",
+    "VLO 2: Demonstrate clinical reasoning based on physical findings and vital trends",
+    "VLO 4: Manage scene, patient, and crew communication with calm and clarity"
+  },
+  "globalRatingScale": {
+    "sceneManagement": {
+      "1": "Did not control scene; unsafe positioning near students.",
+      "3": "Crowd managed, but didn't assess escape route or lighting.",
+      "5": "Cleared immediate area and ensured safe access for transport.",
+      "7": "Created a controlled environment, delegated roles, prepped for ALS efficiently."
+    },
+    "patientAssessment": {
+      "1": "Missed DKA indicators; treated for hypoglycemia incorrectly.",
+      "3": "Took vitals but didn’t connect the dots between Kussmaul breathing and BGL.",
+      "5": "Performed a full assessment and interpreted vitals appropriately.",
+      "7": "Connected all clinical signs into a working diagnosis and managed accordingly."
+    },
+    "historyGathering": {
+      "1": "Failed to ask about insulin or past diabetic history.",
+      "3": "Partial history gathered; missed insulin adherence questions.",
+      "5": "Collected appropriate SAMPLE and identified insulin non-compliance.",
+      "7": "Probed insightfully — uncovered missed dose, timeline, and key risk factors."
+    },
+    "clinicalDecisionMaking": {
+      "1": "Administered glucose incorrectly; confused DKA with hypoglycemia.",
+      "3": "Hesitated or wavered between treatments without clarity.",
+      "5": "Chose appropriate BLS monitoring and airway strategy while awaiting ALS.",
+      "7": "Made confident, nuanced decisions while anticipating ALS needs."
+    },
+    "proceduralSkill": {
+      "1": "No monitoring; failed to prepare for vomiting or airway compromise.",
+      "3": "Basic monitoring done but missed ETCO₂ or patient positioning errors.",
+      "5": "Applied full monitoring and protected airway properly.",
+      "7": "Demonstrated high procedural competence and situational foresight."
+    },
+    "resourceUtilization": {
+      "1": "Didn’t call ALS or prep for ALS arrival.",
+      "3": "ALS called but limited crew coordination.",
+      "5": "Planned ALS handoff and engaged partner well.",
+      "7": "Optimized ALS support timing, documentation, and scene efficiency."
+    },
+    "communication": {
+      "1": "Ignored patient or staff; did not explain care.",
+      "3": "Used unclear terms or rushed explanations.",
+      "5": "Spoke clearly to patient and staff, explained transport plan.",
+      "7": "Built rapport quickly, used calm tone, explained confidently and compassionately."
+    }
+  },
+  "selfReflectionPrompts": [
+    "Did I correctly recognize DKA versus other diabetic emergencies?",
+    "How did I avoid acting on assumptions, and what checked that impulse?",
+    "What clues did the breathing pattern give me, and how did I interpret them?",
+    "What did this call teach me about doing less — but doing it better?"
+  ]
 }
