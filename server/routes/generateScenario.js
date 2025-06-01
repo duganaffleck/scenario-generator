@@ -65,7 +65,7 @@ router.post('/', async (req, res) => {
 
     const today = new Date().toLocaleDateString('en-CA');
 
-    const focusInstruction = focus === "Balanced"
+    let focusInstruction = focus === "Balanced"
       ? "- Ensure a well-rounded scenario touching on assessment, reasoning, communication, and procedural elements evenly."
       : `- Emphasize the learning focus area: ${focus}`;
 
