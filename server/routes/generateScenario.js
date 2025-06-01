@@ -32,7 +32,7 @@ const requiredScenarioFields = [
   "title", "callInformation", "patientDemographics", "patientPresentation",
   "incidentNarrative", "opqrst", "sampleHistory", "medications",
   "allergies", "pastMedicalHistory", "physicalExam", "vitalSigns",
-  "caseProgression", "expectedTreatment", "grsAnchors",
+  "caseProgression", "expectedTreatment", "pathophysiology", "differential diagnosis", "grsAnchors",
   "vocationalLearningOutcomes", "modifiersUsed", "selfReflectionPrompts", "teachersPoints"
 ];
 
@@ -273,6 +273,8 @@ Generate a detailed paramedic scenario using the following fields. ALL of these 
 - caseProgression (withProperTreatment and withoutProperTreatment)
 - expectedTreatment
 - teachersPoints (one-paragraph instructor message to student)
+  - A concise pathophysiology summary explaining the patient's likely condition
+  - A differential diagnosis list with 2–3 options, each with reasoning that supports or rules them out based on scenario data
 - grsAnchors (7 domains: situationalAwareness, patientAssessment, historyGathering, decisionMaking, proceduralSkill, resourceUtilization, communication — each domain must have levels 1, 3, 5, and 7, each with 3 detailed anchor examples)
   - Each score must include three detailed, scenario-specific examples of student behavior.
   - Use a warm, wise, and mentor-like tone to guide performance.

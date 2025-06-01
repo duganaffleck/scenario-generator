@@ -26,6 +26,7 @@ const TITLE_MAP = {
   patientPresentation: "Patient Presentation",
   incidentNarrative: "Incident History",
   sample: "SAMPLE",
+  pathophysiology: "Pathophysiology"
   differentialDiagnosis: "Differential Diagnosis",
   grsAnchors: "GRS Anchors",
   selfReflectiveQuestions: "Self-Reflective Questions",
