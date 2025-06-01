@@ -159,24 +159,31 @@ let typeInstruction = "";
 
 switch (type) {
   case "Medical":
-    typeInstruction = `- This is a **Medical** scenario. Emphasize history, evolving symptoms, and non-traumatic presentations. Include internal causes (e.g., GI, endocrine, sepsis) and detail their progression.`;
+    typeInstruction = `- This is a **Medical** scenario. Emphasize history, evolving symptoms, and non-traumatic presentations. Include internal causes (e.g., GI, endocrine, sepsis) and detail their progression.
+- Avoid trauma-like injuries, obvious external bleeding, or environmental triggers unless clearly secondary.`;
     break;
   case "Trauma":
-    typeInstruction = `- This is a **Trauma** scenario. Emphasize mechanism of injury, bleeding control, SMR, and rapid assessment. Include obvious or occult injuries with realistic trauma patterns.`;
+    typeInstruction = `- This is a **Trauma** scenario. Emphasize mechanism of injury, bleeding control, SMR, and rapid assessment. Include obvious or occult injuries with realistic trauma patterns.
+- Do not include medical causes (e.g., stroke, diabetic emergencies) as primary complaints.`;
     break;
   case "Cardiac":
-    typeInstruction = `- This is a **Cardiac** case. Focus on chest pain, cardiovascular signs, and protocol-driven treatments like ASA and Nitro (depending semester). Consider 12-lead findings if applicable.`;
+    typeInstruction = `- This is a **Cardiac** case. Focus on chest pain, cardiovascular signs, and protocol-driven treatments like ASA and Nitro (depending on semester). Consider 12-lead findings if applicable.
+- Avoid respiratory origin (e.g., asthma, pneumonia) unless clearly secondary to cardiac dysfunction.`;
     break;
   case "Respiratory":
-    typeInstruction = `- This is a **Respiratory** case. Focus on dyspnea, oxygen decisions, adventitious breath sounds, and titrated oxygen. Reflect BLS PCS O₂ guidance explicitly.`;
+    typeInstruction = `- This is a **Respiratory** case. Focus on dyspnea, oxygen decisions, adventitious breath sounds, and titrated oxygen. Reflect BLS PCS O₂ guidance explicitly.
+- Do not let cardiac causes dominate unless they clearly result in respiratory compromise.`;
     break;
   case "Environmental":
-    typeInstruction = `- This is an **Environmental** emergency. Base the call around external causes (e.g., cold, heat, toxin, altitude). Symptoms should reflect the environmental stress.`;
+    typeInstruction = `- This is an **Environmental** emergency. Base the call around external causes (e.g., cold, heat, toxin, altitude). Symptoms should reflect the environmental stress.
+- Avoid primary medical illness without environmental context or causation.`;
     break;
   case "Other":
-    typeInstruction = `- This is a case of **Other/Complex** nature. Consider mental health, overdose, or unique presentations that don't neatly fit other types. Maintain internal consistency.`;
+    typeInstruction = `- This is a case of **Other/Complex** nature. Consider mental health, overdose, or unique presentations that don’t neatly fit other types. Maintain internal consistency.
+- Avoid simple trauma or typical medical complaints. This case should feel atypical and instructive.`;
     break;
 }
+
 
     const generationPrompt = `
     
@@ -207,6 +214,7 @@ Generate a detailed paramedic scenario using the following fields. ALL of these 
 Scenario modifiers must be fully integrated and reflected in incidentNarrative, callInformation, caseProgression, and grsAnchors.
 
 Match the following scenario parameters:
+- The scenario TYPE must be obvious and cleanly match the category selected. Do NOT blur boundaries. Example: Asthma = Respiratory. Sepsis = Medical. Chest pain = Cardiac. Trauma = External Injury.
 - Semester: ${semester}
 - Type: ${type}
 - Environment: ${environment}
