@@ -110,10 +110,43 @@ ${alsStandards}
 - This section should be instructional — not motivational fluff.
 - Ensure the GRS anchors are always the correct 7 categories with anchors
 Include a "teachersPoints" field: a one-paragraph tip, warning, or lesson from the instructor to the student. This should be voiced like a senior paramedic speaking to a junior. Keep it educational, witty, or stern — never vague.
-
 `.trim();
 
+    let semesterInstructions = "";
+
+    if (semester === "2") {
+      semesterInstructions = `
+- This scenario is for a **Semester 2** PCP student. Do NOT include any ALS **medications**. Other ALS directives (e.g., oxygen, SMR) may apply if appropriate.
+- Do NOT include pregnancy, neonate, or pediatric calls.
+- Tone should be highly instructional and supportive — like a senior paramedic mentoring a beginner.
+- Add embedded learning cues in 'patientPresentation', 'caseProgression', and 'expectedTreatment' (e.g., "Notice the flushed face — what might that mean?").
+- Keep clinical complexity low: 1–2 main issues maximum. Avoid ethical dilemmas, polypharmacy, or advanced reasoning traps.
+- GRS anchors should reflect beginner expectations. A score of 5 = safe and functional, not polished.
+- Use direct teaching phrases like "This is where students often hesitate" or "Pause and consider why this matters."
+`;
+    } else if (semester === "3") {
+      semesterInstructions = `
+- This scenario is for a **Semester 3** PCP student. Full ALS **medication scope** applies (as per PCP level).
+- Pregnancy and delivery calls can now be included.
+- Tone should be balanced — professional yet still educational.
+- Include a few embedded learning cues, but do not oversimplify or hand-hold.
+- Moderate complexity: symptoms can evolve, and delayed treatment should worsen condition.
+- Include 1–2 subtle red herrings or decision-making pivots.
+- GRS anchors should reflect growing autonomy. A score of 5 = mostly independent and clinically sound.
+`;
+    } else if (semester === "4") {
+      semesterInstructions = `
+- This scenario is for a **Semester 4** PCP student. Full ALS scope applies.
+- Any call type is appropriate: pediatric, neonate, mental health, etc.
+- Tone should be professional and realistic — minimize overt teaching cues unless critical.
+- High complexity is expected: layered symptoms, time pressures, possible ethical dilemmas, or competing priorities.
+- Expect the student to integrate history, vitals, and presentation without external help.
+- GRS anchors should reflect readiness for independent practice. A score of 5 = graduation-level confidence and capability.
+`;
+    }
+
     const generationPrompt = `
+${semesterInstructions}
 Generate a detailed paramedic scenario using the following fields. ALL of these fields must be included in the output:
 
 - title
