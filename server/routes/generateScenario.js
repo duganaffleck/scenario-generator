@@ -224,6 +224,31 @@ switch (complexity) {
   default:
     complexityInstruction = "";
 }
+let focusInstruction = "";
+
+switch (focus) {
+  case "Assessment":
+    focusInstruction = `- This scenario prioritizes **Assessment**. Emphasize initial impressions, primary and secondary surveys, and appropriate vital sign interpretation. Include subtle physical findings that reward careful observation. Layer 1 teaching cues should reinforce using all senses, working methodically, and forming early working impressions based on cues, not assumptions.`;
+    break;
+  case "Decision Making":
+    focusInstruction = `- This scenario focuses on **Decision Making**. The case should present branching paths, unclear priorities, or dynamic progression that forces clinical judgment. Include teachable moments where premature decisions or inaction could lead to worsening outcomes. Layer 1 cues should nudge re-evaluation, structured logic, and synthesis of incomplete data.`;
+    break;
+  case "Pathophysiology":
+    focusInstruction = `- This case targets **Pathophysiology**. Build a medically rich scenario that challenges students to connect signs and symptoms with underlying biological processes. Present evolving vitals or systemic signs that require deeper reasoning. Layer 1 moments should highlight connecting textbook knowledge to lived clinical presentation.`;
+    break;
+  case "Communication":
+    focusInstruction = `- This case emphasizes **Communication**. Include emotionally charged or socially nuanced moments — distressed patients, family members, or bystanders. Highlight rapport-building, clear verbalization, and de-escalation. Layer 1 cues should emphasize calm, empathetic tone, and structured information gathering even under pressure.`;
+    break;
+  case "Procedures":
+    focusInstruction = `- This scenario focuses on **Procedures**. Incorporate a case that requires PCP-level interventions (e.g., oxygen, glucose, SMR, positioning, assisted meds). Make the skill performance integral to patient improvement or deterioration. Layer 1 teaching should reinforce performing with confidence, checking drugs and gear, and understanding indications/contraindications.`;
+    break;
+  case "Balanced":
+    focusInstruction = `- This is a **Balanced** case. All domains — assessment, decision-making, pathophysiology, communication, and procedures — should be reasonably represented. The scenario should reflect a holistic field call, with embedded teachable moments across the full patient care spectrum. Layer 1 cues should be interspersed and reflective of an overall strong call.`;
+    break;
+  default:
+    focusInstruction = "";
+}
+
     const generationPrompt = `
     
 ${semesterInstructions}
@@ -245,7 +270,26 @@ Generate a detailed paramedic scenario using the following fields. ALL of these 
 - caseProgression (withProperTreatment and withoutProperTreatment)
 - expectedTreatment
 - teachersPoints (one-paragraph instructor message to student)
-- grsAnchors (7 domains: situationalAwareness, patientAssessment, historyGathering, decisionMaking, proceduralSkill, resourceUtilization, communication — each domain must have levels 1, 3, 5, and 7, each with 2–3 detailed anchor examples)
+- grsAnchors (7 domains: situationalAwareness, patientAssessment, historyGathering, decisionMaking, proceduralSkill, resourceUtilization, communication — each domain must have levels 1, 3, 5, and 7, each with 3 detailed anchor examples)
+  - Each score must include three detailed, scenario-specific examples of student behavior.
+  - Use a warm, wise, and mentor-like tone to guide performance.
+  - Anchor content must reflect the specific scenario’s challenges (e.g., environment, complexity, case progression).
+  - DO NOT skip levels or use vague placeholders like "not competent" or "very good". Be specific, educational, and clear.
+- Prioritize the domain that aligns with the selected `focus`. When writing `grsAnchors`, that domain should have the richest and most detailed anchor examples. Aim for:
+  - More vivid or nuanced student behaviors
+  - Slightly longer anchor lists (4+ examples instead of 3, if token space allows)
+  - Embedded Layer 1 cues where appropriate
+
+Use this guide to determine the focus domain:
+  - "Assessment" → emphasize **Assessment & Vitals**
+  - "Decision Making" → emphasize **Clinical Decision-Making**
+  - "Pathophysiology" → emphasize **Clinical Decision-Making and Assessment & Vitals**
+  - "Communication" → emphasize **Communication & Rapport**
+  - "Procedures" → emphasize **Procedures & Skills**
+  - "Balanced" → no prioritization; all domains equally weighted
+
+- The highest-priority GRS domain for this case is: **${focusPriorityDomain}**. Expand its anchors with additional depth and specificity.
+
 - vocationalLearningOutcomes (at least 3)
 - selfReflectionPrompts (at least 4)
 - modifiersUsed (if complications were added)
@@ -258,7 +302,7 @@ Match the following scenario parameters:
 - Type: ${type}
 - Environment: ${environmentInstruction}
 - Complexity: ${complexityInstruction}
-- Learning Focus: ${focus}
+- Learning Focus: ${focusInstruction}
 
 ${focusInstruction}
 ${complicationsInstruction}
