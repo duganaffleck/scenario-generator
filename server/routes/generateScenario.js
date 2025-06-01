@@ -94,6 +94,9 @@ ${blsStandards}
 
 - Apply the following ALS PCS (PCP/IV) directives when relevant:
 ${alsStandards}
+- When describing interventions or decision-making, explicitly name relevant PCS directives (e.g., "per BLS PCS oxygen administration standard", "ALS PCS symptom relief directive", etc.).
+- If oxygen is not applied, justify it using BLS PCS (e.g., "SpO₂ > 94% and no signs of hypoxia").
+- If a medication is given, include its exact indication from ALS PCS and state "as per ALS PCS".
 
 - Format both SAMPLE and OPQRST responses as clearly labeled bullet points
 - Include bystander and patient speech, and at least two red herrings
