@@ -118,6 +118,7 @@ Include a "teachersPoints" field: a one-paragraph tip, warning, or lesson from t
       semesterInstructions = `
 - This scenario is for a **Semester 2** PCP student. Do NOT include any ALS **medications**. Other ALS directives (e.g., oxygen, SMR) may apply if appropriate.
 - Do NOT include pregnancy, neonate, or pediatric calls.
+- Do NOT include 12 leads, buy limb lead rhythm interpretation need including.  Blood glucose determinatin is included.
 - Tone should be highly instructional and supportive — like a senior paramedic mentoring a beginner.
 - Add embedded learning cues in 'patientPresentation', 'caseProgression', and 'expectedTreatment' (e.g., "Notice the flushed face — what might that mean?").
 - Keep clinical complexity low: 1–2 main issues maximum. Avoid ethical dilemmas, polypharmacy, or advanced reasoning traps.
