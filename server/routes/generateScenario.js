@@ -164,6 +164,19 @@ if (includeTeachingCues) {
   teachingCueInstruction = `- Do not include any instructional cues or 💡 teaching prompts in the scenario.`;
 }
 
+let physicalAndVitalCueInstruction = "";
+
+if (includeTeachingCues) {
+  if (semester === "2") {
+    physicalAndVitalCueInstruction = `- In addition to cues in patientPresentation and caseProgression, embed 1–2 short 💡 cues in 'physicalExam' and 'vitalSigns'. Focus on helping students recognize subtle clues (e.g., skin signs, chest rise, abnormal vitals) and encouraging re-checks or reassessment.`;
+  } else if (semester === "3") {
+    physicalAndVitalCueInstruction = `- Include up to 1 subtle 💡 cue in either 'physicalExam' or 'vitalSigns' to reinforce student interpretation and second-order thinking (e.g., "(💡 Pulse pressure matters — look closer)").`;
+  } else if (semester === "4") {
+    physicalAndVitalCueInstruction = `- Only include a teaching cue in 'physicalExam' or 'vitalSigns' if it prevents a common misstep. It must feel like a senior clinician whispering insight — not an instructor pausing class.`;
+  }
+} else {
+  physicalAndVitalCueInstruction = `- Do not embed any 💡 teaching cues in the 'physicalExam' or 'vitalSigns' sections. Keep them purely clinical.`;
+}
 
 let typeInstruction = "";
 
