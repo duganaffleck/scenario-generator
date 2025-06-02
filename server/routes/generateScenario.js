@@ -151,7 +151,7 @@ Include a "teachersPoints" field: a one-paragraph tip, warning, or lesson from t
 let teachingCueInstruction = "";
 
 if (semester === "2") {
-  teachingCueInstruction = `- Embed mandatory 4–6 short, instructional cues across 'patientPresentation', 'caseProgression', and 'expectedTreatment'. Always include "💡". Examples: "💡 Pause and take in the scene," or "💡 This is where students often hesitate."`;
+  teachingCueInstruction = `- Embed mandatory 4–6 short, instructional cues across 'patientPresentation', 'caseProgression', and 'expectedTreatment'. Always include "💡". Examples: "(💡 Pause and take in the scene)" or "(💡 This is where students often hesitate.)"`;
 } else if (semester === "3") {
   teachingCueInstruction = `- Include mandatory 2–3 short instructional cues across the scenario. These should feel like a mentor's voice guiding reasoning, without over-explaining.`;
 } else if (semester === "4") {
