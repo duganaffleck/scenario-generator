@@ -45,35 +45,37 @@
     "eventsLeadingUp": "Attempted to walk unassisted to the bathroom"
   },
   "physicalExam": {
-    "generalAppearance": "Thin, elderly female in mild distress, unable to reposition herself",
-    "headNeck": "No bruising or lacerations noted",
-    "chest": "Clear breath sounds bilaterally",
-    "abdomen": "Soft, non-tender",
-    "pelvis": "Tender to palpation, minimal movement attempted",
-    "extremities": "Left leg appears shortened and externally rotated",
-    "neurological": "AOx3, no deficits noted"
+  "generalAppearance": "Thin, elderly female in mild distress, unable to reposition herself 💡 Frailty cues matter — treat every repositioning as a potential harm point.",
+  "headNeck": "No bruising or lacerations noted",
+  "chest": "Clear breath sounds bilaterally",
+  "abdomen": "Soft, non-tender",
+  "pelvis": "Tender to palpation, minimal movement attempted 💡 Suspect pelvic fracture when tenderness and immobility coexist — always stabilize before movement.",
+  "extremities": "Left leg appears shortened and externally rotated 💡 Classic signs of pelvic or proximal femur injury — don’t miss what’s staring at you.",
+  "neurological": "AOx3, no deficits noted"
+},
+"vitalSigns": {
+  "firstSet": {
+    "HR": "102",
+    "RR": "20",
+    "BP": "138/84",
+    "SpO2": "96% RA",
+    "ETCO2": "38 mmHg",
+    "Temp": "36.3°C",
+    "GCS": "15 💡 A GCS of 15 doesn’t rule out internal injury — stay alert for subtle deterioration.",
+    "BGL": "5.6 mmol/L"
   },
-  "vitalSigns": {
-    "firstSet": {
-      "HR": "102",
-      "RR": "20",
-      "BP": "138/84",
-      "SpO2": "96% RA",
-      "ETCO2": "38 mmHg",
-      "Temp": "36.3°C",
-      "GCS": "15",
-      "BGL": "5.6 mmol/L"
-    },
-    "secondSet": {
-      "HR": "108",
-      "RR": "22",
-      "BP": "132/80",
-      "SpO2": "96% RA",
-      "ETCO2": "37 mmHg",
-      "Temp": "36.4°C",
-      "GCS": "15",
-      "BGL": "5.7 mmol/L"
-    }
+  "secondSet": {
+    "HR": "108 💡 Even small increases in HR could signal pain, anxiety, or early compensation. Don’t ignore trends.",
+    "RR": "22",
+    "BP": "132/80",
+    "SpO2": "96% RA",
+    "ETCO2": "37 mmHg",
+    "Temp": "36.4°C",
+    "GCS": "15",
+    "BGL": "5.7 mmol/L"
+  
+}
+
   },
   "caseProgression": "If the crew recognizes signs of a pelvic fracture and limits movement, Marjorie remains stable, albeit in pain. Gentle handling and pelvic stabilization improve her comfort. (💡 Notice what gets worse first — that’s your early warning. Movement without support rapidly worsens pain and risk.) According to the BLS PCS, spinal motion restriction is not indicated here, but pelvic binding falls under the trauma standard and should be considered.\n\nIf movement is attempted without stabilization or if lifting is done improperly, pain increases, and Marjorie becomes more anxious and tachycardic. Delays in transport or failure to identify the fracture worsen her status en route.",
   "expectedTreatment": "Primary goals include pain mitigation, pelvic stabilization, and safe extrication. Apply a pelvic binder per ALS PCS Trauma Standard if trained and indicated. Use a scoop stretcher or vacuum mattress to minimize movement. Do not delay transport for ALS arrival unless vital signs destabilize. Monitor for shock signs due to anticoagulation. (💡 Even if ALS is 15 minutes out, don’t freeze. BLS doesn’t mean Basic Thinking — stabilize what you can and move thoughtfully.)",
@@ -190,34 +192,36 @@
   ],
   "allergies": "NKDA",
   "pastMedicalHistory": "Generally healthy toddler, no seizure history",
-  "physicalExam": {
-    "General": "Postictal, flushed, semi-conscious",
-    "Head/Neck": "No trauma, fontanelles flat, pupils equal/reactive",
-    "Chest": "Breath sounds clear bilaterally, tachypneic",
-    "Abdomen": "Soft, non-tender",
-    "Extremities": "No deformities, cap refill ~2s"
+"physicalExam": {
+  "General": "Postictal, flushed, semi-conscious 💡 Watch for postictal states in pediatrics—they can mimic low GCS trauma but follow a very different course.",
+  "Head/Neck": "No trauma, fontanelles flat, pupils equal/reactive",
+  "Chest": "Breath sounds clear bilaterally, tachypneic 💡 Increased respiratory rate may be compensatory—always correlate with temperature and SpO₂.",
+  "Abdomen": "Soft, non-tender",
+  "Extremities": "No deformities, cap refill ~2s"
+},
+"vitalSigns": {
+  "firstSet": {
+    "HR": 148,
+    "RR": 34,
+    "BP": "92/60",
+    "SpO₂": "97%",
+    "ETCO₂": "N/A",
+    "Temp": "39.1°C 💡 Febrile seizures often spike over 38.5°C. Temp management is your cue to intervene.",
+    "GCS": "9 (E2 V2 M5) 💡 Don't confuse low GCS post-seizure with head trauma—context is everything.",
+    "BGL": "4.8 mmol/L"
   },
-  "vitalSigns": {
-    "firstSet": {
-      "HR": 148,
-      "RR": 34,
-      "BP": "92/60",
-      "SpO₂": "97%",
-      "ETCO₂": "N/A",
-      "Temp": "39.1°C",
-      "GCS": "9 (E2 V2 M5)",
-      "BGL": "4.8 mmol/L"
-    },
-    "secondSet": {
-      "HR": 140,
-      "RR": 30,
-      "BP": "95/62",
-      "SpO₂": "98%",
-      "ETCO₂": "N/A",
-      "Temp": "38.4°C",
-      "GCS": "12 (E3 V3 M6)",
-      "BGL": "4.9 mmol/L"
-    }
+  "secondSet": {
+    "HR": 140,
+    "RR": 30,
+    "BP": "95/62",
+    "SpO₂": "98%",
+    "ETCO₂": "N/A",
+    "Temp": "38.4°C",
+    "GCS": "12 (E3 V3 M6) 💡 Improving GCS is your cue that the postictal phase is resolving.",
+    "BGL": "4.9 mmol/L"
+  }
+}
+
   },
 
   },
@@ -449,34 +453,35 @@
   "allergies": ["None known"] ,
   "pastMedicalHistory": ["Type 1 Diabetes mellitus"] ,
   "physicalExam": {
-    "generalAppearance": "Lethargic, barely responsive",
-    "headNeck": "No trauma noted",
-    "chest": "Clear air entry, deep Kussmaul breaths",
-    "abdomen": "Soft, mild tenderness on palpation",
-    "extremities": "No edema, cool peripheries"
+  "generalAppearance": "Lethargic, barely responsive 💡 This isn’t just ‘tired’ — this is metabolic fatigue. Look for the patterns that tell you this is serious.",
+  "headNeck": "No trauma noted 💡 Rule out trauma fast but don’t anchor there — this is medical until proven otherwise.",
+  "chest": "Clear air entry, deep Kussmaul breaths 💡 Those exaggerated sighs are the body trying to breathe off acid — hear them, name them, act on them.",
+  "abdomen": "Soft, mild tenderness on palpation 💡 Tenderness without rigidity supports DKA, not intra-abdominal trauma.",
+  "extremities": "No edema, cool peripheries 💡 Peripheral perfusion tells you how bad the hypovolemia might be."
+},
+"vitalSigns": {
+  "firstSet": {
+    "HR": 124,
+    "RR": 30,
+    "BP": "88/54",
+    "SpO2": "97%",
+    "ETCO2": "18 mmHg",
+    "Temp": "37.2°C",
+    "GCS": 10,
+    "BGL": "22.4 mmol/L 💡 If you’re still hunting for drugs after reading this number, you’ve missed the diagnosis."
   },
-  "vitalSigns": {
-    "firstSet": {
-      "HR": 124,
-      "RR": 30,
-      "BP": "88/54",
-      "SpO2": "97%",
-      "ETCO2": "18 mmHg",
-      "Temp": "37.2°C",
-      "GCS": 10,
-      "BGL": "22.4 mmol/L"
-    },
-    "secondSet": {
-      "HR": 132,
-      "RR": 32,
-      "BP": "84/50",
-      "SpO2": "96%",
-      "ETCO2": "16 mmHg",
-      "Temp": "37.3°C",
-      "GCS": 9,
-      "BGL": "22.1 mmol/L"
-    }
-  },
+  "secondSet": {
+    "HR": 132,
+    "RR": 32,
+    "BP": "84/50",
+    "SpO2": "96%",
+    "ETCO2": "16 mmHg",
+    "Temp": "37.3°C",
+    "GCS": 9,
+    "BGL": "22.1 mmol/L 💡 Slight drop in GCS, rising HR, still acidotic. This is your cue — intervene, escalate, monitor."
+  }
+},
+
 
   "caseProgression": {
     "withProperTreatment": "With early recognition and BGL testing, paramedics identify hyperglycemia and support airway/breathing. Patient remains hypoperfused but stable and GCS plateaus. ALS intercept improves outcome.",
@@ -704,35 +709,36 @@
   ],
   "allergies": "None known",
   "pastMedicalHistory": "Generalized anxiety disorder; recent emotional stressor (relationship breakup)",
-  "physicalExam": {
-    "generalAppearance": "Pale, minimally responsive",
-    "headAndNeck": "No trauma, pupils equal but sluggish",
-    "chest": "Breathing shallow but bilateral air entry present",
-    "abdomen": "Soft, non-tender",
-    "extremities": "Cool to touch, no edema or track marks"
+ "physicalExam": {
+  "generalAppearance": "Lethargic, barely responsive 💡 This isn’t just fatigue — metabolic emergencies present with this kind of profound weakness. Ask yourself: does this match DKA or something else?",
+  "headNeck": "No signs of trauma, pupils sluggish but equal 💡 Pupils help you rule out neurological or toxic causes — don’t skip them even in medical calls.",
+  "chest": "Air entry clear bilaterally with deep, labored Kussmaul respirations 💡 Kussmaul = metabolic acidosis compensation. If you hear it, think DKA or salicylates.",
+  "abdomen": "Soft, mildly tender, no guarding or rigidity 💡 Tenderness without peritonitis helps steer you away from surgical causes.",
+  "extremities": "Cool peripheries, no edema, cap refill ~3s 💡 Cap refill is a cheap and fast window into perfusion — use it."
+},
+"vitalSigns": {
+  "firstSet": {
+    "HR": 124,
+    "RR": 30,
+    "BP": "88/54",
+    "SpO₂": "97%",
+    "ETCO₂": "18 mmHg 💡 Low ETCO₂ in a breathing patient should scream 'acidosis' — think DKA.",
+    "Temp": "37.2°C",
+    "GCS": "10 (E3 V2 M5)",
+    "BGL": "22.4 mmol/L 💡 This value doesn’t just confirm hyperglycemia — it helps confirm your differential."
   },
-  "vitalSigns": {
-    "firstSet": {
-      "HR": "54",
-      "RR": "10",
-      "BP": "92/56",
-      "SpO₂": "93%",
-      "ETCO₂": "46 mmHg",
-      "Temp": "36.1°C",
-      "GCS": "12 (E3 V4 M5)",
-      "BGL": "5.0 mmol/L"
-    },
-    "secondSet": {
-      "HR": "48",
-      "RR": "9",
-      "BP": "88/50",
-      "SpO₂": "91%",
-      "ETCO₂": "49 mmHg",
-      "Temp": "35.9°C",
-      "GCS": "11 (E3 V3 M5)",
-      "BGL": "4.9 mmol/L"
-    }
-  },
+  "secondSet": {
+    "HR": 132,
+    "RR": 32,
+    "BP": "84/50",
+    "SpO₂": "96%",
+    "ETCO₂": "16 mmHg 💡 ETCO₂ is falling — this patient is breathing harder to compensate. Watch for fatigue.",
+    "Temp": "37.3°C",
+    "GCS": "9 (E2 V2 M5)",
+    "BGL": "22.1 mmol/L 💡 No significant change — but don’t wait for one. Time is tissue in DKA."
+  }
+}
+,
 
   },
   "caseProgression": {
@@ -844,189 +850,6 @@
   ],
 
 }
-**Title:** Altered Behaviour at the Library
-
-**Scenario Intro:**
-It’s just past noon at the city library — a quiet, climate-controlled space filled with whispers and pages turning. Staff call EMS after a patron begins acting strangely, talking to himself and staring blankly at a wall. Patrons are uncomfortable, and staff are unsure whether to approach.
-
----
-
-### Call Information
-- **Type:** Medical
-- **Location:** Downtown City Library (Public Space)
-- **Time:** 12:15
-- **Dispatch Code:** 25-B-2 (Altered LOC)
-- **Dispatch Notes:** "Male acting bizarre, unresponsive to staff, possibly confused. No known medical history from bystanders."
-- **Hazards/Flags:** No visible hazards; public space with low threat.
-- **Crew Notes:** On scene in 6 minutes. Library security met crew at front desk.
-
----
-
-### Patient Demographics
-- **Name:** Henry Caldwell
-- **Sex:** Male
-- **Age:** 68
-- **Height:** 5'9"
-- **Weight:** 175 lbs
-- **General Appearance:** Disheveled, sweating lightly, seated on a couch staring forward
-
----
-
-### Patient Presentation
-Henry doesn’t react as you approach. He’s muttering under his breath, eyes unfocused. His skin is warm to the touch, and there’s a half-empty water bottle beside him. A library worker says, “He was fine 20 minutes ago. Then he started acting... off.” *(This is where you pause — altered behaviour can mean many things.)*
-
----
-
-### Incident Narrative
-Henry entered the library shortly after 11:00. According to staff, he appeared well at that time and spoke briefly with the front desk about local history books. Around 11:50, he was seen pacing. By noon, he sat down abruptly, stopped interacting, and began speaking to no one in particular. He has no ID on him.
-
----
-
-### OPQRST
-- **Onset:** Gradual, noticed worsening over the last 30–40 minutes
-- **Provocation:** Unknown — sitting quietly; no activity noted
-- **Quality:** Not verbalizing discomfort, just altered mental status
-- **Radiation:** N/A
-- **Severity:** Staff rate concern as high due to sudden behavioural change
-- **Time:** Symptoms began roughly 30–40 minutes prior to 911 call
-
----
-
-### SAMPLE History
-- **Signs/Symptoms:** Confusion, muttering, staring off, warm skin
-- **Allergies:** Unknown
-- **Medications:** Unknown
-- **Past Medical History:** Unknown (patient not communicative; no ID)
-- **Last Oral Intake:** Unknown; water bottle nearby
-- **Events Leading Up:** Seen normal earlier, then began acting bizarre; no trauma or confrontation noted
-
----
-
-### Medications
-Unknown — no pill bottles or med list found on scene
-
----
-
-### Allergies
-Unknown
-
----
-
-### Past Medical History
-Unknown — no chart, ID, or communication from patient yet
-
----
-
-### Physical Exam
-- **General:** Appears confused, warm to touch, not following commands
-- **Head/Neck:** No trauma; pupils 3mm, equal and reactive
-- **Chest:** Normal movement, clear breath sounds bilaterally
-- **Abdomen:** Soft, non-tender, no distention
-- **Extremities:** No tremors, no rigidity; mild diaphoresis on arms
-
----
-
-### Vital Signs
-- **First Set:** HR 108, RR 20, BP 138/88, SpO₂ 96% RA, Temp 38.4°C, GCS 13 (E4 V4 M5), BGL 3.1 mmol/L
-- **Second Set (10 min later):** HR 102, RR 18, BP 134/86, SpO₂ 97% RA, Temp 38.2°C, GCS 14, BGL 4.0 mmol/L after treatment
-
----
-
-### Case Progression
-**With Proper Treatment:**
-- BGL checked early → hypoglycemia discovered → oral glucose given → Henry becomes more alert
-- Patient begins speaking coherently, recognizes surroundings
-- History reveals Type 2 diabetic on metformin; forgot breakfast
-
-**Without Proper Treatment:**
-- BGL not checked or dismissed as psych issue → no intervention → Henry becomes less responsive
-- Vitals stable but GCS drops to 12
-- Patient eventually vomits and becomes increasingly diaphoretic
-
----
-
-### Expected Treatment
-- Ensure scene safety and assess LOC
-- Primary and secondary survey with vitals
-- Early BGL check (due to AMS + no history)
-- Administer oral glucose as per BGL < 4.0 mmol/L (ALS PCS)
-- Reassess GCS, vitals post-glucose
-- Supportive care and transport
-- Report to receiving facility including context and response to glucose
-
-*(Don’t get tricked by the setting. Even if he “looks fine,” altered behavior is a big red flag. Don’t delay your glucose check.)*
-
----
-
-### Teacher's Points
-When it comes to altered LOC, don’t default to “psych” or intox. Hypoglycemia hides in plain sight, and the consequences of missing it are huge — seizures, coma, death. Use your tools. If it’s available, check it. If you’re wrong, no harm done. If you’re right, you’ve saved a life.
-
----
-
-### GRS Anchors
-**Situational Awareness**
-- **1:** Ignores library environment, fails to control scene or ask staff for info
-- **3:** Notices scene is calm but misses available collateral history
-- **5:** Uses environment cues and staff input to inform impression; manages bystanders
-- **7:** Controls environment proactively, delegates partner roles, and anticipates scene challenges
-
-**Patient Assessment**
-- **1:** Performs incomplete primary survey; vital signs omitted
-- **3:** Completes vital signs but misses temperature or glucose
-- **5:** Full primary and secondary survey; recognizes abnormal vitals
-- **7:** Rapid, complete assessment with diagnostic reasoning built into physical exam (e.g., checks pupils, skin temp)
-
-**History Gathering**
-- **1:** Does not gather SAMPLE or OPQRST
-- **3:** Partial SAMPLE history; no follow-up questions
-- **5:** Gathers thorough SAMPLE and OPQRST using collateral when needed
-- **7:** Probes for red herrings, checks for hidden causes, uses open-ended and confirmatory questioning
-
-**Decision Making**
-- **1:** Misses hypoglycemia, treats as psychiatric case
-- **3:** Considers hypoglycemia but delays checking
-- **5:** Recognizes AMS, checks glucose early, treats appropriately
-- **7:** Anticipates cause, initiates treatment confidently, plans transport with hospital needs in mind
-
-**Procedural Skill**
-- **1:** Struggles with BGL test or glucose admin
-- **3:** Performs procedures with some errors or delay
-- **5:** Executes BGL check and oral glucose cleanly, confirms effectiveness
-- **7:** Smooth, efficient procedure performance; guides partner through skill when needed
-
-**Resource Utilization**
-- **1:** Works solo, does not involve partner or staff
-- **3:** Uses partner but misses available resources (e.g., glucometer, library staff)
-- **5:** Coordinates partner, uses staff as collateral sources, leverages equipment
-- **7:** Delegates roles smartly, requests updates, maximizes team performance
-
-**Communication**
-- **1:** Little communication with patient or bystanders
-- **3:** Basic closed-ended questions, lacks empathy
-- **5:** Clear, calm, empathetic; gathers info and reassures effectively
-- **7:** Builds rapport with patient and staff, uses structured SBAR with hospital, explains rationale to partner
-
----
-
-### Learning Objectives
-1. Identify and manage altered mental status due to hypoglycemia
-2. Apply BLS PCS and ALS PCS guidelines for AMS and glucose administration
-3. Demonstrate complete assessment and team communication in a public environment
-
----
-
-### Vocational Learning Outcomes (VLOs)
-1. Provide appropriate primary and secondary assessments to formulate care plans (VLO 2)
-2. Perform PCP-level symptom relief interventions and monitor outcomes (VLO 4)
-3. Communicate effectively with patients, families, and allied personnel (VLO 6)
-
----
-
-### Self-Reflective Prompts
-1. What clues helped you determine the cause of Henry’s altered behavior?
-2. Did you prioritize a BGL check appropriately? If not, what slowed you down?
-3. How did you use the environment and bystanders to your advantage?
-4. What would you do differently if this same case occurred at 3 AM in a dark alley?
 
 {
   "title": "Altered Behaviour in a Remote Campground",
@@ -1080,34 +903,35 @@ When it comes to altered LOC, don’t default to “psych” or intox. Hypoglyce
   "allergies": "None known",
   "pastMedicalHistory": "Anxiety disorder, no seizures or previous behavioral events",
   "physicalExam": {
-    "general": "Flushed, agitated, laughing randomly, pupils 6mm bilaterally",
-    "headAndNeck": "No signs of trauma, responds inconsistently to voice",
-    "chest": "Clear bilaterally, no retractions or abnormal sounds",
-    "abdomen": "Soft, non-tender",
-    "extremities": "No swelling, tremors present, occasional muscle twitching"
+  "general": "Flushed, agitated, laughing randomly, pupils 6mm bilaterally 💡 Large pupils and erratic behavior? Think stimulant or hallucinogen — and scene safety comes first.",
+  "headAndNeck": "No signs of trauma, responds inconsistently to voice 💡 Always rule out trauma — don’t anchor on tox alone in altered patients.",
+  "chest": "Clear bilaterally, no retractions or abnormal sounds 💡 Just because lungs sound clear doesn’t mean they’re oxygenating well — monitor trends.",
+  "abdomen": "Soft, non-tender",
+  "extremities": "No swelling, tremors present, occasional muscle twitching 💡 Twitching may hint at stimulant or serotonergic effects — track for worsening signs."
+},
+"vitalSigns": {
+  "firstSet": {
+    "HR": 112,
+    "RR": 22,
+    "BP": "134/82",
+    "SpO2": "98% on room air",
+    "ETCO2": "37 mmHg",
+    "Temp": "37.8°C",
+    "GCS": "13 (E4 V4 M5)",
+    "BGL": "6.9 mmol/L 💡 Normal sugar — one cause of altered LOC ruled out. Keep checking others."
   },
-  "vitalSigns": {
-    "firstSet": {
-      "HR": 112,
-      "RR": 22,
-      "BP": "134/82",
-      "SpO2": "98% on room air",
-      "ETCO2": "37 mmHg",
-      "Temp": "37.8°C",
-      "GCS": 13 (E4 V4 M5),
-      "BGL": "6.9 mmol/L"
-    },
-    "secondSet": {
-      "HR": 116,
-      "RR": 24,
-      "BP": "130/80",
-      "SpO2": "97% on room air",
-      "ETCO2": "39 mmHg",
-      "Temp": "38.1°C",
-      "GCS": 12 (E3 V4 M5),
-      "BGL": "6.7 mmol/L"
-    }
-  },
+  "secondSet": {
+    "HR": 116,
+    "RR": 24,
+    "BP": "130/80",
+    "SpO2": "97% on room air",
+    "ETCO2": "39 mmHg 💡 Normal ETCO₂ now, but watch for sudden spikes or drops — they can flag deterioration early.",
+    "Temp": "38.1°C",
+    "GCS": "12 (E3 V4 M5)",
+    "BGL": "6.7 mmol/L"
+  }
+}
+,
   "caseProgression": {
     "withProperTreatment": "Patient remains agitated but does not become violent. Vitals stay stable, and extrication proceeds safely. Ongoing monitoring and calm reassurance help keep the situation controlled. Good patient positioning and scene safety are maintained. ALS never arrives, and the crew must manage prolonged care on their own.",
     "withoutProperTreatment": "Without grounding communication and scene control, the patient may wander into the woods or become aggressive. If not monitored, she may seize or collapse. Partner becomes increasingly distressed and interferes with care. Vitals worsen with increasing HR and RR, and confusion deepens into unresponsiveness."
