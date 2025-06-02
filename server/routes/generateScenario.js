@@ -278,6 +278,8 @@ Generate a detailed paramedic scenario using the following fields. ALL of these 
   - A short paragraph that explains **why the final working diagnosis is most likely**, tying it to findings, vitals, and patient history.
 - Tone: instructive, medically accurate, and friendly—as if guiding a senior paramedic student toward better pattern recognition.
 - Do not repeat information verbatim from other sections; instead, **connect the dots**.
+- IMPORTANT: Ensure the final JSON includes *all* of the following top-level fields: 
+  title, callInformation, patientDemographics, patientPresentation, opqrst, sample, physicalExam, vitalSigns, caseProgression, expectedTreatment, protocolNotes, learningObjectives, vocationalLearningOutcomes, selfReflectiveQuestions, grsAnchors, teachersPoints, scenarioRationale, clinicalReasoning.
 
 - caseProgression (withProperTreatment and withoutProperTreatment)
 - expectedTreatment
