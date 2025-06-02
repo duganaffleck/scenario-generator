@@ -32,7 +32,7 @@ const requiredScenarioFields = [
   "title", "callInformation", "patientDemographics", "patientPresentation",
   "incidentNarrative", "opqrst", "sampleHistory", "medications",
   "allergies", "pastMedicalHistory", "physicalExam", "vitalSigns",
-  "caseProgression", "expectedTreatment", "pathophysiology", "differential diagnosis", "grsAnchors",
+  "caseProgression", "expectedTreatment", "clinicalReasoning", "grsAnchors",
   "vocationalLearningOutcomes", "modifiersUsed", "selfReflectionPrompts", "teachersPoints"
 ];
 
@@ -269,7 +269,16 @@ Generate a detailed paramedic scenario using the following fields. ALL of these 
 - pastMedicalHistory
 - physicalExam
 - vitalSigns (firstSet, secondSet)
-- simulationSetup
+- Create a section titled **Integrated Clinical Reasoning**. This should synthesize the overall case, offering:
+  - A clear, concise **summary of the underlying pathophysiology** based on the scenario.
+  - A **differential diagnosis table**, showing 2–4 possible conditions, with columns for:
+    - Condition name
+    - Supporting features
+    - Ruling-out features
+  - A short paragraph that explains **why the final working diagnosis is most likely**, tying it to findings, vitals, and patient history.
+- Tone: instructive, medically accurate, and friendly—as if guiding a senior paramedic student toward better pattern recognition.
+- Do not repeat information verbatim from other sections; instead, **connect the dots**.
+
 - caseProgression (withProperTreatment and withoutProperTreatment)
 - expectedTreatment
 - teachersPoints (one-paragraph instructor message to student)

@@ -15,7 +15,7 @@ const SECTION_GROUPS = {
   "Scene Info": ["title", "callInformation", "incidentNarrative"],
   "Patient Info": ["patientDemographics", "patientPresentation", "opqrst", "sample"],
   "Assessment": ["physicalExam", "vitalSigns"],
-  "Clinical Reasoning": ["caseProgression", "differentialDiagnosis", "expectedTreatment", "protocolNotes", "scenarioRationale"],
+  "Clinical Reasoning": ["caseProgression", "differentialDiagnosis", "expectedTreatment", "protocolNotes", "scenarioRationale", "clinicalReasoning"],
   "Education": ["learningObjectives", "vocationalLearningOutcomes", "selfReflectiveQuestions", "grsAnchors"]
 };
 
@@ -28,6 +28,7 @@ const TITLE_MAP = {
   sample: "SAMPLE",
   pathophysiology: "Pathophysiology",
   differentialDiagnosis: "Differential Diagnosis",
+  clinicalReasoning: "Integrated Clinical Reasoning",
   grsAnchors: "GRS Anchors",
   selfReflectiveQuestions: "Self-Reflective Questions",
   opqrst: "OPQRST",
