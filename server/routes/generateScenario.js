@@ -39,16 +39,18 @@ const requiredScenarioFields = [
 router.post('/', async (req, res) => {
   res.header('Access-Control-Allow-Origin', '*');
 
-  const {
-    semester,
-    type,
-    environment,
-    complexity,
-    focus,
-    includeComplications = true,
-    includeBystanders = true,
-    modifierCategories = {}
-  } = req.body;
+const {
+  semester,
+  type,
+  environment,
+  complexity,
+  focus,
+  includeComplications = true,
+  includeBystanders = true,
+  includeTeachingCues = true,
+  modifierCategories = {}
+} = req.body;
+
 
   try {
     const profilePath = path.join(__dirname, '../data/scenario-instructor-profile.txt');
@@ -150,13 +152,18 @@ Include a "teachersPoints" field: a one-paragraph tip, warning, or lesson from t
     }
 let teachingCueInstruction = "";
 
-if (semester === "2") {
-  teachingCueInstruction = `- Embed mandatory 4–6 short, instructional cues across 'patientPresentation', 'caseProgression', and 'expectedTreatment'. Always include "💡". Examples: "(💡 Pause and take in the scene)" or "(💡 This is where students often hesitate.)"`;
-} else if (semester === "3") {
-  teachingCueInstruction = `- Include mandatory 2–3 short instructional cues across the scenario. These should feel like a mentor's voice guiding reasoning, without over-explaining.`;
-} else if (semester === "4") {
-  teachingCueInstruction = `- Limit instructional cues to 0–1 across the scenario. Only include them when absolutely critical for understanding.`;
+if (includeTeachingCues) {
+  if (semester === "2") {
+    teachingCueInstruction = `- Embed 5–6 short, instructional cues across 'patientPresentation', 'caseProgression', and 'expectedTreatment'. Each must include a 💡 emoji. Examples: "(💡 Pause and take in the scene)" or "(💡 This is where students often hesitate.)"`;
+  } else if (semester === "3") {
+    teachingCueInstruction = `- Include 3–4 instructional cues that feel like a mentor's internal voice. Use 💡 to indicate them. Encourage reflection without over-explaining.`;
+  } else if (semester === "4") {
+    teachingCueInstruction = `- Include 1–2 instructional cue using 💡 — only if it adds deep value or prevents a common clinical error.`;
+  }
+} else {
+  teachingCueInstruction = `- Do not include any instructional cues or 💡 teaching prompts in the scenario.`;
 }
+
 
 let typeInstruction = "";
 

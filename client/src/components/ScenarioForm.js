@@ -39,7 +39,6 @@ const TITLE_MAP = {
   protocolNotes: "Protocol Notes",
   vocationalLearningOutcomes: "Vocational Learning Outcomes (VLOs)",
   learningObjectives: "Learning Objectives",
-  clinicalReasoning: "Integrated Clinical Reasoning",
   teachersPoints: "Teacher's Points",
   scenarioRationale: "Scenario Rationale & Teaching Tips"
 };
@@ -50,7 +49,8 @@ const ScenarioForm = () => {
     type: "Medical",
     environment: "Urban",
     complexity: "Moderate",
-    focus: "Assessment"
+    focus: "Assessment",
+    includeTeachingCues: true
   });
 
   const [scenario, setScenario] = useState(null);
@@ -74,7 +74,6 @@ const ScenarioForm = () => {
     document.head.appendChild(spinnerStyle);
     return () => document.head.removeChild(spinnerStyle);
   }, []);
-
   const handleChange = (e) => {
     const { name, type, checked, value } = e.target;
     setFormData((prev) => ({
@@ -135,7 +134,7 @@ const ScenarioForm = () => {
   const exportToPDF = () => {
     const doc = new jsPDF();
     doc.setFontSize(12);
-    doc.text(`Scenario: ${scenario.title}`, 10, 10);
+    doc.text(`Scenario: ${scenario.title || "Untitled"}`, 10, 10);
     let y = 20;
 
     Object.entries(scenario).forEach(([key, value]) => {
@@ -194,13 +193,38 @@ const ScenarioForm = () => {
     return <span>{String(data)}</span>;
   };
 
-  const renderSection = (title, content) => (
-    <div style={styles(darkMode, fontSizeLarge).card}>
-      <h3 style={styles(darkMode, fontSizeLarge).cardTitle}>{TITLE_MAP[title] || title}</h3>
-      {renderContent(content)}
-    </div>
-  );
+  const renderSection = (title, content) => {
+    const isTeachingCue = typeof content === "string" && content.includes("💡");
+    const isProtocolNote = title === "protocolNotes";
+    const isTeachersPoints = title === "teachersPoints"; // Already handled elsewhere
 
+    const highlightStyle = isTeachingCue
+      ? {
+          backgroundColor: "#e0f2fe",
+          borderLeft: "5px solid #0284c7",
+          padding: "1rem",
+          borderRadius: "8px",
+          marginBottom: "1rem",
+        }
+      : isProtocolNote
+      ? {
+          backgroundColor: "#dcfce7",
+          borderLeft: "5px solid #16a34a",
+          padding: "1rem",
+          borderRadius: "8px",
+          marginBottom: "1rem",
+        }
+      : {};
+
+    return (
+      <div style={{ ...styles(darkMode, fontSizeLarge).card, ...highlightStyle }}>
+        <h3 style={styles(darkMode, fontSizeLarge).cardTitle}>
+          {TITLE_MAP[title] || formatLabel(title)}
+        </h3>
+        {renderContent(content)}
+      </div>
+    );
+  };
   return (
     <div style={styles(darkMode, fontSizeLarge).container}>
       <div style={styles(darkMode, fontSizeLarge).headerBar}>
@@ -244,41 +268,53 @@ const ScenarioForm = () => {
             </select>
           </div>
         ))}
-      </div>
-
-      {error && <p style={styles(darkMode, fontSizeLarge).error}>{error}</p>}
-      {loading && <p style={styles(darkMode, fontSizeLarge).loading}><FaSpinner className="spin" /> Generating Scenario...</p>}
-
-      {scenario && (
-        <div style={styles(darkMode, fontSizeLarge).outputBox}>
-          {Object.entries(SECTION_GROUPS).map(([groupName, keys]) => (
-            <div key={groupName}>
-              <h2 style={styles(darkMode, fontSizeLarge).sectionHeading} onClick={() => toggleSection(groupName)}>
-                {collapsedSections[groupName] ? "▶️" : "🔽"} {groupName}
-              </h2>
-
-              {groupName === "Education" && scenario.teachersPoints && (
-                <div style={{
-                  backgroundColor: darkMode ? "#facc15" : "#fef9c3",
-                  color: "#1e293b",
-                  padding: "1rem",
-                  borderRadius: "12px",
-                  border: "1px solid #eab308",
-                  marginBottom: "1rem"
-                }}>
-                  <h3 style={{ marginBottom: "0.5rem", fontSize: fontSizeLarge ? "1.2rem" : "1rem" }}>🧠 Teacher's Points</h3>
-                  <p style={{ fontStyle: "italic" }}>{scenario.teachersPoints}</p>
-                </div>
-              )}
-
-              {!collapsedSections[groupName] &&
-                keys
-                  .filter((key) => key !== "teachersPoints")
-                  .map((key) => scenario[key] && renderSection(key, scenario[key]))}
-            </div>
-          ))}
+        <div style={styles(darkMode, fontSizeLarge).fieldRow}>
+          <label>
+            <input
+              type="checkbox"
+              name="includeTeachingCues"
+              checked={formData.includeTeachingCues}
+              onChange={handleChange}
+              style={{ marginRight: "0.5rem" }}
+            />
+            Include 💡 Teaching Cues
+          </label>
         </div>
-      )}
+
+        {error && <p style={styles(darkMode, fontSizeLarge).error}>{error}</p>}
+        {loading && <p style={styles(darkMode, fontSizeLarge).loading}><FaSpinner className="spin" /> Generating Scenario...</p>}
+
+        {scenario && (
+          <div style={styles(darkMode, fontSizeLarge).outputBox}>
+            {Object.entries(SECTION_GROUPS).map(([groupName, keys]) => (
+              <div key={groupName}>
+                <h2 style={styles(darkMode, fontSizeLarge).sectionHeading} onClick={() => toggleSection(groupName)}>
+                  {collapsedSections[groupName] ? "▶️" : "🔽"} {groupName}
+                </h2>
+
+                {groupName === "Education" && scenario.teachersPoints && (
+                  <div style={{
+                    backgroundColor: darkMode ? "#facc15" : "#fef9c3",
+                    color: "#1e293b",
+                    padding: "1rem",
+                    borderRadius: "12px",
+                    border: "1px solid #eab308",
+                    marginBottom: "1rem"
+                  }}>
+                    <h3 style={{ marginBottom: "0.5rem", fontSize: fontSizeLarge ? "1.2rem" : "1rem" }}>🧠 Teacher's Points</h3>
+                    <p style={{ fontStyle: "italic" }}>{scenario.teachersPoints}</p>
+                  </div>
+                )}
+
+                {!collapsedSections[groupName] &&
+                  keys
+                    .filter((key) => key !== "teachersPoints")
+                    .map((key) => scenario[key] && renderSection(key, scenario[key]))}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 };
@@ -293,6 +329,7 @@ const styles = (darkMode, fontSizeLarge) => ({
     minHeight: "100vh",
     lineHeight: "1.5"
   },
+
   headerBar: {
     position: "sticky",
     top: 0,
