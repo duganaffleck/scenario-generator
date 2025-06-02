@@ -196,7 +196,7 @@ const ScenarioForm = () => {
   const renderSection = (title, content) => {
     const isTeachingCue = typeof content === "string" && content.includes("💡");
     const isProtocolNote = title === "protocolNotes";
-    const isTeachersPoints = title === "teachersPoints"; // Already handled elsewhere
+    
 
     const highlightStyle = isTeachingCue
       ? {
@@ -284,6 +284,8 @@ const ScenarioForm = () => {
         {error && <p style={styles(darkMode, fontSizeLarge).error}>{error}</p>}
         {loading && <p style={styles(darkMode, fontSizeLarge).loading}><FaSpinner className="spin" /> Generating Scenario...</p>}
 
+    
+      </div>
         {scenario && (
           <div style={styles(darkMode, fontSizeLarge).outputBox}>
             {Object.entries(SECTION_GROUPS).map(([groupName, keys]) => (
@@ -314,7 +316,6 @@ const ScenarioForm = () => {
             ))}
           </div>
         )}
-      </div>
     </div>
   );
 };
