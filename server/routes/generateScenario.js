@@ -269,13 +269,14 @@ Generate a detailed paramedic scenario using the following fields. ALL of these 
 - pastMedicalHistory
 - physicalExam
 - vitalSigns (firstSet, secondSet)
-- Create a section titled **Integrated Clinical Reasoning**. This should synthesize the overall case, offering:
-  - A clear, concise **summary of the underlying pathophysiology** based on the scenario.
-  - A **differential diagnosis table**, showing 2–4 possible conditions, with columns for:
-    - Condition name
-    - Supporting features
-    - Ruling-out features
-  - A short paragraph that explains **why the final working diagnosis is most likely**, tying it to findings, vitals, and patient history.
+- Include a field called "clinicalReasoning" with three parts:
+  - "summary": A concise summary of the underlying pathophysiology.
+  - "differentialDiagnosis": A list of 2–4 objects, each with:
+    - "condition": The name of the condition.
+    - "supportingFeatures": Why this condition might be present.
+    - "rulingOutFeatures": Why this condition may be less likely.
+  - "conclusion": A short paragraph explaining why the working diagnosis is the most likely based on findings.
+
 - Tone: instructive, medically accurate, and friendly—as if guiding a senior paramedic student toward better pattern recognition.
 - Do not repeat information verbatim from other sections; instead, **connect the dots**.
 - IMPORTANT: Ensure the final JSON includes *all* of the following top-level fields: 
@@ -331,7 +332,7 @@ Today's date is ${today}.
     const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
     const completion = await openai.chat.completions.create({
-      model: 'gpt-4-1106-preview',
+      model: 'gpt-4o',
       temperature: 1.0,
       max_tokens: 4096,
       messages: [
