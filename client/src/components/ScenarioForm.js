@@ -39,6 +39,7 @@ const TITLE_MAP = {
   protocolNotes: "Protocol Notes",
   vocationalLearningOutcomes: "Vocational Learning Outcomes (VLOs)",
   learningObjectives: "Learning Objectives",
+  clinicalReasoning: "Integrated Clinical Reasoning",
   teachersPoints: "Teacher's Points",
   scenarioRationale: "Scenario Rationale & Teaching Tips"
 };
