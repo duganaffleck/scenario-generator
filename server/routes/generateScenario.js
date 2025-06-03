@@ -45,6 +45,7 @@ const {
   environment,
   complexity,
   focus,
+  uniqueness = "Common",
   includeComplications = true,
   includeBystanders = true,
   includeTeachingCues = true,
@@ -123,7 +124,7 @@ Include a "teachersPoints" field: a one-paragraph tip, warning, or lesson from t
       semesterInstructions = `
 - This scenario is for a **Semester 2** PCP student. Do NOT include any ALS **medications**. Other ALS directives (e.g., oxygen, SMR) may apply if appropriate.
 - Do NOT include pregnancy, neonate, or pediatric calls.
-- Do NOT include 12 leads, buy limb lead rhythm interpretation need including.  Blood glucose determinatin is included.
+- Do NOT include 12 leads, buy limb lead rhythm interpretation need including.  Blood glucose determination is included.
 - Tone should be highly instructional and supportive — like a senior paramedic mentoring a beginner.
 - Add embedded learning cues in 'patientPresentation', 'caseProgression', and 'expectedTreatment' (e.g., "Notice the flushed face — what might that mean?").
 - Keep clinical complexity low: 1–2 main issues maximum. Avoid ethical dilemmas, polypharmacy, or advanced reasoning traps.
@@ -295,6 +296,32 @@ switch (focus) {
   default:
     focusInstruction = "";
 }
+let uniquenessInstruction = "";
+
+switch (uniqueness) {
+  case "Varied":
+    uniquenessInstruction = `
+- Include moderately unique or underrepresented calls (e.g., CO exposure, lithium toxicity, ovarian torsion, adrenal crisis, serotonin syndrome).
+- These cases should still be realistic, solvable with PCP-level thinking, and teachable.
+- Emphasize clinical curiosity and differential diagnosis.
+`.trim();
+    break;
+  case "Rare/Obscure":
+    uniquenessInstruction = `
+- Prioritize rare, bizarre, or complex cases that test second-order thinking.
+- Examples: pheochromocytoma, heat stroke in cosplay armor, pesticide poisoning, water intoxication, pacemaker malfunction, rabies exposure.
+- These must still remain *teachable* and rooted in real paramedic decision-making — not pure medical trivia.
+- Challenge assumptions and emphasize synthesis over pattern matching.
+`.trim();
+    break;
+  case "Common":
+  default:
+    uniquenessInstruction = `
+- Stick to common paramedic calls (e.g., chest pain, asthma, overdose, trauma).
+- Avoid exotic diagnoses unless explicitly required by complexity or modifiers.
+`.trim();
+}
+
 const sampleInstruction = `
 - SAMPLE should be its own top-level field called "sample", not nested inside any other field.
 - Format it as six labeled bullet points: 
@@ -317,7 +344,7 @@ Generate a detailed paramedic scenario using the following fields. ALL of these 
 - patientPresentation
 - incidentNarrative
 - opqrst
-- sampleHistory
+- sample
 - medications
 - allergies
 - pastMedicalHistory
@@ -374,7 +401,7 @@ Match the following scenario parameters:
 - Environment: ${environmentInstruction}
 - Complexity: ${complexityInstruction}
 - Learning Focus: ${focusInstruction}
-
+- Uniqueness: ${uniqueness}
 
 
 ${complicationsInstruction}
@@ -382,6 +409,7 @@ ${sampleInstruction}
 ${bystanderInstruction}
 ${teachingCueInstruction}
 ${typeInstruction}
+${uniquenessInstruction}
 Today's date is ${today}.
 `.trim();
 

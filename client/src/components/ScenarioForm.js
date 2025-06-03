@@ -11,6 +11,7 @@ const ENVIRONMENTS = ["Urban", "Rural", "Wilderness", "Industrial", "Home", "Pub
 const COMPLEXITIES = ["Simple", "Moderate", "Complex"];
 const LEARNING_FOCI = ["Balanced", "Assessment", "Decision Making", "Pathophysiology", "Communication", "Procedures"];
 
+
 const SECTION_GROUPS = {
   "Scene Info": ["title", "callInformation", "incidentNarrative"],
   "Patient Info": ["patientDemographics", "patientPresentation", "opqrst", "sample"],
@@ -50,6 +51,7 @@ const ScenarioForm = () => {
     environment: "Urban",
     complexity: "Moderate",
     focus: "Assessment",
+    uniqueness: "Common", 
     includeTeachingCues: true
   });
 
@@ -280,6 +282,22 @@ const ScenarioForm = () => {
             Include 💡 Teaching Cues
           </label>
         </div>
+<div style={styles(darkMode, fontSizeLarge).fieldRow}>
+  <label>Uniqueness Level:</label>
+  <select
+    name="uniqueness"
+    value={formData.uniqueness}
+    onChange={handleChange}
+    style={styles(darkMode, fontSizeLarge).select}
+  >
+    <option value="Common">Common</option>
+    <option value="Varied">Varied</option>
+    <option value="Rare/Obscure">Rare/Obscure</option>
+  </select>
+  <p style={{ fontSize: "0.8rem", fontStyle: "italic", color: darkMode ? "#cbd5e1" : "#475569", marginTop: "0.25rem" }}>
+    Select how rare, unique, or creative the case should be.
+  </p>
+</div>
 
         {error && <p style={styles(darkMode, fontSizeLarge).error}>{error}</p>}
         {loading && <p style={styles(darkMode, fontSizeLarge).loading}><FaSpinner className="spin" /> Generating Scenario...</p>}
