@@ -30,7 +30,7 @@ function getSelectedModifiers(modifiersObj, selectedCategories, countPerCategory
 
 const requiredScenarioFields = [
   "title", "callInformation", "patientDemographics", "patientPresentation",
-  "incidentNarrative", "opqrst", "sampleHistory", "medications",
+  "incidentNarrative", "opqrst", "sample", "medications",
   "allergies", "pastMedicalHistory", "physicalExam", "vitalSigns",
   "caseProgression", "expectedTreatment", "clinicalReasoning", "grsAnchors",
   "vocationalLearningOutcomes", "modifiersUsed", "selfReflectionPrompts", "teachersPoints"
@@ -341,8 +341,19 @@ Match the following scenario parameters:
 - Complexity: ${complexityInstruction}
 - Learning Focus: ${focusInstruction}
 
+const sampleInstruction = `
+- SAMPLE should be its own top-level field called "sample", not nested inside any other field.
+- Format it as six labeled bullet points: 
+  - Signs & Symptoms
+  - Allergies
+  - Medications
+  - Past Medical History
+  - Last Oral Intake
+  - Events Leading Up
+`;
 
 ${complicationsInstruction}
+${sampleInstruction}
 ${bystanderInstruction}
 ${teachingCueInstruction}
 ${typeInstruction}
