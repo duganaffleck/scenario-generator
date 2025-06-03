@@ -294,9 +294,7 @@ const ScenarioForm = () => {
     <option value="Varied">Varied</option>
     <option value="Rare/Obscure">Rare/Obscure</option>
   </select>
-  <p style={{ fontSize: "0.8rem", fontStyle: "italic", color: darkMode ? "#cbd5e1" : "#475569", marginTop: "0.25rem" }}>
-    Select how rare, unique, or creative the case should be.
-  </p>
+ 
 </div>
 
         {error && <p style={styles(darkMode, fontSizeLarge).error}>{error}</p>}
