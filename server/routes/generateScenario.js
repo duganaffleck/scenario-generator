@@ -271,6 +271,16 @@ switch (focus) {
   default:
     focusInstruction = "";
 }
+const sampleInstruction = `
+- SAMPLE should be its own top-level field called "sample", not nested inside any other field.
+- Format it as six labeled bullet points: 
+  - Signs & Symptoms
+  - Allergies
+  - Medications
+  - Past Medical History
+  - Last Oral Intake
+  - Events Leading Up
+`.trim();
 
     const generationPrompt = `
     
@@ -341,16 +351,7 @@ Match the following scenario parameters:
 - Complexity: ${complexityInstruction}
 - Learning Focus: ${focusInstruction}
 
-const sampleInstruction = `
-- SAMPLE should be its own top-level field called "sample", not nested inside any other field.
-- Format it as six labeled bullet points: 
-  - Signs & Symptoms
-  - Allergies
-  - Medications
-  - Past Medical History
-  - Last Oral Intake
-  - Events Leading Up
-`;
+
 
 ${complicationsInstruction}
 ${sampleInstruction}
