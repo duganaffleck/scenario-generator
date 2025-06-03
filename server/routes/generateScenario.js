@@ -152,16 +152,40 @@ Include a "teachersPoints" field: a one-paragraph tip, warning, or lesson from t
     }
 let teachingCueInstruction = "";
 
+const cueFormatReminder = `
+- All teaching cues must:
+  - Begin with a 💡 emoji
+  - Be wrapped in brackets
+  - Be italicized using asterisks (*like this*)
+  - Appear as short reflections from a senior paramedic
+  - Example format: *(💡 This is where students often hesitate.)*
+`.trim();
+
 if (includeTeachingCues) {
   if (semester === "2") {
-    teachingCueInstruction = `- Embed 5–6 short, instructional cues across 'patientPresentation', 'caseProgression', and 'expectedTreatment'. Each must include a 💡 emoji. Examples: "(💡 Pause and take in the scene)" or "(💡 This is where students often hesitate.)"`;
+    teachingCueInstruction = `
+- Embed 5–6 short, instructional cues across 'patientPresentation', 'caseProgression', and 'expectedTreatment'.
+- Each cue must follow this format: *(💡 This is where students often hesitate.)*
+- Keep cues brief, instructional, and styled as a mentor’s inner voice.
+${cueFormatReminder}
+`.trim();
   } else if (semester === "3") {
-    teachingCueInstruction = `- Include 3–4 instructional cues that feel like a mentor's internal voice. Use 💡 to indicate them. Encourage reflection without over-explaining.`;
+    teachingCueInstruction = `
+- Include 3–4 instructional cues that feel like a mentor's internal voice.
+- Use the format *(💡 Cue text...)* and focus on reflective guidance, not over-explaining.
+${cueFormatReminder}
+`.trim();
   } else if (semester === "4") {
-    teachingCueInstruction = `- Include 1–2 instructional cue using 💡 — only if it adds deep value or prevents a common clinical error.`;
+    teachingCueInstruction = `
+- Include 1–2 high-impact cues only if they prevent a common clinical error.
+- They must use this format: *(💡 Cue text...)* and reflect expert judgment or clinical warning.
+${cueFormatReminder}
+`.trim();
   }
 } else {
-  teachingCueInstruction = `- Do not include any instructional cues or 💡 teaching prompts in the scenario.`;
+  teachingCueInstruction = `
+- Do not include any instructional cues or 💡 teaching prompts in the scenario.
+`.trim();
 }
 
 let physicalAndVitalCueInstruction = "";
