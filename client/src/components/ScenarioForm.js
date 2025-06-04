@@ -259,11 +259,22 @@ const renderContent = (data) => {
   if (typeof data === "object" && data !== null) {
     return (
       <ul style={{ paddingLeft: "1rem", marginTop: "0.5rem" }}>
-        {Object.entries(data).map(([key, value], index) => (
-          <li key={index}>
-            <strong>{formatLabel(key)}:</strong> {renderContent(value)}
-          </li>
-        ))}
+       {Object.entries(data).map(([key, value], index) => {
+  if (key === "ecgInterpretation") {
+    return (
+      <li key={index} style={{ marginTop: "0.5rem", padding: "0.5rem", background: "#fef9c3", borderLeft: "4px solid #facc15", borderRadius: "6px" }}>
+        <strong>📈 ECG Interpretation:</strong> {renderContent(value)}
+      </li>
+    );
+  }
+
+  return (
+    <li key={index}>
+      <strong>{formatLabel(key)}:</strong> {renderContent(value)}
+    </li>
+  );
+})}
+
       </ul>
     );
   }
