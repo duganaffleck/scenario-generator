@@ -190,7 +190,7 @@ ${cueFormatReminder}
 }
 
 let physicalAndVitalCueInstruction = "";
-- Include a 💡 cue in 'vitalSigns' such as *(💡 Look closely at the rhythm — is it too regular?)* to encourage ECG analysis.
+
 if (includeTeachingCues) {
   if (semester === "2") {
     physicalAndVitalCueInstruction = `- In addition to cues in patientPresentation and caseProgression, embed 1–2 short 💡 cues in 'physicalExam' and 'vitalSigns'. Focus on helping students recognize subtle clues (e.g., skin signs, chest rise, abnormal vitals) and encouraging re-checks or reassessment.`;
