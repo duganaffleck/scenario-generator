@@ -118,21 +118,21 @@ ${alsStandards}
 Include a "teachersPoints" field: a one-paragraph tip, warning, or lesson from the instructor to the student. This should be voiced like a senior paramedic speaking to a junior. Keep it educational, witty, or stern — never vague.
 `.trim();
 
-    let semesterInstructions = "";
+let semesterInstructions = "";
 
-    if (semester === "2") {
-      semesterInstructions = `
+if (semester === "2") {
+  semesterInstructions = `
 - This scenario is for a **Semester 2** PCP student. Do NOT include any ALS **medications**. Other ALS directives (e.g., oxygen, SMR) may apply if appropriate.
 - Do NOT include pregnancy, neonate, or pediatric calls.
-- Do NOT include 12 leads, buy limb lead rhythm interpretation need including.  Blood glucose determination is included.
+- Do NOT include 12-leads, but limb lead rhythm interpretation is included. Blood glucose determination is included.
 - Tone should be highly instructional and supportive — like a senior paramedic mentoring a beginner.
 - Add embedded learning cues in 'patientPresentation', 'caseProgression', and 'expectedTreatment' (e.g., "Notice the flushed face — what might that mean?").
 - Keep clinical complexity low: 1–2 main issues maximum. Avoid ethical dilemmas, polypharmacy, or advanced reasoning traps.
 - GRS anchors should reflect beginner expectations. A score of 5 = safe and functional, not polished.
 - Use direct teaching phrases like "This is where students often hesitate" or "Pause and consider why this matters."
-`;
-    } else if (semester === "3") {
-      semesterInstructions = `
+  `.trim();
+} else if (semester === "3") {
+  semesterInstructions = `
 - This scenario is for a **Semester 3** PCP student. Full ALS **medication scope** applies (as per PCP level).
 - Pregnancy and delivery calls can now be included.
 - Tone should be balanced — professional yet still educational.
@@ -140,18 +140,17 @@ Include a "teachersPoints" field: a one-paragraph tip, warning, or lesson from t
 - Moderate complexity: symptoms can evolve, and delayed treatment should worsen condition.
 - Include 1–2 subtle red herrings or decision-making pivots.
 - GRS anchors should reflect growing autonomy. A score of 5 = mostly independent and clinically sound.
-`;
-    } else if (semester === "4") {
-      semesterInstructions = `
+  `.trim();
+} else if (semester === "4") {
+  semesterInstructions = `
 - This scenario is for a **Semester 4** PCP student. Full ALS scope applies.
 - Any call type is appropriate: pediatric, neonate, mental health, etc.
 - Tone should be professional and realistic — minimize overt teaching cues unless critical.
 - High complexity is expected: layered symptoms, time pressures, possible ethical dilemmas, or competing priorities.
 - Expect the student to integrate history, vitals, and presentation without external help.
 - GRS anchors should reflect readiness for independent practice. A score of 5 = graduation-level confidence and capability.
-`;
-    }
-let teachingCueInstruction = "";
+  `.trim();
+}
 
 const cueFormatReminder = `
 - All teaching cues must:
@@ -160,34 +159,58 @@ const cueFormatReminder = `
   - Be italicized using asterisks (*like this*)
   - Appear as short reflections from a senior paramedic
   - Example format: *(💡 This is where students often hesitate.)*
-`.trim();
+  `.trim();
+
+let teachingCueInstruction = "";
 
 if (includeTeachingCues) {
   if (semester === "2") {
     teachingCueInstruction = `
-- Embed 5–6 short, instructional cues across 'patientPresentation', 'caseProgression', and 'expectedTreatment'.
-- Each cue must follow this format: *(💡 This is where students often hesitate.)*
-- Keep cues brief, instructional, and styled as a mentor’s inner voice.
+- Embed 💡 teaching cues anywhere in the scenario where they provide instructional value.
+- For Semester 2, focus cues on:
+  • Basic scene management
+  • Foundational assessment
+  • SAMPLE/OPQRST gathering
+  • Common errors (e.g., missed vitals, forgetting positioning)
+- Do not include ALS interventions or drug-specific cues.
+- Examples: *(💡 This is a great time to ask about onset.)*, *(💡 Students often forget to reassess airway here.)*
+
 ${cueFormatReminder}
-`.trim();
+    `.trim();
   } else if (semester === "3") {
     teachingCueInstruction = `
-- Include 3–4 instructional cues that feel like a mentor's internal voice.
-- Use the format *(💡 Cue text...)* and focus on reflective guidance, not over-explaining.
+- Embed 💡 teaching cues anywhere in the scenario where they provide genuine instructional value.
+- For Semester 3, guide students toward:
+  • Solidifying assessment-to-decision pathways
+  • Using basic ALS directives (ASA, Nitro, Glucagon, etc.)
+  • Noticing early red flags and forming differentials
+  • Understanding when BLS actions matter most
+- Teaching cues can appear in: vital signs, ECGs, progression, SAMPLE, reasoning, or treatment plans.
+- Examples: *(💡 Would Nitro be appropriate yet — or do we need more info?)*, *(💡 This SpO₂ is borderline — what’s your next step?)*
+
 ${cueFormatReminder}
-`.trim();
+    `.trim();
   } else if (semester === "4") {
     teachingCueInstruction = `
-- Include 1–2 high-impact cues only if they prevent a common clinical error.
-- They must use this format: *(💡 Cue text...)* and reflect expert judgment or clinical warning.
+- Embed 💡 teaching cues anywhere in the scenario where they provide high-level learning opportunities.
+- For Semester 4, challenge students with:
+  • Advanced reasoning and second-order thinking
+  • Managing uncertainty and incomplete data
+  • Justifying treatment plans or refusals
+  • Recognizing subtle physical or ECG cues
+- Encourage instructor-style thought prompts:
+  *(💡 Look again — is there anything about the rhythm that feels off?)*
+  *(💡 This progression isn't linear — what changed the trajectory?)*
+
 ${cueFormatReminder}
-`.trim();
+    `.trim();
   }
 } else {
   teachingCueInstruction = `
 - Do not include any instructional cues or 💡 teaching prompts in the scenario.
-`.trim();
+  `.trim();
 }
+
 
 let physicalAndVitalCueInstruction = "";
 
