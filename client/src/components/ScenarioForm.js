@@ -3,7 +3,9 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import jsPDF from "jspdf";
-import { FaSpinner, FaMoon, FaSun, FaFilePdf } from "react-icons/fa";
+import { FaSpinner, FaMoon, FaSun, FaFilePdf, FaLightbulb} from "react-icons/fa";
+
+
 
 const SCENARIO_TYPES = ["Medical", "Trauma", "Cardiac", "Respiratory", "Environmental", "Other"];
 const SEMESTERS = ["2", "3", "4"];
@@ -61,6 +63,10 @@ const ScenarioForm = () => {
   const [darkMode, setDarkMode] = useState(false);
   const [collapsedSections, setCollapsedSections] = useState({});
   const [fontSizeLarge, setFontSizeLarge] = useState(false);
+  const [selectedCue, setSelectedCue] = useState(null);
+let cueIndexGlobal = 0;
+
+
 
   useEffect(() => {
     const spinnerStyle = document.createElement("style");
@@ -171,29 +177,101 @@ const ScenarioForm = () => {
     doc.save("scenario.pdf");
   };
 
-  const renderContent = (data) => {
-    if (Array.isArray(data)) {
-      return (
-        <ul style={{ paddingLeft: "1rem", marginTop: "0.5rem" }}>
-          {data.map((item, index) => (
-            <li key={index}>{renderContent(item)}</li>
-          ))}
-        </ul>
-      );
+const renderContent = (data) => {
+ if (typeof data === "string") {
+  const parts = [];
+  const cueRegex = /\*\(💡\s*(.+?)\s*\)\*/g;
+  let lastIndex = 0;
+  let match;
+  let localCueIndex = 0;
+
+  while ((match = cueRegex.exec(data)) !== null) {
+    const matchStart = match.index;
+    const matchEnd = cueRegex.lastIndex;
+    const cueText = match[1];
+    const id = `cue-${cueIndexGlobal}-${localCueIndex++}`;
+
+    if (matchStart > lastIndex) {
+      parts.push(<span key={`text-${id}`}>{data.slice(lastIndex, matchStart)}</span>);
     }
-    if (typeof data === "object" && data !== null) {
-      return (
-        <ul style={{ paddingLeft: "1rem", marginTop: "0.5rem" }}>
-          {Object.entries(data).map(([key, value], index) => (
-            <li key={index}>
-              <strong>{formatLabel(key)}:</strong> {renderContent(value)}
-            </li>
-          ))}
-        </ul>
-      );
-    }
-    return <span>{String(data)}</span>;
-  };
+
+    parts.push(
+      <span key={`cue-${id}`} style={{ position: "relative", display: "inline-block" }}>
+        <FaLightbulb
+          style={{
+            cursor: "pointer",
+            marginLeft: "4px",
+            color: selectedCue === id ? "#facc15" : "#eab308",
+            verticalAlign: "middle"
+          }}
+          onClick={(e) => {
+            e.stopPropagation();
+            setSelectedCue((prev) => (prev === id ? null : id));
+          }}
+        />
+        {selectedCue === id && (
+          <div
+            style={{
+              position: "absolute",
+              background: "#fef9c3",
+              color: "#1f2937",
+              border: "1px solid #fcd34d",
+              padding: "0.5rem 0.75rem",
+              borderRadius: "8px",
+              zIndex: 10000,
+              top: "1.8rem",
+              left: 0,
+              minWidth: "240px",
+              maxWidth: "420px",
+              whiteSpace: "normal",
+              boxShadow: "0 6px 12px rgba(0,0,0,0.25)"
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {cueText}
+          </div>
+        )}
+      </span>
+    );
+
+    lastIndex = matchEnd;
+  }
+
+  if (lastIndex < data.length) {
+    parts.push(<span key="text-end">{data.slice(lastIndex)}</span>);
+  }
+
+  cueIndexGlobal++;
+  return <span>{parts}</span>;
+}
+
+
+  if (Array.isArray(data)) {
+    return (
+      <ul style={{ paddingLeft: "1rem", marginTop: "0.5rem" }}>
+        {data.map((item, index) => (
+          <li key={index}>{renderContent(item)}</li>
+        ))}
+      </ul>
+    );
+  }
+
+  if (typeof data === "object" && data !== null) {
+    return (
+      <ul style={{ paddingLeft: "1rem", marginTop: "0.5rem" }}>
+        {Object.entries(data).map(([key, value], index) => (
+          <li key={index}>
+            <strong>{formatLabel(key)}:</strong> {renderContent(value)}
+          </li>
+        ))}
+      </ul>
+    );
+  }
+
+  return <span>{String(data)}</span>;
+};
+
+
 
   const renderSection = (title, content) => {
     const isTeachingCue = typeof content === "string" && content.includes("💡");

@@ -22,7 +22,7 @@
     "weight": "110 lbs",
     "appearance": "Pale, frail, and visibly uncomfortable; lying on her left side"
   },
-  "patientPresentation": "Marjorie lies on the hallway carpet, curled slightly, clutching her left hip. Her face is tense, and she winces with the slightest movement. She’s alert but nervous, answering quietly. (💡 This is where you pause. Take in the surroundings. Her position tells a story — don’t rush past it.)",
+  "patientPresentation": "Marjorie lies on the hallway carpet, curled slightly, clutching her left hip. Her face is tense, and she winces with the slightest movement. She’s alert but nervous, answering quietly. *(💡amber|This is where you pause. Take in the surroundings. Her position tells a story — don’t rush past it.)*",
   "incidentNarrative": "The daughter reports hearing a 'thump' around 07:45. Found her mother on the ground complaining of hip pain. She didn’t see the fall. Patient was trying to make her way to the bathroom alone. No loss of consciousness reported.",
   "opqrst": {
     "onset": "Sudden — during attempt to walk to bathroom",
@@ -45,54 +45,54 @@
     "eventsLeadingUp": "Attempted to walk unassisted to the bathroom"
   },
   "physicalExam": {
-  "generalAppearance": "Thin, elderly female in mild distress, unable to reposition herself 💡 Frailty cues matter — treat every repositioning as a potential harm point.",
-  "headNeck": "No bruising or lacerations noted",
-  "chest": "Clear breath sounds bilaterally",
-  "abdomen": "Soft, non-tender",
-  "pelvis": "Tender to palpation, minimal movement attempted 💡 Suspect pelvic fracture when tenderness and immobility coexist — always stabilize before movement.",
-  "extremities": "Left leg appears shortened and externally rotated 💡 Classic signs of pelvic or proximal femur injury — don’t miss what’s staring at you.",
-  "neurological": "AOx3, no deficits noted"
-},
-"vitalSigns": {
-  "firstSet": {
-    "HR": "102",
-    "RR": "20",
-    "BP": "138/84",
-    "SpO2": "96% RA",
-    "ETCO2": "38 mmHg",
-    "Temp": "36.3°C",
-    "GCS": "15 💡 A GCS of 15 doesn’t rule out internal injury — stay alert for subtle deterioration.",
-    "BGL": "5.6 mmol/L"
+    "generalAppearance": "Thin, elderly female in mild distress, unable to reposition herself *(💡amber|Frailty cues matter — treat every repositioning as a potential harm point.)*",
+    "headNeck": "No bruising or lacerations noted",
+    "chest": "Clear breath sounds bilaterally",
+    "abdomen": "Soft, non-tender",
+    "pelvis": "Tender to palpation, minimal movement attempted *(💡red|Suspect pelvic fracture when tenderness and immobility coexist — always stabilize before movement.)*",
+    "extremities": "Left leg appears shortened and externally rotated *(💡red|Classic signs of pelvic or proximal femur injury — don’t miss what’s staring at you.)*",
+    "neurological": "AOx3, no deficits noted"
   },
-  "secondSet": {
-    "HR": "108 💡 Even small increases in HR could signal pain, anxiety, or early compensation. Don’t ignore trends.",
-    "RR": "22",
-    "BP": "132/80",
-    "SpO2": "96% RA",
-    "ETCO2": "37 mmHg",
-    "Temp": "36.4°C",
-    "GCS": "15",
-    "BGL": "5.7 mmol/L"
-  
-}
-
+  "vitalSigns": {
+    "firstSet": {
+      "HR": "102",
+      "RR": "20",
+      "BP": "138/84",
+      "SpO2": "96% RA",
+      "ETCO2": "38 mmHg",
+      "Temp": "36.3°C",
+      "GCS": "15 *(💡amber|A GCS of 15 doesn’t rule out internal injury — stay alert for subtle deterioration.)*",
+      "BGL": "5.6 mmol/L"
+    },
+    "secondSet": {
+      "HR": "108 *(💡amber|Even small increases in HR could signal pain, anxiety, or early compensation. Don’t ignore trends.)*",
+      "RR": "22",
+      "BP": "132/80",
+      "SpO2": "96% RA",
+      "ETCO2": "37 mmHg",
+      "Temp": "36.4°C",
+      "GCS": "15",
+      "BGL": "5.7 mmol/L"
+    }
   },
-  "caseProgression": "If the crew recognizes signs of a pelvic fracture and limits movement, Marjorie remains stable, albeit in pain. Gentle handling and pelvic stabilization improve her comfort. (💡 Notice what gets worse first — that’s your early warning. Movement without support rapidly worsens pain and risk.) According to the BLS PCS, spinal motion restriction is not indicated here, but pelvic binding falls under the trauma standard and should be considered.\n\nIf movement is attempted without stabilization or if lifting is done improperly, pain increases, and Marjorie becomes more anxious and tachycardic. Delays in transport or failure to identify the fracture worsen her status en route.",
-  "expectedTreatment": "Primary goals include pain mitigation, pelvic stabilization, and safe extrication. Apply a pelvic binder per ALS PCS Trauma Standard if trained and indicated. Use a scoop stretcher or vacuum mattress to minimize movement. Do not delay transport for ALS arrival unless vital signs destabilize. Monitor for shock signs due to anticoagulation. (💡 Even if ALS is 15 minutes out, don’t freeze. BLS doesn’t mean Basic Thinking — stabilize what you can and move thoughtfully.)",
+  "caseProgression": "If the crew recognizes signs of a pelvic fracture and limits movement, Marjorie remains stable, albeit in pain. Gentle handling and pelvic stabilization improve her comfort. *(💡red|Notice what gets worse first — that’s your early warning. Movement without support rapidly worsens pain and risk.)* According to the BLS PCS, spinal motion restriction is not indicated here, but pelvic binding falls under the trauma standard and should be considered.\n\nIf movement is attempted without stabilization or if lifting is done improperly, pain increases, and Marjorie becomes more anxious and tachycardic. Delays in transport or failure to identify the fracture worsen her status en route.",
+  "expectedTreatment": "Primary goals include pain mitigation, pelvic stabilization, and safe extrication. Apply a pelvic binder per ALS PCS Trauma Standard if trained and indicated. Use a scoop stretcher or vacuum mattress to minimize movement. Do not delay transport for ALS arrival unless vital signs destabilize. Monitor for shock signs due to anticoagulation. *(💡amber|Even if ALS is 15 minutes out, don’t freeze. BLS doesn’t mean Basic Thinking — stabilize what you can and move thoughtfully.)*",
   "vocationalLearningOutcomes": [
     "VLO 1: Perform complete patient assessments and integrate findings into care plans",
     "VLO 3: Demonstrate knowledge of anatomy, pathophysiology, and pharmacology relevant to emergency care",
     "VLO 5: Communicate clearly and effectively with patients, families, and healthcare professionals"
-  },
+  ],
   "teacherPoints": [
     "Recognizing pelvic fracture signs early can prevent worsening shock — especially with anticoagulants.",
     "Stabilization is more than equipment — it's communication, planning, and minimizing risk.",
     "Scene safety includes anticipating extrication paths in tight quarters.",
     "This case reinforces the need to link physical signs with PCS-aligned interventions.",
-    "💡 This is a call where thinking clearly buys more time than acting quickly. Teach that restraint and preparation are active skills."
+    "*(💡amber|This is a call where thinking clearly buys more time than acting quickly. Teach that restraint and preparation are active skills.)*"
   ],
+ 
+
   "grsAnchors": {
-    "Scene Management": {
+    "Situational Awareness": {
       "1": "• Failed to assess stairwell hazards.\n• Ignored daughter’s presence and potential stress.\n• Entered hallway without planning or clearing space.",
       "3": "• Noted general environment but missed trip hazards.\n• Began care without discussing lifting options.\n• Minimal crew coordination.",
       "5": "• Identified tight space and prepared gear placement.\n• Briefed partner before movement.\n• Kept daughter informed of plan.",
@@ -135,11 +135,12 @@
       "7": "• Built trust with both patient and daughter.\n• Narrated every step empathetically.\n• Created calm through professionalism and presence."
     }
   },
-  "selfReflectionPrompts": [
+ "selfReflectionPrompts": [
     "What assumptions did I make when I saw the patient's position? Were they accurate?",
     "How did I adapt my communication to suit Marjorie’s needs?",
     "Did I prioritize stabilization appropriately? What would I do differently next time?",
     "What part of this case challenged my decision-making the most, and why?"
+  
   ]
 }
 {
@@ -169,7 +170,7 @@
     "weight": "30 lbs",
     "appearance": "Limp toddler lying on his side on a small nap mat, flushed cheeks, damp forehead"
   },
-  "patientPresentation": "Leo is semi-conscious, not responding to verbal stimuli but moans to painful stimuli. He has flushed skin and is febrile to the touch. His breathing is rapid but regular. There’s no sign of trauma, and he is postictal. *(Layer 1: “This is where students often over-focus on the seizure — but what’s the underlying cause?”)*",
+  "patientPresentation": "Leo is semi-conscious, not responding to verbal stimuli but moans to painful stimuli. He has flushed skin and is febrile to the touch. His breathing is rapid but regular. There’s no sign of trauma, and he is postictal. *(💡orange|This is where students often over-focus on the seizure — but what’s the underlying cause?)*",
   "incidentNarrative": "The daycare worker reports Leo had been napping when he suddenly stiffened and began convulsing for about a minute. No incontinence noted. He has been 'under the weather' the last day or two but was active earlier in the morning. They took his temperature earlier today, and it was 38.5°C.",
   "opqrst": {
     "Onset": "Sudden onset during nap",
@@ -192,44 +193,41 @@
   ],
   "allergies": "NKDA",
   "pastMedicalHistory": "Generally healthy toddler, no seizure history",
-"physicalExam": {
-  "General": "Postictal, flushed, semi-conscious 💡 Watch for postictal states in pediatrics—they can mimic low GCS trauma but follow a very different course.",
-  "Head/Neck": "No trauma, fontanelles flat, pupils equal/reactive",
-  "Chest": "Breath sounds clear bilaterally, tachypneic 💡 Increased respiratory rate may be compensatory—always correlate with temperature and SpO₂.",
-  "Abdomen": "Soft, non-tender",
-  "Extremities": "No deformities, cap refill ~2s"
-},
-"vitalSigns": {
-  "firstSet": {
-    "HR": 148,
-    "RR": 34,
-    "BP": "92/60",
-    "SpO₂": "97%",
-    "ETCO₂": "N/A",
-    "Temp": "39.1°C 💡 Febrile seizures often spike over 38.5°C. Temp management is your cue to intervene.",
-    "GCS": "9 (E2 V2 M5) 💡 Don't confuse low GCS post-seizure with head trauma—context is everything.",
-    "BGL": "4.8 mmol/L"
+  "physicalExam": {
+    "General": "Postictal, flushed, semi-conscious *(💡orange|Watch for postictal states in pediatrics—they can mimic low GCS trauma but follow a very different course.)*",
+    "Head/Neck": "No trauma, fontanelles flat, pupils equal/reactive",
+    "Chest": "Breath sounds clear bilaterally, tachypneic *(💡orange|Increased respiratory rate may be compensatory—always correlate with temperature and SpO₂.)*",
+    "Abdomen": "Soft, non-tender",
+    "Extremities": "No deformities, cap refill ~2s"
   },
-  "secondSet": {
-    "HR": 140,
-    "RR": 30,
-    "BP": "95/62",
-    "SpO₂": "98%",
-    "ETCO₂": "N/A",
-    "Temp": "38.4°C",
-    "GCS": "12 (E3 V3 M6) 💡 Improving GCS is your cue that the postictal phase is resolving.",
-    "BGL": "4.9 mmol/L"
-  }
-}
-
-  },
-
+  "vitalSigns": {
+    "firstSet": {
+      "HR": 148,
+      "RR": 34,
+      "BP": "92/60",
+      "SpO₂": "97%",
+      "ETCO₂": "N/A",
+      "Temp": "39.1°C *(💡orange|Febrile seizures often spike over 38.5°C. Temp management is your cue to intervene.)*",
+      "GCS": "9 (E2 V2 M5) *(💡orange|Don't confuse low GCS post-seizure with head trauma—context is everything.)*",
+      "BGL": "4.8 mmol/L"
+    },
+    "secondSet": {
+      "HR": 140,
+      "RR": 30,
+      "BP": "95/62",
+      "SpO₂": "98%",
+      "ETCO₂": "N/A",
+      "Temp": "38.4°C",
+      "GCS": "12 (E3 V3 M6) *(💡green|Improving GCS is your cue that the postictal phase is resolving.)*",
+      "BGL": "4.9 mmol/L"
+    }
   },
   "caseProgression": {
-    "withProperTreatment": "If Leo is assessed gently, kept cool, monitored, and fever is treated with antipyretic per protocol, his level of consciousness gradually improves. *(Layer 1: “Febrile seizures are frightening, but usually benign — calm scene leadership is key.”)*",
+    "withProperTreatment": "If Leo is assessed gently, kept cool, monitored, and fever is treated with antipyretic per protocol, his level of consciousness gradually improves. *(💡green|Febrile seizures are frightening, but usually benign — calm scene leadership is key.)*",
     "withoutProperTreatment": "If fever is not addressed, or if rough handling/agitation occurs, his condition may stagnate. He may vomit or worsen neurologically, and parents may arrive angry or panicked, increasing stress on scene."
   },
-  "expectedTreatment": "Ensure scene safety, pediatric BLS assessment, monitor ABCs, take full history from caregivers. Expose and cool the child, remove excess clothing, and administer acetaminophen as per ALS PCS (PCP scope, febrile seizure directive). Transport in recovery position, monitor vitals. *(Layer 1: “Don’t wait for ALS — if you can give the antipyretic, give it. Calm and steady always wins here.”)*",
+  "expectedTreatment": "Ensure scene safety, pediatric BLS assessment, monitor ABCs, take full history from caregivers. Expose and cool the child, remove excess clothing, and administer acetaminophen as per ALS PCS (PCP scope, febrile seizure directive). Transport in recovery position, monitor vitals. *(💡green|Don’t wait for ALS — if you can give the antipyretic, give it. Calm and steady always wins here.)*"
+}
   "teachersPoints": "Students often freeze when pediatric seizures are mentioned. This case is about knowing what’s within your scope and not panicking. Look for reversible causes. Reassure caregivers. And most importantly — treat the fever. Don’t forget how dangerous inaction is, even when the worst part seems 'over.'",
   "grsAnchors": {
     "situationalAwareness": {
@@ -428,7 +426,7 @@
     "weight": "145 lbs",
     "appearance": "Thin, pale, breathing rapidly with deep sighing breaths. Strong fruity odor present."
   },
-  "patientPresentation": "Tyler is found collapsed on the floor of the washroom stall, knees tucked in, barely responsive. His skin is warm and dry, and he appears dehydrated. A glucometer is clutched loosely in one hand. (This is where you pause — smell that? That fruity breath matters.)",
+  "patientPresentation": "Tyler is found collapsed on the floor of the washroom stall, knees tucked in, barely responsive. His skin is warm and dry, and he appears dehydrated. A glucometer is clutched loosely in one hand. *(💡yellow|This is where you pause — smell that? That fruity breath matters.)*",
   "incidentNarrative": "Security had to unlock the stall. Tyler was last seen by mall staff around noon acting confused. A janitor discovered him after noticing a strong acetone-like smell. No drugs or paraphernalia were found, but Tyler's backpack contains insulin pens.",
   "opqrst": {
     "onset": "Unknown; janitor found him around 16:00",
@@ -450,38 +448,37 @@
     "Insulin glargine (long-acting insulin, helps manage baseline glucose)",
     "Insulin aspart (short-acting insulin for meals)"
   ],
-  "allergies": ["None known"] ,
-  "pastMedicalHistory": ["Type 1 Diabetes mellitus"] ,
+  "allergies": ["None known"],
+  "pastMedicalHistory": ["Type 1 Diabetes mellitus"],
   "physicalExam": {
-  "generalAppearance": "Lethargic, barely responsive 💡 This isn’t just ‘tired’ — this is metabolic fatigue. Look for the patterns that tell you this is serious.",
-  "headNeck": "No trauma noted 💡 Rule out trauma fast but don’t anchor there — this is medical until proven otherwise.",
-  "chest": "Clear air entry, deep Kussmaul breaths 💡 Those exaggerated sighs are the body trying to breathe off acid — hear them, name them, act on them.",
-  "abdomen": "Soft, mild tenderness on palpation 💡 Tenderness without rigidity supports DKA, not intra-abdominal trauma.",
-  "extremities": "No edema, cool peripheries 💡 Peripheral perfusion tells you how bad the hypovolemia might be."
-},
-"vitalSigns": {
-  "firstSet": {
-    "HR": 124,
-    "RR": 30,
-    "BP": "88/54",
-    "SpO2": "97%",
-    "ETCO2": "18 mmHg",
-    "Temp": "37.2°C",
-    "GCS": 10,
-    "BGL": "22.4 mmol/L 💡 If you’re still hunting for drugs after reading this number, you’ve missed the diagnosis."
+    "generalAppearance": "Lethargic, barely responsive *(💡yellow|This isn’t just ‘tired’ — this is metabolic fatigue. Look for the patterns that tell you this is serious.)*",
+    "headNeck": "No trauma noted *(💡yellow|Rule out trauma fast but don’t anchor there — this is medical until proven otherwise.)*",
+    "chest": "Clear air entry, deep Kussmaul breaths *(💡yellow|Those exaggerated sighs are the body trying to breathe off acid — hear them, name them, act on them.)*",
+    "abdomen": "Soft, mild tenderness on palpation *(💡yellow|Tenderness without rigidity supports DKA, not intra-abdominal trauma.)*",
+    "extremities": "No edema, cool peripheries *(💡yellow|Peripheral perfusion tells you how bad the hypovolemia might be.)*"
   },
-  "secondSet": {
-    "HR": 132,
-    "RR": 32,
-    "BP": "84/50",
-    "SpO2": "96%",
-    "ETCO2": "16 mmHg",
-    "Temp": "37.3°C",
-    "GCS": 9,
-    "BGL": "22.1 mmol/L 💡 Slight drop in GCS, rising HR, still acidotic. This is your cue — intervene, escalate, monitor."
-  }
-},
-
+  "vitalSigns": {
+    "firstSet": {
+      "HR": 124,
+      "RR": 30,
+      "BP": "88/54",
+      "SpO2": "97%",
+      "ETCO2": "18 mmHg",
+      "Temp": "37.2°C",
+      "GCS": 10,
+      "BGL": "22.4 mmol/L *(💡yellow|If you’re still hunting for drugs after reading this number, you’ve missed the diagnosis.)*"
+    },
+    "secondSet": {
+      "HR": 132,
+      "RR": 32,
+      "BP": "84/50",
+      "SpO2": "96%",
+      "ETCO2": "16 mmHg",
+      "Temp": "37.3°C",
+      "GCS": 9,
+      "BGL": "22.1 mmol/L *(💡yellow|Slight drop in GCS, rising HR, still acidotic. This is your cue — intervene, escalate, monitor.)*"
+    }
+  },
 
   "caseProgression": {
     "withProperTreatment": "With early recognition and BGL testing, paramedics identify hyperglycemia and support airway/breathing. Patient remains hypoperfused but stable and GCS plateaus. ALS intercept improves outcome.",
@@ -685,7 +682,7 @@
     "weight": "130 lbs",
     "appearance": "Lying on the bed, pale, slow to respond, visibly disoriented"
   },
-  "patientPresentation": "Jordan is lying supine on the bed, blinking slowly and responding with slurred one-word answers. There’s a slight chemical odor in the room, empty pill bottles scattered nearby, and a nearby laptop with a partially written note. (Instructor cue: This is one of those scenes where emotional tone matters — pause before you act.)",
+  "patientPresentation": "Jordan is lying supine on the bed, blinking slowly and responding with slurred one-word answers. There’s a slight chemical odor in the room, empty pill bottles scattered nearby, and a nearby laptop with a partially written note. *(💡orange|This is one of those scenes where emotional tone matters — pause before you act.)*",
   "incidentNarrative": "Jordan was found by their roommate after not attending a scheduled group meeting. Roommate states Jordan has been “not doing well lately” and may have taken “something” earlier in the evening. They last saw Jordan around 17:00 and report they’ve been withdrawn since a recent breakup.",
   "opqrst": {
     "Onset": "Unknown — last seen well at 17:00",
@@ -709,46 +706,43 @@
   ],
   "allergies": "None known",
   "pastMedicalHistory": "Generalized anxiety disorder; recent emotional stressor (relationship breakup)",
- "physicalExam": {
-  "generalAppearance": "Lethargic, barely responsive 💡 This isn’t just fatigue — metabolic emergencies present with this kind of profound weakness. Ask yourself: does this match DKA or something else?",
-  "headNeck": "No signs of trauma, pupils sluggish but equal 💡 Pupils help you rule out neurological or toxic causes — don’t skip them even in medical calls.",
-  "chest": "Air entry clear bilaterally with deep, labored Kussmaul respirations 💡 Kussmaul = metabolic acidosis compensation. If you hear it, think DKA or salicylates.",
-  "abdomen": "Soft, mildly tender, no guarding or rigidity 💡 Tenderness without peritonitis helps steer you away from surgical causes.",
-  "extremities": "Cool peripheries, no edema, cap refill ~3s 💡 Cap refill is a cheap and fast window into perfusion — use it."
-},
-"vitalSigns": {
-  "firstSet": {
-    "HR": 124,
-    "RR": 30,
-    "BP": "88/54",
-    "SpO₂": "97%",
-    "ETCO₂": "18 mmHg 💡 Low ETCO₂ in a breathing patient should scream 'acidosis' — think DKA.",
-    "Temp": "37.2°C",
-    "GCS": "10 (E3 V2 M5)",
-    "BGL": "22.4 mmol/L 💡 This value doesn’t just confirm hyperglycemia — it helps confirm your differential."
+  "physicalExam": {
+    "generalAppearance": "Lethargic, barely responsive *(💡red|This isn’t just fatigue — metabolic emergencies present with this kind of profound weakness. Ask yourself: does this match DKA or something else?)*",
+    "headNeck": "No signs of trauma, pupils sluggish but equal *(💡yellow|Pupils help you rule out neurological or toxic causes — don’t skip them even in medical calls.)*",
+    "chest": "Air entry clear bilaterally with deep, labored Kussmaul respirations *(💡purple|Kussmaul = metabolic acidosis compensation. If you hear it, think DKA or salicylates.)*",
+    "abdomen": "Soft, mildly tender, no guarding or rigidity *(💡blue|Tenderness without peritonitis helps steer you away from surgical causes.)*",
+    "extremities": "Cool peripheries, no edema, cap refill ~3s *(💡green|Cap refill is a cheap and fast window into perfusion — use it.)*"
   },
-  "secondSet": {
-    "HR": 132,
-    "RR": 32,
-    "BP": "84/50",
-    "SpO₂": "96%",
-    "ETCO₂": "16 mmHg 💡 ETCO₂ is falling — this patient is breathing harder to compensate. Watch for fatigue.",
-    "Temp": "37.3°C",
-    "GCS": "9 (E2 V2 M5)",
-    "BGL": "22.1 mmol/L 💡 No significant change — but don’t wait for one. Time is tissue in DKA."
-  }
-}
-,
-
+  "vitalSigns": {
+    "firstSet": {
+      "HR": 124,
+      "RR": 30,
+      "BP": "88/54",
+      "SpO₂": "97%",
+      "ETCO₂": "18 mmHg *(💡orange|Low ETCO₂ in a breathing patient should scream 'acidosis' — think DKA.)*",
+      "Temp": "37.2°C",
+      "GCS": "10 (E3 V2 M5)",
+      "BGL": "22.4 mmol/L *(💡red|This value doesn’t just confirm hyperglycemia — it helps confirm your differential.)*"
+    },
+    "secondSet": {
+      "HR": 132,
+      "RR": 32,
+      "BP": "84/50",
+      "SpO₂": "96%",
+      "ETCO₂": "16 mmHg *(💡orange|ETCO₂ is falling — this patient is breathing harder to compensate. Watch for fatigue.)*",
+      "Temp": "37.3°C",
+      "GCS": "9 (E2 V2 M5)",
+      "BGL": "22.1 mmol/L *(💡red|No significant change — but don’t wait for one. Time is tissue in DKA.)*"
+    }
   },
   "caseProgression": {
     "withProperTreatment": "With high suspicion of overdose and close monitoring, students administer naloxone per protocol, reposition patient to support airway, and initiate rapid transport. Patient’s GCS improves modestly, and respiratory rate stabilizes. Roommate begins to cry and asks to ride along. Scene de-escalates with appropriate communication and empathy.",
     "withoutProperTreatment": "If the overdose is not recognized and airway is not managed, patient’s respiratory status continues to decline. ETCO₂ rises, GCS drops to 9, and cyanosis becomes visible. Emotional scene becomes chaotic, roommate begins yelling, and the situation spirals into a high-risk, poorly managed transport."
   },
-  "expectedTreatment": "Students should assess mental status, rule out trauma, and consider toxidrome patterns. Oxygen should be titrated per BLS PCS (SpO₂ <94%, target 92–96%). If opioid overdose is suspected based on scene and respiratory status, naloxone should be considered under ALS PCS. Verbal de-escalation and clear documentation of mental health risk are required. (Instructor cue: BLS doesn't mean Basic Thinking — stabilize what you can, even if ALS is 10 minutes out.)",
+  "expectedTreatment": "Students should assess mental status, rule out trauma, and consider toxidrome patterns. Oxygen should be titrated per BLS PCS (SpO₂ <94%, target 92–96%). If opioid overdose is suspected based on scene and respiratory status, naloxone should be considered under ALS PCS. Verbal de-escalation and clear documentation of mental health risk are required. *(💡teal|BLS doesn't mean Basic Thinking — stabilize what you can, even if ALS is 10 minutes out.)*",
   "teachersPoints": "This scenario isn’t about getting the perfect diagnosis — it’s about reading the room. An emotionally unstable environment, unclear history, and subtle signs of overdose all force students to think holistically. Teach them to treat what’s in front of them, communicate compassionately, and trust their training.",
   "grsAnchors": {
-    "Scene Management": {
+    "Siutational Awareness": {
       "1": [
         "Did not secure the scene, allowing bystander panic to escalate",
         "Ignored environmental cues such as pill bottles and open laptop",
@@ -835,7 +829,7 @@
         "Framed clinical actions in supportive, human language",
         "Unified team and bystanders through intentional, empathetic dialogue"
       ]
-    }
+    
   },
   "vocationalLearningOutcomes": [
     "Analyze complex and unpredictable situations to provide safe, ethical care.",
@@ -847,8 +841,7 @@
     "What communication strategies worked best when handling the roommate?",
     "Did your treatment plan reflect both clinical care and emotional support?",
     "What scene clues were most important for guiding your decision-making?"
-  ],
-
+  ]
 }
 
 {
@@ -879,36 +872,16 @@
     "weight": "140 lbs",
     "appearance": "Flushed, alert but responding inappropriately; unkempt, wearing hiking clothes"
   },
-  "patientPresentation": "Jillian is seated on a log beside the firepit, waving at the trees and mumbling incoherently. She occasionally bursts into laughter or shouts gibberish. (This is where you pause and assess safety — is she a threat to herself or others?) Her pupils are dilated, and she occasionally scratches her arms. Her partner says she was normal an hour ago after a hike. She’s not recognizing familiar people or responding to questions appropriately.",
-  "incidentNarrative": "The patient's partner reports that earlier in the day, they hiked for several hours along a trail system near their campsite. They were foraging for berries and mushrooms, and the patient may have eaten something questionable. About an hour ago, she started laughing at nothing and acting confused. Initially he thought she was joking, but she became increasingly agitated, paranoid, and detached from reality. When she began speaking to nonexistent people, he called 911 via satellite phone.",
-  "opqrst": {
-    "onset": "About 1 hour ago",
-    "provocation": "No clear triggers",
-    "quality": "Describes visual and auditory hallucinations (when coherent)",
-    "radiation": "N/A",
-    "severity": "N/A",
-    "time": "Symptoms began after hike/foraging"
-  },
-  "sampleHistory": {
-    "signsAndSymptoms": "Confusion, hallucinations, dilated pupils, erratic behavior",
-    "allergies": "None known",
-    "medications": "Sertraline (antidepressant)",
-    "pastMedicalHistory": "Mild anxiety disorder, no other known conditions",
-    "lastOralIntake": "Foraged berries and trail mix, 2 hours ago",
-    "eventsLeadingUp": "Long hike, possibly ingested unknown mushroom or berry"
-  },
-  "medications": [
-    "Sertraline 100mg daily (SSRI for anxiety)"
-  ],
-  "allergies": "None known",
-  "pastMedicalHistory": "Anxiety disorder, no seizures or previous behavioral events",
-  "physicalExam": {
-  "general": "Flushed, agitated, laughing randomly, pupils 6mm bilaterally 💡 Large pupils and erratic behavior? Think stimulant or hallucinogen — and scene safety comes first.",
-  "headAndNeck": "No signs of trauma, responds inconsistently to voice 💡 Always rule out trauma — don’t anchor on tox alone in altered patients.",
-  "chest": "Clear bilaterally, no retractions or abnormal sounds 💡 Just because lungs sound clear doesn’t mean they’re oxygenating well — monitor trends.",
+ "patientPresentation": "Jillian is seated on a log beside the firepit, waving at the trees and mumbling incoherently. She occasionally bursts into laughter or shouts gibberish. *(💡orange|This is where you pause and assess safety — is she a threat to herself or others?)* Her pupils are dilated, and she occasionally scratches her arms. Her partner says she was normal an hour ago after a hike. She’s not recognizing familiar people or responding to questions appropriately.",
+
+"physicalExam": {
+  "general": "Flushed, agitated, laughing randomly, pupils 6mm bilaterally *(💡red|Large pupils and erratic behavior? Think stimulant or hallucinogen — and scene safety comes first.)*",
+  "headAndNeck": "No signs of trauma, responds inconsistently to voice *(💡yellow|Always rule out trauma — don’t anchor on tox alone in altered patients.)*",
+  "chest": "Clear bilaterally, no retractions or abnormal sounds *(💡purple|Just because lungs sound clear doesn’t mean they’re oxygenating well — monitor trends.)*",
   "abdomen": "Soft, non-tender",
-  "extremities": "No swelling, tremors present, occasional muscle twitching 💡 Twitching may hint at stimulant or serotonergic effects — track for worsening signs."
+  "extremities": "No swelling, tremors present, occasional muscle twitching *(💡green|Twitching may hint at stimulant or serotonergic effects — track for worsening signs.)*"
 },
+
 "vitalSigns": {
   "firstSet": {
     "HR": 112,
@@ -918,25 +891,24 @@
     "ETCO2": "37 mmHg",
     "Temp": "37.8°C",
     "GCS": "13 (E4 V4 M5)",
-    "BGL": "6.9 mmol/L 💡 Normal sugar — one cause of altered LOC ruled out. Keep checking others."
+    "BGL": "6.9 mmol/L *(💡blue|Normal sugar — one cause of altered LOC ruled out. Keep checking others.)*"
   },
   "secondSet": {
     "HR": 116,
     "RR": 24,
     "BP": "130/80",
     "SpO2": "97% on room air",
-    "ETCO2": "39 mmHg 💡 Normal ETCO₂ now, but watch for sudden spikes or drops — they can flag deterioration early.",
+    "ETCO2": "39 mmHg *(💡orange|Normal ETCO₂ now, but watch for sudden spikes or drops — they can flag deterioration early.)*",
     "Temp": "38.1°C",
     "GCS": "12 (E3 V4 M5)",
     "BGL": "6.7 mmol/L"
   }
-}
-,
+},
   "caseProgression": {
     "withProperTreatment": "Patient remains agitated but does not become violent. Vitals stay stable, and extrication proceeds safely. Ongoing monitoring and calm reassurance help keep the situation controlled. Good patient positioning and scene safety are maintained. ALS never arrives, and the crew must manage prolonged care on their own.",
     "withoutProperTreatment": "Without grounding communication and scene control, the patient may wander into the woods or become aggressive. If not monitored, she may seize or collapse. Partner becomes increasingly distressed and interferes with care. Vitals worsen with increasing HR and RR, and confusion deepens into unresponsiveness."
   },
-  "expectedTreatment": "Ensure scene safety first. Do not approach until safe. Begin with calm verbal reassurance, attempt to establish rapport. Assess for ingestion/toxin exposure (possibly hallucinogenic). Monitor vitals and mental status. Position patient safely, away from hazards. Prepare for prolonged extrication. Consider toxidrome support and early transport. BLS doesn’t mean Basic Thinking — use everything you’ve got to keep her safe. Document clearly, including behavior patterns, statements, and progression.",
+  "expectedTreatment": "Ensure scene safety first. Do not approach until safe. Begin with calm verbal reassurance, attempt to establish rapport. Assess for ingestion/toxin exposure (possibly hallucinogenic). Monitor vitals and mental status. Position patient safely, away from hazards. Prepare for prolonged extrication. Consider toxidrome support and early transport. *(💡teal|BLS doesn’t mean Basic Thinking — use everything you’ve got to keep her safe.)* Document clearly, including behavior patterns, statements, and progression."
   "teachersPoints": "Not all altered LOC means stroke or seizure. Wilderness calls demand full-scene awareness, improvisation, and rapport under stress. Stay grounded — this is what clinical judgment looks like when no one else is coming.",
   "grsAnchors": {
     "situationalAwareness": {
