@@ -177,80 +177,79 @@ let cueIndexGlobal = 0;
     doc.save("scenario.pdf");
   };
 
-const renderContent = (data) => {
- if (typeof data === "string") {
-  const parts = [];
-  const cueRegex = /\*\(💡\s*(.+?)\s*\)\*/g;
-  let lastIndex = 0;
-  let match;
-  let localCueIndex = 0;
+const renderSafeContent = (data) => {
+  if (typeof data === "string") {
+    const parts = [];
+    const cueRegex = /\*\(💡\s*(?:[a-z]+\|)?(.+?)\s*\)\*/gi; // removes color words
+    let lastIndex = 0;
+    let match;
+    let localCueIndex = 0;
 
-  while ((match = cueRegex.exec(data)) !== null) {
-    const matchStart = match.index;
-    const matchEnd = cueRegex.lastIndex;
-    const cueText = match[1];
-    const id = `cue-${cueIndexGlobal}-${localCueIndex++}`;
+    while ((match = cueRegex.exec(data)) !== null) {
+      const matchStart = match.index;
+      const matchEnd = cueRegex.lastIndex;
+      const cueText = match[1];
+      const id = `cue-${cueIndexGlobal}-${localCueIndex++}`;
 
-    if (matchStart > lastIndex) {
-      parts.push(<span key={`text-${id}`}>{data.slice(lastIndex, matchStart)}</span>);
+      if (matchStart > lastIndex) {
+        parts.push(<span key={`text-${id}`}>{data.slice(lastIndex, matchStart)}</span>);
+      }
+
+      parts.push(
+        <span key={`cue-${id}`} style={{ position: "relative", display: "inline-block" }}>
+          <FaLightbulb
+            style={{
+              cursor: "pointer",
+              marginLeft: "4px",
+              color: selectedCue === id ? "#facc15" : "#eab308",
+              verticalAlign: "middle"
+            }}
+            onClick={(e) => {
+              e.stopPropagation();
+              setSelectedCue((prev) => (prev === id ? null : id));
+            }}
+          />
+          {selectedCue === id && (
+            <div
+              style={{
+                position: "absolute",
+                background: "#fef9c3",
+                color: "#1f2937",
+                border: "1px solid #fcd34d",
+                padding: "0.5rem 0.75rem",
+                borderRadius: "8px",
+                zIndex: 10000,
+                top: "1.8rem",
+                left: 0,
+                minWidth: "240px",
+                maxWidth: "420px",
+                whiteSpace: "normal",
+                boxShadow: "0 6px 12px rgba(0,0,0,0.25)"
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {cueText}
+            </div>
+          )}
+        </span>
+      );
+
+      lastIndex = matchEnd;
     }
 
-    parts.push(
-      <span key={`cue-${id}`} style={{ position: "relative", display: "inline-block" }}>
-        <FaLightbulb
-          style={{
-            cursor: "pointer",
-            marginLeft: "4px",
-            color: selectedCue === id ? "#facc15" : "#eab308",
-            verticalAlign: "middle"
-          }}
-          onClick={(e) => {
-            e.stopPropagation();
-            setSelectedCue((prev) => (prev === id ? null : id));
-          }}
-        />
-        {selectedCue === id && (
-          <div
-            style={{
-              position: "absolute",
-              background: "#fef9c3",
-              color: "#1f2937",
-              border: "1px solid #fcd34d",
-              padding: "0.5rem 0.75rem",
-              borderRadius: "8px",
-              zIndex: 10000,
-              top: "1.8rem",
-              left: 0,
-              minWidth: "240px",
-              maxWidth: "420px",
-              whiteSpace: "normal",
-              boxShadow: "0 6px 12px rgba(0,0,0,0.25)"
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            {cueText}
-          </div>
-        )}
-      </span>
-    );
+    if (lastIndex < data.length) {
+      parts.push(<span key="text-end">{data.slice(lastIndex)}</span>);
+    }
 
-    lastIndex = matchEnd;
+    cueIndexGlobal++;
+    return <span>{parts}</span>;
   }
-
-  if (lastIndex < data.length) {
-    parts.push(<span key="text-end">{data.slice(lastIndex)}</span>);
-  }
-
-  cueIndexGlobal++;
-  return <span>{parts}</span>;
-}
-
 
   if (Array.isArray(data)) {
     return (
       <ul style={{ paddingLeft: "1rem", marginTop: "0.5rem" }}>
         {data.map((item, index) => (
-          <li key={index}>{renderContent(item)}</li>
+          <li key={index}>{renderSafeContent(item)}</li>
         ))}
       </ul>
     );
@@ -259,22 +258,21 @@ const renderContent = (data) => {
   if (typeof data === "object" && data !== null) {
     return (
       <ul style={{ paddingLeft: "1rem", marginTop: "0.5rem" }}>
-       {Object.entries(data).map(([key, value], index) => {
-  if (key === "ecgInterpretation") {
-    return (
-      <li key={index} style={{ marginTop: "0.5rem", padding: "0.5rem", background: "#fef9c3", borderLeft: "4px solid #facc15", borderRadius: "6px" }}>
-        <strong>📈 ECG Interpretation:</strong> {renderContent(value)}
-      </li>
-    );
-  }
+        {Object.entries(data).map(([key, value], index) => {
+          if (key === "ecgInterpretation") {
+            return (
+              <li key={index} style={{ marginTop: "0.5rem", padding: "0.5rem", background: "#fef9c3", borderLeft: "4px solid #facc15", borderRadius: "6px" }}>
+                <strong>📈 ECG Interpretation:</strong> {renderSafeContent(value)}
+              </li>
+            );
+          }
 
-  return (
-    <li key={index}>
-      <strong>{formatLabel(key)}:</strong> {renderContent(value)}
-    </li>
-  );
-})}
-
+          return (
+            <li key={index}>
+              <strong>{formatLabel(key)}:</strong> {renderSafeContent(value)}
+            </li>
+          );
+        })}
       </ul>
     );
   }
@@ -284,38 +282,39 @@ const renderContent = (data) => {
 
 
 
-  const renderSection = (title, content) => {
-    const isTeachingCue = typeof content === "string" && content.includes("💡");
-    const isProtocolNote = title === "protocolNotes";
-    
 
-    const highlightStyle = isTeachingCue
-      ? {
-          backgroundColor: "#e0f2fe",
-          borderLeft: "5px solid #0284c7",
-          padding: "1rem",
-          borderRadius: "8px",
-          marginBottom: "1rem",
-        }
-      : isProtocolNote
-      ? {
-          backgroundColor: "#dcfce7",
-          borderLeft: "5px solid #16a34a",
-          padding: "1rem",
-          borderRadius: "8px",
-          marginBottom: "1rem",
-        }
-      : {};
+const renderSection = (title, content) => {
+  const isTeachingCue = typeof content === "string" && content.includes("💡");
+  const isProtocolNote = title === "protocolNotes";
 
-    return (
-      <div style={{ ...styles(darkMode, fontSizeLarge).card, ...highlightStyle }}>
-        <h3 style={styles(darkMode, fontSizeLarge).cardTitle}>
-          {TITLE_MAP[title] || formatLabel(title)}
-        </h3>
-        {renderContent(content)}
-      </div>
-    );
-  };
+  const highlightStyle = isTeachingCue
+    ? {
+        backgroundColor: "#e0f2fe",
+        borderLeft: "5px solid #0284c7",
+        padding: "1rem",
+        borderRadius: "8px",
+        marginBottom: "1rem",
+      }
+    : isProtocolNote
+    ? {
+        backgroundColor: "#dcfce7",
+        borderLeft: "5px solid #16a34a",
+        padding: "1rem",
+        borderRadius: "8px",
+        marginBottom: "1rem",
+      }
+    : {};
+
+  return (
+    <div style={{ ...styles(darkMode, fontSizeLarge).card, ...highlightStyle }}>
+      <h3 style={styles(darkMode, fontSizeLarge).cardTitle}>
+        {TITLE_MAP[title] || formatLabel(title)}
+      </h3>
+      {renderSafeContent(content)}
+    </div>
+  );
+};
+
   return (
     <div style={styles(darkMode, fontSizeLarge).container}>
       <div style={styles(darkMode, fontSizeLarge).headerBar}>
