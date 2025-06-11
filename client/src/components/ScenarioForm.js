@@ -278,14 +278,7 @@ if (key === "ecgInterpretation") {
   const interpretation = typeof value === "string" ? value : "";
   const rawECG = scenario?.ecgInterpretation?.trim() || "";
 
-  // Match against known ECG image keys
-  let ecgImageUrl = null;
-  for (const ecgKey of Object.keys(ecgImageMap)) {
-    if (rawECG.toLowerCase().includes(ecgKey.toLowerCase())) {
-      ecgImageUrl = ecgImageMap[ecgKey];
-      break;
-    }
-  }
+let ecgImageUrl = ecgImageMap[rawECG] || null;
 
   return (
     <li key={index}>
