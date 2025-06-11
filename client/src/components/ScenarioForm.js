@@ -4,7 +4,15 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import jsPDF from "jspdf";
 import { FaSpinner, FaMoon, FaSun, FaFilePdf, FaLightbulb} from "react-icons/fa";
+import ecgImageMap from "../utils/ecgImageMap";
 
+function titleCase(str) {
+  return str
+    .toLowerCase()
+    .split(" ")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+}
 
 
 const SCENARIO_TYPES = ["Medical", "Trauma", "Cardiac", "Respiratory", "Environmental", "Other"];
@@ -57,6 +65,7 @@ const ScenarioForm = () => {
     includeTeachingCues: true
   });
 
+  const [selectedECGImage, setSelectedECGImage] = useState(null);
   const [scenario, setScenario] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -65,6 +74,7 @@ const ScenarioForm = () => {
   const [fontSizeLarge, setFontSizeLarge] = useState(false);
   const [selectedCue, setSelectedCue] = useState(null);
 let cueIndexGlobal = 0;
+
 
 
 
@@ -131,7 +141,12 @@ let cueIndexGlobal = 0;
 
     try {
       const response = await axios.post(`${baseURL}/api/generate-scenario`, formData);
-      setScenario(response.data);
+      const generated = response.data;
+
+
+
+setScenario(generated);
+
     } catch (err) {
       setError("Scenario generation failed. Please check backend server.");
     } finally {
@@ -259,13 +274,43 @@ const renderSafeContent = (data) => {
     return (
       <ul style={{ paddingLeft: "1rem", marginTop: "0.5rem" }}>
         {Object.entries(data).map(([key, value], index) => {
-          if (key === "ecgInterpretation") {
-            return (
-              <li key={index} style={{ marginTop: "0.5rem", padding: "0.5rem", background: "#fef9c3", borderLeft: "4px solid #facc15", borderRadius: "6px" }}>
-                <strong>📈 ECG Interpretation:</strong> {renderSafeContent(value)}
-              </li>
-            );
-          }
+if (key === "ecgInterpretation") {
+  const interpretation = typeof value === "string" ? value : "";
+  const rawECG = scenario?.ecgInterpretation?.trim() || "";
+
+  // Match against known ECG image keys
+  let ecgImageUrl = null;
+  for (const ecgKey of Object.keys(ecgImageMap)) {
+    if (rawECG.toLowerCase().includes(ecgKey.toLowerCase())) {
+      ecgImageUrl = ecgImageMap[ecgKey];
+      break;
+    }
+  }
+
+  return (
+    <li key={index}>
+      <strong>
+        {ecgImageUrl ? (
+          <span
+            style={{ cursor: "pointer", textDecoration: "underline", color: "#0ea5e9" }}
+            onClick={(e) => {
+              e.stopPropagation();
+              setSelectedECGImage(ecgImageUrl);
+            }}
+          >
+            📈 ECG Interpretation:
+          </span>
+        ) : (
+          "📈 ECG Interpretation:"
+        )}
+      </strong>{" "}
+      {interpretation}
+    </li>
+  );
+}
+
+
+
 
           return (
             <li key={index}>
@@ -416,10 +461,64 @@ const renderSection = (title, content) => {
                   keys
                     .filter((key) => key !== "teachersPoints")
                     .map((key) => scenario[key] && renderSection(key, scenario[key]))}
+
+
               </div>
             ))}
           </div>
         )}
+        {selectedECGImage && (
+  <div
+    style={{
+      position: "fixed",
+      top: 0,
+      left: 0,
+      width: "100vw",
+      height: "100vh",
+      backgroundColor: "rgba(0, 0, 0, 0.7)",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      zIndex: 20000,
+    }}
+    onClick={() => setSelectedECGImage(null)}
+  >
+    <div
+      style={{
+        position: "relative",
+        background: "#fff",
+        padding: "1rem",
+        borderRadius: "8px",
+        maxWidth: "90vw",
+        maxHeight: "90vh",
+        overflow: "auto",
+        boxShadow: "0 8px 16px rgba(0,0,0,0.3)",
+      }}
+      onClick={(e) => e.stopPropagation()}
+    >
+      <img
+        src={selectedECGImage}
+        alt="ECG Rhythm"
+        style={{ width: "100%", height: "auto", borderRadius: "8px" }}
+      />
+      <button
+        onClick={() => setSelectedECGImage(null)}
+        style={{
+          marginTop: "0.75rem",
+          padding: "0.5rem 1rem",
+          backgroundColor: "#0ea5e9",
+          color: "#fff",
+          border: "none",
+          borderRadius: "4px",
+          cursor: "pointer",
+        }}
+      >
+        Close
+      </button>
+    </div>
+  </div>
+)}
+
     </div>
   );
 };
