@@ -528,95 +528,103 @@ Today's date is ${today}.
 
     const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
-    const completion = await openai.chat.completions.create({
-      model: 'gpt-4o',
-      temperature: 1.0,
-      max_tokens: 4096,
-      messages: [
-        { role: 'system', content: profile },
-        { role: 'user', content: `${fewShots}\n\n${scenarioDirectives}\n\n${generationPrompt}` }
-      ]
-    });
+// Utility to sanitize output before JSON parsing
+function sanitizeOutput(raw) {
+  return raw
+    .replace(/\s*```(json)?\s*/g, '')        // Remove Markdown code fences
+    .replace(/[\u2018\u2019]/g, "'")        // Curly single quotes
+    .replace(/[\u201C\u201D]/g, '"')        // Curly double quotes
+    .replace(/[\u{1F600}-\u{1F6FF}]/gu, '') // Emojis
+    .trim();
+}
 
-    let rawResponse = completion.choices[0].message.content || "";
+let completion;
+try {
+  completion = await openai.chat.completions.create({
+    model: 'gpt-4o',
+    temperature: 1.0,
+    max_tokens: 4096,
+    messages: [
+      { role: 'system', content: profile },
+      { role: 'user', content: `${fewShots}\n\n${scenarioDirectives}\n\n${generationPrompt}` }
+    ]
+  });
+} catch (error) {
+  console.error("❌ OpenAI API error:", error);
+  return res.status(500).json({ error: "Scenario generation failed" });
+}
 
-    console.log("=== RAW RESPONSE ===");
-    console.log(rawResponse);
+if (
+  !completion ||
+  !completion.choices ||
+  !completion.choices[0] ||
+  !completion.choices[0].message?.content
+) {
+  console.error("❌ Invalid OpenAI response structure:", completion);
+  return res.status(500).json({ error: "OpenAI returned malformed data" });
+}
 
-    rawResponse = rawResponse.replace(/\s*```(json)?\s*/g, "").trim();
-let scenarioContent = completion.data.choices[0].message.content;
+let scenarioContent = completion.choices[0].message.content;
+console.log("=== RAW RESPONSE ===\n", scenarioContent);
+scenarioContent = sanitizeOutput(scenarioContent);
 
-// Sanitize curly quotes that break parsing
-scenarioContent = scenarioContent
-  .replace(/[\u2018\u2019]/g, "'")   // Replace curly single quotes
-  .replace(/[\u201C\u201D]/g, '"');  // Replace curly double quotes
+let parsed;
+try {
+  const repaired = jsonrepair(scenarioContent);
+  parsed = JSON.parse(repaired);
 
-const parsedScenario = JSON.parse(scenarioContent);
-    try {
-      const repaired = jsonrepair(rawResponse);
-      const parsed = JSON.parse(repaired);
-
-      // Validate ECG interpretation
-if ("ecgInterpretation" in parsed) {
-  if (!ecgInterpretationWhitelist.includes(parsed.ecgInterpretation)) {
+  // Validate ECG interpretation if present
+  if ("ecgInterpretation" in parsed && !ecgInterpretationWhitelist.includes(parsed.ecgInterpretation)) {
     console.warn("❌ ECG Interpretation was invalid:", parsed.ecgInterpretation);
-    delete parsed.ecgInterpretation; // Remove invalid ECG
+    delete parsed.ecgInterpretation;
   }
+
+  // Fill in any missing required fields
+  for (const field of requiredScenarioFields) {
+    if (!(field in parsed)) parsed[field] = "MISSING";
+  }
+
+  if (includeComplications) {
+    parsed.modifiersUsed = selectedModifiers;
+  }
+
+  // Contextual ECG assignment
+  let ecgToAssign = "Normal Sinus Rhythm";
+  const age = parsed?.patientDemographics?.age || 0;
+  const title = parsed?.title?.toLowerCase() || "";
+  const presentation = parsed?.patientPresentation?.toLowerCase() || "";
+  const keywords = `${title} ${presentation}`;
+
+  if (keywords.includes("chest pain") || keywords.includes("cardiac")) {
+    ecgToAssign = "Atrial Fibrillation";
+  } else if (keywords.includes("palpitations")) {
+    ecgToAssign = "SVT";
+  } else if (keywords.includes("dizzy") || keywords.includes("syncope")) {
+    ecgToAssign = age > 60 ? "Second Degree AV Block Type I" : "Sinus Bradycardia";
+  } else if (keywords.includes("shortness of breath") || keywords.includes("dyspnea")) {
+    ecgToAssign = "Sinus Tachycardia";
+  } else if (keywords.includes("seizure") || keywords.includes("post-ictal")) {
+    ecgToAssign = "Sinus Tachycardia";
+  } else if (keywords.includes("asystole") || keywords.includes("no pulse")) {
+    ecgToAssign = "Asystole";
+  } else if (keywords.includes("collapse") && age > 65) {
+    ecgToAssign = "Third Degree AV Block";
+  } else if (keywords.includes("trauma")) {
+    ecgToAssign = "Sinus Tachycardia";
+  } else if (keywords.includes("altered") || keywords.includes("unresponsive")) {
+    ecgToAssign = "Pulseless Electrical Activity";
+  }
+
+  if (ecgInterpretationWhitelist.includes(ecgToAssign)) {
+    parsed.ecgInterpretation = ecgToAssign;
+  }
+
+  res.json(parsed);
+
+} catch (jsonErr) {
+  console.error("Failed to repair/parse JSON:", jsonErr);
+  return res.status(500).send("JSON parsing error. Please retry.");
 }
-
-
-      for (const field of requiredScenarioFields) {
-        if (!(field in parsed)) {
-          parsed[field] = "MISSING";
-        }
-      }
-
-      if (includeComplications) {
-        parsed.modifiersUsed = selectedModifiers;
-      }
-// Contextual ECG interpretation (must match whitelist)
-let ecgToAssign = "Normal Sinus Rhythm"; // Default fallback
-
-const age = parsedScenario?.patientDemographics?.age || 0;
-const title = parsedScenario?.scenarioTitle?.toLowerCase() || "";
-const presentation = parsedScenario?.patientPresentation?.toLowerCase() || "";
-const keywords = `${title} ${presentation}`;
-
-// Prioritized matching
-if (keywords.includes("chest pain") || keywords.includes("cardiac")) {
-  ecgToAssign = "Atrial Fibrillation";
-} else if (keywords.includes("palpitations")) {
-  ecgToAssign = "SVT";
-} else if (keywords.includes("dizzy") || keywords.includes("syncope")) {
-  ecgToAssign = age > 60 ? "Second Degree AV Block Type I" : "Sinus Bradycardia";
-} else if (keywords.includes("shortness of breath") || keywords.includes("dyspnea")) {
-  ecgToAssign = "Sinus Tachycardia";
-} else if (keywords.includes("seizure") || keywords.includes("post-ictal")) {
-  ecgToAssign = "Sinus Tachycardia";
-} else if (keywords.includes("asystole") || keywords.includes("no pulse")) {
-  ecgToAssign = "Asystole";
-} else if (keywords.includes("collapse") && age > 65) {
-  ecgToAssign = "Third Degree AV Block";
-} else if (keywords.includes("trauma")) {
-  ecgToAssign = "Sinus Tachycardia";
-} else if (keywords.includes("altered") || keywords.includes("unresponsive")) {
-  ecgToAssign = "Pulseless Electrical Activity";
-}
-
-// Final check against whitelist
-if (!ecgInterpretationWhitelist.includes(ecgToAssign)) {
-  ecgToAssign = "Normal Sinus Rhythm";
-}
-
-parsedScenario.ecgInterpretation = ecgToAssign;
-
-
-      res.json(parsed);
-    } catch (jsonErr) {
-      console.error("Failed to repair/parse JSON:", jsonErr);
-      res.status(500).send("JSON parsing error. Please retry.");
-    }
-
   } catch (err) {
     console.error("Scenario generation error:", err);
     res.status(500).send("Internal server error.");
