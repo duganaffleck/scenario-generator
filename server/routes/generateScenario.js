@@ -544,7 +544,14 @@ Today's date is ${today}.
     console.log(rawResponse);
 
     rawResponse = rawResponse.replace(/\s*```(json)?\s*/g, "").trim();
+let scenarioContent = completion.data.choices[0].message.content;
 
+// Sanitize curly quotes that break parsing
+scenarioContent = scenarioContent
+  .replace(/[\u2018\u2019]/g, "'")   // Replace curly single quotes
+  .replace(/[\u201C\u201D]/g, '"');  // Replace curly double quotes
+
+const parsedScenario = JSON.parse(scenarioContent);
     try {
       const repaired = jsonrepair(rawResponse);
       const parsed = JSON.parse(repaired);
