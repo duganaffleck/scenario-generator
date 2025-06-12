@@ -35,6 +35,22 @@ const requiredScenarioFields = [
   "caseProgression", "expectedTreatment", "clinicalReasoning", "grsAnchors",
   "vocationalLearningOutcomes", "modifiersUsed", "selfReflectionPrompts", "teachersPoints"
 ];
+const ecgInterpretationWhitelist = [
+  "Normal Sinus Rhythm",
+  "Sinus Bradycardia",
+  "Sinus Tachycardia",
+  "Atrial Fibrillation",
+  "Atrial Flutter",
+  "SVT",
+  "Ventricular Tachycardia",
+  "Ventricular Fibrillation",
+  "Asystole",
+  "Pulseless Electrical Activity",
+  "First Degree AV Block",
+  "Second Degree AV Block Type I",
+  "Second Degree AV Block Type II",
+  "Third Degree AV Block"
+];
 
 router.post('/', async (req, res) => {
   res.header('Access-Control-Allow-Origin', '*');
@@ -187,7 +203,10 @@ ${cueFormatReminder}
   • Understanding when BLS actions matter most
 - Teaching cues can appear in: vital signs, ECGs, progression, SAMPLE, reasoning, or treatment plans.
 - Examples: *(💡 Would Nitro be appropriate yet — or do we need more info?)*, *(💡 This SpO₂ is borderline — what’s your next step?)*
-
+- If the case involves chest pain, syncope, shortness of breath, or another cardiac indicator, consider including a 12-lead ECG interpretation.
+- Do **not** include full 12-lead output — instead, summarize findings (e.g., "12-lead shows ST elevation in V2-V4").
+- Make sure any 12-lead detail reflects a real clinical picture.
+- If no cardiac cause is suspected, you may skip the 12-lead entirely.
 ${cueFormatReminder}
     `.trim();
   } else if (semester === "4") {
@@ -201,7 +220,10 @@ ${cueFormatReminder}
 - Encourage instructor-style thought prompts:
   *(💡 Look again — is there anything about the rhythm that feels off?)*
   *(💡 This progression isn't linear — what changed the trajectory?)*
-
+- If the case involves chest pain, syncope, shortness of breath, or another cardiac indicator, consider including a 12-lead ECG interpretation.
+- Do **not** include full 12-lead output — instead, summarize findings (e.g., "12-lead shows ST elevation in V2-V4").
+- Make sure any 12-lead detail reflects a real clinical picture.
+- If no cardiac cause is suspected, you may skip the 12-lead entirely.
 ${cueFormatReminder}
     `.trim();
   }
@@ -319,6 +341,31 @@ switch (focus) {
   default:
     focusInstruction = "";
 }
+
+let include12LeadInstruction = `
+If the scenario is cardiac-related and clinically relevant, include an "ecgInterpretation" field.
+Use only one of the following exact values:
+
+- "Normal Sinus Rhythm"
+- "Sinus Bradycardia"
+- "Sinus Tachycardia"
+- "Atrial Fibrillation"
+- "Atrial Flutter"
+- "SVT"
+- "Ventricular Tachycardia"
+- "Ventricular Fibrillation"
+- "Asystole"
+- "Pulseless Electrical Activity"
+- "First Degree AV Block"
+- "Second Degree AV Block Type I"
+- "Second Degree AV Block Type II"
+- "Third Degree AV Block"
+
+Do not add descriptive modifiers like "with PVCs" or "at 90 bpm".
+These values are used to pull matching ECG images on the frontend.
+`;
+
+
 let uniquenessInstruction = "";
 
 switch (uniqueness) {
@@ -375,7 +422,39 @@ Generate a detailed paramedic scenario using the following fields. ALL of these 
 - vitalSigns (firstSet, secondSet)
   - Both sets must include:
     - hr, rr, bp, spo2, etco2, temp, gcs, bgl
-    - ecgInterpretation: A short sentence describing the rhythm. Example: "Normal sinus rhythm at 78 bpm" or "Atrial fibrillation with rapid ventricular response". This is important and must be realistic.
+   
+Only include a field named `"ecgInterpretation"` **if clinically relevant**, and only if the rhythm is found in the list below. 
+
+⚠️ VERY IMPORTANT:
+- The value must be **exactly one** of the strings below. Do **not** add extra details like “at 90 bpm”, “with PVCs”, etc.
+- The value must be **identical** to one of these — no changes, expansions, or descriptions.
+
+Valid values:
+- "Normal Sinus Rhythm"
+- "Sinus Bradycardia"
+- "Sinus Tachycardia"
+- "Atrial Fibrillation"
+- "Atrial Flutter"
+- "SVT"
+- "Ventricular Tachycardia"
+- "Ventricular Fibrillation"
+- "Asystole"
+- "Pulseless Electrical Activity"
+- "First Degree AV Block"
+- "Second Degree AV Block Type I"
+- "Second Degree AV Block Type II"
+- "Third Degree AV Block"
+
+❌ Examples of INVALID values:
+- "Normal sinus rhythm at 90 bpm" ← WRONG
+- "Sinus tachycardia with occasional PVCs" ← WRONG
+
+✅ CORRECT:
+- "Sinus Tachycardia"
+- "Atrial Fibrillation"
+
+
+If no ECG rhythm is clinically relevant, omit the "ecgInterpretation" field entirely. Do not fabricate rhythms not listed above.
 
 - Include a field called "clinicalReasoning" with three parts:
   - "summary": A concise summary of the underlying pathophysiology.
@@ -431,12 +510,14 @@ Match the following scenario parameters:
 - Uniqueness: ${uniqueness}
 
 
+
 ${complicationsInstruction}
 ${sampleInstruction}
 ${bystanderInstruction}
 ${teachingCueInstruction}
 ${typeInstruction}
 ${uniquenessInstruction}
+${include12LeadInstruction}
 Today's date is ${today}.
 `.trim();
 
@@ -462,6 +543,15 @@ Today's date is ${today}.
     try {
       const repaired = jsonrepair(rawResponse);
       const parsed = JSON.parse(repaired);
+
+      // Validate ECG interpretation
+if ("ecgInterpretation" in parsed) {
+  if (!ecgInterpretationWhitelist.includes(parsed.ecgInterpretation)) {
+    console.warn("❌ ECG Interpretation was invalid:", parsed.ecgInterpretation);
+    delete parsed.ecgInterpretation; // Remove invalid ECG
+  }
+}
+
 
       for (const field of requiredScenarioFields) {
         if (!(field in parsed)) {
