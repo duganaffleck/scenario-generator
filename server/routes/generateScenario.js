@@ -573,11 +573,7 @@ try {
   const repaired = jsonrepair(scenarioContent);
   parsed = JSON.parse(repaired);
 
-  // Validate ECG interpretation if present
-  if ("ecgInterpretation" in parsed && !ecgInterpretationWhitelist.includes(parsed.ecgInterpretation)) {
-    console.warn("❌ ECG Interpretation was invalid:", parsed.ecgInterpretation);
-    delete parsed.ecgInterpretation;
-  }
+
 
   // Fill in any missing required fields
   for (const field of requiredScenarioFields) {
@@ -588,38 +584,41 @@ try {
     parsed.modifiersUsed = selectedModifiers;
   }
 
-  // Contextual ECG assignment
-  let ecgToAssign = "Normal Sinus Rhythm";
-  const age = parsed?.patientDemographics?.age || 0;
-  const title = parsed?.title?.toLowerCase() || "";
-  const presentation = parsed?.patientPresentation?.toLowerCase() || "";
-  const keywords = `${title} ${presentation}`;
+// Assign ECG rhythm
+let ecgToAssign = "Normal Sinus Rhythm";
+const age = parsed?.patientDemographics?.age || 0;
+const title = parsed?.title?.toLowerCase() || "";
+const presentation = parsed?.patientPresentation?.toLowerCase() || "";
+const keywords = `${title} ${presentation}`;
 
-  if (keywords.includes("chest pain") || keywords.includes("cardiac")) {
-    ecgToAssign = "Atrial Fibrillation";
-  } else if (keywords.includes("palpitations")) {
-    ecgToAssign = "SVT";
-  } else if (keywords.includes("dizzy") || keywords.includes("syncope")) {
-    ecgToAssign = age > 60 ? "Second Degree AV Block Type I" : "Sinus Bradycardia";
-  } else if (keywords.includes("shortness of breath") || keywords.includes("dyspnea")) {
-    ecgToAssign = "Sinus Tachycardia";
-  } else if (keywords.includes("seizure") || keywords.includes("post-ictal")) {
-    ecgToAssign = "Sinus Tachycardia";
-  } else if (keywords.includes("asystole") || keywords.includes("no pulse")) {
-    ecgToAssign = "Asystole";
-  } else if (keywords.includes("collapse") && age > 65) {
-    ecgToAssign = "Third Degree AV Block";
-  } else if (keywords.includes("trauma")) {
-    ecgToAssign = "Sinus Tachycardia";
-  } else if (keywords.includes("altered") || keywords.includes("unresponsive")) {
-    ecgToAssign = "Pulseless Electrical Activity";
-  }
+if (keywords.includes("chest pain") || keywords.includes("cardiac")) {
+  ecgToAssign = "Atrial Fibrillation";
+} else if (keywords.includes("palpitations")) {
+  ecgToAssign = "SVT";
+} else if (keywords.includes("dizzy") || keywords.includes("syncope")) {
+  ecgToAssign = age > 60 ? "Second Degree AV Block Type I" : "Sinus Bradycardia";
+} else if (keywords.includes("shortness of breath") || keywords.includes("dyspnea")) {
+  ecgToAssign = "Sinus Tachycardia";
+} else if (keywords.includes("seizure") || keywords.includes("post-ictal")) {
+  ecgToAssign = "Sinus Tachycardia";
+} else if (keywords.includes("asystole") || keywords.includes("no pulse")) {
+  ecgToAssign = "Asystole";
+} else if (keywords.includes("collapse") && age > 65) {
+  ecgToAssign = "Third Degree AV Block";
+} else if (keywords.includes("trauma")) {
+  ecgToAssign = "Sinus Tachycardia";
+} else if (keywords.includes("altered") || keywords.includes("unresponsive")) {
+  ecgToAssign = "Pulseless Electrical Activity";
+}
 
-  if (ecgInterpretationWhitelist.includes(ecgToAssign)) {
-    parsed.ecgInterpretation = ecgToAssign;
-  }
+// Final check and assignment
+if (ecgInterpretationWhitelist.includes(ecgToAssign)) {
+  parsed.ecgInterpretation = ecgToAssign;
+}
 
-  res.json(parsed);
+// Final response
+res.json(parsed);
+
 
 } catch (jsonErr) {
   console.error("Failed to repair/parse JSON:", jsonErr);
