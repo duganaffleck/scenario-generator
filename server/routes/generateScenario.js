@@ -584,8 +584,9 @@ try {
     parsed.modifiersUsed = selectedModifiers;
   }
 
-// Assign ECG rhythm
+// --- ECG INTERPRETATION BLOCK ---
 let ecgToAssign = "Normal Sinus Rhythm";
+
 const age = parsed?.patientDemographics?.age || 0;
 const title = parsed?.title?.toLowerCase() || "";
 const presentation = parsed?.patientPresentation?.toLowerCase() || "";
@@ -611,12 +612,10 @@ if (keywords.includes("chest pain") || keywords.includes("cardiac")) {
   ecgToAssign = "Pulseless Electrical Activity";
 }
 
-// Final check and assignment
-if (ecgInterpretationWhitelist.includes(ecgToAssign)) {
-  parsed.ecgInterpretation = ecgToAssign;
-}
+// Add ECG to parsed output
+parsed.ecgInterpretation = ecgToAssign;
+console.log("✅ ECG added:", ecgToAssign);
 
-// Final response
 res.json(parsed);
 
 

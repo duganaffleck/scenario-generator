@@ -4,7 +4,27 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import jsPDF from "jspdf";
 import { FaSpinner, FaMoon, FaSun, FaFilePdf, FaLightbulb} from "react-icons/fa";
-import ecgImageMap from "../utils/ecgImageMap";
+
+
+const ecgImageMap = {
+  "Normal Sinus Rhythm": "/ecg/NSR.jpeg",
+  "Sinus Bradycardia": "/ecg/sinusbrad.jpeg",
+  "Sinus Tachycardia": "/ecg/sinustach.jpeg",
+  "Atrial Fibrillation": "/ecg/afib.jpeg",
+  "Atrial Flutter": "/ecg/atrialflutter.jpeg",
+  "SVT": "/ecg/SVT.jpeg",
+  "Ventricular Tachycardia": "/ecg/vtach.jpeg",
+  "Ventricular Fibrillation": "/ecg/vfib.jpeg",
+  "Asystole": "/ecg/asystole.jpg",
+  "Pulseless Electrical Activity": "/ecg/sinubrad.jpeg",
+  "First Degree AV Block": "/ecg/firstdegree.jpeg",
+  "Second Degree AV Block Type I": "/ecg/secondegree1.jpeg",
+  "Second Degree AV Block Type II": "/ecg/seconddegree2.jpeg",
+  "Third Degree AV Block": "/ecg/thirddegree.jpeg",
+
+};
+
+
 
 function titleCase(str) {
   return str
@@ -54,6 +74,8 @@ const TITLE_MAP = {
   scenarioRationale: "Scenario Rationale & Teaching Tips"
 };
 
+
+
 const ScenarioForm = () => {
   const [formData, setFormData] = useState({
     semester: "3",
@@ -74,6 +96,7 @@ const ScenarioForm = () => {
   const [fontSizeLarge, setFontSizeLarge] = useState(false);
   const [selectedCue, setSelectedCue] = useState(null);
 let cueIndexGlobal = 0;
+
 
 
 
