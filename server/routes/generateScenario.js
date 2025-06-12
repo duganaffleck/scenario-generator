@@ -423,9 +423,9 @@ Generate a detailed paramedic scenario using the following fields. ALL of these 
   - Both sets must include:
     - hr, rr, bp, spo2, etco2, temp, gcs, bgl
    
-Only include a field named `"ecgInterpretation"` **if clinically relevant**, and only if the rhythm is found in the list below. 
+Only include a field named "ecgInterpretation" **if clinically relevant**, and only if the rhythm is found in the list below. 
 
-⚠️ VERY IMPORTANT:
+VERY IMPORTANT:
 - The value must be **exactly one** of the strings below. Do **not** add extra details like “at 90 bpm”, “with PVCs”, etc.
 - The value must be **identical** to one of these — no changes, expansions, or descriptions.
 
@@ -445,16 +445,21 @@ Valid values:
 - "Second Degree AV Block Type II"
 - "Third Degree AV Block"
 
-❌ Examples of INVALID values:
+Examples of INVALID values:
 - "Normal sinus rhythm at 90 bpm" ← WRONG
 - "Sinus tachycardia with occasional PVCs" ← WRONG
 
-✅ CORRECT:
+CORRECT:
 - "Sinus Tachycardia"
 - "Atrial Fibrillation"
 
+When including an ecgInterpretation, do a final check: the value must match one of the exact 15 approved rhythm strings. If not, omit the field entirely
 
 If no ECG rhythm is clinically relevant, omit the "ecgInterpretation" field entirely. Do not fabricate rhythms not listed above.
+
+"Only use exact ECG rhythm names from this list for the 'ecgInterpretation' field, with no additional description: " +
+Object.keys(ecgImageMap).join(", ") + ". " +
+"Do not add qualifiers like 'with PVCs' or 'with ST elevation'. Just provide the base rhythm name exactly as listed."
 
 - Include a field called "clinicalReasoning" with three parts:
   - "summary": A concise summary of the underlying pathophysiology.
