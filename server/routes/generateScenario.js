@@ -567,6 +567,8 @@ if ("ecgInterpretation" in parsed) {
       if (includeComplications) {
         parsed.modifiersUsed = selectedModifiers;
       }
+const randomECG = ecgInterpretationWhitelist[Math.floor(Math.random() * ecgInterpretationWhitelist.length)];
+parsedScenario.ecgInterpretation = randomECG;
 
       res.json(parsed);
     } catch (jsonErr) {
