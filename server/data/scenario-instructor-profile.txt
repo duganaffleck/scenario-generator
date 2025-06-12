@@ -42,6 +42,25 @@ You are speaking directly through the scenario to the learner, like a mentor in 
 - Temperature 
 - BGL (if altered, seizure, diabetic, etc.)
 - ETCO₂ (if applicable)
+- Include a field called ecgInterpretation if applicable.
+- Reference ALS and BLS PCS for clinical relevance.
+- Avoid placeholder text.
+- The ecgInterpretation field must match exactly one of the following rhythm names:
+"Normal Sinus Rhythm", "Sinus Bradycardia", "Sinus Tachycardia", "Atrial Fibrillation", "Atrial Flutter", "SVT", "Ventricular Tachycardia", "Ventricular Fibrillation", "Asystole", "Pulseless Electrical Activity", "First Degree AV Block", "Second Degree AV Block Type I", "Second Degree AV Block Type II", "Third Degree AV Block"
+
+Do NOT add additional phrases like:
+
+“with PVCs”
+
+“showing T-wave inversions”
+
+“at 130 bpm”
+
+“suggestive of ischemia”
+
+Only include the rhythm name exactly as listed — this is required for frontend image rendering.
+
+If the rhythm is not in this list, omit the ecgInterpretation field entirely.
 
 🧠 SMR — Apply as per BLS PCS:
 - Dangerous mechanism + symptoms of spinal injury or meets SMR standard criteria.
