@@ -453,9 +453,16 @@ CORRECT:
 - "Sinus Tachycardia"
 - "Atrial Fibrillation"
 
-When including an ecgInterpretation, do a final check: the value must match one of the exact 15 approved rhythm strings. If not, omit the field entirely
+If ecgInterpretation is provided, embed at least one teaching cue (💡) explaining the rhythm in context. You may include it in:
+- Vital signs (e.g., HR, ECG summary)
+- Case progression (e.g., rhythm changes, response to treatment)
+- Expected treatment (e.g., defibrillation for V-fib)
 
-If no ECG rhythm is clinically relevant, omit the "ecgInterpretation" field entirely. Do not fabricate rhythms not listed above.
+Use the exact format: *(💡|your teaching point)* to ensure frontend rendering.
+
+When including an ecgInterpretation, do a final check: the value must match one of the exact 15 approved rhythm strings. 
+
+
 
 "Only use exact ECG rhythm names from this list for the 'ecgInterpretation' field, with no additional description: " +
 Object.keys(ecgImageMap).join(", ") + ". " +
@@ -584,37 +591,30 @@ try {
     parsed.modifiersUsed = selectedModifiers;
   }
 
-// --- ECG INTERPRETATION BLOCK ---
-let ecgToAssign = "Normal Sinus Rhythm";
+const generationPrompt = `
+choose an ECG rhythm that best matches the patient's presentation. Select from the following list only:
+- Normal Sinus Rhythm
+- Sinus Bradycardia
+- Sinus Tachycardia
+- Atrial Fibrillation
+- Atrial Flutter
+- SVT
+- Ventricular Tachycardia
+- Ventricular Fibrillation
+- Asystole
+- Pulseless Electrical Activity
+- First Degree AV Block
+- Second Degree AV Block Type I
+- Second Degree AV Block Type II
+- Third Degree AV Block
 
-const age = parsed?.patientDemographics?.age || 0;
-const title = parsed?.title?.toLowerCase() || "";
-const presentation = parsed?.patientPresentation?.toLowerCase() || "";
-const keywords = `${title} ${presentation}`;
+Return your choices under the field names:
+- vitalSigns.first.ecgInterpretation
+- vitalSigns.second.ecgInterpretation
 
-if (keywords.includes("chest pain") || keywords.includes("cardiac")) {
-  ecgToAssign = "Atrial Fibrillation";
-} else if (keywords.includes("palpitations")) {
-  ecgToAssign = "SVT";
-} else if (keywords.includes("dizzy") || keywords.includes("syncope")) {
-  ecgToAssign = age > 60 ? "Second Degree AV Block Type I" : "Sinus Bradycardia";
-} else if (keywords.includes("shortness of breath") || keywords.includes("dyspnea")) {
-  ecgToAssign = "Sinus Tachycardia";
-} else if (keywords.includes("seizure") || keywords.includes("post-ictal")) {
-  ecgToAssign = "Sinus Tachycardia";
-} else if (keywords.includes("asystole") || keywords.includes("no pulse")) {
-  ecgToAssign = "Asystole";
-} else if (keywords.includes("collapse") && age > 65) {
-  ecgToAssign = "Third Degree AV Block";
-} else if (keywords.includes("trauma")) {
-  ecgToAssign = "Sinus Tachycardia";
-} else if (keywords.includes("altered") || keywords.includes("unresponsive")) {
-  ecgToAssign = "Pulseless Electrical Activity";
-}
 
-// Add ECG to parsed output
-parsed.ecgInterpretation = ecgToAssign;
-console.log("✅ ECG added:", ecgToAssign);
+Return the rhythm under the field name ecgInterpretation.`
+
 
 res.json(parsed);
 

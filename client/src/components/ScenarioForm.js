@@ -7,20 +7,20 @@ import { FaSpinner, FaMoon, FaSun, FaFilePdf, FaLightbulb} from "react-icons/fa"
 
 
 const ecgImageMap = {
-  "Normal Sinus Rhythm": "/ecg/NSR.jpeg",
+  "Normal Sinus Rhythm": "/ecg/NSR.jpg",
   "Sinus Bradycardia": "/ecg/sinusbrad.jpeg",
-  "Sinus Tachycardia": "/ecg/sinustach.jpeg",
-  "Atrial Fibrillation": "/ecg/afib.jpeg",
-  "Atrial Flutter": "/ecg/atrialflutter.jpeg",
-  "SVT": "/ecg/SVT.jpeg",
-  "Ventricular Tachycardia": "/ecg/vtach.jpeg",
-  "Ventricular Fibrillation": "/ecg/vfib.jpeg",
-  "Asystole": "/ecg/asystole.jpg",
-  "Pulseless Electrical Activity": "/ecg/sinubrad.jpeg",
-  "First Degree AV Block": "/ecg/firstdegree.jpeg",
-  "Second Degree AV Block Type I": "/ecg/secondegree1.jpeg",
-  "Second Degree AV Block Type II": "/ecg/seconddegree2.jpeg",
-  "Third Degree AV Block": "/ecg/thirddegree.jpeg",
+  "Sinus Tachycardia": "/ecg/sinustach.jpg",
+  "Atrial Fibrillation": "/ecg/afib.jpg",
+  "Atrial Flutter": "/ecg/atrialflutter.jpg",
+  "SVT": "/ecg/SVT.jpg",
+  "Ventricular Tachycardia": "/ecg/vtach.jpg",
+  "Ventricular Fibrillation": "/ecg/vfib.jpg",
+  "Asystole": "/ecg/asystole.jpeg",
+  "Pulseless Electrical Activity": "/ecg/sinusbrad.jpeg",
+  "First Degree AV Block": "/ecg/firstdegree.jpg",
+  "Second Degree AV Block Type I": "/ecg/secondegree1.jpg",
+  "Second Degree AV Block Type II": "/ecg/seconddegree2.jpg",
+  "Third Degree AV Block": "/ecg/thirddegree.jpg",
 
 };
 
@@ -168,7 +168,11 @@ let cueIndexGlobal = 0;
 
 
 
+if (generated.ecgInterpretation && generated.vitalSigns) {
+  generated.vitalSigns.ecgInterpretation = generated.ecgInterpretation;
+}
 setScenario(generated);
+console.log("Received scenario:", generated);
 
     } catch (err) {
       setError("Scenario generation failed. Please check backend server.");
@@ -215,7 +219,7 @@ setScenario(generated);
     doc.save("scenario.pdf");
   };
 
-const renderSafeContent = (data) => {
+const renderSafeContent = (data, parentKey = "") => {
   if (typeof data === "string") {
     const parts = [];
     const cueRegex = /\*\(💡\s*(?:[a-z]+\|)?(.+?)\s*\)\*/gi; // removes color words
@@ -293,57 +297,62 @@ const renderSafeContent = (data) => {
     );
   }
 
-  if (typeof data === "object" && data !== null) {
-    return (
-      <ul style={{ paddingLeft: "1rem", marginTop: "0.5rem" }}>
-        {Object.entries(data).map(([key, value], index) => {
-if (key === "ecgInterpretation") {
-  const interpretation = typeof value === "string" ? value : "";
-  const rawECG = scenario?.ecgInterpretation?.trim() || "";
-
-let ecgImageUrl = ecgImageMap[rawECG] || null;
+if (typeof data === "object" && data !== null) {
+  const parentKey = "";
 
   return (
-    <li key={index}>
-      <strong>
-        {ecgImageUrl ? (
-          <span
-            style={{ cursor: "pointer", textDecoration: "underline", color: "#0ea5e9" }}
-            onClick={(e) => {
-              e.stopPropagation();
-              setSelectedECGImage(ecgImageUrl);
-            }}
-          >
-            📈 ECG Interpretation:
-          </span>
-        ) : (
-          "📈 ECG Interpretation:"
-        )}
-      </strong>{" "}
-      {interpretation}
-    </li>
-  );
-}
+    <ul style={{ paddingLeft: "1rem", marginTop: "0.5rem" }}>
+      {Object.entries(data).map(([key, value], index) => {
+  const contextKey = parentKey;
+        // ECG INTERPRETATION BLOCK
+        if (key === "ecgInterpretation") {
+          const interpretation = typeof value === "string" ? value : "";
+          const rawECG = interpretation.trim();
+          const ecgImageUrl = ecgImageMap[rawECG] || null;
 
-
-
+          const labelPrefix = parentKey?.toLowerCase().includes("second") ? "Second Set" :
+                    parentKey?.toLowerCase().includes("first") ? "First Set" :
+                    "";
 
           return (
             <li key={index}>
-              <strong>{formatLabel(key)}:</strong> {renderSafeContent(value)}
+              <strong>
+                {ecgImageUrl ? (
+                  <span
+                    style={{ cursor: "pointer", textDecoration: "underline", color: "#0ea5e9" }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelectedECGImage(ecgImageUrl);
+                    }}
+                  >
+                    📈 {labelPrefix} ECG Interpretation:
+                  </span>
+                ) : (
+                  `📈 ${labelPrefix} ECG Interpretation:`
+                )}
+              </strong>{" "}
+              {interpretation}
             </li>
           );
-        })}
-      </ul>
-    );
-  }
+        }
 
-  return <span>{String(data)}</span>;
-};
+        // DEFAULT DISPLAY FOR OTHER FIELDS
+        return (
+          <li key={index}>
+            <strong>{formatLabel(key)}:</strong> {renderSafeContent(value, contextKey)}
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
+// Fallback for primitive values
+return <span>{String(data)}</span>;
 
 
 
-
+}; 
 const renderSection = (title, content) => {
   const isTeachingCue = typeof content === "string" && content.includes("💡");
   const isProtocolNote = title === "protocolNotes";
