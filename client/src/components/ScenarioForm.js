@@ -222,7 +222,7 @@ console.log("Received scenario:", generated);
 const renderSafeContent = (data, parentKey = "") => {
   if (typeof data === "string") {
     const parts = [];
-    const cueRegex = /\*\(💡\s*(?:[a-z]+\|)?(.+?)\s*\)\*/gi; // removes color words
+    const cueRegex = /\*\(💡(?:[a-z]+\|)?\s*(.+?)\s*\)\*/gi; // removes color words
     let lastIndex = 0;
     let match;
     let localCueIndex = 0;
@@ -275,7 +275,7 @@ const renderSafeContent = (data, parentKey = "") => {
           )}
         </span>
       );
-
+parts.push(<span key={`cue-spacer-${id}`}> </span>);
       lastIndex = matchEnd;
     }
 
@@ -315,24 +315,33 @@ if (typeof data === "object" && data !== null) {
                     "";
 
           return (
-            <li key={index}>
-              <strong>
-                {ecgImageUrl ? (
-                  <span
-                    style={{ cursor: "pointer", textDecoration: "underline", color: "#0ea5e9" }}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setSelectedECGImage(ecgImageUrl);
-                    }}
-                  >
-                    📈 {labelPrefix} ECG Interpretation:
-                  </span>
-                ) : (
-                  `📈 ${labelPrefix} ECG Interpretation:`
-                )}
-              </strong>{" "}
-              {interpretation}
-            </li>
+<li key={index} style={{ listStyleType: "circle", paddingLeft: "0.05rem" }}>
+  <strong>{labelPrefix} ECG Interpretation:</strong>{" "}
+  {ecgImageUrl ? (
+    <span
+      style={{
+        cursor: "pointer",
+        textDecoration: "underline",
+        color: "#0ea5e9",
+        marginLeft: "6px",
+        marginRight: "6px"
+      }}
+      onClick={(e) => {
+        e.stopPropagation();
+        setSelectedECGImage(ecgImageUrl);
+      }}
+    >
+      📈
+    </span>
+  ) : (
+    "📈"
+  )}
+  {interpretation}
+</li>
+
+
+
+
           );
         }
 

@@ -33,7 +33,7 @@ const requiredScenarioFields = [
   "incidentNarrative", "opqrst", "sample", "medications",
   "allergies", "pastMedicalHistory", "physicalExam", "vitalSigns",
   "caseProgression", "expectedTreatment", "clinicalReasoning", "grsAnchors",
-  "vocationalLearningOutcomes", "modifiersUsed", "selfReflectionPrompts", "teachersPoints"
+  "vocationalLearningOutcomes", "selfReflectionPrompts", "teachersPoints"
 ];
 const ecgInterpretationWhitelist = [
   "Normal Sinus Rhythm",
@@ -171,11 +171,11 @@ if (semester === "2") {
 const cueFormatReminder = `
 - All teaching cues must:
   - Begin with a 💡 emoji
-  - Be wrapped in brackets
-  - Be italicized using asterisks (*like this*)
-  - Appear as short reflections from a senior paramedic
-  - Example format: *(💡 This is where students often hesitate.)*
-  `.trim();
+  - Be wrapped like this: *(💡 Short instructional insight)*
+  - Be italicized using asterisks
+  - Never include a color label
+  - Example: *(💡 This is where students often hesitate.)*
+`.trim();
 
 let teachingCueInstruction = "";
 
@@ -245,7 +245,7 @@ if (includeTeachingCues) {
     physicalAndVitalCueInstruction = `- Only include a teaching cue in 'physicalExam' or 'vitalSigns' if it prevents a common misstep. It must feel like a senior clinician whispering insight — not an instructor pausing class.`;
   }
 } else {
-  physicalAndVitalCueInstruction = `- Do not embed any 💡 teaching cues in the 'physicalExam' or 'vitalSigns' sections. Keep them purely clinical.`;
+  physicalAndVitalCueInstruction = `- Only embed 💡 teaching cues in the 'physicalExam' or 'vitalSigns' sections where clinically relevant.`;
 }
 
 let typeInstruction = "";
@@ -343,7 +343,7 @@ switch (focus) {
 }
 
 let include12LeadInstruction = `
-If the scenario is cardiac-related and clinically relevant, include an "ecgInterpretation" field.
+If the scenario is medical in nature, and not a result of an isolated trauma, include an "ecgInterpretation" field.
 Use only one of the following exact values:
 
 - "Normal Sinus Rhythm"
@@ -423,7 +423,7 @@ Generate a detailed paramedic scenario using the following fields. ALL of these 
   - Both sets must include:
     - hr, rr, bp, spo2, etco2, temp, gcs, bgl
    
-Only include a field named "ecgInterpretation" **if clinically relevant**, and only if the rhythm is found in the list below. 
+Only include a field named "ecgInterpretation" if Scenario **is not an isolated trauma**, and only if the rhythm is found in the list below. 
 
 VERY IMPORTANT:
 - The value must be **exactly one** of the strings below. Do **not** add extra details like “at 90 bpm”, “with PVCs”, etc.
@@ -458,7 +458,7 @@ If ecgInterpretation is provided, embed at least one teaching cue (💡) explain
 - Case progression (e.g., rhythm changes, response to treatment)
 - Expected treatment (e.g., defibrillation for V-fib)
 
-Use the exact format: *(💡|your teaching point)* to ensure frontend rendering.
+Use the exact format: (💡 your teaching point) to ensure frontend rendering.
 
 When including an ecgInterpretation, do a final check: the value must match one of the exact 15 approved rhythm strings. 
 
