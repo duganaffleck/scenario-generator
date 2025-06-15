@@ -47,7 +47,7 @@ const SECTION_GROUPS = {
   "Patient Info": ["patientDemographics", "patientPresentation", "opqrst", "sample"],
   "Assessment": ["physicalExam", "vitalSigns"],
   "Clinical Reasoning": ["caseProgression", "differentialDiagnosis", "expectedTreatment", "protocolNotes", "scenarioRationale", "clinicalReasoning"],
-  "Education": ["learningObjectives", "vocationalLearningOutcomes", "selfReflectiveQuestions", "grsAnchors"]
+  "Education": ["learningObjectives", "vocationalLearningOutcomes", "selfReflectivePrompts", "grsAnchors"]
 };
 
 const TITLE_MAP = {
@@ -61,7 +61,7 @@ const TITLE_MAP = {
   differentialDiagnosis: "Differential Diagnosis",
   clinicalReasoning: "Integrated Clinical Reasoning",
   grsAnchors: "GRS Anchors",
-  selfReflectiveQuestions: "Self-Reflective Questions",
+  selfReflectivePrompts: "Self-Reflective Questions",
   opqrst: "OPQRST",
   physicalExam: "Physical Assessment",
   vitalSigns: "Vital Signs",
@@ -365,6 +365,7 @@ return <span>{String(data)}</span>;
 const renderSection = (title, content) => {
   const isTeachingCue = typeof content === "string" && content.includes("💡");
   const isProtocolNote = title === "protocolNotes";
+  
 
   const highlightStyle = isTeachingCue
     ? {
