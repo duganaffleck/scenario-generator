@@ -422,6 +422,8 @@ Generate a detailed paramedic scenario using the following fields. ALL of these 
 - vitalSigns (firstSet, secondSet)
   - Both sets must include:
     - hr, rr, bp, spo2, etco2, temp, gcs, bgl
+- Integrated Clinical Reasoning
+- Teacher's Points
    
 Only include a field named "ecgInterpretation" if Scenario **is not an isolated trauma**, and only if the rhythm is found in the list below. 
 
