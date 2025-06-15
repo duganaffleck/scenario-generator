@@ -1042,6 +1042,136 @@
 },
 
 {
+  "title": "Pediatric ATV Collision — Airway Risk & Scene Chaos",
+  "scenarioIntro": "Rural scenes can lull you into thinking you’ll have time to set up and assess — until you’re facing a panicked parent, a child on the ground, and the creeping dread that airway control might come too late.",
+  "callInformation": "Code 4 response to a rural trailhead for a 7-year-old male involved in an ATV rollover. Caller reports child is 'breathing funny' and drifting in and out of consciousness.",
+  "incidentNarrative": "Child was riding an ATV with an older sibling on a wooded trail. The vehicle tipped after hitting a log at low speed. The child was not wearing a helmet and struck his head and chest on the handlebars before falling to the ground. Family members report he initially cried out, then became quieter. They say he’s breathing fast, has vomited once, and keeps trying to 'fall asleep.' Bystanders rolled him into the recovery position.",
+  "patientDemographics": {
+    "name": "Lucas Emory",
+    "age": 7,
+    "sex": "Male",
+    "height": "4'1\"",
+    "weight": "50 lbs",
+    "generalAppearance": "Small child lying on his side in the dirt, pale and groaning, dried vomit on cheek, obvious distress in family"
+  },
+  "patientPresentation": "Lucas is semi-conscious (GCS ~11), crying softly and moaning intermittently. He is tachypneic and occasionally gurgling on inspiration. There’s blood on his lips and a red abrasion across his upper chest. Parents are hovering and emotionally distraught. *(💡emotional cues|Scenes involving pediatric trauma often carry heightened emotional load — consider how to manage the family while focusing on care.)*",
+  "opqrst": {
+    "onset": "Sudden, immediately after ATV flipped",
+    "provocation": "Movement seems to worsen discomfort",
+    "quality": "Child complains of 'hurts in chest' when able to speak",
+    "radiation": "No clear radiation — difficult to assess",
+    "severity": "Unable to quantify — intermittent crying and moaning",
+    "time": "Incident occurred 12 minutes prior to arrival"
+  },
+  "sample": {
+    "signsSymptoms": "Altered LOC, rapid breathing, vomited once, facial abrasion, chest abrasion",
+    "allergies": "None known",
+    "medications": "None",
+    "pastMedicalHistory": "Healthy, up to date on immunizations",
+    "lastOralIntake": "Lunch ~1 hour ago",
+    "eventsLeadingUp": "ATV tipped over while riding in woods; struck handlebars and then ground; briefly cried, now lethargic"
+  },
+  "vitalSigns": [
+    {
+      "time": "Initial",
+      "hr": 148,
+      "rr": 38,
+      "bp": "96/58",
+      "spo2": "92%",
+      "etco2": "28 mmHg",
+      "temp": "36.8°C",
+      "gcs": "11 (E3 V3 M5)",
+      "bgl": "5.1 mmol/L"
+    },
+    {
+      "time": "10 min later",
+      "hr": 156,
+      "rr": "42 and irregular",
+      "bp": "88/50",
+      "spo2": "89% on room air",
+      "etco2": "25 mmHg",
+      "temp": "36.5°C",
+      "gcs": "9 (E2 V2 M5)",
+      "bgl": "5.0 mmol/L"
+    }
+  ],
+  "physicalExam": {
+    "generalAppearance": "Pale, sweaty, semi-conscious, moaning",
+    "headNeck": "Facial abrasions, dried vomit, no obvious deformity; C-spine not immobilized yet",
+    "chest": "Abrasion across upper sternum; shallow, fast respirations with occasional gurgling",
+    "abdomen": "Soft, no obvious distension or guarding",
+    "extremities": "No gross deformities, but minor scrapes; cap refill ~3s",
+    "back": "Not yet assessed — currently in lateral position"
+  },
+  "caseProgression": {
+    "appropriateCare": "If oxygen is applied via NRB and airway adjunct is placed (e.g., OPA or NPA depending on assessment), SpO₂ improves to 95%. ETCO₂ rises to 30–32 mmHg. Patient remains lethargic but GCS stabilizes around 10. Family calms somewhat if updated. *(💡airway cue|The gurgling and vomit risk make this a high-priority airway scenario — consider early suction and positioning to protect from aspiration.)*",
+    "inadequateCare": "If airway is not secured or SpO₂ drops below 88% and no intervention occurs, the child becomes unresponsive (GCS 6), vomits again, and oxygenation falls to 84%. Care is interrupted by family yelling or attempting to reposition the child. *(💡deterioration cue|Delayed airway control and ineffective oxygenation can cascade quickly — trauma scenes don’t wait for you to feel ready.)*"
+  },
+  "expectedTreatment": "Initiate SMR as per BLS PCS Spinal Motion Restriction Standard. Suction as needed, apply OPA or NPA, provide high-flow oxygen via NRB (if tolerated), titrate to 92–96% per BLS PCS Oxygen Therapy Standard. Ventilate with BVM if respiratory effort weakens. Reassess LOC, vitals, and perform rapid trauma survey. Monitor ETCO₂ to guide airway and perfusion adequacy. Prepare for rapid transport. *(💡protocol tip|Remember: for pediatric trauma with decreasing LOC and vomit risk, airway control is a time-sensitive priority — early suction and positioning matter.)*",
+  "grs": {
+    "Scene Management": {
+      "1": ["Did not secure scene or control family members", "Ignored need for PPE or environmental threats", "Failed to delegate basic tasks like C-spine or suction"],
+      "3": ["Recognized scene safety but did not control chaos", "Delayed establishing command presence", "Missed early PPE or SMR setup"],
+      "5": ["Established scene control, used clear roles", "Directed partner to manage SMR and suction prep", "Acknowledged emotional factors and reassured family"],
+      "7": ["Masterfully balanced clinical care with emotional scene control", "Preemptively positioned resources and delegated tasks", "Used therapeutic communication to diffuse escalating emotions"]
+    },
+    "Primary Assessment & Vitals": {
+      "1": ["Skipped or missed signs of airway compromise", "Failed to assess LOC or breathing pattern", "Ignored abnormal vitals"],
+      "3": ["Performed assessment but lacked synthesis", "Missed gurgling breath sounds or abnormal cap refill", "Delayed oxygen decision"],
+      "5": ["Identified abnormal LOC, ABC threats, and hypoxia", "Performed complete pediatric vitals including GCS and BGL", "Initiated oxygen and suction appropriately"],
+      "7": ["Led a calm, thorough assessment even under pressure", "Prioritized key vitals guiding intervention", "Adjusted care dynamically to changing patient status"]
+    },
+    "History Gathering": {
+      "1": ["No attempt to gather SAMPLE or event history", "Ignored family input"],
+      "3": ["Partial SAMPLE gathered", "Did not clarify mechanism of injury"],
+      "5": ["Collected full SAMPLE with clear event timeline", "Asked relevant pediatric questions (last meal, recent illnesses)"],
+      "7": ["Built rapport with family to elicit clear trauma timeline", "Verified consistency between bystanders’ versions", "Translated history into clinical priorities"]
+    },
+    "Clinical Judgment & Decision Making": {
+      "1": ["Did not recognize signs of airway deterioration", "Failed to act on declining GCS"],
+      "3": ["Recognized issue but delayed intervention", "Did not reassess after treatment"],
+      "5": ["Connected signs of airway threat with mechanism", "Chose suction, adjunct, and oxygen at correct times"],
+      "7": ["Demonstrated proactive airway protection strategy", "Anticipated worsening and prepared backup plans", "Used ETCO₂ and LOC trends to guide care"]
+    },
+    "Procedural Skill & Safety": {
+      "1": ["Performed no SMR, no suction, or incorrect adjunct", "Unsafe BVM use or mask fit"],
+      "3": ["Attempted airway management but technique was flawed", "Missed important SMR steps"],
+      "5": ["Properly sized and inserted OPA/NPA", "Delivered BVM effectively as needed", "Initiated SMR safely and promptly"],
+      "7": ["Executed airway interventions with precision", "Maintained SMR while managing airway", "Used equipment confidently and competently"]
+    },
+    "Resource Utilization": {
+      "1": ["Did not involve partner effectively", "Ignored available tools (e.g., suction)"],
+      "3": ["Used partner for basic tasks only", "Delayed tool prep"],
+      "5": ["Delegated suction, SMR, and equipment setup", "Requested timely vitals and reassessment"],
+      "7": ["Ran a team-based approach efficiently", "Orchestrated multi-step care while anticipating needs", "Maintained forward momentum throughout scene"]
+    },
+    "Communication": {
+      "1": ["Did not communicate plan", "Ignored family or partner"],
+      "3": ["Spoke to partner but not family", "Gave vague or late directions"],
+      "5": ["Explained findings and plans clearly", "Kept family updated", "Used calm tone and clear priorities"],
+      "7": ["Balanced empathy with control", "Reassured family while explaining critical steps", "Kept partner aligned moment-to-moment"]
+    }
+  },
+  "selfReflection": [
+    "How did I prioritize airway control in this pediatric trauma situation?",
+    "What emotional factors affected my performance or decision-making?",
+    "Did I use the appropriate oxygen therapy standard based on this child’s vitals?",
+    "What could I do better next time to balance family communication and clinical care?"
+  ],
+  "clinicalReasoning": {
+    "summary": "This case presents a pediatric traumatic head/chest injury with an emerging airway compromise. Decreasing LOC, gurgling respirations, and vomiting are red flags for potential aspiration and loss of protective reflexes.",
+    "differentialDiagnosis": [
+      ["Airway obstruction (vomit/blood)", "Supported by gurgling, facial trauma, and LOC changes"],
+      ["Pneumothorax or pulmonary contusion", "Fast breathing, trauma to chest, low SpO₂"],
+      ["Concussion/TBI", "Decreasing GCS, post-traumatic vomiting"],
+      ["Shock (compensated)", "Tachycardia, borderline hypotension, poor cap refill"]
+    ]
+   
+  }
+},
+
+
+{
   "title": "COPD Exacerbation with Refusal and Bias Challenge",
   "scenarioIntro": "A complex respiratory case that tests your ability to manage both clinical care and patient refusal — with a twist of bias.",
   "callInformation": "Dispatched code 3 to a community housing unit for a 66-year-old male experiencing difficulty breathing.",
