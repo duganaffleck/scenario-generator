@@ -8,6 +8,17 @@
 - Titrate oxygen to maintain an SpO₂ of 92–96% unless otherwise directed.
 - Use appropriate delivery method (nasal cannula, non-rebreather, BVM) based on severity and directive.
 
+Airway Management:
+- Provide airway support in this order:
+  • Positioning → suction → OPA/NPA → BVM → supraglottic (if PCP authorized)
+- Monitor for effectiveness and reassess airway status frequently.
+
+Cardiac Arrest (CPR/AED):
+- Begin CPR immediately if no pulse or signs of life.
+- Attach AED ASAP and follow prompts.
+- Minimize interruptions.
+- PCPs should follow TOR (Termination of Resuscitation) protocol as outlined.
+
 ## Vital Signs Required
 - All patients must have full vitals taken unless unsafe or impractical:
   - Heart Rate (HR)
@@ -24,6 +35,7 @@
 ## Spinal Motion Restriction (SMR) Standard
 - Apply SMR if the patient has:
   - GCS <15
+  - over the age of 65 with history of a fall
   - Spine pain or tenderness
   - Neurological deficits (numbness, weakness, paralysis)
   - Distracting injury (e.g., long bone fracture)
@@ -34,7 +46,7 @@
     - Ejection from vehicle
     - High-speed collision
 - Do NOT use spinal boards for transport.
-- Use stretcher with head blocks and 3-strap immobilization.
+- Use stretcher and 3-strap immobilization.
 - Document SMR application, criteria met, and patient response.
 
 ## Blood Glucose Testing
@@ -75,6 +87,12 @@
   - Wear appropriate PPE for respiratory, bleeding, or contamination risk
   - Request fire or police assistance when safety or access is compromised
   - Maintain personal and team safety as the top priority
+
+  ## Mental Health 
+  Patient in Crisis:
+- Ensure scene safety.
+- Use de-escalation techniques.
+- Apply BLS protocols and contact police/mental health team as required.
 
 ## Additional BLS Expectations
 - Reassessment is required every 5–10 minutes or after any intervention.

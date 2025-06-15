@@ -663,195 +663,142 @@
   ]
 },
 {
-  "title": "Overdose and Mental Health Crisis at a College Residence",
-  "scenarioIntro": "It’s late evening at a campus residence. A call comes in: a student is locked in their room, unresponsive, and a friend is panicking. You’re dispatched with minimal info — and an uneasy feeling in your gut.",
-  "callInformation": {
-    "type": "Other",
-    "location": "College dormitory, third-floor shared residence",
-    "time": "21:15",
-    "dispatchCode": "25-B-4",
-    "dispatchNotes": [
-      "Caller reports patient locked in room, not responding",
-      "Possible overdose, unknown substances",
-      "Roommate emotionally distressed and unable to provide clear history"
-    ],
-    "hazardsOrFlags": [
-      "Locked door access",
-      "Possible drug paraphernalia",
-      "Emotional bystanders"
-    ],
-    "crewNotes": "Campus security may meet you at entrance; be prepared for complex emotional context"
-  },
+  "title": "Respiratory Failure — Opioid Overdose",
+  "scenarioIntro": "This scene unfolds in a dim apartment bedroom. You’re met with the quiet dread of an unresponsive young adult and a panicked friend who thinks he’s 'just sleeping it off.' But the shallow breaths say otherwise.",
+  "callInformation": "Code 4 response to a private residence for a 24-year-old male, unresponsive. Friend reports recent opioid use.",
+  "incidentNarrative": "The patient reportedly used opioids (likely fentanyl) about an hour ago after a night of partying. Friend found him unresponsive on the bed, slow shallow breaths. Unsure if he used anything else.",
   "patientDemographics": {
-    "name": "Jordan Reyes",
-    "age": 20,
-    "sex": "Non-binary",
-    "height": "5'6\"",
-    "weight": "130 lbs",
-    "appearance": "Lying on the bed, pale, slow to respond, visibly disoriented"
+    "name": "Tyler Shaw",
+    "age": 24,
+    "sex": "Male",
+    "height": "5'10\"",
+    "weight": "170 lbs",
+    "generalAppearance": "Lying supine on bed, cyanotic lips, slow respirations, no response to verbal stimuli"
   },
-  "patientPresentation": "Jordan is lying supine on the bed, blinking slowly and responding with slurred one-word answers. There’s a slight chemical odor in the room, empty pill bottles scattered nearby, and a nearby laptop with a partially written note. *(💡 This is one of those scenes where emotional tone matters — pause before you act.)*",
-  "incidentNarrative": "Jordan was found by their roommate after not attending a scheduled group meeting. Roommate states Jordan has been “not doing well lately” and may have taken “something” earlier in the evening. They last saw Jordan around 17:00 and report they’ve been withdrawn since a recent breakup.",
+  "patientPresentation": "Tyler is unresponsive to verbal stimuli, only moans to pain. Respiratory effort is minimal — ~6 shallow breaths per minute *(💡 Bradypnea + pinpoint pupils = likely opioid toxicity)*. Cyanosis present around lips and nail beds. Gurgling audible without suction. Pupils are pinpoint.",
   "opqrst": {
-    "Onset": "Unknown — last seen well at 17:00",
-    "Provocation": "Unclear, patient not coherent enough to answer",
-    "Quality": "States they feel 'weird' and 'numb'",
-    "Radiation": "No reported pain",
-    "Severity": "Patient unable to rate symptoms",
-    "Time": "Roommate reports patient has been unresponsive since ~20:30"
+    "Onset": "Unknown exact time, likely 45–60 min ago",
+    "Provocation": "No response to voice or sternal rub",
+    "Quality": "Not verbalized — moans only",
+    "Radiation": "N/A",
+    "Severity": "Unresponsive",
+    "Time": "Friend last saw him alert ~1 hour ago"
   },
-  "sampleHistory": {
-    "SignsSymptoms": "Confusion, slurred speech, mild respiratory depression",
-    "Allergies": "None known",
-    "Medications": "Sertraline (SSRI), propranolol (for anxiety)",
-    "PastMedicalHistory": "Generalized anxiety disorder, recent suicidal ideation",
-    "LastOralIntake": "Ate dinner around 18:00, unsure if anything since",
-    "EventsLeadingUp": "Suspected overdose; evidence of pill bottles and note; emotionally volatile context"
+  "sample": {
+    "Signs/Symptoms": "Unresponsive, cyanosis, shallow breathing, pinpoint pupils",
+    "Allergies": "Unknown",
+    "Medications": "Unknown — likely opioid use (suspected fentanyl)",
+    "Past Medical History": "History of substance use disorder — not on methadone",
+    "Last Oral Intake": "Likely alcohol earlier in the night",
+    "Events Leading Up": "Party, multiple drugs used, found unresponsive in bed"
   },
-  "medications": [
-    "Sertraline - SSRI, used for depression/anxiety; overdose can cause serotonin toxicity",
-    "Propranolol - Beta-blocker, used for anxiety and heart rate control; overdose may cause bradycardia/hypotension"
-  ],
-  "allergies": "None known",
-  "pastMedicalHistory": "Generalized anxiety disorder; recent emotional stressor (relationship breakup)",
   "physicalExam": {
-    "generalAppearance": "Lethargic, barely responsive *(💡 This isn’t just fatigue — metabolic emergencies present with this kind of profound weakness. Ask yourself: does this match DKA or something else?)*",
-    "headNeck": "No signs of trauma, pupils sluggish but equal *(💡 Pupils help you rule out neurological or toxic causes — don’t skip them even in medical calls.)*",
-    "chest": "Air entry clear bilaterally with deep, labored Kussmaul respirations *(💡 Kussmaul = metabolic acidosis compensation. If you hear it, think DKA or salicylates.)*",
-    "abdomen": "Soft, mildly tender, no guarding or rigidity *(💡 Tenderness without peritonitis helps steer you away from surgical causes.)*",
-    "extremities": "Cool peripheries, no edema, cap refill ~3s *(💡 Cap refill is a cheap and fast window into perfusion — use it.)*"
+    "General": "Unresponsive, moaning with pain, poor respiratory effort",
+    "Head/Neck": "No trauma, airway partially obstructed by tongue/gurgling secretions",
+    "Chest": "Shallow chest rise, equal bilaterally",
+    "Abdomen": "Soft, non-tender",
+    "Extremities": "No signs of IV drug use noted, cap refill ~3s, cool",
+    "Skin": "Cyanotic around lips and fingers, diaphoretic",
+    "Pupils": "Pinpoint bilaterally, sluggish"
   },
   "vitalSigns": {
-    "firstSet": {
-      "HR": 124,
-      "RR": 30,
-      "BP": "88/54",
-      "SpO₂": "97%",
-      "ETCO₂": "18 mmHg *(💡 Low ETCO₂ in a breathing patient should scream 'acidosis' — think DKA.)*",
-      "Temp": "37.2°C",
-      "GCS": "10 (E3 V2 M5)",
-      "BGL": "22.4 mmol/L *(💡 This value doesn’t just confirm hyperglycemia — it helps confirm your differential.)*",
-      "ecgInterpretation": "Sinus Tachycardia"
+    "First Set": {
+      "HR": 54,
+      "RR": 6,
+      "BP": "102/66",
+      "SpO2": "84%",
+      "ETCO2": "59 mmHg",
+      "Temp": "36.4°C",
+      "GCS": "7 (E2 V2 M3)",
+      "BGL": "5.2 mmol/L",
+      "ecgInterpretation": "Sinus Bradycardia"
     },
-    "secondSet": {
-      "HR": 132,
-      "RR": 32,
-      "BP": "84/50",
-      "SpO₂": "96%",
-      "ETCO₂": "16 mmHg *(💡 ETCO₂ is falling — this patient is breathing harder to compensate. Watch for fatigue.)*",
-      "Temp": "37.3°C",
-      "GCS": "9 (E2 V2 M5)",
-      "BGL": "22.1 mmol/L *(💡 No significant change — but don’t wait for one. Time is tissue in DKA.)*",
-      "ecgInterpretation": "Sinus Tachycardia"
+    "Second Set": {
+      "HR": 68,
+      "RR": "10 with assisted ventilations",
+      "BP": "108/70",
+      "SpO2": "96%",
+      "ETCO2": "40 mmHg",
+      "Temp": "36.6°C",
+      "GCS": "11 (E3 V3 M5)",
+      "BGL": "5.3 mmol/L",
+      "ecgInterpretation": "Sinus Bradycardia"
     }
   },
   "caseProgression": {
-    "withProperTreatment": "With high suspicion of overdose and close monitoring, students administer naloxone per protocol, reposition patient to support airway, and initiate rapid transport. Patient’s GCS improves modestly, and respiratory rate stabilizes. Roommate begins to cry and asks to ride along. Scene de-escalates with appropriate communication and empathy.",
-    "withoutProperTreatment": "If the overdose is not recognized and airway is not managed, patient’s respiratory status continues to decline. ETCO₂ rises, GCS drops to 9, and cyanosis becomes visible. Emotional scene becomes chaotic, roommate begins yelling, and the situation spirals into a high-risk, poorly managed transport."
+    "withProperTreatment": "If ventilations are supported with BVM and naloxone is administered promptly per ALS PCS, patient begins to improve within minutes — GCS rises to ~11, ETCO₂ drops, and SpO₂ stabilizes. *(💡 Always treat hypoventilation with ventilations first — not just naloxone.)*",
+    "withoutProperTreatment": "If BVM is not initiated or naloxone is delayed, hypoxia and hypercapnia worsen. ETCO₂ climbs, SpO₂ drops, cardiac arrest is possible within minutes. Friend may become aggressive or panicked."
   },
-  "expectedTreatment": "Students should assess mental status, rule out trauma, and consider toxidrome patterns. Oxygen should be titrated per BLS PCS (SpO₂ <94%, target 92–96%). If opioid overdose is suspected based on scene and respiratory status, naloxone should be considered under ALS PCS. Verbal de-escalation and clear documentation of mental health risk are required. *(💡 BLS doesn't mean Basic Thinking — stabilize what you can, even if ALS is 10 minutes out.)*",
-  "teachersPoints": "This scenario isn’t about getting the perfect diagnosis — it’s about reading the room. An emotionally unstable environment, unclear history, and subtle signs of overdose all force students to think holistically. Teach them to treat what’s in front of them, communicate compassionately, and trust their training.",
-  "grsAnchors": {
-    "situationalAwareness": {
-      "1": [
-        "Did not secure the scene, allowing bystander panic to escalate",
-        "Ignored environmental cues such as pill bottles and open laptop",
-        "Failed to establish control or request backup early"
-      ],
-      "3": [
-        "Attempted to manage scene but provided unclear instructions",
-        "Missed key clues due to emotional overwhelm",
-        "Delayed scene control efforts, impacting assessment"
-      ],
-      "5": [
-        "Recognized emotionally charged environment and maintained calm",
-        "Secured room access and involved campus security appropriately",
-        "Used tone and body language to de-escalate roommate"
-      ],
-      "7": [
-        "Anticipated escalation and preemptively involved supports",
-        "Repositioned bystanders to minimize interference",
-        "Integrated scene clues into clinical picture instantly"
-      ]
-    },
-    "Assessment": {
-      "1": [
-        "No vitals taken before initiating movement",
-        "Overlooked airway concerns despite low SpO₂ and GCS",
-        "Failed to assess mental status or LOC changes"
-      ],
-      "3": [
-        "Incomplete vital signs collected",
-        "Recognized overdose but did not assess thoroughly",
-        "Missed secondary causes such as trauma"
-      ],
-      "5": [
-        "Performed thorough head-to-toe including toxidrome considerations",
-        "Used GCS and vitals to reassess LOC",
-        "Included ETCO₂ to monitor ventilatory status"
-      ],
-      "7": [
-        "Connected scene, vitals, and history into a working diagnosis",
-        "Identified high-risk status early and reassessed trends",
-        "Confirmed overdose through systematic elimination"
-      ]
-    },
-    "Decision Making": {
-      "1": [
-        "Failed to act despite low GCS and respiratory depression",
-        "Did not request ALS backup or prepare for transport",
-        "Ignored scene evidence suggesting overdose"
-      ],
-      "3": [
-        "Recognized concern but delayed action",
-        "Considered overdose but did not treat definitively",
-        "Relied on unclear bystander info without critical filtering"
-      ],
-      "5": [
-        "Made timely decision to support airway and initiate transport",
-        "Integrated ALS PCS for naloxone consideration",
-        "Balanced emotional and clinical inputs effectively"
-      ],
-      "7": [
-        "Rapidly triaged priorities and anticipated complications",
-        "Used protocol proactively (oxygen titration, naloxone)",
-        "Coordinated bystander, partner, and scene control into treatment plan"
-      ]
-    },
-    "Communication": {
-      "1": [
-        "Did not acknowledge roommate presence or engage them",
-        "Used cold or dismissive language",
-        "Failed to relay patient status clearly to partner"
-      ],
-      "3": [
-        "Provided minimal communication with patient or bystander",
-        "Relayed findings but lacked clarity",
-        "Missed opportunity to reduce stress through explanation"
-      ],
-      "5": [
-        "Used compassionate tone to engage patient and roommate",
-        "Relayed clinical findings clearly and confirmed understanding",
-        "Provided calm, directed instructions to team"
-      ],
-      "7": [
-        "Demonstrated therapeutic presence with distressed roommate",
-        "Framed clinical actions in supportive, human language",
-        "Unified team and bystanders through intentional, empathetic dialogue"
-      ]
-    }
+  "expectedTreatment": "Ensure PPE, manage airway with suction and basic maneuvers. Begin BVM ventilations immediately. Confirm opioid toxidrome. Administer naloxone IM or IN per ALS PCS. Reassess breathing and LOC. Transport while continuing ventilations or monitoring closely if respiratory drive returns. *(💡 Ventilations are the priority. Naloxone buys time — BVM saves lives.)*",
+  "protocolNotes": "Per ALS PCS: Naloxone indicated for suspected opioid toxicity with hypoventilation or apnea. Must initiate BVM support first. Per BLS PCS: oxygen required with SpO₂ <94% and poor respiratory effort.",
+  "scenarioRationale": "This scenario reinforces the need for airway and ventilatory support prior to pharmacological intervention. Many students reach for naloxone first — this case emphasizes that oxygenation and ventilation are foundational.",
+  "clinicalReasoning": "Opioids suppress respiratory drive — leading to hypercapnic respiratory failure. Bradypnea, low SpO₂, high ETCO₂, and pinpoint pupils point to opioid toxidrome. BVM should precede naloxone to avoid delay in oxygenation.",
+  "differentialDiagnosis": {
+    "Opioid Overdose": "Most likely based on symptoms and history",
+    "Alcohol intoxication": "Possible contributor, but does not explain pinpoint pupils or severe bradypnea",
+    "Head injury": "Unlikely — no trauma reported or visible",
+    "Seizure/postictal": "No seizure activity noted, pupils inconsistent"
   },
+  "learningObjectives": [
+    "Recognize signs of opioid overdose and respiratory failure",
+    "Initiate proper BVM support before naloxone administration",
+    "Understand ETCO₂ and SpO₂ values in opioid-related hypoventilation"
+  ],
   "vocationalLearningOutcomes": [
-    "Analyze complex and unpredictable situations to provide safe, ethical care.",
-    "Collaborate with patients and team members using effective communication strategies.",
-    "Perform relevant controlled acts and interventions within the paramedic scope using clinical judgment."
+    "Provide basic airway management and ventilation in respiratory failure",
+    "Demonstrate protocol-based pharmacological intervention (naloxone)",
+    "Interpret and respond to abnormal vital signs and monitoring data"
   ],
   "selfReflectionPrompts": [
-    "How did you recognize this as a possible overdose even before confirming?",
-    "What communication strategies worked best when handling the roommate?",
-    "Did your treatment plan reflect both clinical care and emotional support?",
-    "What scene clues were most important for guiding your decision-making?"
-  ]
+    "Did I start ventilating early enough, or was I delayed by other tasks?",
+    "How comfortable am I with BVM technique in real-time situations?",
+    "Did I explain to the bystander what was happening and why?",
+    "How did I confirm this was an opioid overdose and not something else?"
+  ],
+  "grsAnchors": {
+    "sceneManagement": {
+      "1": "No PPE used, didn’t assess for hazards like needles or panicked bystanders",
+      "3": "Recognized overdose scene but forgot to calm or instruct bystanders",
+      "5": "Safe, controlled scene; took charge while maintaining focus",
+      "7": "Delegated roles, controlled bystander chaos, initiated care immediately with confidence"
+    },
+    "assessment": {
+      "1": "Skipped ABCs, didn’t assess breathing or pupils",
+      "3": "Partial assessment done, missed signs of hypoventilation",
+      "5": "Identified key findings — pinpoint pupils, low RR, cyanosis",
+      "7": "Rapid, comprehensive toxidrome assessment with real-time clinical prioritization"
+    },
+    "historyGathering": {
+      "1": "Asked no questions, missed context of opioid use",
+      "3": "Got vague history but didn’t clarify timelines or substances",
+      "5": "Took SAMPLE + event history from friend, established opioid use clearly",
+      "7": "Confirmed opioid timeline, explored polysubstance use and past medical history deeply"
+    },
+    "clinicalDecisionMaking": {
+      "1": "Did not ventilate or delayed treatment significantly",
+      "3": "Went straight to naloxone without BVM support",
+      "5": "Recognized opioid overdose, supported breathing first, gave naloxone per protocol",
+      "7": "Prioritized ventilations, optimized care sequence, adjusted to changes confidently"
+    },
+    "proceduralSkill": {
+      "1": "Poor BVM seal or didn’t suction airway",
+      "3": "Attempted BVM but with inadequate technique or frequency",
+      "5": "Performed effective BVM, suctioned, monitored ETCO₂",
+      "7": "Flawless airway control — BVM, suction, monitoring all optimized"
+    },
+    "resourceUtilization": {
+      "1": "Did not ask for help, worked solo",
+      "3": "Used partner inconsistently, forgot to prep gear",
+      "5": "Assigned roles, managed suction, BVM, naloxone prep smoothly",
+      "7": "Coordinated airway care as a team, delegated skillfully under pressure"
+    },
+    "communication": {
+      "1": "Said little or panicked, ignored bystander input",
+      "3": "Basic explanation, unclear or jargon-heavy",
+      "5": "Spoke calmly to friend, explained treatment and transport",
+      "7": "De-escalated scene, educated bystander, communicated with team clearly and supportively"
+    }
+  }
 },
 
 {
