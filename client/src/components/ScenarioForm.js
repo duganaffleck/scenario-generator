@@ -47,7 +47,7 @@ const SECTION_GROUPS = {
   "Patient Info": ["patientDemographics", "patientPresentation", "opqrst", "sample"],
   "Assessment": ["physicalExam", "vitalSigns"],
   "Clinical Reasoning": ["caseProgression", "differentialDiagnosis", "expectedTreatment", "protocolNotes", "scenarioRationale", "clinicalReasoning"],
-  "Education": ["learningObjectives", "vocationalLearningOutcomes", "selfReflectivePrompts", "grsAnchors"]
+  "Education": ["learningObjectives", "vocationalLearningOutcomes", "selfReflectionPrompts",  "grsAnchors"]
 };
 
 const TITLE_MAP = {
@@ -61,7 +61,7 @@ const TITLE_MAP = {
   differentialDiagnosis: "Differential Diagnosis",
   clinicalReasoning: "Integrated Clinical Reasoning",
   grsAnchors: "GRS Anchors",
-  selfReflectivePrompts: "Self-Reflective Questions",
+  selfReflectionPrompts:  "Self-Reflective Questions",
   opqrst: "OPQRST",
   physicalExam: "Physical Assessment",
   vitalSigns: "Vital Signs",
@@ -495,7 +495,8 @@ const renderSection = (title, content) => {
                 {!collapsedSections[groupName] &&
                   keys
                     .filter((key) => key !== "teachersPoints")
-                    .map((key) => scenario[key] && renderSection(key, scenario[key]))}
+                    .map((key) => scenario[key] && renderSection(key, scenario[key]))
+                    }
 
 
               </div>
