@@ -65,7 +65,8 @@ const {
   includeComplications = true,
   includeBystanders = true,
   includeTeachingCues = true,
-  modifierCategories = {}
+  modifierCategories = {},
+  customPrompt //
 } = req.body;
 
 
@@ -549,15 +550,20 @@ function sanitizeOutput(raw) {
 
 let completion;
 try {
-  completion = await openai.chat.completions.create({
-    model: 'gpt-4o',
-    temperature: 1.0,
-    max_tokens: 4096,
-    messages: [
-      { role: 'system', content: profile },
-      { role: 'user', content: `${fewShots}\n\n${scenarioDirectives}\n\n${generationPrompt}` }
-    ]
-  });
+ const userPrompt = `${fewShots}\n\n${scenarioDirectives}\n\n${
+  customPrompt ? `Instructor Request: ${customPrompt}\n\n` : ''
+}${generationPrompt}`;
+
+completion = await openai.chat.completions.create({
+  model: 'gpt-4o',
+  temperature: 1.0,
+  max_tokens: 8192,
+  messages: [
+    { role: 'system', content: profile },
+    { role: 'user', content: userPrompt }
+  ]
+});
+
 } catch (error) {
   console.error("❌ OpenAI API error:", error);
   return res.status(500).json({ error: "Scenario generation failed" });
@@ -592,6 +598,10 @@ try {
   if (includeComplications) {
     parsed.modifiersUsed = selectedModifiers;
   }
+  if (customPrompt) {
+  parsed.customPrompt = customPrompt;
+}
+
 
 const generationPrompt = `
 choose an ECG rhythm that best matches the patient's presentation. Select from the following list only:

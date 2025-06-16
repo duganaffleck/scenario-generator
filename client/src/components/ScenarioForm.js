@@ -84,8 +84,11 @@ const ScenarioForm = () => {
     complexity: "Moderate",
     focus: "Assessment",
     uniqueness: "Common", 
-    includeTeachingCues: true
+    includeTeachingCues: true,
+    customPrompt: ""
   });
+
+
 
   const [selectedECGImage, setSelectedECGImage] = useState(null);
   const [scenario, setScenario] = useState(null);
@@ -96,6 +99,7 @@ const ScenarioForm = () => {
   const [fontSizeLarge, setFontSizeLarge] = useState(false);
   const [selectedCue, setSelectedCue] = useState(null);
 let cueIndexGlobal = 0;
+
 
 
 
@@ -464,6 +468,24 @@ const renderSection = (title, content) => {
   </select>
  
 </div>
+<div style={styles(darkMode, fontSizeLarge).fieldRow}>
+  <label htmlFor="customPrompt"><strong>Instructor Prompt (Optional)</strong></label>
+  <textarea
+    id="customPrompt"
+    name="customPrompt"
+    value={formData.customPrompt}
+    onChange={handleChange}
+    placeholder="e.g. 'Make this a sports injury in a teen with subtle signs of head trauma.'"
+    rows={3}
+    style={{
+      padding: "0.5rem",
+      borderRadius: "8px",
+      border: "1px solid #64748b",
+      backgroundColor: darkMode ? "#1e293b" : "#ffffff",
+      color: darkMode ? "#f1f5f9" : "#1e293b"
+    }}
+  />
+</div>
 
         {error && <p style={styles(darkMode, fontSizeLarge).error}>{error}</p>}
         {loading && <p style={styles(darkMode, fontSizeLarge).loading}><FaSpinner className="spin" /> Generating Scenario...</p>}
@@ -472,6 +494,19 @@ const renderSection = (title, content) => {
       </div>
         {scenario && (
           <div style={styles(darkMode, fontSizeLarge).outputBox}>
+          {scenario.customPrompt && (
+  <div style={{
+    backgroundColor: "#fef9c3",
+    borderLeft: "6px solid #facc15",
+    padding: "1rem",
+    borderRadius: "10px",
+    marginBottom: "1rem"
+  }}>
+    <strong>📌 Instructor Prompt:</strong>
+    <p style={{ marginTop: "0.5rem" }}>{scenario.customPrompt}</p>
+  </div>
+)}
+
             {Object.entries(SECTION_GROUPS).map(([groupName, keys]) => (
               <div key={groupName}>
                 <h2 style={styles(darkMode, fontSizeLarge).sectionHeading} onClick={() => toggleSection(groupName)}>
