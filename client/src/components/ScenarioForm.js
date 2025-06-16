@@ -469,7 +469,7 @@ const renderSection = (title, content) => {
  
 </div>
 <div style={styles(darkMode, fontSizeLarge).fieldRow}>
-  <label htmlFor="customPrompt"><strong>Instructor Prompt (Optional)</strong></label>
+  <label htmlFor="customPrompt">Instructor Prompt (Optional)</label>
   <textarea
     id="customPrompt"
     name="customPrompt"
