@@ -1,0 +1,284 @@
+[
+  {
+    "title": "The Tight Chest at the Bus Stop",
+    "scenarioIntro": "This scenario focuses on recognition and management of acute asthma exacerbation. Students must recognize respiratory distress, initiate oxygen appropriately, administer bronchodilator therapy, and communicate effectively with a patient who is anxious and struggling to breathe.",
+
+    "callInformation": {
+      "dispatch": "Difficulty breathing at a bus stop",
+      "location": "City bus shelter",
+      "timeOfDay": "Afternoon",
+      "environment": "Cool weather, moderate pedestrian traffic"
+    },
+
+    "patientDemographics": {
+      "age": 22,
+      "gender": "Female"
+    },
+
+    "incidentNarrative": "The patient was waiting for the bus when she began experiencing increasing shortness of breath and chest tightness. She used her inhaler once with minimal relief. Bystanders called 911 when she began having difficulty speaking in full sentences.",
+
+    "patientPresentation": "Patient is sitting upright, visibly anxious, speaking in short phrases, using accessory muscles to breathe. Audible wheezing present. Skin slightly pale but warm and dry. *(💡yellow|Short phrases + accessory muscle use should immediately signal moderate to severe respiratory distress)*",
+
+    "opqrst": {
+      "onset": "Gradual over 20 minutes",
+      "provocation": "Worse with movement",
+      "quality": "Tight chest",
+      "radiation": "None",
+      "severity": "7/10",
+      "time": "Started 20 minutes ago"
+    },
+
+    "sample": {
+      "symptoms": "Shortness of breath, chest tightness, wheezing",
+      "allergies": "None",
+      "medications": "Salbutamol inhaler",
+      "pastMedicalHistory": "Asthma",
+      "lastOralIntake": "Lunch 2 hours ago",
+      "events": "Waiting for bus when symptoms started"
+    },
+
+    "physicalExam": {
+      "airway": "Patent",
+      "breathing": "Rapid, shallow, wheezes bilaterally",
+      "circulation": "Radial pulse rapid, skin warm",
+      "disability": "Alert and oriented",
+      "exposure": "No trauma"
+    },
+
+    "vitalSigns": {
+      "set1": {
+        "HR": 118,
+        "RR": 28,
+        "BP": "132/84",
+        "SpO2": "91%",
+        "GCS": 15,
+        "Temp": "36.8C",
+        "BGL": "5.8"
+      },
+      "set2": {
+        "HR": 104,
+        "RR": 22,
+        "BP": "128/82",
+        "SpO2": "96%",
+        "GCS": 15,
+        "Temp": "36.8C",
+        "BGL": "5.8"
+      }
+    },
+
+    "caseProgression": {
+      "withTreatment": "After oxygen and salbutamol administration, wheezing decreases, respiratory rate improves, patient able to speak full sentences, SpO₂ improves to mid-90s.",
+      "withoutTreatment": "Respiratory distress worsens, patient becomes fatigued, wheezing decreases with poor air movement, SpO₂ drops into high 80s, patient becomes drowsy."
+    },
+
+    "expectedTreatment": [
+      "Scene safety and PPE",
+      "Primary survey",
+      "Oxygen administration per BLS PCS",
+      "Assist with salbutamol MDI or administer bronchodilator",
+      "Position patient upright",
+      "Monitor vitals and reassess after treatment",
+      "Transport decision",
+      "Provide reassurance and communication"
+    ],
+
+    "clinicalReasoning": {
+      "mostLikelyDiagnosis": "Acute asthma exacerbation due to bronchospasm and airway inflammation causing airflow limitation.",
+      "differentialDiagnosis": [
+        "Anxiety/panic attack",
+        "Allergic reaction",
+        "Respiratory infection",
+        "Pulmonary embolism"
+      ],
+      "keyClues": [
+        "Wheezes → bronchospasm",
+        "Short phrases → respiratory distress",
+        "Improvement after bronchodilator → asthma likely"
+      ]
+    },
+
+    "grsAnchors": {
+      "situationAwareness": {
+        "1": [
+          "Fails to recognize respiratory distress",
+          "Misses abnormal vital signs",
+          "Does not prioritize patient condition"
+        ],
+        "3": [
+          "Recognizes breathing problem but underestimates severity",
+          "Delayed recognition of abnormal vitals",
+          "Needs prompting to prioritize care"
+        ],
+        "5": [
+          "Recognizes respiratory distress and prioritizes appropriately",
+          "Monitors vitals and patient status",
+          "Maintains awareness of patient condition"
+        ],
+        "7": [
+          "Immediately recognizes severity of respiratory distress",
+          "Anticipates deterioration or fatigue",
+          "Continuously reassesses and adjusts care"
+        ]
+      },
+
+      "decisionMaking": {
+        "1": [
+          "Fails to administer oxygen",
+          "Fails to provide bronchodilator",
+          "Poor transport decision"
+        ],
+        "3": [
+          "Provides some treatment but delayed",
+          "Incorrect treatment priority",
+          "Transport decision delayed"
+        ],
+        "5": [
+          "Provides oxygen and bronchodilator appropriately",
+          "Reassesses after treatment",
+          "Appropriate transport decision"
+        ],
+        "7": [
+          "Prioritizes bronchodilator quickly",
+          "Anticipates repeat treatments",
+          "Excellent clinical reasoning and transport planning"
+        ]
+      }
+    },
+
+    "selfReflection": [
+      "What clinical signs indicated respiratory distress?",
+      "How did treatment change the patient condition?",
+      "What would you do differently next time?",
+      "What complications could occur in severe asthma?"
+    ]
+  },
+
+  {
+    "title": "The Quiet Diabetic",
+    "scenarioIntro": "This scenario focuses on recognition and management of hypoglycemia. Students must identify altered mental status due to low blood glucose and administer appropriate treatment such as oral glucose or glucagon.",
+
+    "callInformation": {
+      "dispatch": "Unconscious person",
+      "location": "Private residence",
+      "timeOfDay": "Morning",
+      "environment": "Small apartment"
+    },
+
+    "patientDemographics": {
+      "age": 58,
+      "gender": "Male"
+    },
+
+    "incidentNarrative": "Family states patient is diabetic and was found confused and diaphoretic this morning. He did not eat breakfast and took his insulin.",
+
+    "patientPresentation": "Patient is confused, pale, diaphoretic, slow to respond to questions. *(💡yellow|Altered LOC + diaphoresis in diabetic patient should immediately trigger BGL check)*",
+
+    "opqrst": {
+      "onset": "Gradual",
+      "provocation": "Missed meal",
+      "quality": "Weak and dizzy",
+      "radiation": "None",
+      "severity": "5/10",
+      "time": "This morning"
+    },
+
+    "sample": {
+      "symptoms": "Confusion, sweating",
+      "allergies": "None",
+      "medications": "Insulin",
+      "pastMedicalHistory": "Diabetes",
+      "lastOralIntake": "Last night",
+      "events": "Took insulin but did not eat"
+    },
+
+    "physicalExam": {
+      "airway": "Patent",
+      "breathing": "Normal",
+      "circulation": "Diaphoretic",
+      "disability": "Confused",
+      "exposure": "No trauma"
+    },
+
+    "vitalSigns": {
+      "set1": {
+        "HR": 102,
+        "RR": 18,
+        "BP": "138/88",
+        "SpO2": "98%",
+        "GCS": 13,
+        "Temp": "36.5C",
+        "BGL": "2.3"
+      },
+      "set2": {
+        "HR": 88,
+        "RR": 16,
+        "BP": "132/82",
+        "SpO2": "99%",
+        "GCS": 15,
+        "Temp": "36.6C",
+        "BGL": "5.6"
+      }
+    },
+
+    "caseProgression": {
+      "withTreatment": "After glucagon or oral glucose, patient becomes alert, diaphoresis resolves, vitals stabilize, patient able to answer questions.",
+      "withoutTreatment": "Patient LOC decreases, may become unconscious, risk of seizure, worsening hypoglycemia."
+    },
+
+    "expectedTreatment": [
+      "Primary survey",
+      "Check blood glucose",
+      "Administer oral glucose if conscious",
+      "Administer glucagon if unable to swallow",
+      "Reassess LOC and BGL",
+      "Transport decision"
+    ],
+
+    "clinicalReasoning": {
+      "mostLikelyDiagnosis": "Hypoglycemia due to insulin administration without food intake.",
+      "differentialDiagnosis": [
+        "Stroke",
+        "Head injury",
+        "Drug or alcohol intoxication",
+        "Sepsis"
+      ],
+      "keyClues": [
+        "Diabetic history",
+        "Low BGL",
+        "Improves after glucose"
+      ]
+    },
+
+    "grsAnchors": {
+      "decisionMaking": {
+        "1": [
+          "Fails to check BGL",
+          "Fails to treat hypoglycemia",
+          "Incorrect treatment decision"
+        ],
+        "3": [
+          "Delayed BGL check",
+          "Delayed glucose administration",
+          "Needs prompting for treatment"
+        ],
+        "5": [
+          "Checks BGL promptly",
+          "Administers glucose appropriately",
+          "Reassesses patient"
+        ],
+        "7": [
+          "Immediately recognizes hypoglycemia",
+          "Provides rapid treatment",
+          "Excellent reassessment and management"
+        ]
+      }
+    },
+
+    "selfReflection": [
+      "What clues indicated hypoglycemia?",
+      "Why is checking BGL important in altered LOC?",
+      "What complications can occur if untreated?",
+      "How did treatment affect the patient?"
+    ]
+  }
+]

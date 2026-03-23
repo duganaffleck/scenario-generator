@@ -1,0 +1,1180 @@
+[
+{
+  "title": "Elderly Fall With Suspected Pelvic Fracture",
+  "scenarioIntro": "A quiet hallway becomes the scene of a painful mystery: what starts as a simple lift assist quickly reveals deeper complexity. This case asks you to pause, observe, and think critically before moving forward.",
+  "callInformation": {
+    "type": "Trauma",
+    "location": "Private Residence - Carpeted Hallway",
+    "time": "08:15",
+    "dispatchCode": "17-A-2",
+    "dispatchNotes": [
+      "82 y/o female fell in hallway, can't get up",
+      "Reports hip pain and inability to move",
+      "Caller is daughter, unsure if patient hit her head"
+    ],
+    "hazardsOrFlags": ["Tight space", "Staircase nearby", "Possible need for lifting assistance"],
+    "crewNotes": "BLS crew on scene; ALS 15 minutes out. Prepare for extrication support."
+  },
+  "patientDemographics": {
+    "name": "Marjorie Ellison",
+    "sex": "Female",
+    "age": 82,
+    "height": "5'3\"",
+    "weight": "110 lbs",
+    "appearance": "Pale, frail, and visibly uncomfortable; lying on her left side"
+  },
+  "patientPresentation": "Marjorie lies on the hallway carpet, curled slightly, clutching her left hip. Her face is tense, and she winces with the slightest movement. She’s alert but nervous, answering quietly. *(💡 This is where you pause. Take in the surroundings. Her position tells a story — don’t rush past it.)*",
+  "incidentNarrative": "The daughter reports hearing a 'thump' around 07:45. Found her mother on the ground complaining of hip pain. She didn’t see the fall. Patient was trying to make her way to the bathroom alone. No loss of consciousness reported.",
+  "opqrst": {
+    "onset": "Sudden — during attempt to walk to bathroom",
+    "provocation": "Movement worsens the pain",
+    "quality": "Sharp and deep",
+    "radiation": "Confined to left hip",
+    "severity": "8/10 when trying to move",
+    "time": "30 minutes ago"
+  },
+  "sampleHistory": {
+    "signsAndSymptoms": "Left hip pain, no head strike or dizziness reported",
+    "allergies": "Penicillin",
+    "medications": [
+      "Warfarin (anticoagulant — increased bleeding risk)",
+      "Amlodipine (calcium channel blocker for hypertension)",
+      "Calcium + Vitamin D (osteoporosis supplement)"
+    ],
+    "pastMedicalHistory": "Hypertension, atrial fibrillation, osteoporosis",
+    "lastOralIntake": "Tea and toast at 06:30",
+    "eventsLeadingUp": "Attempted to walk unassisted to the bathroom"
+  },
+  "physicalExam": {
+    "generalAppearance": "Thin, elderly female in mild distress, unable to reposition herself *(💡 Frailty cues matter — treat every repositioning as a potential harm point.)*",
+    "headNeck": "No bruising or lacerations noted",
+    "chest": "Clear breath sounds bilaterally",
+    "abdomen": "Soft, non-tender",
+    "pelvis": "Tender to palpation, minimal movement attempted *(💡 Suspect pelvic fracture when tenderness and immobility coexist — always stabilize before movement.)*",
+    "extremities": "Left leg appears shortened and externally rotated *(💡 Classic signs of pelvic or proximal femur injury — don’t miss what’s staring at you.)*",
+    "neurological": "AOx3, no deficits noted"
+  },
+  "vitalSigns": {
+    "firstSet": {
+      "HR": "102",
+      "RR": "20",
+      "BP": "138/84",
+      "SpO2": "96% RA",
+      "ETCO2": "38 mmHg",
+      "Temp": "36.3°C",
+      "GCS": "15 *(💡 A GCS of 15 doesn’t rule out internal injury — stay alert for subtle deterioration.)*",
+      "BGL": "5.6 mmol/L",
+      "ecgInterpretation": "Sinus Tachycardia"
+
+    },
+    "secondSet": {
+      "HR": "108 *(💡 Even small increases in HR could signal pain, anxiety, or early compensation. Don’t ignore trends.)*",
+      "RR": "22",
+      "BP": "132/80",
+      "SpO2": "96% RA",
+      "ETCO2": "37 mmHg",
+      "Temp": "36.4°C",
+      "GCS": "15",
+      "BGL": "5.7 mmol/L",
+      "ecgInterpretation": "Sinus Tachycardia"
+    }
+  },
+  "caseProgression": "If the crew recognizes signs of a pelvic fracture and limits movement, Marjorie remains stable, albeit in pain. Gentle handling and pelvic stabilization improve her comfort. *(💡 Notice what gets worse first — that’s your early warning. Movement without support rapidly worsens pain and risk.)* According to the BLS PCS, spinal motion restriction is not indicated here, but pelvic binding falls under the trauma standard and should be considered.\n\nIf movement is attempted without stabilization or if lifting is done improperly, pain increases, and Marjorie becomes more anxious and tachycardic. Delays in transport or failure to identify the fracture worsen her status en route.",
+  "expectedTreatment": "Primary goals include pain mitigation, pelvic stabilization, and safe extrication. Apply a pelvic binder per ALS PCS Trauma Standard if trained and indicated. Use a scoop stretcher or vacuum mattress to minimize movement. Do not delay transport for ALS arrival unless vital signs destabilize. Monitor for shock signs due to anticoagulation. *(💡 Even if ALS is 15 minutes out, don’t freeze. BLS doesn’t mean Basic Thinking — stabilize what you can and move thoughtfully.)*",
+  "vocationalLearningOutcomes": [
+    "VLO 1: Perform complete patient assessments and integrate findings into care plans",
+    "VLO 3: Demonstrate knowledge of anatomy, pathophysiology, and pharmacology relevant to emergency care",
+    "VLO 5: Communicate clearly and effectively with patients, families, and healthcare professionals"
+  ],
+  "teacherPoints": [
+    "Recognizing pelvic fracture signs early can prevent worsening shock — especially with anticoagulants.",
+    "Stabilization is more than equipment — it's communication, planning, and minimizing risk.",
+    "Scene safety includes anticipating extrication paths in tight quarters.",
+    "This case reinforces the need to link physical signs with PCS-aligned interventions.",
+    "*(💡 This is a call where thinking clearly buys more time than acting quickly. Teach that restraint and preparation are active skills.)*"
+  ],
+ 
+
+  "grsAnchors": {
+    "Situational Awareness": {
+      "1": "• Failed to assess stairwell hazards.\n• Ignored daughter’s presence and potential stress.\n• Entered hallway without planning or clearing space.",
+      "3": "• Noted general environment but missed trip hazards.\n• Began care without discussing lifting options.\n• Minimal crew coordination.",
+      "5": "• Identified tight space and prepared gear placement.\n• Briefed partner before movement.\n• Kept daughter informed of plan.",
+      "7": "• Controlled entire hallway flow, cleared hazards.\n• Assigned roles and exit path ahead of time.\n• Built scene safety plan that minimized risk."
+    },
+    "Assessment & Vitals": {
+      "1": "• Did not examine pelvis or affected limb.\n• Missed vitals or recorded incomplete data.\n• Ignored visible deformity.",
+      "3": "• Took basic vitals but missed leg shortening and rotation.\n• Failed to reassess after movement.\n• Did not link findings to potential fracture.",
+      "5": "• Performed focused pelvic and limb assessment.\n• Recognized deformity and tenderness.\n• Rechecked vitals after binder application.",
+      "7": "• Identified injury early with minimal patient discomfort.\n• Predicted shock risk based on assessment.\n• Used vitals to guide prehospital plan."
+    },
+    "History Taking": {
+      "1": "• Did not gather medication history (missed warfarin).\n• Overlooked daughter’s eyewitness information.\n• Skipped mobility or fall risk questions.",
+      "3": "• Took basic SAMPLE but missed osteoporosis context.\n• Didn’t confirm timeline of events.\n• Missed daily routine questions.",
+      "5": "• Thorough SAMPLE/OPQRST gathered.\n• Clarified fall sequence and warfarin use.\n• Asked about prior falls and mobility aids.",
+      "7": "• Integrated daughter’s account with patient story.\n• Identified patterns of fall risk and medication interaction.\n• Uncovered environmental triggers (e.g., morning routine)."
+    },
+    "Clinical Decision-Making": {
+      "1": "• Lifted without assessing pelvis.\n• No stabilization attempted.\n• Ignored anticoagulant bleeding risk.",
+      "3": "• Hesitated to treat despite injury signs.\n• Waited for ALS before making key decisions.\n• Transport delayed without rationale.",
+      "5": "• Applied binder and prepared for cautious extrication.\n• Chose scoop with minimal movement.\n• Prioritized early transport within scope.",
+      "7": "• Balanced stabilization, transport timing, and ALS ETA.\n• Used PCS trauma directives to guide care.\n• Anticipated worsening and planned accordingly."
+    },
+    "Procedures & Skills": {
+      "1": "• Lifted patient manually without pelvic binder.\n• No stabilization attempted during move.\n• Missed chances to protect injury.",
+      "3": "• Binder applied but poorly positioned or not secured.\n• Scoop used but caused excessive movement.\n• Delayed reassessment post-transfer.",
+      "5": "• Binder applied correctly.\n• Scoop/mattress used with coordinated lift.\n• Rechecked vitals post-move.",
+      "7": "• Executed binder and lift with minimal discomfort.\n• Anticipated gear needs before entry.\n• Rehearsed move and coached team clearly."
+    },
+    "Resource Utilization": {
+      "1": "• Did not contact ALS despite anticoagulant use.\n• No transport plan created.\n• Worked alone without partner direction.",
+      "3": "• ALS notified late or without clear information.\n• Partner not effectively used.\n• Extrication plan lacked clarity.",
+      "5": "• ALS coordinated early.\n• Partner assigned tasks.\n• Scene and exit path prepped ahead of time.",
+      "7": "• ALS timing matched patient need.\n• Used all resources effectively, including daughter.\n• Delegated, coordinated, and updated in real-time."
+    },
+    "Communication & Rapport": {
+      "1": "• Did not acknowledge patient anxiety.\n• Spoke over patient and daughter.\n• Failed to explain plan or findings.",
+      "3": "• Basic explanation of care given.\n• Minimal emotional support provided.\n• Did not check for understanding.",
+      "5": "• Calmly explained findings and plan.\n• Kept daughter updated.\n• Offered reassurance during movement.",
+      "7": "• Built trust with both patient and daughter.\n• Narrated every step empathetically.\n• Created calm through professionalism and presence."
+    }
+  },
+ "selfReflectionPrompts": [
+    "What assumptions did I make when I saw the patient's position? Were they accurate?",
+    "How did I adapt my communication to suit Marjorie’s needs?",
+    "Did I prioritize stabilization appropriately? What would I do differently next time?",
+    "What part of this case challenged my decision-making the most, and why?"
+  
+  ]
+},
+{
+  "title": "Toddler Seizure at Daycare After Fever",
+  "scenarioIntro": "Sometimes the quietest calls bring the most fear. A worried daycare worker calls 911 — 'He just started shaking and won't wake up right!'",
+  "callInformation": {
+    "type": "Medical",
+    "location": "Sunshine Valley Daycare, suburban residential area",
+    "time": "13:45",
+    "dispatchCode": "32-D-2",
+    "dispatchNotes": [
+      "Caller reports 2-year-old male child seizing and unresponsive",
+      "Seizure activity lasted approximately 1 minute",
+      "Child is now breathing but unresponsive"
+    ],
+    "hazardsOrFlags": [
+      "Anxious caregivers",
+      "Crowded playroom with multiple children"
+    ],
+    "crewNotes": "Code 4 response, parents en route from work"
+  },
+  "patientDemographics": {
+    "name": "Leo Morrison",
+    "age": 2,
+    "sex": "male",
+    "height": "2'10\"",
+    "weight": "30 lbs",
+    "appearance": "Limp toddler lying on his side on a small nap mat, flushed cheeks, damp forehead"
+  },
+  "patientPresentation": "Leo is semi-conscious, not responding to verbal stimuli but moans to painful stimuli. He has flushed skin and is febrile to the touch. His breathing is rapid but regular. There’s no sign of trauma, and he is postictal. *(💡 This is where students often over-focus on the seizure — but what’s the underlying cause?)*",
+  "incidentNarrative": "The daycare worker reports Leo had been napping when he suddenly stiffened and began convulsing for about a minute. No incontinence noted. He has been 'under the weather' the last day or two but was active earlier in the morning. They took his temperature earlier today, and it was 38.5°C.",
+  "opqrst": {
+    "Onset": "Sudden onset during nap",
+    "Provocation": "Unknown",
+    "Quality": "Full-body convulsions lasting about 1 minute",
+    "Radiation": "N/A",
+    "Severity": "Severe (unresponsive and alarming)",
+    "Time": "Occurred approximately 5 minutes prior to your arrival"
+  },
+  "sampleHistory": {
+    "Signs/Symptoms": "Fever, drowsiness, postictal unresponsiveness",
+    "Allergies": "None known",
+    "Medications": "Children's acetaminophen earlier today (dosage unknown)",
+    "Past Medical History": "Born full-term, no previous seizures",
+    "Last Oral Intake": "Crackers and juice at snack time (~11:00)",
+    "Events Leading Up": "Fever began yesterday, seizure started while napping"
+  },
+  "medications": [
+    "Children's Tylenol (acetaminophen) — antipyretic, reduces fever"
+  ],
+  "allergies": "NKDA",
+  "pastMedicalHistory": "Generally healthy toddler, no seizure history",
+  "physicalExam": {
+    "General": "Postictal, flushed, semi-conscious *(💡 Watch for postictal states in pediatrics—they can mimic low GCS trauma but follow a very different course.)*",
+    "Head/Neck": "No trauma, fontanelles flat, pupils equal/reactive",
+    "Chest": "Breath sounds clear bilaterally, tachypneic *(💡 Increased respiratory rate may be compensatory—always correlate with temperature and SpO₂.)*",
+    "Abdomen": "Soft, non-tender",
+    "Extremities": "No deformities, cap refill ~2s"
+  },
+  "vitalSigns": {
+    "firstSet": {
+      "HR": 148,
+      "RR": 34,
+      "BP": "92/60",
+      "SpO₂": "97%",
+      "ETCO₂": "N/A",
+      "Temp": "39.1°C *(💡 Febrile seizures often spike over 38.5°C. Temp management is your cue to intervene.)*",
+      "GCS": "9 (E2 V2 M5) *(💡 Don't confuse low GCS post-seizure with head trauma—context is everything.)*",
+      "BGL": "4.8 mmol/L",
+      "ecgInterpretation": "Sinus Tachycardia"
+    },
+    "secondSet": {
+      "HR": 140,
+      "RR": 30,
+      "BP": "95/62",
+      "SpO₂": "98%",
+      "ETCO₂": "N/A",
+      "Temp": "38.4°C",
+      "GCS": "12 (E3 V3 M6) *(💡 Improving GCS is your cue that the postictal phase is resolving.)*",
+      "BGL": "4.9 mmol/L",
+      "ecgInterpretation": "Sinus Tachycardia"
+    }
+  },
+  "caseProgression": {
+    "withProperTreatment": "If Leo is assessed gently, kept cool, monitored, and fever is treated with antipyretic per protocol, his level of consciousness gradually improves. *(💡 Febrile seizures are frightening, but usually benign — calm scene leadership is key.)*",
+    "withoutProperTreatment": "If fever is not addressed, or if rough handling/agitation occurs, his condition may stagnate. He may vomit or worsen neurologically, and parents may arrive angry or panicked, increasing stress on scene."
+  },
+  "expectedTreatment": "Ensure scene safety, pediatric BLS assessment, monitor ABCs, take full history from caregivers. Expose and cool the child, remove excess clothing, and administer acetaminophen as per ALS PCS (PCP scope, febrile seizure directive). Transport in recovery position, monitor vitals. *(💡 Don’t wait for ALS — if you can give the antipyretic, give it. Calm and steady always wins here.)*",
+},
+{
+    "situationalAwareness": {
+      "1": [
+        "Ignores panicked daycare staff or doesn't secure the area from other children",
+        "Fails to consider scene chaos as a clinical distraction",
+        "Misses opportunity to control emotional tone early"
+      ],
+      "3": [
+        "Attempts to calm scene but lacks consistency in leadership",
+        "Delays addressing environment (e.g., crowded room, noise)",
+        "Struggles to manage multiple scene elements simultaneously"
+      ],
+      "5": [
+        "Quickly identifies chaotic scene and calmly reduces stimulus",
+        "Reassures caregivers and takes control without panic",
+        "Keeps team focused and ensures child safety from further harm"
+      ],
+      "7": [
+        "Maintains absolute command of the scene while keeping caregiver rapport high",
+        "Anticipates arrival of parents and prepares accordingly",
+        "Creates a calm bubble around the child through deliberate, clear action"
+      ]
+    },
+    "patientAssessment": {
+      "1": [
+        "Performs incomplete or rushed assessment, misses abnormal vitals",
+        "Neglects temperature check or neuro exam",
+        "Overlooks respiratory rate and perfusion cues"
+      ],
+      "3": [
+        "Attempts full assessment but misses one key parameter (e.g., GCS)",
+        "Recognizes fever but doesn’t reassess",
+        "Needs prompting to expose patient properly"
+      ],
+      "5": [
+        "Performs thorough, pediatric-appropriate assessment",
+        "Identifies febrile state and subtle respiratory rate elevation",
+        "Follows BLS PCS vitals standards and documents clearly"
+      ],
+      "7": [
+        "Uses pediatric-specific norms to interpret all findings",
+        "Explains clinical significance of signs (e.g., flushed skin = vasodilation)",
+        "Anticipates progression and reevaluates consistently without cue"
+      ]
+    },
+    "historyGathering": {
+      "1": [
+        "Fails to ask caregivers for seizure duration or prior symptoms",
+        "Misses medication history or fever timing",
+        "Relies on dispatch only"
+      ],
+      "3": [
+        "Asks caregiver questions but lacks structure or focus",
+        "Misses one key SAMPLE element",
+        "Confuses timeline of events"
+      ],
+      "5": [
+        "Obtains focused, chronological history from daycare staff",
+        "Clarifies fever onset, seizure length, and medication use",
+        "Cross-verifies story when possible"
+      ],
+      "7": [
+        "Builds rapport to extract even unclear caregiver info",
+        "Summarizes and confirms back details for clarity",
+        "Asks advanced questions (e.g., seizure pattern, past episodes)"
+      ]
+    },
+    "decisionMaking": {
+      "1": [
+        "Stalls or freezes due to pediatric stress",
+        "Fails to treat fever or initiate appropriate care",
+        "Waits for ALS despite clear BLS scope"
+      ],
+      "3": [
+        "Initiates transport but omits key treatment like cooling or meds",
+        "Delays decisions or repeatedly second-guesses care plan",
+        "Acts cautiously but inefficiently"
+      ],
+      "5": [
+        "Makes calm, protocol-based decisions including antipyretic administration",
+        "Plans for evolving scene (e.g., parent arrival)",
+        "Shows clinical confidence even in pediatric call"
+      ],
+      "7": [
+        "Quickly forms working diagnosis (febrile seizure) and acts with certainty",
+        "Leads crew with smooth execution of treatment",
+        "Explains each decision clearly to caregivers and team"
+      ]
+    },
+    "proceduralSkill": {
+      "1": [
+        "Fumbles BGL check or misuses thermometer",
+        "Fails to expose child appropriately",
+        "Uncoordinated or rough technique"
+      ],
+      "3": [
+        "Performs basic skills but needs coaching",
+        "Uncertain with pediatric dosing or technique",
+        "Misses one step in procedure"
+      ],
+      "5": [
+        "Performs all relevant pediatric skills smoothly and gently",
+        "Checks temp, BGL, and vitals with good technique",
+        "Prepares meds correctly and safely"
+      ],
+      "7": [
+        "Executes all interventions with calm precision",
+        "Verifies dosing, route, and time for antipyretic without delay",
+        "Maintains child comfort throughout"
+      ]
+    },
+    "resourceUtilization": {
+      "1": [
+        "Fails to use team members or available staff effectively",
+        "Does not delegate or request ALS appropriately",
+        "Works solo when assistance is needed"
+      ],
+      "3": [
+        "Uses partner but does not clearly assign tasks",
+        "Delays appropriate ALS request or caregiver engagement",
+        "Accepts help passively"
+      ],
+      "5": [
+        "Coordinates crew to optimize assessment and comfort",
+        "Engages daycare staff appropriately",
+        "Considers ALS ETA and plans accordingly"
+      ],
+      "7": [
+        "Creates a true team environment — efficient, communicative, clear roles",
+        "Delegates tasks like vitals or calming the room",
+        "Keeps daycare staff involved for history while focusing on treatment"
+      ]
+    },
+    "communication": {
+      "1": [
+        "Panics or appears distressed to staff or bystanders",
+        "Uses unclear language with caregivers",
+        "Ignores parent updates or caregiver concerns"
+      ],
+      "3": [
+        "Communicates basically but awkwardly",
+        "Reassures staff but with vague language",
+        "Misses chance to build trust with caregivers"
+      ],
+      "5": [
+        "Explains situation clearly and calmly to daycare staff",
+        "Uses developmentally appropriate language for scene",
+        "Keeps tone steady, composed, and empathetic"
+      ],
+      "7": [
+        "Masterfully reassures caregivers while guiding scene",
+        "Maintains full transparency without overexplaining",
+        "Uses calm tone that diffuses panic and builds trust"
+      ]
+    }
+  },
+{
+    "type": "Medical",
+    "location": "Public washroom in a downtown shopping mall",
+    "time": "16:12",
+    "dispatchCode": "31-D-2",
+    "dispatchNotes": [
+      "Caller reports male unresponsive in locked stall",
+      "Security attempting entry",
+      "Unknown if drugs or medical issue",
+      "Bystanders report a chemical smell"
+    ],
+    "hazardsOrFlags": [
+      "Potential unknown substance exposure",
+      "Public location with high foot traffic"
+    ],
+    "crewNotes": "Bring suction and PPE. Prepare for altered LOC or environmental hazard."
+  },
+{
+    "name": "Tyler Ross",
+    "sex": "Male",
+    "age": 23,
+    "height": "5'10\"",
+    "weight": "145 lbs",
+    "appearance": "Thin, pale, breathing rapidly with deep sighing breaths. Strong fruity odor present."
+  },
+{
+    "onset": "Unknown; janitor found him around 16:00",
+    "provocation": "N/A — patient unresponsive",
+    "quality": "N/A",
+    "region": "N/A",
+    "severity": "N/A",
+    "timing": "Likely several hours"
+  },
+{
+    "signsSymptoms": "Confusion earlier in day, now unresponsive. Fruity breath, Kussmaul respirations.",
+    "allergies": "None known",
+    "medications": "Insulin glargine (long-acting), insulin aspart (short-acting)",
+    "pastMedicalHistory": "Type 1 Diabetes diagnosed at age 11",
+    "lastOralIntake": "Unknown",
+    "eventsLeading": "May have missed insulin doses or had illness"
+  },
+{
+    "generalAppearance": "Lethargic, barely responsive *(💡 This isn’t just ‘tired’ — this is metabolic fatigue. Look for the patterns that tell you this is serious.)*",
+    "headNeck": "No trauma noted *(💡 Rule out trauma fast but don’t anchor there — this is medical until proven otherwise.)*",
+    "chest": "Clear air entry, deep Kussmaul breaths *(💡 Those exaggerated sighs are the body trying to breathe off acid — hear them, name them, act on them.)*",
+    "abdomen": "Soft, mild tenderness on palpation *(💡 Tenderness without rigidity supports DKA, not intra-abdominal trauma.)*",
+    "extremities": "No edema, cool peripheries *(💡 Peripheral perfusion tells you how bad the hypovolemia might be.)*"
+  },
+{
+    "firstSet": {
+      "HR": 124,
+      "RR": 30,
+      "BP": "88/54",
+      "SpO2": "97%",
+      "ETCO2": "18 mmHg",
+      "Temp": "37.2°C",
+      "GCS": 10,
+      "BGL": "22.4 mmol/L *(💡 If you’re still hunting for drugs after reading this number, you’ve missed the diagnosis.)*",
+      "ecgInterpretation": "Sinus Tachycardia"
+    },
+    "secondSet": {
+      "HR": 132,
+      "RR": 32,
+      "BP": "84/50",
+      "SpO2": "96%",
+      "ETCO2": "16 mmHg",
+      "Temp": "37.3°C",
+      "GCS": 9,
+      "BGL": "22.1 mmol/L *(💡 Slight drop in GCS, rising HR, still acidotic. This is your cue — intervene, escalate, monitor.)*",
+      "ecgInterpretation": "Sinus Tachycardia"
+    }
+  },
+{
+    "withProperTreatment": "With early recognition and BGL testing, paramedics identify hyperglycemia and support airway/breathing. Patient remains hypoperfused but stable and GCS plateaus. ALS intercept improves outcome.",
+    "withoutProperTreatment": "If glucose isn’t checked or fruity breath is dismissed, patient deteriorates into coma with worsening shock. Hypovolemia and acidosis compound without fluids."
+  },
+{
+    "situationalAwareness": {
+      "1": [
+        "Fails to identify hazards in the confined bathroom setting",
+        "Does not react to public exposure or bystanders",
+        "Does not consider need for ALS early"
+      ],
+      "3": [
+        "Recognizes some scene challenges but lacks urgency",
+        "Needs prompting to request ALS",
+        "Overlooks signs of rapid deterioration"
+      ],
+      "5": [
+        "Identifies the bathroom layout and prepares gear in advance",
+        "Requests ALS after initial assessment confirms GCS and vitals",
+        "Monitors surroundings while remaining focused on patient"
+      ],
+      "7": [
+        "Leads scene with full awareness of space, patient needs, and access points",
+        "Coordinates with mall staff to secure privacy and control crowd",
+        "Anticipates need for rapid extrication if patient crashes"
+      ]
+    },
+    "patientAssessment": {
+      "1": [
+        "Does not perform BGL or misses abnormal vitals",
+        "Fails to assess respiratory pattern (misses Kussmaul)",
+        "Neglects ABCs entirely"
+      ],
+      "3": [
+        "Performs vitals but skips BGL",
+        "Misses significance of deep breathing",
+        "Inconsistent head-to-toe exam"
+      ],
+      "5": [
+        "Performs full vitals including BGL early",
+        "Recognizes Kussmaul pattern and links to metabolic issue",
+        "Efficient, complete assessment under pressure"
+      ],
+      "7": [
+        "Completes structured, prioritized assessment while managing scene",
+        "Links signs and symptoms to probable DKA diagnosis",
+        "Reassesses vitals methodically and updates treatment plan accordingly"
+      ]
+    },
+    "historyGathering": {
+      "1": [
+        "Fails to check backpack or ask about diabetes",
+        "Doesn’t gather any collateral history",
+        "Ignores potential insulin use"
+      ],
+      "3": [
+        "Asks about diabetes only after prompted",
+        "Inconsistently documents SAMPLE",
+        "Misses collateral clues like glucometer"
+      ],
+      "5": [
+        "Reviews backpack contents for clues",
+        "Documents SAMPLE and OPQRST accurately",
+        "Confirms insulin use and possible missed dose"
+      ],
+      "7": [
+        "Synthesizes history with environment and vitals to support diagnosis",
+        "Asks mall staff and bystanders key timing questions",
+        "Uses small scene details to build timeline of deterioration"
+      ]
+    },
+    "decisionMaking": {
+      "1": [
+        "Fails to consider metabolic issue",
+        "Assumes opioid overdose without supporting evidence",
+        "Misses need for ALS or transport priority"
+      ],
+      "3": [
+        "Considers DKA late or inconsistently",
+        "Needs guidance to prioritize interventions",
+        "Wavers between overdose and medical cause"
+      ],
+      "5": [
+        "Forms early impression of DKA based on vitals and history",
+        "Initiates appropriate treatment and ALS support",
+        "Stays on plan even as scene distractors arise"
+      ],
+      "7": [
+        "Uses pattern recognition and logic to rapidly confirm metabolic cause",
+        "Prevents unnecessary delays (e.g., no naloxone unless warranted)",
+        "Balances treatment priorities while planning transport, support, and updates"
+      ]
+    },
+    "proceduralSkill": {
+      "1": [
+        "Fails to test BGL",
+        "Improperly positions patient",
+        "Fails to protect airway"
+      ],
+      "3": [
+        "Tests BGL late or incorrectly",
+        "Uncertain about airway protection measures",
+        "Needs prompting for proper positioning"
+      ],
+      "5": [
+        "Performs BGL test confidently",
+        "Positions patient safely and monitors airway",
+        "Prepares gear methodically with good technique"
+      ],
+      "7": [
+        "Performs all procedures fluidly and anticipates next steps",
+        "Explains procedures clearly to partner while working",
+        "Adapts to scene layout without compromising technique"
+      ]
+    },
+    "resourceUtilization": {
+      "1": [
+        "Ignores ALS availability",
+        "Does not request additional equipment",
+        "Doesn’t involve partner"
+      ],
+      "3": [
+        "Requests ALS late",
+        "Does not clearly delegate roles",
+        "Inefficient with gear selection"
+      ],
+      "5": [
+        "Requests ALS appropriately",
+        "Works efficiently with partner to gather equipment",
+        "Plans gear use and backup early"
+      ],
+      "7": [
+        "Manages team dynamically, delegating clearly",
+        "Coordinates with mall security and public responders",
+        "Uses scene support and timing efficiently"
+      ]
+    },
+    "communication": {
+      "1": [
+        "Provides no updates",
+        "Avoids eye contact with team or bystanders",
+        "Fails to speak to patient even when responsive"
+      ],
+      "3": [
+        "Gives minimal verbal communication",
+        "Speaks awkwardly to partner or patient",
+        "Misses opportunities for reassurance"
+      ],
+      "5": [
+        "Explains findings clearly to partner",
+        "Offers calm, respectful tone to patient",
+        "Provides handoff-ready report to ALS"
+      ],
+      "7": [
+        "Narrates clinical reasoning aloud for team benefit",
+        "Balances rapport with task focus",
+        "Prepares concise yet thorough patch/handoff under pressure"
+      ]
+    }
+  },
+{
+    "type": "Other",
+    "location": "College dormitory, third-floor shared residence",
+    "time": "21:15",
+    "dispatchCode": "25-B-4",
+    "dispatchNotes": [
+      "Caller reports patient locked in room, not responding",
+      "Possible overdose, unknown substances",
+      "Roommate emotionally distressed and unable to provide clear history"
+    ],
+    "hazardsOrFlags": [
+      "Locked door access",
+      "Possible drug paraphernalia",
+      "Emotional bystanders"
+    ],
+    "crewNotes": "Campus security may meet you at entrance; be prepared for complex emotional context"
+  },
+{
+    "name": "Jordan Reyes",
+    "age": 20,
+    "sex": "Non-binary",
+    "height": "5'6\"",
+    "weight": "130 lbs",
+    "appearance": "Lying on the bed, pale, slow to respond, visibly disoriented"
+  },
+{
+    "Onset": "Unknown — last seen well at 17:00",
+    "Provocation": "Unclear, patient not coherent enough to answer",
+    "Quality": "States they feel 'weird' and 'numb'",
+    "Radiation": "No reported pain",
+    "Severity": "Patient unable to rate symptoms",
+    "Time": "Roommate reports patient has been unresponsive since ~20:30"
+  },
+{
+    "SignsSymptoms": "Confusion, slurred speech, mild respiratory depression",
+    "Allergies": "None known",
+    "Medications": "Sertraline (SSRI), propranolol (for anxiety)",
+    "PastMedicalHistory": "Generalized anxiety disorder, recent suicidal ideation",
+    "LastOralIntake": "Ate dinner around 18:00, unsure if anything since",
+    "EventsLeadingUp": "Suspected overdose; evidence of pill bottles and note; emotionally volatile context"
+  },
+{
+    "generalAppearance": "Lethargic, barely responsive *(💡 This isn’t just fatigue — metabolic emergencies present with this kind of profound weakness. Ask yourself: does this match DKA or something else?)*",
+    "headNeck": "No signs of trauma, pupils sluggish but equal *(💡 Pupils help you rule out neurological or toxic causes — don’t skip them even in medical calls.)*",
+    "chest": "Air entry clear bilaterally with deep, labored Kussmaul respirations *(💡 Kussmaul = metabolic acidosis compensation. If you hear it, think DKA or salicylates.)*",
+    "abdomen": "Soft, mildly tender, no guarding or rigidity *(💡 Tenderness without peritonitis helps steer you away from surgical causes.)*",
+    "extremities": "Cool peripheries, no edema, cap refill ~3s *(💡 Cap refill is a cheap and fast window into perfusion — use it.)*"
+  },
+{
+    "firstSet": {
+      "HR": 124,
+      "RR": 30,
+      "BP": "88/54",
+      "SpO₂": "97%",
+      "ETCO₂": "18 mmHg *(💡 Low ETCO₂ in a breathing patient should scream 'acidosis' — think DKA.)*",
+      "Temp": "37.2°C",
+      "GCS": "10 (E3 V2 M5)",
+      "BGL": "22.4 mmol/L *(💡 This value doesn’t just confirm hyperglycemia — it helps confirm your differential.)*",
+      "ecgInterpretation": "Sinus Tachycardia"
+    },
+    "secondSet": {
+      "HR": 132,
+      "RR": 32,
+      "BP": "84/50",
+      "SpO₂": "96%",
+      "ETCO₂": "16 mmHg *(💡 ETCO₂ is falling — this patient is breathing harder to compensate. Watch for fatigue.)*",
+      "Temp": "37.3°C",
+      "GCS": "9 (E2 V2 M5)",
+      "BGL": "22.1 mmol/L *(💡 No significant change — but don’t wait for one. Time is tissue in DKA.)*",
+      "ecgInterpretation": "Sinus Tachycardia"
+    }
+  },
+{
+    "withProperTreatment": "With high suspicion of overdose and close monitoring, students administer naloxone per protocol, reposition patient to support airway, and initiate rapid transport. Patient’s GCS improves modestly, and respiratory rate stabilizes. Roommate begins to cry and asks to ride along. Scene de-escalates with appropriate communication and empathy.",
+    "withoutProperTreatment": "If the overdose is not recognized and airway is not managed, patient’s respiratory status continues to decline. ETCO₂ rises, GCS drops to 9, and cyanosis becomes visible. Emotional scene becomes chaotic, roommate begins yelling, and the situation spirals into a high-risk, poorly managed transport."
+  },
+{
+    "Siutational Awareness": {
+      "1": [
+        "Did not secure the scene, allowing bystander panic to escalate",
+        "Ignored environmental cues such as pill bottles and open laptop",
+        "Failed to establish control or request backup early"
+      ],
+      "3": [
+        "Attempted to manage scene but provided unclear instructions",
+        "Missed key clues due to emotional overwhelm",
+        "Delayed scene control efforts, impacting assessment"
+      ],
+      "5": [
+        "Recognized emotionally charged environment and maintained calm",
+        "Secured room access and involved campus security appropriately",
+        "Used tone and body language to de-escalate roommate"
+      ],
+      "7": [
+        "Anticipated escalation and preemptively involved supports",
+        "Repositioned bystanders to minimize interference",
+        "Integrated scene clues into clinical picture instantly"
+      ]
+    },
+    "Assessment": {
+      "1": [
+        "No vitals taken before initiating movement",
+        "Overlooked airway concerns despite low SpO₂ and GCS",
+        "Failed to assess mental status or LOC changes"
+      ],
+      "3": [
+        "Incomplete vital signs collected",
+        "Recognized overdose but did not assess thoroughly",
+        "Missed secondary causes such as trauma"
+      ],
+      "5": [
+        "Performed thorough head-to-toe including toxidrome considerations",
+        "Used GCS and vitals to reassess LOC",
+        "Included ETCO₂ to monitor ventilatory status"
+      ],
+      "7": [
+        "Connected scene, vitals, and history into a working diagnosis",
+        "Identified high-risk status early and reassessed trends",
+        "Confirmed overdose through systematic elimination"
+      ]
+    },
+    "Decision Making": {
+      "1": [
+        "Failed to act despite low GCS and respiratory depression",
+        "Did not request ALS backup or prepare for transport",
+        "Ignored scene evidence suggesting overdose"
+      ],
+      "3": [
+        "Recognized concern but delayed action",
+        "Considered overdose but did not treat definitively",
+        "Relied on unclear bystander info without critical filtering"
+      ],
+      "5": [
+        "Made timely decision to support airway and initiate transport",
+        "Integrated ALS PCS for naloxone consideration",
+        "Balanced emotional and clinical inputs effectively"
+      ],
+      "7": [
+        "Rapidly triaged priorities and anticipated complications",
+        "Used protocol proactively (oxygen titration, naloxone),",
+        "Coordinated bystander, partner, and scene control into treatment plan"
+      ]
+    },
+    "Communication": {
+      "1": [
+        "Did not acknowledge roommate presence or engage them",
+        "Used cold or dismissive language",
+        "Failed to relay patient status clearly to partner"
+      ],
+      "3": [
+        "Provided minimal communication with patient or bystander",
+        "Relayed findings but lacked clarity",
+        "Missed opportunity to reduce stress through explanation"
+      ],
+      "5": [
+        "Used compassionate tone to engage patient and roommate",
+        "Relayed clinical findings clearly and confirmed understanding",
+        "Provided calm, directed instructions to team"
+      ],
+      "7": [
+        "Demonstrated therapeutic presence with distressed roommate",
+        "Framed clinical actions in supportive, human language",
+        "Unified team and bystanders through intentional, empathetic dialogue"
+      ]
+    
+  },
+  "vocationalLearningOutcomes": [
+    "Analyze complex and unpredictable situations to provide safe, ethical care.",
+    "Collaborate with patients and team members using effective communication strategies.",
+    "Perform relevant controlled acts and interventions within the paramedic scope using clinical judgment."
+  ],
+  "selfReflectionPrompts": [
+    "How did you recognize this as a possible overdose even before confirming?",
+    "What communication strategies worked best when handling the roommate?",
+    "Did your treatment plan reflect both clinical care and emotional support?",
+    "What scene clues were most important for guiding your decision-making?"
+  ]
+},
+{
+  "title": "Altered Behaviour in a Remote Campground",
+  "scenarioIntro": "A 36-year-old woman is acting bizarrely in a remote forest campground after a hike. Her partner says she was fine earlier, but now she’s confused, stumbling, and talking to people who aren’t there.",
+  "callInformation": {
+    "type": "Medical",
+    "location": "Remote campsite, 4km down a forest trail",
+    "time": "17:45",
+    "dispatchCode": "25-B-3",
+    "dispatchNotes": [
+      "Caller reports woman acting erratically and talking to trees",
+      "Scene is remote; patient located near riverbank with firepit",
+      "Partner on scene; states she may have eaten wild berries"
+    ],
+    "hazardsOrFlags": [
+      "Difficult terrain, ATV or on-foot access only",
+      "Low light conditions approaching dusk",
+      "Potential wildlife in area"
+    ],
+    "crewNotes": "Expect 4km hike-in. ALS is 25+ minutes out, likely unavailable before extrication. Prepare for wilderness safety and prolonged on-scene time."
+  },
+  "patientDemographics": {
+    "name": "Jillian Howe",
+    "sex": "Female",
+    "age": 36,
+    "height": "5'6\"",
+    "weight": "140 lbs",
+    "appearance": "Flushed, alert but responding inappropriately; unkempt, wearing hiking clothes"
+  },
+ "patientPresentation": "Jillian is seated on a log beside the firepit, waving at the trees and mumbling incoherently. She occasionally bursts into laughter or shouts gibberish. *(💡 This is where you pause and assess safety — is she a threat to herself or others?)* Her pupils are dilated, and she occasionally scratches her arms. Her partner says she was normal an hour ago after a hike. She’s not recognizing familiar people or responding to questions appropriately.",
+
+"physicalExam": {
+  "general": "Flushed, agitated, laughing randomly, pupils 6mm bilaterally *(💡 Large pupils and erratic behavior? Think stimulant or hallucinogen — and scene safety comes first.)*",
+  "headAndNeck": "No signs of trauma, responds inconsistently to voice *(💡 Always rule out trauma — don’t anchor on tox alone in altered patients.)*",
+  "chest": "Clear bilaterally, no retractions or abnormal sounds *(💡 Just because lungs sound clear doesn’t mean they’re oxygenating well — monitor trends.)*",
+  "abdomen": "Soft, non-tender",
+  "extremities": "No swelling, tremors present, occasional muscle twitching *(💡 Twitching may hint at stimulant or serotonergic effects — track for worsening signs.)*"
+},
+
+"vitalSigns": {
+  "firstSet": {
+    "HR": 112,
+    "RR": 22,
+    "BP": "134/82",
+    "SpO2": "98% on room air",
+    "ETCO2": "37 mmHg",
+    "Temp": "37.8°C",
+    "GCS": "13 (E4 V4 M5)",
+    "BGL": "6.9 mmol/L *(💡 Normal sugar — one cause of altered LOC ruled out. Keep checking others.)*",
+    "ecgInterpretation": "Sinus Tachycardia"
+  },
+  "secondSet": {
+    "HR": 116,
+    "RR": 24,
+    "BP": "130/80",
+    "SpO2": "97% on room air",
+    "ETCO2": "39 mmHg *(💡 Normal ETCO₂ now, but watch for sudden spikes or drops — they can flag deterioration early.)*",
+    "Temp": "38.1°C",
+    "GCS": "12 (E3 V4 M5)",
+    "BGL": "6.7 mmol/L",
+    "ecgInterpretation": "Sinus Tachycardia"
+  }
+},
+  "caseProgression": {
+    "withProperTreatment": "Patient remains agitated but does not become violent. Vitals stay stable, and extrication proceeds safely. Ongoing monitoring and calm reassurance help keep the situation controlled. Good patient positioning and scene safety are maintained. ALS never arrives, and the crew must manage prolonged care on their own.",
+    "withoutProperTreatment": "Without grounding communication and scene control, the patient may wander into the woods or become aggressive. If not monitored, she may seize or collapse. Partner becomes increasingly distressed and interferes with care. Vitals worsen with increasing HR and RR, and confusion deepens into unresponsiveness."
+  },
+  "expectedTreatment": "Ensure scene safety first. Do not approach until safe. Begin with calm verbal reassurance, attempt to establish rapport. Assess for ingestion/toxin exposure (possibly hallucinogenic). Monitor vitals and mental status. Position patient safely, away from hazards. Prepare for prolonged extrication. Consider toxidrome support and early transport. *(💡 BLS doesn’t mean Basic Thinking — use everything you’ve got to keep her safe.)* Document clearly, including behavior patterns, statements, and progression."
+  "teachersPoints": "Not all altered LOC means stroke or seizure. Wilderness calls demand full-scene awareness, improvisation, and rapport under stress. Stay grounded — this is what clinical judgment looks like when no one else is coming.",
+  "grsAnchors": {
+    "situationalAwareness": {
+      "1": [
+        "Fails to assess environmental safety; walks directly into patient's space despite erratic behavior",
+        "Overlooks terrain hazards and doesn’t plan safe extrication path",
+        "Ignores partner's warnings and dismisses scene difficulty"
+      ],
+      "3": [
+        "Identifies some risks but fails to act on them (e.g., doesn’t move equipment closer, ignores daylight limits)",
+        "Hesitates to call for backup despite remote setting",
+        "Has vague awareness of terrain but not integrated into planning"
+      ],
+      "5": [
+        "Establishes scene safety, maintains distance until safe",
+        "Plans extrication and lighting with realistic expectations",
+        "Positions gear and crew for remote care"
+      ],
+      "7": [
+        "Anticipates worsening weather or light and adapts extrication",
+        "Uses terrain intelligently for positioning and safety",
+        "Mentors partner role-player and delegates tasks for safety"
+      ]
+    },
+    "patientAssessment": {
+      "1": [
+        "Doesn’t complete full set of vitals",
+        "Ignores mental status changes over time",
+        "Fails to consider toxic or environmental cause"
+      ],
+      "3": [
+        "Performs vitals and brief exam but misses subtle signs (e.g., tremors, pupils)",
+        "Over-relies on partner history without patient contact",
+        "Doesn't reassess or notice changing GCS"
+      ],
+      "5": [
+        "Completes full vitals and recognizes altered LOC with hallucinations",
+        "Identifies possible toxin ingestion",
+        "Monitors for deterioration and re-evaluates GCS"
+      ],
+      "7": [
+        "Uses scene clues (berries, mushrooms) to build differential",
+        "Connects physical findings to likely toxidrome",
+        "Narrates assessment steps for instructional value"
+      ]
+    },
+    "historyGathering": {
+      "1": [
+        "Asks closed questions only",
+        "Doesn’t obtain SAMPLE from partner",
+        "Misses last oral intake and events leading up"
+      ],
+      "3": [
+        "Asks basic SAMPLE but fails to dig deeper",
+        "Doesn’t clarify what was eaten",
+        "Misses connection between foraging and symptoms"
+      ],
+      "5": [
+        "Uses partner as historian, gets full SAMPLE",
+        "Asks about foraged foods, last seen normal",
+        "Documents clearly with details from bystander"
+      ],
+      "7": [
+        "Guides partner through timeline to reconstruct events",
+        "Connects anxiety meds to presentation risks",
+        "Uses motivational interviewing techniques despite scene chaos"
+      ]
+    },
+    "decisionMaking": {
+      "1": [
+        "Fails to transport or delays without reason",
+        "Attempts to restrain or confront patient prematurely",
+        "Does not triage risk of toxicity seriously"
+      ],
+      "3": [
+        "Plans transport but with minimal strategy",
+        "Ignores importance of maintaining rapport",
+        "Waits passively for ALS despite delays"
+      ],
+      "5": [
+        "Prioritizes safe extrication and early transport",
+        "Plans for prolonged care without ALS",
+        "Uses verbal de-escalation effectively"
+      ],
+      "7": [
+        "Prepares for worsening toxidrome and reassesses every 10 minutes",
+        "Balances rapid movement with patient safety",
+        "Leads extrication planning with safety-first framing"
+      ]
+    },
+    "proceduralSkill": {
+      "1": [
+        "Forgets to check BGL or temp",
+        "Fails to position patient away from firepit",
+        "Does not monitor vitals repeatedly"
+      ],
+      "3": [
+        "Performs basic checks but misses opportunities to prevent harm",
+        "Monitors vitals once but doesn’t trend",
+        "Reluctant to position or adjust patient for safety"
+      ],
+      "5": [
+        "Uses proper technique for vitals, BGL, temperature",
+        "Monitors and trends for change",
+        "Prepares gear for extrication and exposure management"
+      ],
+      "7": [
+        "Uses improvised techniques (e.g., natural shade, safe restraints)",
+        "Prepares packaging and movement plan on uneven ground",
+        "Shows adaptability with gear and hands-on skills"
+      ]
+    },
+    "resourceUtilization": {
+      "1": [
+        "Doesn’t request fire or SAR despite access issues",
+        "Leaves partner idle, doesn’t involve them",
+        "Fails to request backup or notify base hospital"
+      ],
+      "3": [
+        "Makes one call but doesn’t update or adapt plan",
+        "Ignores partner as resource",
+        "Doesn’t brief transport partner or prep crew"
+      ],
+      "5": [
+        "Requests SAR or fire as needed",
+        "Briefs partner and involves them in packaging",
+        "Delegates scene safety roles"
+      ],
+      "7": [
+        "Uses every available asset intelligently (gear, people, environment)",
+        "Anticipates future resource needs (lighting, route marking)",
+        "Acts as scene leader, commanding respect and collaboration"
+      ]
+    },
+    "communication": {
+      "1": [
+        "Talks at patient with no empathy",
+        "Interrupts partner or ignores their input",
+        "Fails to update crew or coordinate extrication"
+      ],
+      "3": [
+        "Communicates some plans but inconsistently",
+        "Talks calmly but not clearly",
+        "Listens but doesn’t act on concerns raised"
+      ],
+      "5": [
+        "Maintains calm, clear, patient-centered communication",
+        "Explains actions to partner and crew",
+        "Uses simple, clear words with altered LOC patient"
+      ],
+      "7": [
+        "Uses tone and language to ground the scene",
+        "Leads team with structured, calm voice",
+        "Speaks to the partner with respect and elicits cooperation even under stress"
+      ]
+    }
+  },
+  "vocationalLearningOutcomes": [
+    "Demonstrate clinical judgment in remote or prolonged-care situations",
+    "Manage altered LOC using BLS protocols with psychological sensitivity",
+    "Communicate clearly with both patient and bystanders under stress"
+  ],
+  "learningObjectives": [
+    "Conduct a complete assessment of a patient with altered behaviour in a remote setting",
+    "Recognize toxidrome patterns and act within BLS limitations",
+    "Ensure scene safety and apply appropriate communication strategies"
+  ],
+  "selfReflectionPrompts": [
+    "How did you maintain scene safety before and during contact with the patient?",
+    "What clues helped you determine the possible ingestion?",
+    "How well did you adapt to a prolonged care situation without ALS?",
+    "If the partner had become confrontational, how would your approach change?"
+  ]
+},
+{
+    "title": "COPD Exacerbation with Refusal and Bias Challenge",
+    "scenarioIntro": "A complex respiratory case that tests your ability to manage both clinical care and patient refusal — with a twist of bias.",
+    "callInformation": "Dispatched code 3 to a community housing unit for a 66-year-old male experiencing difficulty breathing.",
+    "incidentNarrative": "Patient called 911 reporting shortness of breath worsening over the past 3 days. Staff on scene report the patient often calls but refuses transport.",
+    "patientDemographics": {
+      "name": "Walter Crane",
+      "age": 66,
+      "sex": "Male",
+      "height": "5'10\"",
+      "weight": "160 lbs",
+      "generalAppearance": "Thin, anxious male seated in tripod position"
+    },
+    "patientPresentation": "Patient is in moderate respiratory distress, using accessory muscles, speaking in short phrases *(💡 consider how speech patterns indicate severity)*. Room is smoky, cluttered. Two cats observed *(💡 environment suggests chronic triggers)*.",
+    "opqrst": {
+      "Onset": "Gradual over past 3 days",
+      "Provocation": "Worse when walking or lying flat",
+      "Quality": "Feels like he can't get enough air",
+      "Radiation": "None",
+      "Severity": "7/10",
+      "Time": "Constant, worsening"
+    },
+    "sample": {
+      "Signs/Symptoms": "SOB, wheezing, cough with yellow sputum",
+      "Allergies": "None",
+      "Medications": "Ventolin, Atrovent, Prednisone, Ramipril",
+      "Past Medical History": "COPD, hypertension, smoking history",
+      "Last Oral Intake": "Coffee 2 hours ago",
+      "Events Leading Up": "Stopped taking meds 3 days ago, claims they 'don't work anymore'"
+    },
+    "physicalExam": {
+      "General": "Alert, but irritable",
+      "Respiratory": "Diminished air entry bilaterally, wheezes, no crackles",
+      "Cardiac": "Regular rate and rhythm, no murmurs",
+      "Skin": "Pale, diaphoretic",
+      "Extremities": "Clubbing noted on fingers *(💡 chronic hypoxia marker)*"
+    },
+    "vitalSigns": {
+      "First Set": {
+        "HR": 108,
+        "RR": 26,
+        "BP": "146/92",
+        "SpO2": "87% on RA",
+        "ETCO2": "52 mmHg",
+        "Temp": "37.4°C",
+        "GCS": "15",
+        "BGL": "6.2 mmol/L",
+        "ecgInterpretation": "Sinus Tachycardia"
+      },
+      "Second Set": {
+        "HR": 102,
+        "RR": 24,
+        "BP": "140/88",
+        "SpO2": "91% on Salbutamol/Atrovent neb",
+        "ETCO2": "48 mmHg",
+        "Temp": "37.2°C",
+        "GCS": "15",
+        "BGL": "6.1 mmol/L",
+        "ecgInterpretation": "Sinus Tachycardia"
+      }
+    },
+    "caseProgression": {
+      "With Treatment": "Patient improves with bronchodilators; becomes less anxious, SpO₂ improves above 90%.",
+      "Without Treatment": "Patient may deteriorate, increased work of breathing, possible exhaustion and hypoxia-related confusion. Refusal of care becomes safety concern."
+    },
+    "expectedTreatment": "Nebulized bronchodilators (Salbutamol + Ipratropium), oxygen titration to 92–96% per BLS PCS *(💡 do not over-oxygenate COPD patients)*, refusal protocol steps if patient declines transport.",
+    "protocolNotes": "If patient refuses, document full capacity check, vital trends, and inform base hospital if needed.",
+    "scenarioRationale": "Designed to challenge students to navigate respiratory care, refusal protocols, and bias against 'frequent flyers'.",
+    "clinicalReasoning": "This is likely a COPD exacerbation, worsened by non-compliance and environmental triggers. Students must balance clinical care with professional communication. SpO₂ <90%, ETCO₂ >45, and wheezing with accessory muscle use all point to bronchospasm. Student should avoid oxygen overdose.",
+    "differentialDiagnosis": {
+      "COPD Exacerbation": "Most likely, matches presentation and history",
+      "CHF": "Less likely — no crackles, JVD, or edema",
+      "Pneumonia": "Possible — sputum present, but no focal findings",
+      "PE": "Unlikely without chest pain or risk factors"
+    },
+    "learningObjectives": [
+      "Assess and manage a patient with an acute COPD exacerbation",
+      "Demonstrate appropriate refusal of care protocol",
+      "Identify and reflect on clinical bias during patient care"
+    ],
+    "vocationalLearningOutcomes": [
+      "Apply respiratory assessment and symptom relief protocols",
+      "Demonstrate professional conduct during complex patient encounters",
+      "Document and justify clinical decisions related to refusal of service"
+    ],
+    "selfReflectionPrompts": [
+      "How did I balance patient safety with their right to refuse care?",
+      "Did any personal bias affect how I approached this patient?",
+      "What objective indicators supported my treatment decisions?",
+      "How might I improve my communication with resistant patients?"
+    ],
+    "grsAnchors": {
+      "sceneManagement": {
+        "1": "Unsafe approach, no PPE, missed smoking hazard.",
+        "3": "Recognized cluttered space but minimal scene control.",
+        "5": "Identified hazards, adjusted treatment position, ensured safety.",
+        "7": "Excellent management — adjusted scene dynamically and ensured all team members were aware."
+      },
+      "assessment": {
+        "1": "Did not auscultate or assess work of breathing.",
+        "3": "Performed basic vitals, missed lung sounds or ETCO₂.",
+        "5": "Full primary and secondary, appropriate use of monitoring.",
+        "7": "Connected findings to pathophysiology clearly, used advanced assessment tools (e.g., waveform analysis)."
+      },
+      "historyGathering": {
+        "1": "Failed to ask about meds or triggers.",
+        "3": "Partial SAMPLE, incomplete OPQRST.",
+        "5": "Thorough history, good use of follow-up questions.",
+        "7": "Explored patient beliefs and barriers to care with empathy."
+      },
+      "clinicalDecisionMaking": {
+        "1": "No treatment offered or refusal accepted without assessment.",
+        "3": "Started treatment but failed to complete refusal process.",
+        "5": "Recognized need for neb therapy and refusal documentation.",
+        "7": "Balanced clinical needs and ethical patient autonomy with clear communication."
+      },
+      "proceduralSkill": {
+        "1": "Incorrect neb setup or dose.",
+        "3": "Delayed neb, didn’t reassess.",
+        "5": "Neb given per protocol, reassessment done.",
+        "7": "Fluent with delivery, timed well with coaching and positioning."
+      },
+      "resourceUtilization": {
+        "1": "Did not consult partner or consider base hospital.",
+        "3": "Used partner, but no escalation.",
+        "5": "Team approach, offered base consult if needed.",
+        "7": "Escalated appropriately and documented everything for safe refusal."
+      },
+      "communication": {
+        "1": "Rude or dismissive of frequent caller.",
+        "3": "Basic communication, slightly dismissive.",
+        "5": "Respectful, effective communication throughout.",
+        "7": "Empathetic, adaptive, bias-aware interaction that improved patient trust."
+      }
+    }
+  }
+]

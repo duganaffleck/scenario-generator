@@ -1,0 +1,160 @@
+{
+  "title": "Confused Diabetic at Retirement Complex",
+  "callInformation": {
+    "timeOfDay": "09:45",
+    "weather": "Mild and sunny, 18°C",
+    "location": "Urban assisted living facility common area"
+  },
+  "patientDemographics": {
+    "name": "Geraldine Morris",
+    "age": 74,
+    "sex": "female",
+    "height": "5'1\"",
+    "weight": "130 lbs",
+    "appearance": "Disoriented, pale, and anxious; seated in a lounge chair holding a juice box"
+  },
+  "patientPresentation": "Patient appears confused and repetitive in conversation, cycling through the same three questions. Staff state she normally engages well in conversation but began acting 'off' after breakfast. She is cooperative but slow to answer and appears jittery.",
+  "incidentHistory": {
+    "narrative": "Staff called 911 after noticing Ms. Morris asking repeatedly about breakfast, despite having already eaten. One PSW reports, 'She told me she was dizzy, then stared blankly like she didn’t know where she was.' The scene is calm but observably clinical, with staff present and residents in the background. A half-empty juice box sits on a table nearby. A glucometer is sitting unused next to a staff charting tablet.",
+    "opqrst": {
+      "onset": "Started shortly after breakfast, around 09:00",
+      "provocation": "Worsens with movement or walking",
+      "quality": "Described as 'woozy and cloudy'",
+      "radiation": "No radiation",
+      "severity": "Moderate; patient states she feels 'off but not terrible'",
+      "time": "Persisting for about 45 minutes"
+    }
+  },
+  "narrativeHealthHistory": {
+    "sample": {
+      "symptoms": "Dizziness, mild tremors, confusion",
+      "allergies": "Penicillin",
+      "medications": "Metformin, Lisinopril, ASA",
+      "pastMedicalHistory": "Type 2 diabetes, hypertension, osteoarthritis",
+      "lastOralIntake": "Ate toast and coffee around 08:30, drank half a juice box afterward",
+      "eventsLeading": "Was sitting watching morning news when confusion began"
+    }
+  },
+  "physicalExam": {
+    "generalAppearance": "Alert but disoriented; mild hand tremors noted",
+    "headNeck": "No trauma or abnormalities",
+    "chest": "Clear air entry bilaterally, no abnormal sounds",
+    "abdomen": "Soft, non-tender",
+    "extremities": "Mild tremor in both hands, no cyanosis"
+  },
+  "vitalSigns": [
+    {
+      "hr": 94,
+      "rr": 18,
+      "bp": "132/86",
+      "spo2": 97,
+      "etco2": 35,
+      "temp": 36.4,
+      "gcs": 14,
+      "bgl": 2.9
+    },
+    {
+      "hr": 88,
+      "rr": 16,
+      "bp": "130/84",
+      "spo2": 98,
+      "etco2": 36,
+      "temp": 36.5,
+      "gcs": 15,
+      "bgl": 5.3
+    }
+  ],
+  "caseProgression": [
+    "If oral glucose is administered promptly: Patient regains full orientation within 10–15 minutes, reports feeling better, and becomes conversational. BGL increases appropriately, tremors resolve.",
+    "If no glucose is given: Patient becomes increasingly lethargic and eventually becomes nonverbal and confused. GCS drops to 12. BGL remains low and requires urgent correction.",
+    "If physical exam and vitals are not reassessed: Early improvement or deterioration is missed; patient may either worsen or show rebound hypoglycemia if treated inappropriately.",
+    "Scene remains safe, but team stress increases if patient deteriorates without visible cause due to missed BGL reassessment."
+  ],
+  "differentialDiagnosis": [
+    "Hypoglycemia",
+    "TIA",
+    "Delirium from infection",
+    "Postictal state"
+  ],
+  "learningObjectives": [
+    "Identify early signs of hypoglycemia in geriatric populations",
+    "Implement ALS PCS Hypoglycemia directive appropriately",
+    "Demonstrate effective scene communication and vitals reassessment"
+  ],
+  "vocationalLearningOutcomes": [
+    "Provide comprehensive patient assessments including glucose evaluation",
+    "Apply clinical judgment to select appropriate intervention protocols",
+    "Adapt communication strategies for cognitively impaired patients"
+  ],
+  "selfReflectiveJournalingPrompts": [
+    "How did you identify the cause of the altered mental status?",
+    "Did you reassess vitals after the intervention? Why or why not?",
+    "What communication strategies worked well with the patient and staff?",
+    "What would you do differently if the patient had become unresponsive?"
+  ],
+  "grs": {
+    "situationalAwareness": {
+      "1": "Fails to consider the clinical environment or utilize staff observations. Ignores glucometer present in room.",
+      "2": "Notices staff input but does not factor it into patient context. Overlooks subtle scene clues like juice box or half-eaten breakfast.",
+      "3": "Acknowledges clinical setting and staff reports but does not correlate with patient condition. Scene feel remains disorganized.",
+      "4": "Identifies general safety and context issues. Recognizes staff concern as valid but delays action.",
+      "5": "Effectively integrates environmental information (juice box, glucometer) and uses staff narrative to support assessment.",
+      "6": "Anticipates need to manage cognitive challenges, requests staff involvement proactively, and ensures other residents are not disturbed.",
+      "7": "Demonstrates exceptional environmental control. Leverages staff insight, adjusts lighting/sound, and manages scene seamlessly to optimize care."
+    },
+    "assessment": {
+      "1": "Fails to assess GCS or BGL. Misses primary signs of hypoglycemia and does not conduct a focused neurological exam.",
+      "2": "Performs basic vitals but does not evaluate glucose despite symptoms. No neurological assessment performed.",
+      "3": "Completes full vitals but is slow to include BGL or fails to repeat it after treatment. Limited secondary assessment.",
+      "4": "Performs complete primary survey. Identifies low BGL but delays treatment.",
+      "5": "Performs both primary and secondary assessment. Accurately identifies hypoglycemia as root cause.",
+      "6": "Performs focused neuro and glucose assessment rapidly. Monitors for progression and reassesses after intervention.",
+      "7": "Demonstrates thorough and prioritized assessment with real-time adjustment. Ties BGL, vitals, and neuro status into a comprehensive clinical picture."
+    },
+    "historyGathering": {
+      "1": "Fails to ask SAMPLE or OPQRST questions. Does not acknowledge staff or patient history.",
+      "2": "Obtains brief or irrelevant history. Omits key elements like past diabetes diagnosis.",
+      "3": "Asks general questions but fails to clarify medication use or last oral intake.",
+      "4": "Obtains basic SAMPLE and partial OPQRST. Misses opportunity to confirm diabetic trends or staff input.",
+      "5": "Efficiently gathers full SAMPLE and OPQRST. Identifies recent meal, symptoms, and relevant history.",
+      "6": "Explores timeline of confusion, last glucose intake, and medication timing with staff and patient clearly.",
+      "7": "Masterfully elicits a timeline linking history, intake, and early signs. Cross-references chart, medication, and staff observations for triangulated history."
+    },
+    "decisionMaking": {
+      "1": "Fails to treat hypoglycemia. Delays decision until patient worsens significantly.",
+      "2": "Considers hypoglycemia but chooses incorrect intervention or waits for transport.",
+      "3": "Identifies the need to treat but hesitates or second-guesses protocol application.",
+      "4": "Applies correct directive but without reassessment or follow-up planning.",
+      "5": "Administers oral glucose appropriately and monitors patient response.",
+      "6": "Makes timely decision based on presentation and BGL. Plans ahead for reassessment and transport.",
+      "7": "Demonstrates excellent clinical judgment. Balances protocol use, reassessment, and outcome prediction to adapt care in real time."
+    },
+    "proceduralSkill": {
+      "1": "Fails to gather or prepare required equipment. No glucose administration attempted.",
+      "2": "Struggles with glucose administration technique or uses incorrect dose/form.",
+      "3": "Administers glucose slowly or hesitantly. Reassesses late or not at all.",
+      "4": "Performs oral glucose administration competently. Minor delays or technique flaws.",
+      "5": "Administers glucose efficiently, reassesses within 5 minutes, and documents effectively.",
+      "6": "Demonstrates confidence and fluency with intervention. Coaches patient during care.",
+      "7": "Executes intervention with speed, safety, and comfort. Reassesses BGL, adjusts care, and documents with precision."
+    },
+    "resourceUse": {
+      "1": "Fails to engage staff or use on-site tools (glucometer, chart, juice box).",
+      "2": "Recognizes staff input but works independently without asking for help.",
+      "3": "Uses available resources, but inefficiently or reactively.",
+      "4": "Accepts staff help but does not delegate tasks clearly.",
+      "5": "Effectively uses staff and scene tools to streamline assessment and care.",
+      "6": "Delegates scene tasks (e.g., BGL, monitoring) while maintaining patient focus.",
+      "7": "Coordinates scene like a team leader—delegating, updating, and optimizing staff roles and equipment use."
+    },
+    "communication": {
+      "1": "Provides little to no verbal communication. Does not inform patient or staff of plan.",
+      "2": "Speaks sporadically or without clarity. Appears unsure and lacks empathy.",
+      "3": "Communicates plan but does not check understanding. Minimal staff involvement.",
+      "4": "Explains intervention to patient and staff. Moderate pacing and tone.",
+      "5": "Communicates clearly and compassionately with all parties. Checks understanding.",
+      "6": "Uses tone, timing, and pacing to reassure patient and update team simultaneously.",
+      "7": "Exemplary communicator—transparent, collaborative, and adaptive to emotion, context, and comprehension level."
+    }
+  }
+}
