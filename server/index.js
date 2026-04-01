@@ -1,10 +1,9 @@
 import dotenv from 'dotenv';
 dotenv.config();
+
 import express from 'express';
 import cors from 'cors';
 import generateScenarioRouter from './routes/generateScenario.js';
-
-
 
 const app = express();
 const PORT = process.env.PORT || 10000;
@@ -12,7 +11,6 @@ const PORT = process.env.PORT || 10000;
 app.use(cors());
 app.use(express.json({ limit: '1mb' }));
 
-// ✅ THIS is what allows /api/generate-scenario to work
 app.use('/api/generate-scenario', generateScenarioRouter);
 
 app.get('/', (req, res) => {
@@ -22,4 +20,3 @@ app.get('/', (req, res) => {
 app.listen(PORT, () => {
   console.log(`✅ Server is running on http://localhost:${PORT}`);
 });
-console.log("API KEY:", process.env.OPENAI_API_KEY);

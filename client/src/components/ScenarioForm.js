@@ -1,5 +1,3 @@
-// File: src/components/ScenarioForm.js
-
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import jsPDF from "jspdf";
@@ -22,18 +20,37 @@ const ecgImageMap = {
   "Third Degree AV Block": "/ecg/thirddegree.jpg",
 };
 
-const SCENARIO_TYPES = ["Medical", "Trauma", "Cardiac", "Respiratory", "Environmental", "Other"];
+const SCENARIO_TYPES = [
+  "Medical",
+  "Trauma",
+  "Cardiac",
+  "Respiratory",
+  "Environmental",
+  "Other",
+];
+
 const SEMESTERS = ["2", "3", "4"];
 const ENVIRONMENTS = ["Urban", "Rural", "Wilderness", "Industrial", "Home", "Public Space"];
 const COMPLEXITIES = ["Simple", "Moderate", "Complex"];
-const UNIQUENESS_LEVELS = ["Common", "Varied", "Rare/Obscure"];
 
 const SECTION_GROUPS = {
   "Scene Info": ["scenarioIntro", "title", "callInformation", "incidentNarrative"],
   "Patient Info": ["patientDemographics", "patientPresentation", "opqrst", "sample"],
   Assessment: ["physicalExam", "vitalSigns"],
-  "Clinical Reasoning": ["caseProgression", "expectedTreatment", "protocolNotes", "scenarioRationale", "clinicalReasoning"],
-  Education: ["learningObjectives", "vocationalLearningOutcomes", "selfReflectionPrompts", "grsAnchors"],
+  "Clinical Reasoning": [
+    "caseProgression",
+    "differentialDiagnosis",
+    "expectedTreatment",
+    "protocolNotes",
+    "scenarioRationale",
+    "clinicalReasoning",
+  ],
+  Education: [
+    "learningObjectives",
+    "vocationalLearningOutcomes",
+    "selfReflectionPrompts",
+    "grsAnchors",
+  ],
 };
 
 const TITLE_MAP = {
@@ -44,6 +61,8 @@ const TITLE_MAP = {
   patientPresentation: "Patient Presentation",
   incidentNarrative: "Incident History",
   sample: "SAMPLE",
+  pathophysiology: "Pathophysiology",
+  differentialDiagnosis: "Differential Diagnosis",
   clinicalReasoning: "Integrated Clinical Reasoning",
   grsAnchors: "GRS Anchors",
   selfReflectionPrompts: "Self-Reflective Questions",
@@ -65,7 +84,6 @@ const ScenarioForm = () => {
     type: "Medical",
     environment: "Urban",
     complexity: "Moderate",
-    uniqueness: "Common",
     includeTeachingCues: true,
     customPrompt: "",
   });
@@ -89,7 +107,27 @@ const ScenarioForm = () => {
       }
     `;
     document.head.appendChild(spinnerStyle);
-    return () => document.head.removeChild(spinnerStyle);
+
+    return () => {
+      document.head.removeChild(spinnerStyle);
+    };
+  }, []);
+
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    document.documentElement.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = "";
+      document.documentElement.style.overflow = "";
+    };
+  }, []);
+
+
+  useEffect(() => {
+    const closeCue = () => setSelectedCue(null);
+    document.addEventListener("click", closeCue);
+    return () => document.removeEventListener("click", closeCue);
   }, []);
 
   const handleChange = (e) => {
@@ -104,6 +142,7 @@ const ScenarioForm = () => {
 
   const formatFieldValue = (fieldValue) => {
     if (!fieldValue) return "";
+
     if (typeof fieldValue === "object" && !Array.isArray(fieldValue)) {
       return Object.entries(fieldValue)
         .map(([key, value]) => {
@@ -114,11 +153,13 @@ const ScenarioForm = () => {
         })
         .join("\n");
     }
+
     if (Array.isArray(fieldValue)) {
       return fieldValue
         .map((item) => (typeof item === "object" ? `• ${formatFieldValue(item)}` : `• ${item}`))
         .join("\n");
     }
+
     return `• ${fieldValue}`;
   };
 
@@ -145,6 +186,10 @@ const ScenarioForm = () => {
       const response = await axios.post(`${baseURL}/api/generate-scenario`, formData);
       const generated = response.data;
 
+      if (generated.ecgInterpretation && generated.vitalSigns && !generated.vitalSigns.ecgInterpretation) {
+        generated.vitalSigns.ecgInterpretation = generated.ecgInterpretation;
+      }
+
       setScenario(generated);
       console.log("Received scenario:", generated);
     } catch (err) {
@@ -160,6 +205,8 @@ const ScenarioForm = () => {
   };
 
   const exportToPDF = () => {
+    if (!scenario) return;
+
     const doc = new jsPDF();
     doc.setFontSize(12);
     doc.text(`Scenario: ${scenario.title || "Untitled"}`, 10, 10);
@@ -167,7 +214,8 @@ const ScenarioForm = () => {
 
     Object.entries(scenario).forEach(([key, value]) => {
       if (key === "teachersPoints") return;
-      const label = capitalizeFirstLetter(key);
+
+      const label = TITLE_MAP[key] || capitalizeFirstLetter(key);
       doc.setFont(undefined, "bold");
       doc.text(`${label}:`, 10, y);
       y += 6;
@@ -185,6 +233,11 @@ const ScenarioForm = () => {
     });
 
     if (scenario.teachersPoints) {
+      if (y > 250) {
+        doc.addPage();
+        y = 20;
+      }
+
       doc.setFont(undefined, "bold");
       doc.text("Teacher's Points:", 10, y);
       y += 6;
@@ -357,7 +410,7 @@ const ScenarioForm = () => {
         : {};
 
     return (
-      <div style={{ ...styles.card, ...highlightStyle }}>
+      <div style={{ ...styles.card, ...highlightStyle }} key={title}>
         <h3 style={styles.cardTitle}>{TITLE_MAP[title] || formatLabel(title)}</h3>
         {renderSafeContent(content, title)}
       </div>
@@ -377,133 +430,128 @@ const ScenarioForm = () => {
         </div>
       </div>
 
-      <div style={styles.formBox}>
-        <button onClick={handleSubmit} disabled={loading} style={styles.button}>
-          {loading ? <FaSpinner className="spin" /> : "Generate Scenario"}
-        </button>
+      <div style={styles.mainLayout}>
+        <div style={styles.leftPanel}>
+          <div style={styles.formBox}>
+            <button onClick={handleSubmit} disabled={loading} style={styles.button}>
+              {loading ? <FaSpinner className="spin" /> : "Generate Scenario"}
+            </button>
 
-        {["semester", "type", "environment", "complexity"].map((field, index) => (
-          <div key={index} style={styles.fieldRow}>
-            <label>{capitalizeFirstLetter(field)}:</label>
-            <select name={field} value={formData[field]} onChange={handleChange} style={styles.select}>
-              {(field === "semester"
-                ? SEMESTERS
-                : field === "type"
-                  ? SCENARIO_TYPES
-                  : field === "environment"
-                    ? ENVIRONMENTS
-                    : COMPLEXITIES
-              ).map((opt) => (
-                <option key={opt} value={opt}>
-                  {opt}
-                </option>
-              ))}
-            </select>
-          </div>
-        ))}
-
-        <div style={styles.fieldRow}>
-          <label>
-            <input
-              type="checkbox"
-              name="includeTeachingCues"
-              checked={formData.includeTeachingCues}
-              onChange={handleChange}
-              style={{ marginRight: "0.5rem" }}
-            />
-            Include 💡 Teaching Cues
-          </label>
-        </div>
-
-        <div style={styles.fieldRow}>
-          <label>Uniqueness Level:</label>
-          <select
-            name="uniqueness"
-            value={formData.uniqueness}
-            onChange={handleChange}
-            style={styles.select}
-          >
-            {UNIQUENESS_LEVELS.map((opt) => (
-              <option key={opt} value={opt}>
-                {opt}
-              </option>
+            {["semester", "type", "environment", "complexity"].map((field) => (
+              <div key={field} style={styles.fieldRow}>
+                <label>{capitalizeFirstLetter(field)}:</label>
+                <select name={field} value={formData[field]} onChange={handleChange} style={styles.select}>
+                  {(field === "semester"
+                    ? SEMESTERS
+                    : field === "type"
+                      ? SCENARIO_TYPES
+                      : field === "environment"
+                        ? ENVIRONMENTS
+                        : COMPLEXITIES
+                  ).map((opt) => (
+                    <option key={opt} value={opt}>
+                      {opt}
+                    </option>
+                  ))}
+                </select>
+              </div>
             ))}
-          </select>
-        </div>
 
-        <div style={styles.fieldRow}>
-          <label htmlFor="customPrompt">Instructor Prompt (Optional)</label>
-          <textarea
-            id="customPrompt"
-            name="customPrompt"
-            value={formData.customPrompt}
-            onChange={handleChange}
-            placeholder="e.g. 'Make this a sports injury in a teen with subtle signs of head trauma.'"
-            rows={3}
-            style={styles.textarea}
-          />
-        </div>
-
-        {error && <p style={styles.error}>{error}</p>}
-        {loading && (
-          <p style={styles.loading}>
-            <FaSpinner className="spin" /> Generating Scenario...
-          </p>
-        )}
-      </div>
-
-      {scenario && (
-        <div style={styles.outputBox}>
-          {scenario.customPrompt && (
-            <div
-              style={{
-                backgroundColor: "#fef9c3",
-                borderLeft: "6px solid #facc15",
-                padding: "1rem",
-                borderRadius: "10px",
-                marginBottom: "1rem",
-              }}
-            >
-              <strong>📌 Instructor Prompt:</strong>
-              <p style={{ marginTop: "0.5rem" }}>{scenario.customPrompt}</p>
+            <div style={styles.fieldRow}>
+              <label>
+                <input
+                  type="checkbox"
+                  name="includeTeachingCues"
+                  checked={formData.includeTeachingCues}
+                  onChange={handleChange}
+                  style={{ marginRight: "0.5rem" }}
+                />
+                Include 💡 Teaching Cues
+              </label>
             </div>
-          )}
 
-          {Object.entries(SECTION_GROUPS).map(([groupName, keys]) => (
-            <div key={groupName}>
-              <h2 style={styles.sectionHeading} onClick={() => toggleSection(groupName)}>
-                {collapsedSections[groupName] ? "▶️" : "🔽"} {groupName}
-              </h2>
+            <div style={styles.fieldRow}>
+              <label htmlFor="customPrompt">Instructor Prompt (Optional)</label>
+              <textarea
+                id="customPrompt"
+                name="customPrompt"
+                value={formData.customPrompt}
+                onChange={handleChange}
+                placeholder="e.g. 'Make this a sports injury in a teen with subtle signs of head trauma.'"
+                rows={3}
+                style={styles.textarea}
+              />
+            </div>
 
-              {groupName === "Education" && scenario.teachersPoints && (
+            {error && <p style={styles.error}>{error}</p>}
+          </div>
+        </div>
+
+        <div style={styles.rightPanel}>
+          {scenario && (
+            <div style={styles.outputBox}>
+              {scenario.customPrompt && (
                 <div
                   style={{
                     backgroundColor: "#fef9c3",
-                    color: "#1e293b",
+                    borderLeft: "6px solid #facc15",
                     padding: "1rem",
-                    borderRadius: "12px",
-                    border: "1px solid #eab308",
+                    borderRadius: "10px",
                     marginBottom: "1rem",
                   }}
                 >
-                  <h3
-                    style={{
-                      marginBottom: "0.5rem",
-                      fontSize: "1rem",
-                    }}
-                  >
-                    🧠 Teacher's Points
-                  </h3>
-                  <p style={{ fontStyle: "italic" }}>{scenario.teachersPoints}</p>
+                  <strong>📌 Instructor Prompt:</strong>
+                  <p style={{ marginTop: "0.5rem" }}>{scenario.customPrompt}</p>
                 </div>
               )}
 
-              {!collapsedSections[groupName] &&
-                keys
-                  .filter((key) => key !== "teachersPoints")
-                  .map((key) => scenario[key] && renderSection(key, scenario[key]))}
+              {Object.entries(SECTION_GROUPS).map(([groupName, keys]) => (
+                <div key={groupName}>
+                  <h2 style={styles.sectionHeading} onClick={() => toggleSection(groupName)}>
+                    {collapsedSections[groupName] ? "▶️" : "🔽"} {groupName}
+                  </h2>
+
+                  {groupName === "Education" && scenario.teachersPoints && (
+                    <div
+                      style={{
+                        backgroundColor: "#fef9c3",
+                        color: "#1e293b",
+                        padding: "1rem",
+                        borderRadius: "12px",
+                        border: "1px solid #eab308",
+                        marginBottom: "1rem",
+                      }}
+                    >
+                      <h3
+                        style={{
+                          marginBottom: "0.5rem",
+                          fontSize: "1rem",
+                        }}
+                      >
+                        🧠 Teacher's Points
+                      </h3>
+                      <p style={{ fontStyle: "italic" }}>{scenario.teachersPoints}</p>
+                    </div>
+                  )}
+
+                  {!collapsedSections[groupName] &&
+                    keys
+                      .filter((key) => key !== "teachersPoints")
+                      .map((key) => scenario[key] && renderSection(key, scenario[key]))}
+                </div>
+              ))}
             </div>
-          ))}
+          )}
+        </div>
+      </div>
+
+      {loading && (
+        <div style={styles.loadingOverlay}>
+          <div style={styles.loadingBox}>
+            <FaSpinner className="spin" style={styles.loadingSpinner} />
+            <div style={styles.loadingTitle}>Generating Scenario...</div>
+            <div style={styles.loadingSubtext}>Building a full case now.</div>
+          </div>
         </div>
       )}
 
@@ -565,115 +613,195 @@ const ScenarioForm = () => {
 const styles = {
   container: {
     padding: "2rem",
-    backgroundColor: "#f1f5f9",
+    backgroundColor: "#f8fafc",
     color: "#1e293b",
     fontFamily: "Arial, sans-serif",
     fontSize: "14px",
-    minHeight: "100vh",
+    height: "100vh",
+    overflow: "hidden",
+    boxSizing: "border-box",
     lineHeight: "1.5",
   },
+  loadingOverlay: {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    width: "100vw",
+    height: "100vh",
+    backgroundColor: "rgba(15, 23, 42, 0.45)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: 30000,
+    overflow: "hidden",
+  },
 
+  loadingBox: {
+    backgroundColor: "#ffffff",
+    padding: "1.5rem 2rem",
+    borderRadius: "14px",
+    boxShadow: "0 10px 30px rgba(0,0,0,0.25)",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    gap: "0.75rem",
+    minWidth: "260px",
+  },
+
+  loadingSpinner: {
+    fontSize: "1.75rem",
+    color: "#0d9488",
+  },
+
+  loadingTitle: {
+    fontSize: "1.05rem",
+    fontWeight: "bold",
+    color: "#1e293b",
+  },
+
+  loadingSubtext: {
+    fontSize: "0.9rem",
+    color: "#475569",
+  },
   headerBar: {
     position: "sticky",
     top: 0,
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: "1rem",
+    marginBottom: "0.05rem",
     backgroundColor: "#e2e8f0",
-    padding: "0.5rem 1rem",
-    borderRadius: "8px",
-    boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
+    padding: "0.75rem 1.25rem",
+    borderRadius: "10px",
+    boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
     zIndex: 1000,
+    borderLeft: "6px solid #0d9488",
   },
+
   heading: {
-    fontSize: "1.2rem",
+    fontSize: "1.4rem",
+    fontWeight: "bold",
     margin: 0,
   },
+
   toggle: {
-    padding: "0.5rem",
+    padding: "0.5rem 0.75rem",
     marginLeft: "0.5rem",
     borderRadius: "8px",
     border: "none",
     cursor: "pointer",
     backgroundColor: "#cbd5e1",
     color: "#1e293b",
-    fontSize: "1rem",
+    fontSize: "0.9rem",
   },
+
+   mainLayout: {
+    display: "grid",
+    gridTemplateColumns: "320px 1fr",
+    gap: "0.5rem",
+    alignItems: "start",
+    height: "calc(100vh - 110px)",
+    overflow: "hidden",
+  },
+
+  leftPanel: {
+    position: "sticky",
+    top: "80px",
+    height: "fit-content",
+  },
+
+  rightPanel: {
+    minWidth: 0,
+  },
+
   formBox: {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
-    gap: "1rem",
+    gridTemplateColumns: "1fr",
+    gap: "0.85rem",
     backgroundColor: "#e2e8f0",
-    padding: "1rem",
-    borderRadius: "12px",
+    padding: "1.25rem",
+    borderRadius: "14px",
     marginBottom: "1rem",
+    boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
   },
+
   fieldRow: {
     display: "flex",
     flexDirection: "column",
+    gap: "0.35rem",
   },
+
   select: {
-    padding: "0.5rem",
+    padding: "0.45rem",
     borderRadius: "8px",
-    border: "1px solid #64748b",
+    border: "1px solid #94a3b8",
     backgroundColor: "#ffffff",
     color: "#1e293b",
   },
+
   textarea: {
     padding: "0.5rem",
     borderRadius: "8px",
-    border: "1px solid #64748b",
+    border: "1px solid #94a3b8",
     backgroundColor: "#ffffff",
     color: "#1e293b",
+    resize: "vertical",
   },
+
   button: {
-    gridColumn: "1 / -1",
-    padding: "0.75rem",
+    padding: "0.85rem",
     fontSize: "1rem",
     fontWeight: "bold",
-    borderRadius: "8px",
+    borderRadius: "10px",
     border: "none",
-    backgroundColor: "#0ea5e9",
+    backgroundColor: "#0d9488",
     color: "#ffffff",
     cursor: "pointer",
+    boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
   },
+
   outputBox: {
-    maxHeight: "70vh",
+    maxHeight: "calc(100vh - 140px)",
     overflowY: "auto",
-    marginTop: "1rem",
     backgroundColor: "#ffffff",
-    padding: "1rem",
-    borderRadius: "12px",
-    boxShadow: "0 1px 4px rgba(0,0,0,0.2)",
+    padding: "1.5rem",
+    borderRadius: "14px",
+    boxShadow: "0 2px 8px rgba(0,0,0,0.12)",
   },
+
   card: {
-    backgroundColor: "#f8fafc",
+    backgroundColor: "#f9fafb",
     padding: "1rem",
-    borderRadius: "8px",
-    marginBottom: "0.75rem",
+    borderRadius: "10px",
+    marginBottom: "1rem",
+    border: "1px solid #e5e7eb",
   },
+
   cardTitle: {
     marginBottom: "0.5rem",
     fontWeight: "bold",
-    fontSize: "1rem",
+    fontSize: "1.05rem",
+    color: "#0d9488",
   },
+
   error: {
     color: "#dc2626",
     fontWeight: "bold",
     marginTop: "0.5rem",
   },
+
   loading: {
     color: "#1e293b",
     fontWeight: "bold",
     marginTop: "0.5rem",
   },
+
   sectionHeading: {
-    fontSize: "1.1rem",
+    fontSize: "1.15rem",
     cursor: "pointer",
-    marginTop: "1rem",
-    paddingBottom: "0.3rem",
-    borderBottom: "2px solid #475569",
+    marginTop: "0.5rem",
+    paddingBottom: "0.4rem",
+    borderBottom: "2px solid #0d9488",
   },
 };
 

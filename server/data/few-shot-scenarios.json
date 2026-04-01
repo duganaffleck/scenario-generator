@@ -1,284 +1,1595 @@
 [
   {
     "title": "The Tight Chest at the Bus Stop",
-    "scenarioIntro": "This scenario focuses on recognition and management of acute asthma exacerbation. Students must recognize respiratory distress, initiate oxygen appropriately, administer bronchodilator therapy, and communicate effectively with a patient who is anxious and struggling to breathe.",
-
+    "scenarioIntro": "This scenario teaches recognition and management of meaningful asthma distress in a young adult. It is designed to reward focused respiratory assessment, appropriate oxygen use, bronchodilator therapy, and reassessment after intervention. It should work for both instructor-led simulation and independent student practice.",
     "callInformation": {
-      "dispatch": "Difficulty breathing at a bus stop",
+      "type": "Respiratory",
       "location": "City bus shelter",
-      "timeOfDay": "Afternoon",
-      "environment": "Cool weather, moderate pedestrian traffic"
+      "time": "Afternoon",
+      "dispatchCode": "06-D-1",
+      "dispatchNotes": [
+        "22-year-old female with difficulty breathing",
+        "Used inhaler once with little relief",
+        "Now having trouble speaking in full sentences"
+      ],
+      "hazardsOrFlags": [
+        "Cool outdoor weather",
+        "Moderate pedestrian traffic",
+        "Anxious bystanders"
+      ],
+      "crewNotes": "Bring airway bag and prepare for reassessment after bronchodilator therapy."
     },
-
     "patientDemographics": {
-      "age": 22,
-      "gender": "Female"
+      "name": "Maya Chen",
+      "sex": "Female",
+      "age": "22",
+      "height": "5'6\"",
+      "weight": "140 lbs",
+      "appearance": "Sitting upright, anxious, using accessory muscles, speaking in short phrases",
+      "chiefComplaint": "Shortness of breath and chest tightness"
     },
-
-    "incidentNarrative": "The patient was waiting for the bus when she began experiencing increasing shortness of breath and chest tightness. She used her inhaler once with minimal relief. Bystanders called 911 when she began having difficulty speaking in full sentences.",
-
-    "patientPresentation": "Patient is sitting upright, visibly anxious, speaking in short phrases, using accessory muscles to breathe. Audible wheezing present. Skin slightly pale but warm and dry. *(💡yellow|Short phrases + accessory muscle use should immediately signal moderate to severe respiratory distress)*",
-
+    "patientPresentation": "Maya is seated on the bus bench leaning slightly forward. She is visibly anxious, working to breathe, and only able to answer in short phrases. Audible wheezes are present. *(💡 Short phrases plus accessory muscle use should immediately raise concern for more than mild respiratory distress.)*",
+    "incidentNarrative": "The patient was waiting for the bus when she began experiencing increasing shortness of breath and chest tightness. She used her salbutamol inhaler once with minimal relief. Bystanders called 911 when she became more anxious and had difficulty speaking in full sentences.",
     "opqrst": {
       "onset": "Gradual over 20 minutes",
-      "provocation": "Worse with movement",
-      "quality": "Tight chest",
+      "provocation": "Worse with movement and speaking",
+      "quality": "Chest tightness",
       "radiation": "None",
       "severity": "7/10",
-      "time": "Started 20 minutes ago"
+      "time": "Started about 20 minutes ago and is getting worse"
     },
-
     "sample": {
-      "symptoms": "Shortness of breath, chest tightness, wheezing",
-      "allergies": "None",
-      "medications": "Salbutamol inhaler",
+      "signsAndSymptoms": "Shortness of breath, chest tightness, wheezing, anxiety",
+      "allergies": "None known",
+      "medications": [
+        "Salbutamol MDI"
+      ],
       "pastMedicalHistory": "Asthma",
       "lastOralIntake": "Lunch 2 hours ago",
-      "events": "Waiting for bus when symptoms started"
+      "eventsLeadingUp": "Waiting outdoors for the bus when symptoms escalated"
     },
-
+    "medications": [
+      "Salbutamol MDI - short acting bronchodilator"
+    ],
+    "allergies": [
+      "None known"
+    ],
+    "pastMedicalHistory": [
+      "Asthma"
+    ],
     "physicalExam": {
+      "generalAppearance": "Anxious young adult in moderate respiratory distress",
       "airway": "Patent",
-      "breathing": "Rapid, shallow, wheezes bilaterally",
-      "circulation": "Radial pulse rapid, skin warm",
-      "disability": "Alert and oriented",
-      "exposure": "No trauma"
+      "breathing": "Rapid and shallow with bilateral wheezes, accessory muscle use, able to speak only in short phrases",
+      "circulation": "Radial pulse rapid, skin warm, no cyanosis",
+      "neuro": "Alert and oriented but anxious",
+      "headNeck": "No JVD, no trauma",
+      "chest": "Widespread expiratory wheezes bilaterally, no chest wall tenderness",
+      "abdomen": "Soft, non-tender",
+      "pelvis": "Stable",
+      "extremities": "No edema, moves all limbs",
+      "skin": "Warm, slightly pale, dry"
     },
-
     "vitalSigns": {
-      "set1": {
-        "HR": 118,
-        "RR": 28,
-        "BP": "132/84",
-        "SpO2": "91%",
-        "GCS": 15,
-        "Temp": "36.8C",
-        "BGL": "5.8"
+      "firstSet": {
+        "hr": "118",
+        "rr": "28",
+        "bp": "132/84",
+        "spo2": "91%",
+        "etco2": "40 mmHg",
+        "temp": "36.8 C",
+        "gcs": "15",
+        "bgl": "5.8 mmol/L",
+        "ecgInterpretation": "Sinus Tachycardia"
       },
-      "set2": {
-        "HR": 104,
-        "RR": 22,
-        "BP": "128/82",
-        "SpO2": "96%",
-        "GCS": 15,
-        "Temp": "36.8C",
-        "BGL": "5.8"
+      "secondSet": {
+        "hr": "104",
+        "rr": "22",
+        "bp": "128/82",
+        "spo2": "96%",
+        "etco2": "38 mmHg",
+        "temp": "36.8 C",
+        "gcs": "15",
+        "bgl": "5.8 mmol/L",
+        "ecgInterpretation": "Sinus Tachycardia"
       }
     },
-
     "caseProgression": {
-      "withTreatment": "After oxygen and salbutamol administration, wheezing decreases, respiratory rate improves, patient able to speak full sentences, SpO₂ improves to mid-90s.",
-      "withoutTreatment": "Respiratory distress worsens, patient becomes fatigued, wheezing decreases with poor air movement, SpO₂ drops into high 80s, patient becomes drowsy."
+      "withProperTreatment": "After upright positioning, oxygen only as indicated, and bronchodilator therapy, wheezing decreases, speech improves, and work of breathing becomes less pronounced. The patient remains anxious but is clearly easier to assess and transport. *(💡 This is a reassessment case, not a one-treatment case.)*",
+      "withoutProperTreatment": "Respiratory distress worsens, the patient becomes more fatigued, air entry may decrease, and oxygen saturation drops further. Speech becomes more limited and the patient appears increasingly exhausted."
     },
-
     "expectedTreatment": [
-      "Scene safety and PPE",
-      "Primary survey",
-      "Oxygen administration per BLS PCS",
-      "Assist with salbutamol MDI or administer bronchodilator",
-      "Position patient upright",
-      "Monitor vitals and reassess after treatment",
-      "Transport decision",
-      "Provide reassurance and communication"
+      "Ensure scene safety and PPE",
+      "Perform a primary survey and focused respiratory assessment",
+      "Position the patient upright",
+      "Administer oxygen only if clinically indicated and titrate appropriately",
+      "Assist with or administer salbutamol as clinically appropriate",
+      "Reassess work of breathing, speech, wheeze, and SpO2 after treatment",
+      "Monitor vitals and transport without unnecessary delay",
+      "Provide calm reassurance and clear communication throughout"
     ],
-
-    "clinicalReasoning": {
-      "mostLikelyDiagnosis": "Acute asthma exacerbation due to bronchospasm and airway inflammation causing airflow limitation.",
-      "differentialDiagnosis": [
-        "Anxiety/panic attack",
-        "Allergic reaction",
-        "Respiratory infection",
-        "Pulmonary embolism"
-      ],
-      "keyClues": [
-        "Wheezes → bronchospasm",
-        "Short phrases → respiratory distress",
-        "Improvement after bronchodilator → asthma likely"
-      ]
-    },
-
+    "protocolNotes": [
+      "Use Ontario oxygen language: oxygen should be titrated rather than applied reflexively",
+      "Asthma management should emphasize bronchodilator therapy and reassessment",
+      "Do not frame CPAP as a default asthma treatment",
+      "Dexamethasone may be supportive when relevant but is not the immediate rescue intervention",
+      "Transport priority should reflect the risk of fatigue and deterioration even if initial improvement occurs"
+    ],
+    "learningObjectives": [
+      "Recognize moderate to severe asthma exacerbation from presentation and vitals",
+      "Apply focused respiratory assessment and reassessment",
+      "Use oxygen and bronchodilator therapy appropriately",
+      "Communicate clearly with an anxious respiratory patient"
+    ],
+    "vocationalLearningOutcomes": [
+      "Perform a complete patient assessment and integrate findings into a care plan",
+      "Demonstrate appropriate symptom-relief management within PCP scope",
+      "Communicate effectively with patients, bystanders, and receiving staff"
+    ],
+    "selfReflectionPrompts": [
+      "What findings told you this was more than mild shortness of breath?",
+      "How did reassessment change your understanding of the patient's severity?",
+      "Did your oxygen decision reflect actual need or habit?",
+      "How effectively did you communicate with an anxious patient in distress?"
+    ],
     "grsAnchors": {
-      "situationAwareness": {
+      "situationalAwareness": {
         "1": [
-          "Fails to recognize respiratory distress",
-          "Misses abnormal vital signs",
-          "Does not prioritize patient condition"
+          "Fails to recognize significant respiratory distress",
+          "Misses the importance of short-phrase speech and accessory muscle use",
+          "Does not prioritize the patient's breathing problem"
         ],
         "3": [
-          "Recognizes breathing problem but underestimates severity",
-          "Delayed recognition of abnormal vitals",
-          "Needs prompting to prioritize care"
+          "Recognizes a breathing issue but underestimates severity",
+          "Notices abnormal vitals late",
+          "Needs prompting to keep respiratory distress as the main priority"
         ],
         "5": [
-          "Recognizes respiratory distress and prioritizes appropriately",
-          "Monitors vitals and patient status",
-          "Maintains awareness of patient condition"
+          "Recognizes respiratory distress early and prioritizes appropriately",
+          "Maintains awareness of patient effort, speech, and saturation trends",
+          "Adjusts attention as the patient responds to treatment"
         ],
         "7": [
-          "Immediately recognizes severity of respiratory distress",
-          "Anticipates deterioration or fatigue",
-          "Continuously reassesses and adjusts care"
+          "Immediately identifies moderate to severe asthma features",
+          "Anticipates fatigue and worsening air entry before obvious collapse",
+          "Maintains excellent awareness of both clinical and scene factors throughout"
         ]
       },
-
+      "patientAssessment": {
+        "1": [
+          "Performs an incomplete respiratory assessment",
+          "Misses wheeze, speech limitation, or accessory muscle use",
+          "Fails to obtain or interpret key vitals"
+        ],
+        "3": [
+          "Obtains some findings but lacks depth or structure",
+          "Documents vitals without linking them to severity",
+          "Requires prompting to reassess after intervention"
+        ],
+        "5": [
+          "Performs a focused and organized respiratory assessment",
+          "Interprets wheeze, work of breathing, and SpO2 appropriately",
+          "Reassesses after treatment and notes improvement or lack of improvement"
+        ],
+        "7": [
+          "Builds a highly coherent assessment from subtle and obvious cues",
+          "Links patient appearance, speech, vitals, and chest findings smoothly",
+          "Uses serial assessment to guide treatment and transport urgency"
+        ]
+      },
+      "historyGathering": {
+        "1": [
+          "Fails to obtain key asthma history",
+          "Misses inhaler use prior to arrival",
+          "Does not clarify onset or symptom progression"
+        ],
+        "3": [
+          "Obtains partial history but misses useful details",
+          "Uses OPQRST or SAMPLE inconsistently",
+          "Needs prompting to ask about prior treatment and asthma history"
+        ],
+        "5": [
+          "Obtains clear OPQRST and SAMPLE history relevant to the call",
+          "Clarifies inhaler use, onset, and symptom worsening",
+          "Integrates history into the working impression"
+        ],
+        "7": [
+          "Uses history gathering to sharpen both severity and treatment decisions",
+          "Elicits useful detail efficiently despite patient distress",
+          "Integrates patient and bystander information with excellent structure"
+        ]
+      },
       "decisionMaking": {
         "1": [
-          "Fails to administer oxygen",
-          "Fails to provide bronchodilator",
-          "Poor transport decision"
+          "Delays treatment despite clear respiratory distress",
+          "Uses poor treatment priorities",
+          "Makes a weak or unsafe transport decision"
         ],
         "3": [
-          "Provides some treatment but delayed",
-          "Incorrect treatment priority",
-          "Transport decision delayed"
+          "Initiates some appropriate care but with hesitation",
+          "Treatment order is somewhat inefficient",
+          "Needs prompting to reassess response and plan transport"
         ],
         "5": [
-          "Provides oxygen and bronchodilator appropriately",
-          "Reassesses after treatment",
-          "Appropriate transport decision"
+          "Uses upright positioning, oxygen, and bronchodilator therapy appropriately",
+          "Reassesses after treatment and adjusts plan",
+          "Makes a timely and appropriate transport decision"
         ],
         "7": [
-          "Prioritizes bronchodilator quickly",
-          "Anticipates repeat treatments",
-          "Excellent clinical reasoning and transport planning"
+          "Prioritizes the most important interventions quickly and calmly",
+          "Anticipates the need for close reassessment and possible deterioration",
+          "Shows strong clinical reasoning and transport planning throughout"
+        ]
+      },
+      "proceduralSkill": {
+        "1": [
+          "Uses poor inhaler or medication-assist technique",
+          "Applies oxygen incorrectly",
+          "Performs skills awkwardly enough to interfere with care"
+        ],
+        "3": [
+          "Completes skills but with hesitation or minor errors",
+          "Needs correction for setup or sequencing",
+          "Reassessment after intervention is delayed"
+        ],
+        "5": [
+          "Performs oxygen setup and bronchodilator assistance competently",
+          "Uses appropriate technique and timing",
+          "Repeats assessment smoothly after treatment"
+        ],
+        "7": [
+          "Executes interventions efficiently with minimal wasted motion",
+          "Combines treatment and reassessment seamlessly",
+          "Maintains patient comfort and confidence while performing skills"
+        ]
+      },
+      "resourceUtilization": {
+        "1": [
+          "Fails to use partner or available equipment effectively",
+          "Ignores helpful bystander information",
+          "Creates unnecessary delays through poor organization"
+        ],
+        "3": [
+          "Uses some resources but incompletely",
+          "Delegation is limited or unclear",
+          "Misses chances to improve scene efficiency"
+        ],
+        "5": [
+          "Uses partner, equipment, and bystander information appropriately",
+          "Keeps the scene organized and treatment focused",
+          "Prepares for transport efficiently"
+        ],
+        "7": [
+          "Uses all available resources in a calm, deliberate way",
+          "Delegates clearly and effectively",
+          "Creates an efficient, well-managed scene without losing patient focus"
+        ]
+      },
+      "communication": {
+        "1": [
+          "Communicates poorly with the patient and partner",
+          "Adds to patient anxiety through tone or lack of explanation",
+          "Provides an unclear handover"
+        ],
+        "3": [
+          "Provides basic communication with noticeable gaps",
+          "Offers limited reassurance",
+          "Handover is missing some key details"
+        ],
+        "5": [
+          "Communicates clearly with patient, partner, and receiving staff",
+          "Provides reassurance appropriate to the patient's distress",
+          "Gives an organized and relevant handover"
+        ],
+        "7": [
+          "Uses calm, confidence-building communication throughout the call",
+          "Keeps the anxious patient focused and cooperative",
+          "Delivers a concise, high-quality handover with strong clinical clarity"
         ]
       }
     },
-
-    "selfReflection": [
-      "What clinical signs indicated respiratory distress?",
-      "How did treatment change the patient condition?",
-      "What would you do differently next time?",
-      "What complications could occur in severe asthma?"
-    ]
+    "teachersPoints": [
+      "Students should not need severe hypoxia before recognizing significant asthma distress.",
+      "This case rewards reassessment, not just initial treatment.",
+      "Oxygen should be purposeful and titrated, not automatic.",
+      "Communication matters because anxiety can make respiratory distress feel even worse."
+    ],
+    "scenarioRationale": "This scenario is designed to teach recognition of clinically meaningful asthma distress, reinforce appropriate Ontario-style oxygen language, and reward organized reassessment after bronchodilator therapy.",
+    "clinicalReasoning": {
+      "summary": "The presentation is most consistent with an acute asthma exacerbation causing bronchospasm and increased work of breathing.",
+      "differentialDiagnosis": [
+        {
+          "condition": "Asthma exacerbation",
+          "supportingFeatures": "Known asthma history, wheeze, chest tightness, short-phrase speech, bronchodilator response",
+          "rulingOutFeatures": "None significant"
+        },
+        {
+          "condition": "Anxiety or panic reaction",
+          "supportingFeatures": "Anxiety and dyspnea can overlap",
+          "rulingOutFeatures": "Objective wheeze, low SpO2, accessory muscle use, and clear respiratory findings support asthma more strongly"
+        },
+        {
+          "condition": "Allergic reaction",
+          "supportingFeatures": "Could cause respiratory distress in some settings",
+          "rulingOutFeatures": "No rash, swelling, or exposure history suggesting anaphylaxis"
+        }
+      ],
+      "conclusion": "This is most consistent with acute asthma exacerbation requiring focused respiratory assessment, appropriate bronchodilator treatment, and ongoing reassessment during transport."
+    }
   },
-
   {
     "title": "The Quiet Diabetic",
-    "scenarioIntro": "This scenario focuses on recognition and management of hypoglycemia. Students must identify altered mental status due to low blood glucose and administer appropriate treatment such as oral glucose or glucagon.",
-
+    "scenarioIntro": "This scenario teaches recognition and management of hypoglycemia. Students must identify altered mental status due to low blood glucose, decide whether oral glucose is safe, and reassess carefully after treatment. It should also remind students not to abandon a broader differential too early.",
     "callInformation": {
-      "dispatch": "Unconscious person",
+      "type": "Medical",
       "location": "Private residence",
-      "timeOfDay": "Morning",
-      "environment": "Small apartment"
+      "time": "Morning",
+      "dispatchCode": "31-D-2",
+      "dispatchNotes": [
+        "58-year-old male found confused and sweaty",
+        "Diabetic history reported by family",
+        "Family states he took insulin but did not eat"
+      ],
+      "hazardsOrFlags": [
+        "Tight apartment workspace",
+        "Anxious family nearby"
+      ],
+      "crewNotes": "Bring glucometer and be ready to determine whether oral glucose or glucagon is appropriate."
     },
-
     "patientDemographics": {
-      "age": 58,
-      "gender": "Male"
+      "name": "David Mercer",
+      "sex": "Male",
+      "age": "58",
+      "height": "5'9\"",
+      "weight": "180 lbs",
+      "appearance": "Pale, diaphoretic, slow to respond, sitting slumped at the kitchen table",
+      "chiefComplaint": "Confusion and weakness"
     },
-
-    "incidentNarrative": "Family states patient is diabetic and was found confused and diaphoretic this morning. He did not eat breakfast and took his insulin.",
-
-    "patientPresentation": "Patient is confused, pale, diaphoretic, slow to respond to questions. *(💡yellow|Altered LOC + diaphoresis in diabetic patient should immediately trigger BGL check)*",
-
+    "patientPresentation": "David is pale, sweaty, and confused. He answers slowly and appears unable to follow complex instructions. Family says he was normal earlier but became weak and confused after taking his insulin without breakfast. *(💡 Altered LOC plus diaphoresis in a diabetic patient should trigger an early blood glucose check.)*",
+    "incidentNarrative": "Family states David is diabetic and took his usual insulin this morning but skipped breakfast. Over the next hour he became shaky, confused, and increasingly difficult to rouse. He has not fallen and there is no sign of trauma.",
     "opqrst": {
-      "onset": "Gradual",
-      "provocation": "Missed meal",
-      "quality": "Weak and dizzy",
+      "onset": "Gradual over the morning",
+      "provocation": "Missed meal after insulin administration",
+      "quality": "Weak, shaky, and dizzy before becoming confused",
       "radiation": "None",
-      "severity": "5/10",
-      "time": "This morning"
+      "severity": "Unable to rate clearly due to confusion",
+      "time": "Symptoms developed over the last hour"
     },
-
     "sample": {
-      "symptoms": "Confusion, sweating",
-      "allergies": "None",
-      "medications": "Insulin",
-      "pastMedicalHistory": "Diabetes",
+      "signsAndSymptoms": "Confusion, diaphoresis, weakness, decreased responsiveness",
+      "allergies": "None known",
+      "medications": [
+        "Insulin"
+      ],
+      "pastMedicalHistory": "Diabetes mellitus",
       "lastOralIntake": "Last night",
-      "events": "Took insulin but did not eat"
+      "eventsLeadingUp": "Took insulin this morning but did not eat breakfast"
     },
-
+    "medications": [
+      "Insulin"
+    ],
+    "allergies": [
+      "None known"
+    ],
+    "pastMedicalHistory": [
+      "Diabetes mellitus"
+    ],
     "physicalExam": {
+      "generalAppearance": "Ill-appearing, pale, sweaty, confused",
       "airway": "Patent",
-      "breathing": "Normal",
-      "circulation": "Diaphoretic",
-      "disability": "Confused",
-      "exposure": "No trauma"
+      "breathing": "Normal rate and effort",
+      "circulation": "Skin cool and diaphoretic, radial pulse mildly tachycardic",
+      "neuro": "Confused, follows only simple commands, no obvious focal deficit",
+      "headNeck": "No trauma noted",
+      "chest": "Clear breath sounds bilaterally",
+      "abdomen": "Soft, non-tender",
+      "pelvis": "Stable",
+      "extremities": "Moves all limbs, no trauma",
+      "skin": "Pale and diaphoretic"
     },
-
     "vitalSigns": {
-      "set1": {
-        "HR": 102,
-        "RR": 18,
-        "BP": "138/88",
-        "SpO2": "98%",
-        "GCS": 13,
-        "Temp": "36.5C",
-        "BGL": "2.3"
+      "firstSet": {
+        "hr": "102",
+        "rr": "18",
+        "bp": "138/88",
+        "spo2": "98%",
+        "etco2": "",
+        "temp": "36.5 C",
+        "gcs": "13",
+        "bgl": "2.3 mmol/L",
+        "ecgInterpretation": "Sinus Tachycardia"
       },
-      "set2": {
-        "HR": 88,
-        "RR": 16,
-        "BP": "132/82",
-        "SpO2": "99%",
-        "GCS": 15,
-        "Temp": "36.6C",
-        "BGL": "5.6"
+      "secondSet": {
+        "hr": "88",
+        "rr": "16",
+        "bp": "132/82",
+        "spo2": "99%",
+        "etco2": "",
+        "temp": "36.6 C",
+        "gcs": "15",
+        "bgl": "5.6 mmol/L",
+        "ecgInterpretation": "Normal Sinus Rhythm"
       }
     },
-
     "caseProgression": {
-      "withTreatment": "After glucagon or oral glucose, patient becomes alert, diaphoresis resolves, vitals stabilize, patient able to answer questions.",
-      "withoutTreatment": "Patient LOC decreases, may become unconscious, risk of seizure, worsening hypoglycemia."
+      "withProperTreatment": "After appropriate glucose treatment, the patient becomes more alert, diaphoresis resolves, and mental status improves significantly. Repeat glucose confirms correction, and the patient can answer questions appropriately. *(💡 Improvement does not end the call. Reassessment and transport thinking still matter.)*",
+      "withoutProperTreatment": "Mental status worsens, the patient may become unresponsive or seize, and the risk of airway compromise and severe neurologic injury increases."
     },
-
     "expectedTreatment": [
-      "Primary survey",
-      "Check blood glucose",
-      "Administer oral glucose if conscious",
-      "Administer glucagon if unable to swallow",
-      "Reassess LOC and BGL",
-      "Transport decision"
+      "Ensure scene safety and perform a primary survey",
+      "Check blood glucose early in the call",
+      "Determine whether the patient can safely take oral glucose",
+      "Administer oral glucose if appropriate or glucagon if oral intake is unsafe and indications are met",
+      "Reassess level of consciousness and repeat blood glucose",
+      "Monitor airway and prepare for deterioration if the patient worsens",
+      "Transport with ongoing reassessment"
     ],
-
-    "clinicalReasoning": {
-      "mostLikelyDiagnosis": "Hypoglycemia due to insulin administration without food intake.",
-      "differentialDiagnosis": [
-        "Stroke",
-        "Head injury",
-        "Drug or alcohol intoxication",
-        "Sepsis"
-      ],
-      "keyClues": [
-        "Diabetic history",
-        "Low BGL",
-        "Improves after glucose"
-      ]
-    },
-
+    "protocolNotes": [
+      "Blood glucose should be checked early in altered LOC cases when hypoglycemia is possible",
+      "Glucose treatment must match the patient's ability to protect their airway and swallow safely",
+      "Do not let a diabetic history narrow the differential too early; stroke, head injury, intoxication, and sepsis still require consideration",
+      "Document response to treatment and repeat glucose clearly"
+    ],
+    "learningObjectives": [
+      "Recognize hypoglycemia as a common reversible cause of altered mental status",
+      "Use blood glucose testing early and meaningfully",
+      "Select the correct treatment based on the patient's presentation",
+      "Reassess response after treatment and adjust the plan"
+    ],
+    "vocationalLearningOutcomes": [
+      "Perform a complete patient assessment and integrate findings into care plans",
+      "Apply symptom-relief treatment within PCP scope appropriately",
+      "Communicate findings clearly to family, partner, and receiving staff"
+    ],
+    "selfReflectionPrompts": [
+      "What clues made hypoglycemia likely early in the call?",
+      "How did you decide whether oral glucose or glucagon was more appropriate?",
+      "Did you keep a broad differential before the glucose result came back?",
+      "How effective was your reassessment after treatment?"
+    ],
     "grsAnchors": {
-      "decisionMaking": {
+      "situationalAwareness": {
         "1": [
-          "Fails to check BGL",
-          "Fails to treat hypoglycemia",
-          "Incorrect treatment decision"
+          "Fails to recognize the urgency of altered mental status",
+          "Does not prioritize a reversible cause assessment",
+          "Gets distracted by scene details that do not matter"
         ],
         "3": [
-          "Delayed BGL check",
-          "Delayed glucose administration",
-          "Needs prompting for treatment"
+          "Recognizes the patient is unwell but is slow to focus on likely reversible causes",
+          "Requires prompting to prioritize blood glucose testing",
+          "Maintains only partial awareness of changing mental status"
         ],
         "5": [
-          "Checks BGL promptly",
-          "Administers glucose appropriately",
-          "Reassesses patient"
+          "Recognizes altered LOC as urgent and focuses on likely reversible causes",
+          "Prioritizes blood glucose appropriately",
+          "Tracks improvement or deterioration throughout the call"
         ],
         "7": [
-          "Immediately recognizes hypoglycemia",
-          "Provides rapid treatment",
-          "Excellent reassessment and management"
+          "Immediately frames the case around time-sensitive reversible causes",
+          "Anticipates seizure or airway risk before deterioration occurs",
+          "Maintains excellent awareness of both patient and scene throughout"
+        ]
+      },
+      "patientAssessment": {
+        "1": [
+          "Performs an incomplete assessment",
+          "Misses diaphoresis, confusion, or abnormal glucose",
+          "Fails to reassess after treatment"
+        ],
+        "3": [
+          "Obtains some useful findings but lacks structure",
+          "Blood glucose testing is delayed or poorly integrated",
+          "Needs prompting for repeat assessment"
+        ],
+        "5": [
+          "Performs an organized altered LOC assessment",
+          "Obtains and interprets blood glucose appropriately",
+          "Reassesses mental status and vitals after treatment"
+        ],
+        "7": [
+          "Builds a strong assessment rapidly and efficiently",
+          "Integrates glucose result smoothly into the working impression",
+          "Uses serial assessment to guide treatment and transport"
+        ]
+      },
+      "historyGathering": {
+        "1": [
+          "Fails to obtain useful diabetic history",
+          "Misses insulin use or missed meal history",
+          "Does not ask family about the timeline"
+        ],
+        "3": [
+          "Obtains some history but misses key details",
+          "Uses SAMPLE inconsistently",
+          "Needs prompting to clarify medication and meal timing"
+        ],
+        "5": [
+          "Obtains a focused and relevant history from family and patient when possible",
+          "Clarifies insulin use, oral intake, and symptom onset",
+          "Integrates history with assessment findings"
+        ],
+        "7": [
+          "Uses history gathering to quickly support and refine the diagnosis",
+          "Extracts a clear timeline from limited information",
+          "Keeps the differential broad while still recognizing hypoglycemia strongly"
+        ]
+      },
+      "decisionMaking": {
+        "1": [
+          "Fails to check blood glucose or delays treatment excessively",
+          "Chooses an inappropriate treatment route",
+          "Makes a poor or unsafe transport decision"
+        ],
+        "3": [
+          "Recognizes hypoglycemia but treats hesitantly",
+          "Needs prompting to match treatment to airway and swallow safety",
+          "Reassessment and transport planning are inconsistent"
+        ],
+        "5": [
+          "Checks glucose promptly and chooses treatment appropriately",
+          "Reassesses response after intervention",
+          "Makes a sound transport decision"
+        ],
+        "7": [
+          "Acts quickly and correctly once hypoglycemia is suspected or confirmed",
+          "Balances treatment, airway safety, and reassessment very well",
+          "Shows clear, efficient reasoning throughout the call"
+        ]
+      },
+      "proceduralSkill": {
+        "1": [
+          "Performs blood glucose testing poorly or incorrectly",
+          "Uses poor medication administration technique",
+          "Creates avoidable delay through clumsy skill performance"
+        ],
+        "3": [
+          "Completes skills with hesitation or minor errors",
+          "Needs prompting for setup or medication preparation",
+          "Reassessment after the intervention is delayed"
+        ],
+        "5": [
+          "Performs glucose testing and treatment competently",
+          "Uses safe technique and clear sequencing",
+          "Repeats blood glucose and reassesses appropriately"
+        ],
+        "7": [
+          "Executes all relevant skills quickly and safely",
+          "Matches procedural flow to the patient's urgency well",
+          "Maintains patient safety and efficiency throughout"
+        ]
+      },
+      "resourceUtilization": {
+        "1": [
+          "Uses partner and family poorly",
+          "Fails to gather helpful collateral information",
+          "Creates unnecessary inefficiency in a simple workspace"
+        ],
+        "3": [
+          "Uses some available help but not well",
+          "Delegation is limited or vague",
+          "Misses simple opportunities to improve flow"
+        ],
+        "5": [
+          "Uses partner and family information effectively",
+          "Keeps scene tasks organized and efficient",
+          "Prepares transport without losing reassessment focus"
+        ],
+        "7": [
+          "Uses all available resources deliberately and effectively",
+          "Delegates smoothly while maintaining leadership",
+          "Creates a highly efficient scene with strong information flow"
+        ]
+      },
+      "communication": {
+        "1": [
+          "Communicates poorly with family and partner",
+          "Fails to explain the situation clearly",
+          "Provides a weak or disorganized handover"
+        ],
+        "3": [
+          "Provides basic communication with some gaps",
+          "Explains treatment only partially",
+          "Handover lacks useful structure"
+        ],
+        "5": [
+          "Communicates clearly with family, partner, and receiving staff",
+          "Explains treatment and reassessment appropriately",
+          "Provides an organized handover"
+        ],
+        "7": [
+          "Uses calm, efficient, confidence-building communication throughout",
+          "Reassures family while keeping care moving",
+          "Delivers an excellent handover with clear clinical reasoning"
         ]
       }
     },
-
-    "selfReflection": [
-      "What clues indicated hypoglycemia?",
-      "Why is checking BGL important in altered LOC?",
-      "What complications can occur if untreated?",
-      "How did treatment affect the patient?"
-    ]
+    "teachersPoints": [
+      "Hypoglycemia should be a reflex check in altered LOC, but not the only possibility considered.",
+      "This case rewards early BGL and treatment matched to airway safety.",
+      "Improvement after treatment is important, but reassessment still matters.",
+      "Family history can be the difference between guessing and knowing."
+    ],
+    "scenarioRationale": "This scenario reinforces the importance of blood glucose testing in altered mental status, appropriate treatment route selection, and structured reassessment after intervention.",
+    "clinicalReasoning": {
+      "summary": "The presentation is most consistent with hypoglycemia caused by insulin administration without adequate oral intake.",
+      "differentialDiagnosis": [
+        {
+          "condition": "Hypoglycemia",
+          "supportingFeatures": "Diabetic history, insulin use, missed meal, diaphoresis, confusion, low blood glucose, rapid improvement after treatment",
+          "rulingOutFeatures": "None significant"
+        },
+        {
+          "condition": "Stroke",
+          "supportingFeatures": "Altered mental status can occur in stroke",
+          "rulingOutFeatures": "No clear focal neurologic deficit and marked improvement after glucose treatment"
+        },
+        {
+          "condition": "Sepsis",
+          "supportingFeatures": "Altered LOC can occur in severe infection",
+          "rulingOutFeatures": "No fever, no infectious story, and low glucose clearly explains the presentation"
+        }
+      ],
+      "conclusion": "This is most consistent with hypoglycemia requiring prompt glucose assessment, appropriate treatment route selection, and repeat reassessment."
+    }
+  },
+  {
+    "title": "Elderly Fall With Suspected Pelvic Fracture",
+    "scenarioIntro": "This scenario teaches learners to recognize that a benign dispatch can hide a significant injury. It rewards slow, organized trauma assessment, integration of mechanism and medication history, and careful movement planning rather than reflexive lifting.",
+    "callInformation": {
+      "type": "Trauma",
+      "location": "Private residence hallway",
+      "time": "08:15",
+      "dispatchCode": "17-A-2",
+      "dispatchNotes": [
+        "82-year-old female fell in hallway and cannot get up",
+        "Reports severe left hip pain",
+        "Caller unsure whether patient struck her head"
+      ],
+      "hazardsOrFlags": [
+        "Tight hallway",
+        "Staircase nearby",
+        "Potentially difficult extrication"
+      ],
+      "crewNotes": "BLS crew on scene. ALS is 15 minutes away. Plan movement carefully before touching the patient."
+    },
+    "patientDemographics": {
+      "name": "Marjorie Ellison",
+      "sex": "Female",
+      "age": "82",
+      "height": "5'3\"",
+      "weight": "110 lbs",
+      "appearance": "Frail elderly female lying on her side, pale, guarded, and visibly uncomfortable",
+      "chiefComplaint": "Left hip and pelvic pain after fall"
+    },
+    "patientPresentation": "Marjorie is lying on the carpeted hallway floor, curled slightly and clutching her left hip. She winces with even slight movement and appears frightened but cooperative. *(💡 Position, age, pain, and unwillingness to move should make you think beyond a simple lift assist.)*",
+    "incidentNarrative": "Her daughter heard a thump around 07:45 and found Marjorie on the floor complaining of left hip pain. The patient had been trying to walk to the bathroom on her own. No clear loss of consciousness is reported, and the daughter did not witness the actual fall.",
+    "opqrst": {
+      "onset": "Sudden during attempted walk to the bathroom",
+      "provocation": "Any movement worsens the pain",
+      "quality": "Sharp, deep pain",
+      "radiation": "Confined to left hip and pelvic area",
+      "severity": "8/10 with movement",
+      "time": "Approximately 30 minutes ago"
+    },
+    "sample": {
+      "signsAndSymptoms": "Left hip pain, inability to stand, fear of movement",
+      "allergies": "Penicillin",
+      "medications": [
+        "Warfarin",
+        "Amlodipine",
+        "Calcium and Vitamin D"
+      ],
+      "pastMedicalHistory": "Hypertension, atrial fibrillation, osteoporosis",
+      "lastOralIntake": "Tea and toast at 06:30",
+      "eventsLeadingUp": "Attempted to walk unassisted to the bathroom and fell"
+    },
+    "medications": [
+      "Warfarin - anticoagulant",
+      "Amlodipine - antihypertensive",
+      "Calcium and Vitamin D - osteoporosis supplement"
+    ],
+    "allergies": [
+      "Penicillin"
+    ],
+    "pastMedicalHistory": [
+      "Hypertension",
+      "Atrial fibrillation",
+      "Osteoporosis"
+    ],
+    "physicalExam": {
+      "generalAppearance": "Thin, frail elderly patient in pain, guarded, reluctant to move",
+      "airway": "Patent",
+      "breathing": "Normal rate and effort, clear breath sounds bilaterally",
+      "circulation": "Skin pale, radial pulse present, no obvious major external bleeding",
+      "neuro": "Alert and oriented, no obvious focal deficit",
+      "headNeck": "No visible trauma, no obvious scalp wounds",
+      "chest": "No tenderness, clear air entry",
+      "abdomen": "Soft, non-tender",
+      "pelvis": "Pain with palpation and movement, significant guarding",
+      "extremities": "Left leg appears shortened and externally rotated",
+      "skin": "Pale, warm, dry"
+    },
+    "vitalSigns": {
+      "firstSet": {
+        "hr": "96",
+        "rr": "20",
+        "bp": "138/84",
+        "spo2": "96%",
+        "etco2": "",
+        "temp": "36.3 C",
+        "gcs": "15",
+        "bgl": "5.6 mmol/L",
+        "ecgInterpretation": ""
+      },
+      "secondSet": {
+        "hr": "108",
+        "rr": "22",
+        "bp": "132/80",
+        "spo2": "96%",
+        "etco2": "",
+        "temp": "36.4 C",
+        "gcs": "15",
+        "bgl": "5.7 mmol/L",
+        "ecgInterpretation": ""
+      }
+    },
+    "caseProgression": {
+      "withProperTreatment": "If the crew recognizes a likely pelvic or proximal femur injury, limits unnecessary movement, stabilizes appropriately, and plans extrication carefully, the patient remains hemodynamically stable though still in significant pain. Anxiety is reduced by calm explanation and controlled movement. *(💡 Movement planning is treatment in trauma, not just logistics.)*",
+      "withoutProperTreatment": "If the crew treats the call like a simple lift assist and moves the patient carelessly, pain increases sharply, heart rate rises, anxiety worsens, and the risk of occult bleeding and deterioration increases."
+    },
+    "expectedTreatment": [
+      "Ensure scene safety and assess the extrication environment before moving the patient",
+      "Perform a primary survey and focused trauma assessment",
+      "Recognize likely significant pelvic or proximal femur injury based on age, mechanism, pain, and deformity",
+      "Minimize movement and plan extrication before attempting any lift",
+      "Use appropriate movement equipment to reduce unnecessary manipulation",
+      "Monitor vitals and watch for evolving signs of shock, especially given anticoagulant use",
+      "Do not apply oxygen routinely when oxygenation is normal and there are no clear indications",
+      "Transport promptly with ongoing reassessment"
+    ],
+    "protocolNotes": [
+      "Do not default to oxygen when saturation and clinical presentation do not support it",
+      "This case should emphasize trauma assessment, movement planning, and occult bleeding risk",
+      "Anticoagulant use increases concern for significant internal bleeding even when vitals are initially normal",
+      "The educational focus is safe handling, not rushing to move the patient",
+      "Extrication strategy should be deliberate and minimize worsening pain or injury"
+    ],
+    "learningObjectives": [
+      "Recognize signs suggesting pelvic or proximal femur injury in an elderly fall patient",
+      "Integrate mechanism, physical findings, and medication history into risk assessment",
+      "Plan movement and extrication safely rather than reflexively",
+      "Monitor for subtle deterioration in an anticoagulated trauma patient"
+    ],
+    "vocationalLearningOutcomes": [
+      "Perform complete trauma assessments and integrate findings into care plans",
+      "Demonstrate knowledge of pathophysiology and risk factors relevant to trauma care",
+      "Communicate clearly and effectively with patients, families, and healthcare professionals"
+    ],
+    "selfReflectionPrompts": [
+      "What clues told you this was more than a simple lift assist?",
+      "How did anticoagulant use change your concern level or transport thinking?",
+      "Did you move the patient only after you had a plan?",
+      "How well did your communication reduce fear and improve cooperation?"
+    ],
+    "grsAnchors": {
+      "situationalAwareness": {
+        "1": [
+          "Treats the call like a routine lift assist without recognizing injury risk",
+          "Misses environmental and extrication hazards",
+          "Fails to appreciate the significance of age and frailty"
+        ],
+        "3": [
+          "Recognizes some concern but underestimates the seriousness of the injury",
+          "Notices the tight space late",
+          "Needs prompting to plan before moving the patient"
+        ],
+        "5": [
+          "Recognizes likely significant injury and adjusts priorities appropriately",
+          "Accounts for hallway constraints and movement risk",
+          "Maintains awareness of anticoagulant-related bleeding concern"
+        ],
+        "7": [
+          "Quickly reframes the call from lift assist to significant trauma risk",
+          "Anticipates movement, bleeding, and transport problems early",
+          "Controls both clinical and environmental factors extremely well"
+        ]
+      },
+      "patientAssessment": {
+        "1": [
+          "Performs a poor trauma assessment",
+          "Misses limb shortening or external rotation",
+          "Fails to monitor for worsening pain or compensation"
+        ],
+        "3": [
+          "Obtains basic findings but lacks depth or structure",
+          "Underinterprets deformity and guarding",
+          "Reassessment is incomplete or delayed"
+        ],
+        "5": [
+          "Performs a focused and organized trauma assessment",
+          "Recognizes deformity, pain, and guarding as important findings",
+          "Uses repeat vitals to monitor for change"
+        ],
+        "7": [
+          "Links mechanism, deformity, pain, and medication history into a strong clinical picture",
+          "Minimizes patient discomfort while still gathering essential findings",
+          "Uses serial assessment to anticipate deterioration early"
+        ]
+      },
+      "historyGathering": {
+        "1": [
+          "Fails to obtain a useful fall history",
+          "Misses warfarin use",
+          "Does not clarify the timeline or circumstances of the fall"
+        ],
+        "3": [
+          "Obtains a partial history but misses key risk details",
+          "Uses SAMPLE inconsistently",
+          "Needs prompting to ask about mobility and prior baseline function"
+        ],
+        "5": [
+          "Obtains a relevant trauma and medical history efficiently",
+          "Clarifies fall mechanism, timeline, and anticoagulant use",
+          "Integrates history into risk assessment and transport planning"
+        ],
+        "7": [
+          "Uses both patient and daughter information effectively",
+          "Elicits high-value details that sharpen risk and planning",
+          "Builds a strong, coherent history despite pain and anxiety"
+        ]
+      },
+      "decisionMaking": {
+        "1": [
+          "Moves the patient without adequate assessment or planning",
+          "Fails to recognize the need to minimize movement",
+          "Makes poor transport or treatment priorities"
+        ],
+        "3": [
+          "Recognizes injury but hesitates or plans poorly",
+          "Movement strategy is only partly thought through",
+          "Needs prompting to prioritize transport and reassessment"
+        ],
+        "5": [
+          "Makes sound decisions based on suspected serious injury",
+          "Prioritizes gentle handling, movement planning, and transport",
+          "Accounts for anticoagulant-related risk in decision-making"
+        ],
+        "7": [
+          "Shows excellent judgment around extrication, reassessment, and transport timing",
+          "Anticipates what could worsen the patient's condition",
+          "Makes calm, efficient, high-quality trauma decisions throughout"
+        ]
+      },
+      "proceduralSkill": {
+        "1": [
+          "Handles the patient roughly or unsafely",
+          "Uses movement equipment poorly",
+          "Performs reassessment awkwardly or incompletely"
+        ],
+        "3": [
+          "Uses equipment with some hesitation or inefficiency",
+          "Needs correction for movement technique",
+          "Reassessment after movement is delayed"
+        ],
+        "5": [
+          "Uses equipment and movement technique competently",
+          "Minimizes unnecessary pain and manipulation",
+          "Reassesses after movement appropriately"
+        ],
+        "7": [
+          "Executes patient handling with excellent control and minimal discomfort",
+          "Coordinates movement skillfully with partner",
+          "Blends procedure, communication, and reassessment extremely well"
+        ]
+      },
+      "resourceUtilization": {
+        "1": [
+          "Uses partner and available equipment poorly",
+          "Fails to organize the scene for safe movement",
+          "Does not think ahead about extrication needs"
+        ],
+        "3": [
+          "Uses some available resources but inconsistently",
+          "Delegation is limited or unclear",
+          "Scene setup is only partially effective"
+        ],
+        "5": [
+          "Uses partner, equipment, and available information appropriately",
+          "Organizes the scene for safer movement",
+          "Prepares for transport efficiently"
+        ],
+        "7": [
+          "Uses all available resources with excellent forethought",
+          "Delegates clearly and effectively",
+          "Creates a smooth, well-controlled extrication and transport flow"
+        ]
+      },
+      "communication": {
+        "1": [
+          "Provides little explanation or reassurance",
+          "Communicates poorly with the daughter",
+          "Gives a weak or disorganized handover"
+        ],
+        "3": [
+          "Provides basic communication with some gaps",
+          "Offers limited reassurance during painful movement",
+          "Handover misses some key details"
+        ],
+        "5": [
+          "Communicates clearly with the patient, daughter, and partner",
+          "Explains movement and transport decisions well",
+          "Provides an organized handover"
+        ],
+        "7": [
+          "Uses calm, confidence-building communication throughout the call",
+          "Builds trust with both patient and daughter",
+          "Delivers an excellent trauma handover with clear risk framing"
+        ]
+      }
+    },
+    "teachersPoints": [
+      "This case is about recognizing that a benign dispatch can hide a significant injury.",
+      "Movement planning is treatment in trauma, not just logistics.",
+      "Normal initial vitals do not rule out a bad injury, especially with warfarin use.",
+      "Oxygen is not automatically required just because the patient looks uncomfortable."
+    ],
+    "scenarioRationale": "This scenario teaches learners to recognize serious injury risk in an elderly fall, avoid reflexive movement, and integrate medication history, deformity, and transport planning into trauma care.",
+    "clinicalReasoning": {
+      "summary": "The presentation is most consistent with a significant pelvic or proximal femur injury after a low-mechanism fall in a frail, anticoagulated elderly patient.",
+      "differentialDiagnosis": [
+        {
+          "condition": "Pelvic fracture",
+          "supportingFeatures": "Pain with movement, pelvic tenderness, inability to stand, anticoagulant use, frailty",
+          "rulingOutFeatures": "No obvious external pelvic instability does not exclude injury"
+        },
+        {
+          "condition": "Proximal femur fracture",
+          "supportingFeatures": "Shortened externally rotated leg, severe hip pain, inability to weight-bear",
+          "rulingOutFeatures": "Pelvic pain and tenderness may suggest combined or alternative injury pattern"
+        },
+        {
+          "condition": "Minor soft tissue injury only",
+          "supportingFeatures": "Ground-level fall can sometimes be deceptively mild",
+          "rulingOutFeatures": "Severity of pain, deformity, and inability to move argue strongly against a simple minor injury"
+        }
+      ],
+      "conclusion": "This call should be managed as a significant trauma in a high-risk elderly patient, with deliberate movement planning, close reassessment, and prompt transport."
+    }
+  },
+  {
+    "title": "The Collapse After the Stairs",
+    "scenarioIntro": "This scenario teaches evaluation of syncope with a meaningful cardiac concern. It rewards careful history gathering, ECG acquisition, ongoing reassessment, and transport decisions that reflect risk rather than temporary clinical calm.",
+    "callInformation": {
+      "type": "Cardiac",
+      "location": "Private residence foyer",
+      "time": "Late morning",
+      "dispatchCode": "31-C-1",
+      "dispatchNotes": [
+        "67-year-old male collapsed after climbing stairs",
+        "Now awake but weak and pale",
+        "Family reports brief loss of consciousness"
+      ],
+      "hazardsOrFlags": [
+        "Narrow foyer and stair landing",
+        "Concerned spouse speaking quickly",
+        "Patient wants to stay home if he feels better"
+      ],
+      "crewNotes": "Bring monitor and be ready for ECG acquisition. Keep a broad differential, but do not miss cardiac syncope."
+    },
+    "patientDemographics": {
+      "name": "Michael Haines",
+      "sex": "Male",
+      "age": "67",
+      "height": "5'10\"",
+      "weight": "196 lbs",
+      "appearance": "Pale, mildly diaphoretic, seated against the wall near the bottom of the stairs",
+      "chiefComplaint": "Collapse with weakness and lightheadedness"
+    },
+    "patientPresentation": "Michael is awake now, but he looks washed out and tired. He says he felt suddenly lightheaded while coming down the stairs and woke up on the floor a moment later. His spouse says he was only out for a few seconds. *(💡 Syncope that happens around exertion or position change deserves more than a quick reassurance and lift.)*",
+    "incidentNarrative": "The patient had gone upstairs to get dressed and was coming back down when he suddenly became dizzy and collapsed on the lower steps. His spouse heard the fall, found him awake within seconds, and called 911 when he remained pale and weak. He denies striking his head hard and denies chest pain, but says this felt different from being 'just dizzy.'",
+    "opqrst": {
+      "onset": "Sudden",
+      "provocation": "Occurred while moving on the stairs",
+      "quality": "Lightheaded, weak, briefly blacked out",
+      "radiation": "None",
+      "severity": "Unable to rate the actual syncope, now rates weakness as 5/10",
+      "time": "Occurred about 10 minutes ago"
+    },
+    "sample": {
+      "signsAndSymptoms": "Syncope, pallor, diaphoresis, weakness, lightheadedness",
+      "allergies": "None known",
+      "medications": [
+        "Metoprolol",
+        "Ramipril",
+        "Rosuvastatin",
+        "ASA"
+      ],
+      "pastMedicalHistory": "Hypertension, dyslipidemia, prior NSTEMI 3 years ago",
+      "lastOralIntake": "Coffee and toast 1 hour ago",
+      "eventsLeadingUp": "Was descending the stairs when he suddenly felt lightheaded and collapsed"
+    },
+    "medications": [
+      "Metoprolol - beta blocker",
+      "Ramipril - ACE inhibitor",
+      "Rosuvastatin - lipid lowering agent",
+      "ASA - antiplatelet"
+    ],
+    "allergies": [
+      "None known"
+    ],
+    "pastMedicalHistory": [
+      "Hypertension",
+      "Dyslipidemia",
+      "Prior NSTEMI"
+    ],
+    "physicalExam": {
+      "generalAppearance": "Pale, mildly diaphoretic older adult, alert but fatigued",
+      "airway": "Patent",
+      "breathing": "Normal rate and effort, clear breath sounds",
+      "circulation": "Peripheral perfusion slightly reduced, radial pulse present but somewhat irregular",
+      "neuro": "Alert and oriented, no obvious focal deficits, no ongoing post-ictal features",
+      "headNeck": "No obvious trauma, no neck pain",
+      "chest": "No chest wall tenderness, no obvious trauma",
+      "abdomen": "Soft, non-tender",
+      "pelvis": "Stable",
+      "extremities": "Moves all limbs, no gross injury",
+      "skin": "Cool, pale, slightly diaphoretic"
+    },
+    "vitalSigns": {
+      "firstSet": {
+        "hr": "48",
+        "rr": "18",
+        "bp": "98/62",
+        "spo2": "97%",
+        "etco2": "",
+        "temp": "36.4 C",
+        "gcs": "15",
+        "bgl": "6.0 mmol/L",
+        "ecgInterpretation": "Second Degree AV Block Type II"
+      },
+      "secondSet": {
+        "hr": "44",
+        "rr": "18",
+        "bp": "92/58",
+        "spo2": "97%",
+        "etco2": "",
+        "temp": "36.4 C",
+        "gcs": "15",
+        "bgl": "6.0 mmol/L",
+        "ecgInterpretation": "Second Degree AV Block Type II"
+      }
+    },
+    "caseProgression": {
+      "withProperTreatment": "If the crew recognizes high-risk syncope, obtains an ECG early, limits unnecessary standing or exertion, and prioritizes transport and monitoring, the patient remains conscious but continues to look unwell. He may improve slightly with positioning, but the rhythm and borderline pressure keep the call high risk. *(💡 Feeling better does not erase a dangerous rhythm.)*",
+      "withoutProperTreatment": "If the crew minimizes the event because the patient woke quickly and denies chest pain, the patient becomes dizzier when moved, pressure drifts lower, and a second syncopal episode may occur during packaging or ambulation."
+    },
+    "expectedTreatment": [
+      "Ensure scene safety and perform a primary survey",
+      "Obtain a focused history of the event, including witness information and exertional context",
+      "Perform a focused cardiac assessment and obtain an ECG early",
+      "Keep the patient seated or supine and avoid unnecessary standing or walking",
+      "Monitor vitals and reassess for recurrent symptoms or further hemodynamic decline",
+      "Treat the call as high-risk syncope and prioritize transport",
+      "Provide a clear handover emphasizing the rhythm, syncope history, and trend in blood pressure"
+    ],
+    "protocolNotes": [
+      "Do not let absence of chest pain falsely lower concern in syncope with ECG abnormality",
+      "ECG should meaningfully influence transport urgency and overall risk framing",
+      "Borderline or worsening pressure after syncope should increase concern rather than reassure",
+      "This case is about recognizing dangerous syncope, not simply documenting a faint"
+    ],
+    "learningObjectives": [
+      "Recognize high-risk features of cardiac syncope",
+      "Use ECG findings to support risk assessment and transport urgency",
+      "Integrate witness history, vitals, and rhythm interpretation into decision making",
+      "Avoid false reassurance when the patient briefly improves"
+    ],
+    "vocationalLearningOutcomes": [
+      "Perform a complete patient assessment and integrate findings into a care plan",
+      "Use cardiac monitoring and ECG appropriately within PCP practice",
+      "Communicate effectively with patients, family, and receiving staff"
+    ],
+    "selfReflectionPrompts": [
+      "What made this more concerning than a simple faint?",
+      "How did the ECG change your understanding of the call?",
+      "Did you let the patient's temporary improvement affect your transport decision?",
+      "How well did you use witness history to shape your risk assessment?"
+    ],
+    "grsAnchors": {
+      "situationalAwareness": {
+        "1": [
+          "Treats the event like a benign faint without recognizing cardiac risk",
+          "Misses the importance of exertional context and pallor",
+          "Fails to appreciate that a recovered patient may still be unstable"
+        ],
+        "3": [
+          "Recognizes syncope but underestimates its potential seriousness",
+          "Needs prompting to keep cardiac causes high on the list",
+          "Notices some concerning findings but does not fully prioritize them"
+        ],
+        "5": [
+          "Recognizes the call as high-risk syncope and prioritizes assessment appropriately",
+          "Accounts for the witnessed collapse, vitals, and rhythm concern",
+          "Maintains awareness of worsening pressure and recurrent syncope risk"
+        ],
+        "7": [
+          "Rapidly identifies dangerous syncope features and reframes the call early",
+          "Anticipates deterioration with movement or delay",
+          "Maintains excellent awareness of patient, spouse, and scene constraints throughout"
+        ]
+      },
+      "patientAssessment": {
+        "1": [
+          "Performs an incomplete assessment and misses key cardiac features",
+          "Fails to obtain meaningful vitals or ECG information",
+          "Does not reassess after the initial impression"
+        ],
+        "3": [
+          "Obtains basic findings but lacks depth or sequencing",
+          "ECG is delayed or not well integrated into assessment",
+          "Reassessment is present but weak"
+        ],
+        "5": [
+          "Performs a focused and organized syncope assessment",
+          "Obtains and interprets the ECG in a clinically useful way",
+          "Uses repeat vitals and symptoms to refine concern"
+        ],
+        "7": [
+          "Builds a highly coherent assessment from history, rhythm, and hemodynamic trend",
+          "Recognizes what matters most without getting distracted by less relevant details",
+          "Uses serial assessment to guide packaging and transport urgency"
+        ]
+      },
+      "historyGathering": {
+        "1": [
+          "Fails to obtain useful witness history",
+          "Misses exertional context and cardiac background",
+          "Does not clarify the timeline of loss of consciousness and recovery"
+        ],
+        "3": [
+          "Obtains partial history but misses important risk details",
+          "Uses OPQRST or SAMPLE inconsistently",
+          "Needs prompting to ask about prior cardiac history and medications"
+        ],
+        "5": [
+          "Obtains a clear history from both patient and spouse",
+          "Clarifies exertional context, recovery, and relevant cardiac history",
+          "Integrates medication and event details into the working impression"
+        ],
+        "7": [
+          "Uses history gathering to sharpen both diagnosis and transport priority",
+          "Extracts high-value witness details efficiently",
+          "Builds a clear, clinically useful timeline despite scene stress"
+        ]
+      },
+      "decisionMaking": {
+        "1": [
+          "Minimizes the event and delays appropriate transport decisions",
+          "Fails to use the ECG meaningfully",
+          "Allows the patient to ambulate despite ongoing risk"
+        ],
+        "3": [
+          "Recognizes concern but hesitates in transport prioritization",
+          "Obtains an ECG but underuses it in decision making",
+          "Needs prompting to avoid false reassurance"
+        ],
+        "5": [
+          "Uses ECG, vitals, and event history to support prompt transport",
+          "Avoids unnecessary movement and reassesses appropriately",
+          "Makes a sound high-risk syncope decision"
+        ],
+        "7": [
+          "Prioritizes the dangerous elements of the call quickly and calmly",
+          "Anticipates recurrent syncope or hemodynamic decline",
+          "Shows strong, efficient clinical reasoning throughout"
+        ]
+      },
+      "proceduralSkill": {
+        "1": [
+          "Delays or poorly performs ECG acquisition",
+          "Handles movement or positioning in a way that increases risk",
+          "Performs monitoring inconsistently"
+        ],
+        "3": [
+          "Completes relevant skills with some hesitation or inefficiency",
+          "Needs prompting for setup, sequencing, or repeat assessment",
+          "Does not fully match procedures to the patient's risk level"
+        ],
+        "5": [
+          "Obtains ECG and monitoring competently",
+          "Uses appropriate positioning and safe handling",
+          "Reassesses smoothly after initial setup"
+        ],
+        "7": [
+          "Executes ECG, monitoring, and patient handling efficiently",
+          "Blends procedures and reassessment without losing patient focus",
+          "Matches skill performance well to urgency and risk"
+        ]
+      },
+      "resourceUtilization": {
+        "1": [
+          "Uses partner and available space poorly",
+          "Fails to use spouse information effectively",
+          "Creates unnecessary inefficiency during assessment and packaging"
+        ],
+        "3": [
+          "Uses some resources but delegation and flow are inconsistent",
+          "Gets useful information but not in a well-organized way",
+          "Misses opportunities to make the scene smoother"
+        ],
+        "5": [
+          "Uses partner, monitor, and spouse information appropriately",
+          "Keeps the scene organized and focused on risk recognition",
+          "Prepares transport efficiently"
+        ],
+        "7": [
+          "Uses all available resources deliberately and calmly",
+          "Delegates clearly and effectively",
+          "Creates a smooth, well-managed scene despite space and family pressure"
+        ]
+      },
+      "communication": {
+        "1": [
+          "Communicates poorly with the patient and spouse",
+          "Fails to explain why the call is high risk",
+          "Provides a weak or disorganized handover"
+        ],
+        "3": [
+          "Provides basic communication but leaves important gaps",
+          "Offers limited explanation for transport urgency",
+          "Handover includes some relevant information but lacks strong structure"
+        ],
+        "5": [
+          "Communicates clearly with patient, spouse, and receiving staff",
+          "Explains why ECG findings and syncope history matter",
+          "Provides an organized and relevant handover"
+        ],
+        "7": [
+          "Uses calm, confidence-building communication throughout",
+          "Explains risk without creating unnecessary alarm",
+          "Delivers a concise, high-quality handover with strong clinical framing"
+        ]
+      }
+    },
+    "teachersPoints": [
+      "Syncope with a concerning rhythm is not a reassurance case just because the patient wakes up quickly.",
+      "This scenario rewards witness history and ECG use, not just a tidy set of vitals.",
+      "Movement can reveal how unstable the patient really is.",
+      "Transport urgency should reflect risk, not patient preference alone."
+    ],
+    "scenarioRationale": "This scenario teaches learners to identify cardiac syncope as a high-risk problem, use ECG findings meaningfully, and avoid false reassurance when the patient briefly appears improved.",
+    "clinicalReasoning": {
+      "summary": "The presentation is most consistent with high-risk syncope due to a conduction abnormality causing transient cerebral hypoperfusion.",
+      "differentialDiagnosis": [
+        {
+          "condition": "Cardiac syncope from conduction disturbance",
+          "supportingFeatures": "Sudden collapse, brief LOC, bradycardia, conduction abnormality on ECG, pallor, exertional context",
+          "rulingOutFeatures": "No major ruling-out features; this remains the leading concern"
+        },
+        {
+          "condition": "Orthostatic or volume-related syncope",
+          "supportingFeatures": "Lightheadedness and collapse can occur with lower pressure states",
+          "rulingOutFeatures": "The ECG abnormality, exertional context, and persistent bradycardia make a primary cardiac cause more concerning"
+        },
+        {
+          "condition": "Vasovagal syncope",
+          "supportingFeatures": "Brief LOC with spontaneous recovery can fit vasovagal episodes",
+          "rulingOutFeatures": "Age, cardiac history, rhythm abnormality, and borderline hemodynamics make vasovagal syncope less reassuring here"
+        }
+      ],
+      "conclusion": "This call should be managed as dangerous syncope with a likely cardiac etiology, requiring ECG-guided risk recognition, careful handling, ongoing reassessment, and prompt transport."
+    }
+  },
+  {
+    "title": "The Rooftop Heat Worker",
+    "scenarioIntro": "This scenario teaches recognition of heat illness in an environment where weather and exertion matter as much as the medical findings. It rewards scene awareness, cooling decisions, and differentiating significant heat stress from simple fatigue or dehydration.",
+    "callInformation": {
+      "type": "Environmental",
+      "location": "Commercial building rooftop",
+      "time": "15:10",
+      "dispatchCode": "31-D-3",
+      "dispatchNotes": [
+        "Construction worker dizzy and vomiting on rooftop",
+        "Coworkers say he became confused in the heat",
+        "Patient still conscious but not acting normally"
+      ],
+      "hazardsOrFlags": [
+        "Direct sun exposure",
+        "Hot roofing surface",
+        "Limited shade",
+        "Equipment and materials creating movement obstacles"
+      ],
+      "crewNotes": "Bring water-resistant cooling supplies if available and be prepared for access delays from rooftop location."
+    },
+    "patientDemographics": {
+      "name": "Luis Romero",
+      "sex": "Male",
+      "age": "34",
+      "height": "5'8\"",
+      "weight": "185 lbs",
+      "appearance": "Sweating heavily, flushed, unsteady, seated against a rooftop vent housing",
+      "chiefComplaint": "Dizziness, vomiting, and weakness in extreme heat"
+    },
+    "patientPresentation": "Luis is seated on the rooftop, flushed and exhausted, with his hard hat off and shirt damp with sweat. He looks slowed down and slightly confused when answering questions. Coworkers say he was trying to keep working but became wobbly, vomited, and then sat down. *(💡 Heat illness often looks like 'just overdoing it' until you pay attention to mentation, environment, and trend.)*",
+    "incidentNarrative": "The patient has been working under direct sun since late morning with short breaks. Coworkers report he complained of cramps and headache earlier, then became dizzy and vomited once while carrying materials across the roof. They say he is now not acting like himself and is slower to answer than usual.",
+    "opqrst": {
+      "onset": "Gradual over the last 1 to 2 hours",
+      "provocation": "Exertion in direct heat",
+      "quality": "Weak, dizzy, nauseated, head feels heavy",
+      "radiation": "Headache remains generalized",
+      "severity": "Rates headache and dizziness as 7/10",
+      "time": "Worsening steadily through the afternoon"
+    },
+    "sample": {
+      "signsAndSymptoms": "Dizziness, vomiting, weakness, headache, confusion, heavy sweating",
+      "allergies": "None known",
+      "medications": [],
+      "pastMedicalHistory": "No significant medical history reported",
+      "lastOralIntake": "Energy drink and half a sandwich around noon",
+      "eventsLeadingUp": "Working on a hot rooftop for several hours with limited rest and likely poor fluid intake"
+    },
+    "medications": [],
+    "allergies": [
+      "None known"
+    ],
+    "pastMedicalHistory": [],
+    "physicalExam": {
+      "generalAppearance": "Hot, flushed, fatigued, slowed, mildly confused worker in visible distress",
+      "airway": "Patent",
+      "breathing": "Slightly rapid but non-laboured",
+      "circulation": "Skin hot and flushed, radial pulse rapid, capillary refill mildly delayed",
+      "neuro": "Alert to person and place, slow to answer, mildly confused to time, no focal deficits",
+      "headNeck": "No trauma, dry lips, no neck stiffness",
+      "chest": "Clear breath sounds bilaterally",
+      "abdomen": "Soft, mildly nauseated but no focal tenderness",
+      "pelvis": "Stable",
+      "extremities": "Generalized weakness, no focal injury",
+      "skin": "Hot, flushed, heavily diaphoretic"
+    },
+    "vitalSigns": {
+      "firstSet": {
+        "hr": "132",
+        "rr": "24",
+        "bp": "102/64",
+        "spo2": "98%",
+        "etco2": "",
+        "temp": "39.6 C",
+        "gcs": "14",
+        "bgl": "6.2 mmol/L",
+        "ecgInterpretation": "Sinus Tachycardia"
+      },
+      "secondSet": {
+        "hr": "122",
+        "rr": "22",
+        "bp": "108/68",
+        "spo2": "98%",
+        "etco2": "",
+        "temp": "38.9 C",
+        "gcs": "15",
+        "bgl": "6.2 mmol/L",
+        "ecgInterpretation": "Sinus Tachycardia"
+      }
+    },
+    "caseProgression": {
+      "withProperTreatment": "If the crew moves the patient out of direct heat, begins active cooling measures, reduces exertion, and prioritizes transport, the patient becomes more coherent and stops worsening. Temperature and heart rate improve slightly, but he still looks clinically significant and requires ongoing care. *(💡 Cooling and environment control are not optional extras here. They are the treatment.)*",
+      "withoutProperTreatment": "If the crew delays cooling, leaves the patient exposed, or underestimates the significance of altered mentation, the patient becomes more confused, vomits again, and may become less cooperative. Temperature remains elevated and perfusion worsens, increasing concern for more severe heat illness."
+    },
+    "expectedTreatment": [
+      "Ensure scene safety and account for rooftop access and environmental hazards",
+      "Perform a primary survey and focused assessment for heat illness severity",
+      "Move the patient out of direct sun or create shade if possible",
+      "Begin active cooling measures appropriate to the setting and available equipment",
+      "Limit exertion and avoid unnecessary movement",
+      "Monitor vitals, mentation, and response to cooling closely",
+      "Treat this as significant heat illness and prioritize transport",
+      "Communicate clearly with coworkers while keeping the scene organized"
+    ],
+    "protocolNotes": [
+      "Environmental control is a treatment priority in significant heat illness",
+      "Altered mentation should raise concern beyond simple dehydration or fatigue",
+      "Do not rely on normal SpO2 to falsely reassure yourself in environmental calls",
+      "Transport should not be delayed just because the patient begins to feel somewhat better after cooling"
+    ],
+    "learningObjectives": [
+      "Recognize clinically important heat illness using environment, history, and patient findings",
+      "Use cooling and scene management appropriately in environmental emergencies",
+      "Differentiate heat illness from simple fatigue or dehydration",
+      "Reassess mentation, temperature, and perfusion trends during treatment"
+    ],
+    "vocationalLearningOutcomes": [
+      "Perform a complete patient assessment and integrate findings into a care plan",
+      "Apply environmental and supportive care strategies within PCP scope",
+      "Communicate effectively with patients, coworkers, and receiving staff"
+    ],
+    "selfReflectionPrompts": [
+      "What made this more concerning than simple dehydration or fatigue?",
+      "How much did the environment shape your treatment priorities?",
+      "Did you treat the heat itself as part of the emergency?",
+      "How did reassessment change your understanding of severity?"
+    ],
+    "grsAnchors": {
+      "situationalAwareness": {
+        "1": [
+          "Fails to appreciate the role of heat and exertion in the patient's condition",
+          "Misses the significance of altered mentation on a hot rooftop",
+          "Does not prioritize environmental hazards or scene access issues"
+        ],
+        "3": [
+          "Recognizes heat as a factor but underestimates severity",
+          "Notices some scene issues but does not integrate them well",
+          "Needs prompting to keep environmental exposure central to the call"
+        ],
+        "5": [
+          "Recognizes significant heat illness and prioritizes scene and patient factors appropriately",
+          "Accounts for rooftop hazards, sun exposure, and access limitations",
+          "Maintains awareness of both clinical trend and environmental burden"
+        ],
+        "7": [
+          "Immediately frames the call around meaningful heat illness rather than simple fatigue",
+          "Anticipates worsening mentation and access-related delays early",
+          "Shows excellent awareness of clinical, environmental, and operational risk throughout"
+        ]
+      },
+      "patientAssessment": {
+        "1": [
+          "Performs an incomplete assessment and misses key heat illness findings",
+          "Fails to appreciate temperature, mentation, or perfusion changes",
+          "Does not reassess after initial contact"
+        ],
+        "3": [
+          "Obtains basic findings but does not fully interpret severity",
+          "Recognizes some heat illness features but lacks structure",
+          "Reassessment is present but shallow"
+        ],
+        "5": [
+          "Performs an organized assessment focused on heat illness severity",
+          "Interprets mentation, temperature, and tachycardia appropriately",
+          "Uses reassessment to track response to cooling and transport urgency"
+        ],
+        "7": [
+          "Builds a highly coherent assessment linking environment, exertion, and physiologic change",
+          "Recognizes subtle but important severity markers early",
+          "Uses serial assessment to guide treatment and urgency with confidence"
+        ]
+      },
+      "historyGathering": {
+        "1": [
+          "Fails to obtain useful environmental and exertional history",
+          "Misses earlier symptoms like cramps or headache",
+          "Does not clarify fluid intake or timeline"
+        ],
+        "3": [
+          "Obtains some useful history but misses high-value details",
+          "Needs prompting to ask about duration of heat exposure and work intensity",
+          "Uses SAMPLE inconsistently"
+        ],
+        "5": [
+          "Obtains a focused environmental and medical history efficiently",
+          "Clarifies heat exposure, exertion, oral intake, and symptom progression",
+          "Integrates coworker information meaningfully"
+        ],
+        "7": [
+          "Uses history gathering to distinguish significant heat illness from milder causes",
+          "Extracts high-value details quickly from both patient and coworkers",
+          "Builds a clear timeline that sharpens severity recognition"
+        ]
+      },
+      "decisionMaking": {
+        "1": [
+          "Underestimates the call and delays meaningful cooling or transport",
+          "Fails to prioritize environment control",
+          "Makes a weak or unsafe disposition decision"
+        ],
+        "3": [
+          "Recognizes heat illness but treatment priorities are hesitant or incomplete",
+          "Begins supportive care without fully addressing environmental burden",
+          "Needs prompting to prioritize transport appropriately"
+        ],
+        "5": [
+          "Uses environment control, cooling, reassessment, and transport appropriately",
+          "Recognizes that altered mentation raises concern for more serious heat illness",
+          "Makes sound decisions based on response and overall risk"
+        ],
+        "7": [
+          "Prioritizes the most important interventions quickly and calmly",
+          "Anticipates deterioration if cooling is delayed or incomplete",
+          "Shows strong, efficient reasoning throughout the call"
+        ]
+      },
+      "proceduralSkill": {
+        "1": [
+          "Implements cooling or monitoring poorly",
+          "Creates avoidable delay through disorganized treatment setup",
+          "Handles patient movement or packaging inefficiently"
+        ],
+        "3": [
+          "Completes cooling and monitoring with some hesitation or inefficiency",
+          "Needs prompting for better sequencing",
+          "Reassessment after intervention is delayed or limited"
+        ],
+        "5": [
+          "Implements cooling and monitoring competently",
+          "Uses safe, organized sequencing",
+          "Reassesses temperature, mentation, and vitals appropriately"
+        ],
+        "7": [
+          "Executes treatment and reassessment efficiently with minimal wasted effort",
+          "Combines environmental control and patient care smoothly",
+          "Matches procedural flow well to urgency and setting"
+        ]
+      },
+      "resourceUtilization": {
+        "1": [
+          "Uses partner, scene resources, and coworker help poorly",
+          "Fails to organize the rooftop scene effectively",
+          "Does not think ahead about access or movement"
+        ],
+        "3": [
+          "Uses some resources but not efficiently",
+          "Delegation is limited or unclear",
+          "Misses opportunities to improve flow and scene control"
+        ],
+        "5": [
+          "Uses partner, available cooling options, and coworker information appropriately",
+          "Keeps the rooftop scene organized and treatment-focused",
+          "Prepares movement and transport efficiently"
+        ],
+        "7": [
+          "Uses all available resources with strong foresight",
+          "Delegates clearly and effectively in a difficult environment",
+          "Creates a smooth, well-managed scene despite heat and access challenges"
+        ]
+      },
+      "communication": {
+        "1": [
+          "Communicates poorly with the patient and coworkers",
+          "Fails to explain the seriousness of the call",
+          "Provides a weak or disorganized handover"
+        ],
+        "3": [
+          "Provides basic communication but leaves some gaps",
+          "Offers limited explanation for treatment or transport urgency",
+          "Handover includes some relevant details but lacks structure"
+        ],
+        "5": [
+          "Communicates clearly with patient, coworkers, and receiving staff",
+          "Explains the heat illness concern and treatment plan appropriately",
+          "Provides an organized and relevant handover"
+        ],
+        "7": [
+          "Uses calm, practical communication throughout the call",
+          "Keeps coworkers useful without letting them take over the scene",
+          "Delivers a concise, high-quality handover with strong clinical framing"
+        ]
+      }
+    },
+    "teachersPoints": [
+      "This case is about environment-driven physiology, not just a patient who feels sick in the sun.",
+      "Altered mentation should push the learner past the idea of simple dehydration.",
+      "Cooling and shade are actual treatment priorities here.",
+      "The patient can look slightly better and still be clinically significant."
+    ],
+    "scenarioRationale": "This scenario teaches learners to treat environmental burden as a core part of the emergency, recognize meaningful heat illness, and use cooling plus reassessment to guide transport decisions.",
+    "clinicalReasoning": {
+      "summary": "The presentation is most consistent with significant heat illness caused by prolonged exertion in direct sun with inadequate recovery and fluid replacement.",
+      "differentialDiagnosis": [
+        {
+          "condition": "Heat exhaustion with concerning neurologic features",
+          "supportingFeatures": "Hot environment, exertion, vomiting, tachycardia, elevated temperature, weakness, altered mentation",
+          "rulingOutFeatures": "The confusion raises concern that this may be moving beyond a simple mild presentation"
+        },
+        {
+          "condition": "Dehydration alone",
+          "supportingFeatures": "Poor intake, vomiting, weakness, tachycardia",
+          "rulingOutFeatures": "Marked environmental exposure, elevated temperature, and altered mentation make pure dehydration too narrow"
+        },
+        {
+          "condition": "Metabolic or infectious cause",
+          "supportingFeatures": "Confusion and vomiting can occur with other illnesses",
+          "rulingOutFeatures": "The strong environmental and exertional story with heat findings makes heat illness the leading diagnosis"
+        }
+      ],
+      "conclusion": "This call should be managed as clinically significant heat illness requiring environmental control, active cooling, reassessment, and prompt transport."
+    }
   }
 ]
