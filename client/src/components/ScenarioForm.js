@@ -219,7 +219,7 @@ const ScenarioForm = () => {
     const cueRegex = /\*\(💡(?:[a-z]+\|)?\s*(.+?)\s*\)\*/gi;
     return String(value ?? "")
       .replace(cueRegex, "Teaching cue: $1")
-      .replace(/[^\x09\x0A\x0D\x20-\x7E]/g, "")
+      .replace(/[^\t\n\r\x20-\x7E]/g, "")
       .replace(/\r\n/g, "\n")
       .split("\n")
       .map((line) => line.replace(/\s{2,}/g, " ").trimEnd())
@@ -377,18 +377,6 @@ const ScenarioForm = () => {
         return true;
       }
       return false;
-    };
-
-    const printLine = (text, size, bold, color) => {
-      doc.setFont(undefined, bold ? "bold" : "normal");
-      doc.setFontSize(size);
-      doc.setTextColor(...color);
-      const wrapped = doc.splitTextToSize(sanitizePdfText(text), maxLineWidth);
-      wrapped.forEach((line) => {
-        needsNewPage(bodyLH);
-        doc.text(line, marginX, y);
-        y += bodyLH;
-      });
     };
 
     const drawPageFooter = (pageNum, total) => {
