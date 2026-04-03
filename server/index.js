@@ -3,13 +3,39 @@ dotenv.config();
 
 import express from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
 import generateScenarioRouter from './routes/generateScenario.js';
 
 const app = express();
 const PORT = process.env.PORT || 10000;
 
-app.use(cors());
+const allowedOrigins = String(process.env.CORS_ORIGIN || '')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
+const corsOptions = {
+  origin(origin, callback) {
+    if (!origin || !allowedOrigins.length || allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    return callback(new Error('CORS origin denied'));
+  }
+};
+
+const apiRateLimiter = rateLimit({
+  windowMs: Number(process.env.RATE_LIMIT_WINDOW_MS || 60_000),
+  max: Number(process.env.RATE_LIMIT_MAX || 30),
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many requests. Please retry shortly.' }
+});
+
+app.use(helmet());
+app.use(cors(corsOptions));
 app.use(express.json({ limit: '1mb' }));
+app.use('/api/', apiRateLimiter);
 
 app.use('/api/generate-scenario', generateScenarioRouter);
 

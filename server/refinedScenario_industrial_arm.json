@@ -1,0 +1,358 @@
+{
+  "title": "Industrial Arm Injury",
+  "generationMetadata": {
+    "semester": "4",
+    "complexity": "Complex",
+    "callType": "Trauma",
+    "environment": "Industrial",
+    "hasMeds": false,
+    "vitalSetCount": 3,
+    "cueDensity": 0
+  },
+  "scenarioIntro": "This Semester 4 complex trauma scenario focuses on managing an isolated extremity injury in an industrial setting, emphasizing pain management, splinting, neurovascular assessment, and operational challenges in a noisy environment.",
+  "callInformation": {
+    "type": "Trauma",
+    "location": "Factory assembly line",
+    "time": "1430",
+    "dispatchCode": "Priority Orange",
+    "dispatchNotes": ["Worker with arm injury after machinery incident", "Right arm caught in machine", "Significant swelling and pain"],
+    "hazardsOrFlags": ["Active machinery", "Noise interference", "Moving equipment nearby"],
+    "crewNotes": "Ensure scene safety and manage communication challenges due to noise. This is a complex extremity injury requiring serial neurovascular assessment and pain management within industrial hazard constraints."
+  },
+  "incidentNarrative": "The patient was working on the assembly line when his right arm was caught in a machine. He managed to pull it out, but now experiences severe pain and swelling in the forearm, with numbness in the fingers. Report indicates rapid onset of deformity and compartment concern.",
+  "patientPresentation": "The patient is seated on the factory floor, cradling his right arm, which appears swollen and deformed. He is pale and diaphoretic, reporting severe pain and numbness in the hand.",
+  "patientDemographics": {
+    "name": "John Smith",
+    "sex": "Male",
+    "age": "45",
+    "height": "180 cm",
+    "weight": "90 kg",
+    "appearance": "Pale, diaphoretic, in pain, guarding right arm",
+    "chiefComplaint": "Right arm pain after machinery incident"
+  },
+  "sceneArrival": {
+    "sceneDescription": "Factory assembly line work station",
+    "environmentDetails": ["Significant machinery noise", "Active equipment nearby", "Moderate crowd of coworkers"],
+    "hazards": ["Active machinery", "Noise interference", "Limited space for patient movement"],
+    "accessIssues": "Machinery must be powered down before crew can approach safely",
+    "bystandersPresent": "Supervisor and multiple coworkers present",
+    "sceneEnergy": "Urgent and constrained"
+  },
+  "firstImpression": {
+    "generalAppearance": "Severe extremity trauma with neurovascular compromise concern",
+    "levelOfDistress": "Severe pain with compromised circulation signs",
+    "apparentSeverity": "Complex injury requiring immediate targeted intervention and transport",
+    "positionFound": "Seated on factory floor, cradling arm",
+    "visibleClues": ["Significant swelling", "Deformity", "Pale hand distal to injury", "Diaphoresis"],
+    "initialRedFlags": ["Rapid swelling progression", "Weak distal pulse", "Numbness in hand", "Machinery entrapment mechanism"]
+  },
+  "initialAssessment": {
+    "airway": "Patent",
+    "breathing": "Normal rate and depth",
+    "circulation": "Weak radial pulse on the right, delayed capillary refill",
+    "disability": "Alert and oriented, numbness in fingers",
+    "exposure": "Right forearm visibly swollen and deformed",
+    "generalImpression": "Complex extremity trauma with evolving neurovascular compromise",
+    "immediatePriorities": ["Scene safety confirmation", "Primary assessment", "Neurovascular baseline documentation", "Rapid splinting and pain management", "Serial reassessment during stabilization"],
+    "immediateInterventions": ["Position of comfort", "Baseline neurovascular check", "Gentle traction consideration", "Padding and splint preparation"]
+  },
+  "historyGathering": {
+    "historySource": "Patient and supervisor",
+    "additionalHistory": ["No known anticoagulants", "No bleeding disorders", "No chronic vascular disease"],
+    "bystanderInformation": ["Mechanism was machinery crush at moderate speed", "Immediate swelling noted"],
+    "contradictionsOrBarriers": ["Machinery noise makes communication difficult", "Patient anxiety and pain limit detailed responses"],
+    "sceneContextClues": ["Machinery entrapment", "Rapid swelling", "Occupational injury in high-speed environment"]
+  },
+  "secondaryAssessment": {
+    "generalAppearance": "Pain persists, swelling continues to progress",
+    "breathing": "Stable throughout assessment",
+    "circulation": "Weak radial pulse persists, capillary refill remains delayed",
+    "keyFindings": ["Forearm deformity and swelling", "Weak radial pulse", "Delayed capillary refill", "Numbness in finger distribution", "Diaphoresis from pain and anxiety"],
+    "missedIfNotAssessed": ["Progressive compartment syndrome", "Complete circulatory compromise", "Nerve damage progression"],
+    "evolvingFindings": ["Swelling increases during scene time", "Necessity for escalated intervention becomes more apparent"]
+  },
+  "additionalAssessments": ["Serial neurovascular checks before and after splinting", "Repeat distal pulse quality", "Serial pain assessment", "Repeat capillary refill timing"],
+  "transportPhase": {
+    "transportConsiderations": ["Prompt monitored transport", "Elevation and immobilization maintained", "Serial neurovascular checks en route", "Pain management priority"],
+    "ongoingCare": ["Continuous monitoring of perfusion", "Trend checks for compartment changes", "Reassessment of skin color and temperature distal to injury"],
+    "reassessmentFocus": ["Radial pulse quality", "Capillary refill", "Hand temperature and color", "Finger numbness progression", "Pain trend"],
+    "handoffConsiderations": "Include mechanism details, baseline neurovascular findings, splinting performed, any interventions applied, pain management effectiveness, and current neurovascular status."
+  },
+  "opqrst": {
+    "onset": "Sudden during machinery operation",
+    "provocation": "Movement increases pain significantly",
+    "quality": "Sharp and throbbing",
+    "radiation": "Pain radiates to hand and fingers",
+    "severity": "8/10",
+    "time": "Immediate after incident"
+  },
+  "sample": {
+    "signsAndSymptoms": "Severe arm pain, swelling, numbness, deformity",
+    "allergies": "None known",
+    "medications": [],
+    "pastMedicalHistory": "None significant",
+    "lastOralIntake": "Lunch 2 hours ago",
+    "eventsLeadingUp": "Arm caught in machinery, pulled out quickly"
+  },
+  "medications": [],
+  "allergies": ["None known"],
+  "pastMedicalHistory": ["None significant"],
+  "physicalExam": {
+    "generalAppearance": "Pale, diaphoretic, in severe pain",
+    "airway": "Patent",
+    "breathing": "Normal rate and depth",
+    "circulation": "Weak radial pulse on right, delayed capillary refill distal to injury",
+    "neuro": "Alert and oriented, numbness in hands and digits",
+    "headNeck": "No trauma",
+    "chest": "Clear breath sounds",
+    "abdomen": "Soft, non-tender",
+    "pelvis": "Stable",
+    "extremities": "Swelling and deformity in right forearm, pale hand distal to injury",
+    "skin": "Pale, diaphoretic"
+  },
+  "vitalSigns": {
+    "firstSet": {
+      "context": "Initial assessment on scene",
+      "hr": 110,
+      "rr": 20,
+      "bp": "130/80",
+      "spo2": 98,
+      "etco2": 36,
+      "temp": 36.5,
+      "gcs": 15,
+      "bgl": 5.8,
+      "ecgInterpretation": "Normal Sinus Rhythm"
+    },
+    "secondSet": {
+      "context": "After initial splinting and pain assessment",
+      "hr": 105,
+      "rr": 18,
+      "bp": "128/78",
+      "spo2": 98,
+      "etco2": 36,
+      "temp": 36.5,
+      "gcs": 15,
+      "bgl": 5.8,
+      "ecgInterpretation": "Normal Sinus Rhythm"
+    },
+    "additionalSets": [
+      {
+        "context": "During transport preparation",
+        "hr": 100,
+        "rr": 18,
+        "bp": "126/76",
+        "spo2": 98,
+        "etco2": 36,
+        "temp": 36.5,
+        "gcs": 15,
+        "bgl": 5.8,
+        "ecgInterpretation": "Normal Sinus Rhythm"
+      }
+    ]
+  },
+  "caseProgression": {
+    "withProperTreatment": [
+      "Baseline neurovascular status is carefully documented before any intervention.",
+      "Pain decreases with effective splinting and analgesia.",
+      "Serial neurovascular checks confirm stable or improved distal perfusion.",
+      "Patient remains stable and monitored during transport with clear improvement trend."
+    ],
+    "withoutProperTreatment": [
+      "Missed baseline neurovascular assessment prevents comparison with hospital exam.",
+      "Pain remains severe without analgesia, increasing agitation and anxiety.",
+      "Risk of neurovascular compromise increases without proper immobilization.",
+      "Transport becomes more challenging due to uncontrolled pain and anxiety."
+    ],
+    "withIncorrectTreatment": [
+      "Improper splinting exacerbates pain and risk of further compartment syndrome.",
+      "Failure to document baseline neurovascular status limits ED decision-making.",
+      "Aggressive manipulation or delay in splinting worsens distal perfusion.",
+      "Inadequate pain management reduces patient cooperation and increases sympathetic response."
+    ]
+  },
+  "expectedTreatment": [
+    "Primary trauma assessment and scene safety confirmation",
+    "Baseline neurovascular assessment and documentation before intervention",
+    "Gentle wound exposure if safe to assess",
+    "Apply splint to stabilize the arm in anatomic position",
+    "Administer analgesia if no contraindications, per protocol",
+    "Perform neurovascular assessment after splinting",
+    "Monitor vital signs and reassess neurovascular status",
+    "Prepare for prompt transport with minimal movement"
+  ],
+  "protocolNotes": [
+    "Follow BLS PCS 3.4 (2023) for trauma assessment and management.",
+    "Baseline neurovascular check is mandatory before and after any intervention.",
+    "Document distal pulse quality, capillary refill, color, temperature, and sensation at baseline.",
+    "Machinery injury mechanism increases risk of crush syndrome and compartment syndrome.",
+    "Administer analgesia per ALS PCS 5.4 (2025) if no contraindications.",
+    "Monitor vital signs and reassess pain management effectiveness."
+  ],
+  "clinicalReasoning": "The patient likely has a significant fracture or dislocation of the right forearm with evolving neurovascular compromise due to the machinery crush mechanism and rapid swelling. Effective splinting, pain management, and serial neurovascular assessment are essential to prevent further injury, maintain perfusion, and guide appropriate urgency. The baseline neurovascular status must be documented before any intervention to enable proper ED triage and surgical planning.",
+  "scenarioRationale": "This scenario teaches management of complex isolated extremity injuries in industrial settings, emphasizing the balance between pain control, structural stability, neurovascular preservation, and communication challenges in a noisy environment. It bridges Sem4 complexity expectations by requiring multi-system decision-making within operational constraints.",
+  "learningObjectives": [
+    "Perform thorough baseline neurovascular assessment before intervention",
+    "Apply effective splinting techniques that preserve circulation",
+    "Manage pain appropriately within protocol and clinical context",
+    "Navigate operational challenges in a noisy industrial environment",
+    "Execute serial neurovascular reassessment to detect deterioration early",
+    "Communicate complex clinical findings clearly despite noise barriers"
+  ],
+  "selfReflectionPrompts": [
+    "How did you ensure a complete baseline neurovascular assessment before splinting?",
+    "What changes in neurovascular status did you detect across reassessments?",
+    "How did you manage communication in a noisy environment with your team and patient?",
+    "What features of this scenario made it complex rather than moderate?",
+    "If swelling had progressed during scene time, how would you adjust your priorities?"
+  ],
+  "teachersPoints": [
+    "Communication in noisy industrial environments requires intentionality beyond standard clarity. Crews who succeed here use clear verbal confirms, visual checkpoints, and deliberate role clarity before any movement. The noise does not just hide words; it can blur priorities if the team is not aligned on the splinting sequence and neurovascular schedule. Practice flagging key decisions loudly and confirming understanding before action.",
+    "Neurovascular assessment is the clinical foundation of extremity trauma care, particularly in machinery injuries where crush and compartment risk is high. Baseline assessment before any intervention is not optional. It provides the reference point that determines whether deterioration occurs and guides surgical urgency. Serial reassessment after splinting, during packaging, and en route is equally critical because swelling progresses over minutes.",
+    "Pain management should be prioritized once contraindications are ruled out because it improves patient comfort, reduces sympathetic response, and enables better cooperation during movement. In complex extremity trauma, uncontrolled pain worsens outcomes by elevating heart rate and blood pressure, increasing bleeding and swelling, and reducing the patient's ability to communicate new symptoms.",
+    "Splinting should stabilize the injury in anatomic position and prevent further harm. Ensure proper technique that supports the limb without tourniquet effect, maintains some elevation if possible, and allows reassessment of distal neurovascular status. The splint must be snug enough to prevent motion but loose enough that progressive swelling does not create compartment trap. Reassess neurovascular status immediately after application and then at regular intervals.",
+    "Scene management in industrial settings requires awareness of machinery hazards and proactive communication to maintain safety and efficiency. Machinery must be powered down or secured before crew approaches. Noise interference is predictable; use hand signals, proximity-based communication, and deliberate team alignment to mitigate. Document the mechanism in detail because crush injuries have delayed complications that the receiving facility needs to anticipate."
+  ],
+  "grsAnchors": {
+    "situationalAwareness": {
+      "3": [
+        "Recognizes the need for splinting but does not establish baseline neurovascular status first.",
+        "Underestimates the impact of machinery noise on team communication and priorities.",
+        "Misses early signs of compartment syndrome or progressive swelling.",
+        "Scene safety concerns are not systematically addressed before patient contact."
+      ],
+      "5": [
+        "Identifies baseline neurovascular status and documents it before splinting.",
+        "Manages communication effectively despite noise by using clear verbal confirms and visual cues.",
+        "Monitors for swelling progression and detects subtle changes in distal perfusion.",
+        "Confirms scene safety and machinery shutdown before approaching patient."
+      ],
+      "7": [
+        "Rapidly establishes comprehensive baseline neurovascular documentation and integrates it into care decisions.",
+        "Anticipates communication challenges and adjusts strategy proactively using hand signals, proximity work, and clear role pre-alignment.",
+        "Detects early compartment syndrome or perfusion compromise cues and escalates response proportionally.",
+        "Leads scene safety with precision, ensuring machinery is secured and maintaining crew positioning away from hazards."
+      ]
+    },
+    "historyGathering": {
+      "3": [
+        "Gathers basic history but misses mechanism details from supervisor.",
+        "Relies heavily on patient report despite pain and anxiety limiting reliability.",
+        "Does not fully explore machinery type, speed, or duration of compression.",
+        "Fails to clarify anticoagulant or bleeding disorder history given crush injury risk."
+      ],
+      "5": [
+        "Obtains relevant history from patient and supervisor effectively despite noise.",
+        "Explores mechanism of injury detail and its implications for compartment risk.",
+        "Uses collateral information from coworkers to enhance mechanism understanding.",
+        "Clarifies relevant medical history related to crush injury outcomes."
+      ],
+      "7": [
+        "Efficiently synthesizes detailed mechanism from supervisor, colleagues, and patient to inform compartment risk stratification.",
+        "Anticipates crush syndrome complications based on mechanism depth and duration.",
+        "Integrates mechanism, patient factors, and occupational context into clinical reasoning clearly.",
+        "Delivers handoff that contextualizes the machinery type and crush dynamics for ED surgical planning."
+      ]
+    },
+    "patientAssessment": {
+      "3": [
+        "Performs basic assessment but misses detailed baseline neurovascular checks.",
+        "Delays reassessment after splinting or fails to document after-intervention status.",
+        "Inconsistent monitoring of pain, perfusion, and swelling progression.",
+        "Does not recognize progressive compartment syndrome signs."
+      ],
+      "5": [
+        "Conducts thorough baseline neurovascular assessment and reassesses after splinting.",
+        "Monitors pain, perfusion, and swelling trends effectively throughout the call.",
+        "Documents neurovascular findings clearly before and after interventions.",
+        "Detects and reports compartment syndrome warning signs appropriately."
+      ],
+      "7": [
+        "Demonstrates comprehensive assessment with anticipatory reassessment intervals before deterioration becomes dramatic.",
+        "Integrates baseline and serial neurovascular findings into a coherent perfusion narrative.",
+        "Maintains high-quality serial monitoring including pain, pulse, skin color, temperature, and sensation.",
+        "Recognizes compartment syndrome trajectory early and escalates urgency with clinical precision."
+      ]
+    },
+    "decisionMaking": {
+      "3": [
+        "Delays analgesia despite clear indications and mechanism severity.",
+        "Inconsistent prioritization of baseline assessment versus immediate splinting.",
+        "Treats compartment concern as low priority rather than urgent investigation trigger.",
+        "Fails to adapt plan if neurovascular status deteriorates during scene time."
+      ],
+      "5": [
+        "Prioritizes baseline neurovascular assessment and splinting effectively.",
+        "Makes timely analgesia decisions based on patient needs and protocol.",
+        "Recognizes compartment concern and escalates appropriately.",
+        "Adapts plan as neurovascular or swelling changes emerge."
+      ],
+      "7": [
+        "Demonstrates exceptional prioritization balancing baseline documentation, splinting, pain control, and transport urgency.",
+        "Anticipates compartment progression and makes escalation decisions before deterioration becomes critical.",
+        "Aligns all actions tightly with neurovascular trajectory and mechanism risk.",
+        "Makes decisive decisions under noise and uncertainty that optimize patient outcomes."
+      ]
+    },
+    "communication": {
+      "3": [
+        "Provides basic explanations but lacks clarity in noisy environment.",
+        "Team coordination is inconsistent due to communication barriers.",
+        "Handoff lacks detail on baseline neurovascular status and post-splint reassessment.",
+        "Patient communication about pain management is minimal or unclear."
+      ],
+      "5": [
+        "Communicates clearly with team and patient despite noise using deliberate pacing and confirms.",
+        "Coordinates effectively with team to ensure baseline assessment and splinting workflow alignment.",
+        "Delivers organized and detailed handoff including baseline and current neurovascular findings.",
+        "Explains pain management plan to patient in a reassuring manner."
+      ],
+      "7": [
+        "Leads communication with clarity and confidence, overcoming noise barriers through pre-planned hand signals and proximity positioning.",
+        "Ensures all team members understand baseline findings, splinting approach, and reassessment schedule before execution.",
+        "Delivers a concise high-impact handoff emphasizing baseline versus current neurovascular status, swelling progression, and compartment concern level.",
+        "Maintains therapeutic communication with patient throughout despite pain and anxiety."
+      ]
+    },
+    "teamwork": {
+      "3": [
+        "Does not pre-align team on baseline assessment sequence or splinting approach.",
+        "Duplicates effort or misses steps due to unclear role assignment in noisy environment.",
+        "Response to machinery hazard is reactive rather than coordinated.",
+        "Limited use of supervisor or coworker input to clarify mechanism."
+      ],
+      "5": [
+        "Aligns team on baseline assessment priorities and splinting workflow before action.",
+        "Coordinates roles clearly despite noise to avoid duplication and missed steps.",
+        "Proactively coordinates scene safety with supervisor and machinery control.",
+        "Uses collateral resources effectively to gather mechanism detail."
+      ],
+      "7": [
+        "Pre-briefs team with precise role clarity, assessment sequence, and reassessment intervals before touching patient.",
+        "Runs coordinated baseline-to-splint-to-reassess workflow with minimal redundancy despite noise.",
+        "Leads machinery safety coordination with supervisor with anticipatory positioning and hazard awareness.",
+        "Integrates supervisor and coworker input into mechanism understanding and clinical priorities seamlessly."
+      ]
+    },
+    "professionalism": {
+      "3": [
+        "Scene behavior is anxious or hesitant, potentially reducing team confidence.",
+        "Does not acknowledge machinery hazards or occupational safety concerns explicitly.",
+        "Appears overwhelmed by complexity, affecting patient and team psychology.",
+        "Documentation or communication is incomplete or emotionally reactive."
+      ],
+      "5": [
+        "Maintains composed, professional demeanor throughout despite machinery environment and injury severity.",
+        "Acknowledges occupational hazards and safety concerns respectfully to supervisor and team.",
+        "Demonstrates competence and confidence that reassures patient and team.",
+        "Documentation and handoff are professional, complete, and clinically precise."
+      ],
+      "7": [
+        "Exhibits calm, confident leadership presence that elevates team performance and patient trust in a high-hazard machinery environment.",
+        "Proactively engages occupational safety by working with supervisor and coordinating machinery control professionally.",
+        "Demonstrates mastery of complexity through clear decision rationale and calm execution.",
+        "Documentation and handoff are exemplary, precise, and anticipatory of downstream surgical planning needs."
+      ]
+    }
+  },
+  "directiveSources": ["BLS PCS 3.4 (2023)", "ALS PCS 5.4 (2025)", "OBHG ALS PCS Companion v5.4 (2025)"]
+}

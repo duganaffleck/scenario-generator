@@ -6,10 +6,28 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { jsonrepair } from 'jsonrepair';
 import { buildDirectivePromptAddendum } from '../data/ontarioDirectiveRules.js';
+import { buildScenarioHookAddendum, getScenarioHook } from '../data/ontarioScenarioHooks.js';
 
 const router = express.Router();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const OPENAI_MODEL = 'gpt-4o';
+const DEFAULT_DIRECTIVE_SOURCES = [
+  'BLS PCS 3.4 (2023)',
+  'ALS PCS 5.4 (2025)',
+  'OBHG ALS PCS Companion v5.4 (2025)'
+];
+const OPENAI_TIMEOUT_MS = Number(process.env.OPENAI_TIMEOUT_MS || 60_000);
+const OPENAI_MAX_RETRIES = Number(process.env.OPENAI_MAX_RETRIES || 1);
+const CONTROL_REPAIR_MAX_ATTEMPTS = Math.max(1, Number(process.env.CONTROL_REPAIR_MAX_ATTEMPTS || 2));
+const IS_PRODUCTION = process.env.NODE_ENV === 'production';
+const ALLOWED_SEMESTERS = ['2', '3', '4'];
+const ALLOWED_COMPLEXITIES = ['Simple', 'Moderate', 'Complex'];
+const ALLOWED_ENVIRONMENTS = ['Urban', 'Rural', 'Wilderness', 'Industrial', 'Home', 'Public Space'];
+const RECENT_CUE_FINGERPRINT_WINDOW = 240;
+const RECENT_CUE_OPENING_WINDOW = 180;
+let recentCueFingerprints = [];
+let recentCueOpenings = [];
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
@@ -39,21 +57,330 @@ async function loadFewShots() {
   return fewShotsCache;
 }
 
-function buildFewShotBlock(fewShots, finalCallType) {
-  if (!Array.isArray(fewShots) || !fewShots.length) return '';
+const CALL_TYPE_FAMILIES = ['Medical', 'Trauma', 'Cardiac', 'Respiratory', 'Environmental'];
+const ENVIRONMENT_CHOICES = ['Urban', 'Rural', 'Wilderness', 'Industrial', 'Home', 'Public Space'];
+const COMPLEXITY_ORDER = { Simple: 0, Moderate: 1, Complex: 2 };
+const MEDICATION_KEYWORDS = [
+  'asa',
+  'nitro',
+  'nitroglycerin',
+  'salbutamol',
+  'ventolin',
+  'atrovent',
+  'dexamethasone',
+  'ondansetron',
+  'dimenhydrinate',
+  'ketorolac',
+  'glucagon',
+  'dextrose',
+  'oral glucose',
+  'epinephrine',
+  'naloxone',
+  'txa',
+  'analgesia'
+];
+const WITHHOLDING_KEYWORDS = [
+  'withhold',
+  'contraindication',
+  'do not give',
+  'hold',
+  'right-sided',
+  '12-lead before nitro',
+  'destination',
+  'transport priority'
+];
+const HIGH_BURDEN_KEYWORDS = [
+  'narrow',
+  'stairs',
+  'crowd',
+  'bystander',
+  'family pressure',
+  'wilderness',
+  'industrial',
+  'locked',
+  'public',
+  'remote',
+  'emotional',
+  'limited space',
+  'packaging',
+  'extrication'
+];
+const HIGH_ACUITY_KEYWORDS = [
+  'cyanosis',
+  'accessory muscle',
+  'tripod',
+  'severe distress',
+  'unable to speak',
+  'altered mental status',
+  'shock',
+  'hypotension',
+  'pulmonary edema',
+  'crackles bilaterally'
+];
 
-  const normalizedType = String(finalCallType || '').trim().toLowerCase();
+function normalizeCallFamily(value = '') {
+  const raw = String(value || '').trim();
+  if (!raw) return 'Medical';
 
-  const matching = fewShots.filter(
-    (item) =>
-      String(item?.callInformation?.type || '')
-        .trim()
-        .toLowerCase() === normalizedType
+  const lower = raw.toLowerCase();
+  const exact = CALL_TYPE_FAMILIES.find((item) => item.toLowerCase() === lower);
+  if (exact) return exact;
+
+  if (/arrest|chest pain|stemi|acs|cardiac|palpitation|arrhythm/i.test(lower)) return 'Cardiac';
+  if (/asthma|copd|respir|wheez|shortness of breath|anaphyl/i.test(lower)) return 'Respiratory';
+  if (/trauma|fall|mvc|collision|fracture|injury|blunt|head injury/i.test(lower)) return 'Trauma';
+  if (/heat|cold|exposure|carbon monoxide|river|heater|environment/i.test(lower)) return 'Environmental';
+  return 'Medical';
+}
+
+function devLog(...args) {
+  if (!IS_PRODUCTION) {
+    console.log(...args);
+  }
+}
+
+function devWarn(...args) {
+  if (!IS_PRODUCTION) {
+    console.warn(...args);
+  }
+}
+
+function coerceBoolean(value, defaultValue = true) {
+  if (typeof value === 'boolean') return value;
+  if (typeof value === 'string') {
+    const normalized = value.trim().toLowerCase();
+    if (['true', '1', 'yes', 'on'].includes(normalized)) return true;
+    if (['false', '0', 'no', 'off'].includes(normalized)) return false;
+  }
+  return defaultValue;
+}
+
+function normalizeEnvironment(value) {
+  const env = String(value || '').trim();
+  if (!env) return 'Urban';
+  const exact = ALLOWED_ENVIRONMENTS.find((item) => item.toLowerCase() === env.toLowerCase());
+  return exact || null;
+}
+
+function normalizeComplexity(value) {
+  const complexity = String(value || '').trim();
+  if (!complexity) return 'Moderate';
+  const exact = ALLOWED_COMPLEXITIES.find((item) => item.toLowerCase() === complexity.toLowerCase());
+  return exact || null;
+}
+
+function validateGenerationRequest(rawBody = {}) {
+  const errors = [];
+  const semester = String(rawBody.semester || '3').trim();
+  const normalizedCallType = normalizeCallFamily(rawBody.callType || rawBody.type || 'Medical');
+  const environment = normalizeEnvironment(rawBody.environment);
+  const complexity = normalizeComplexity(rawBody.complexity);
+  const normalizedComplexity = semester === '2' ? 'Simple' : (complexity || 'Moderate');
+
+  if (!ALLOWED_SEMESTERS.includes(semester)) {
+    errors.push(`Invalid semester "${semester}". Allowed values: ${ALLOWED_SEMESTERS.join(', ')}.`);
+  }
+
+  if (!environment) {
+    errors.push(`Invalid environment "${rawBody.environment}".`);
+  }
+
+  if (!complexity) {
+    errors.push(`Invalid complexity "${rawBody.complexity}".`);
+  }
+
+  return {
+    isValid: errors.length === 0,
+    errors,
+    value: {
+      semester,
+      callType: normalizedCallType,
+      environment: environment || 'Urban',
+      complexity: normalizedComplexity,
+      includeTeachingCues: coerceBoolean(rawBody.includeTeachingCues, true),
+      customPrompt: sanitizeCustomPrompt(rawBody.customPrompt || '')
+    }
+  };
+}
+
+function complexityDistance(a, b) {
+  const aValue = COMPLEXITY_ORDER[a] ?? COMPLEXITY_ORDER.Moderate;
+  const bValue = COMPLEXITY_ORDER[b] ?? COMPLEXITY_ORDER.Moderate;
+  return Math.abs(aValue - bValue);
+}
+
+function countKeywordMatches(text, keywords) {
+  const lower = String(text || '').toLowerCase();
+  return keywords.reduce((total, keyword) => (lower.includes(keyword) ? total + 1 : total), 0);
+}
+
+function normalizeEnvironmentTag(value = '') {
+  const raw = String(value || '').trim().toLowerCase();
+  if (!raw) return '';
+
+  const exact = ENVIRONMENT_CHOICES.find((item) => item.toLowerCase() === raw);
+  if (exact) return exact;
+
+  if (/farm|country|rural|cottage|barn/.test(raw)) return 'Rural';
+  if (/trail|forest|camp|river|backcountry|wilderness|shoreline/.test(raw)) return 'Wilderness';
+  if (/warehouse|factory|industrial|construction|shop/.test(raw)) return 'Industrial';
+  if (/home|residence|apartment|bedroom|bathroom|l?tc|long term care|assisted living|retirement/.test(raw)) return 'Home';
+  if (/mall|food court|arena|school|public|parking lot|lobby|community centre/.test(raw)) return 'Public Space';
+  if (/urban|downtown|intersection|transit|condo/.test(raw)) return 'Urban';
+  return '';
+}
+
+function collectFewShotText(item) {
+  return JSON.stringify({
+    title: item?.title,
+    scenarioIntro: item?.scenarioIntro,
+    patientPresentation: item?.patientPresentation,
+    incidentNarrative: item?.incidentNarrative,
+    expectedTreatment: item?.expectedTreatment,
+    protocolNotes: item?.protocolNotes,
+    teachersPoints: item?.teachersPoints,
+    clinicalReasoning: item?.clinicalReasoning,
+    sceneArrival: item?.sceneArrival,
+    historyGathering: item?.historyGathering,
+    transportPhase: item?.transportPhase
+  });
+}
+
+function inferFewShotMetadata(item) {
+  const metadata = item?.generationMetadata || item?.metadata || {};
+  const text = collectFewShotText(item);
+  const lowerText = text.toLowerCase();
+  const callFamily = normalizeCallFamily(
+    metadata.callType || metadata.type || item?.callInformation?.type || ''
   );
+  const inferredEnvironment =
+    normalizeEnvironmentTag(
+      metadata.environment ||
+      metadata.environmentTag ||
+      item?.callInformation?.environment ||
+      item?.callInformation?.location ||
+      (item?.sceneArrival?.environmentDetails || []).join(' ')
+    ) ||
+    'Urban';
 
-  const selected = (matching.length ? matching : fewShots).slice(0, 3);
+  const hazardCount = (item?.sceneArrival?.hazards || []).length;
+  const environmentCount = (item?.sceneArrival?.environmentDetails || []).length;
+  const contradictionCount = (item?.historyGathering?.contradictionsOrBarriers || []).length;
+  const bystanderCount = (item?.historyGathering?.bystanderInformation || []).length;
+  const additionalSetCount = (item?.vitalSigns?.additionalSets || []).length;
+  const medicationScore = countKeywordMatches(text, MEDICATION_KEYWORDS);
+  const withholdingScore = countKeywordMatches(text, WITHHOLDING_KEYWORDS);
+  const explicitVitalSetCount = Number(metadata.vitalSetCount);
+  const inferredVitalSetCount = 2 + additionalSetCount;
+  const vitalSetCount = Number.isFinite(explicitVitalSetCount) && explicitVitalSetCount > 0
+    ? explicitVitalSetCount
+    : inferredVitalSetCount;
+  const cueMarkerCount = (lowerText.match(/\(💡/g) || []).length;
+  const cueDensity = Number.isFinite(Number(metadata.cueDensity))
+    ? Number(metadata.cueDensity)
+    : cueMarkerCount;
+  const hasMeds = typeof metadata.hasMeds === 'boolean' ? metadata.hasMeds : medicationScore > 0;
 
-  return JSON.stringify(selected, null, 2);
+  const burdenScore =
+    hazardCount +
+    contradictionCount +
+    bystanderCount +
+    additionalSetCount +
+    (item?.sceneArrival?.accessIssues ? 1 : 0) +
+    (item?.transportPhase?.transportConsiderations || []).length +
+    Math.min(environmentCount, 2) +
+    countKeywordMatches(text, HIGH_BURDEN_KEYWORDS);
+
+  let inferredComplexity = metadata.targetComplexity || metadata.complexity;
+  if (!inferredComplexity) {
+    if (burdenScore >= 9 || additionalSetCount >= 2 || withholdingScore >= 2) {
+      inferredComplexity = 'Complex';
+    } else if (burdenScore >= 4 || additionalSetCount >= 1 || medicationScore >= 1) {
+      inferredComplexity = 'Moderate';
+    } else {
+      inferredComplexity = 'Simple';
+    }
+  }
+
+  let inferredSemester = String(metadata.targetSemester || metadata.semester || '').trim();
+  if (!['2', '3', '4'].includes(inferredSemester)) {
+    if (medicationScore === 0 && additionalSetCount === 0 && burdenScore <= 3) {
+      inferredSemester = '2';
+    } else if (withholdingScore >= 2 || additionalSetCount >= 2 || burdenScore >= 8) {
+      inferredSemester = '4';
+    } else {
+      inferredSemester = '3';
+    }
+  }
+
+  return {
+    callFamily,
+    semester: inferredSemester,
+    complexity: inferredComplexity,
+    environment: inferredEnvironment,
+    hasMeds,
+    vitalSetCount,
+    cueDensity,
+    medicationScore,
+    burdenScore,
+    title: item?.title || 'Untitled example'
+  };
+}
+
+function scoreFewShotMatch(item, request) {
+  const metadata = inferFewShotMetadata(item);
+  const requestType = normalizeCallFamily(request?.callType || 'Medical');
+  const requestSemester = String(request?.semester || '3');
+  const requestComplexity = String(request?.complexity || 'Moderate');
+  const requestEnvironment = String(request?.environment || 'Urban');
+  const requestSubtype = String(request?.subtype || '').toLowerCase();
+  const itemText = collectFewShotText(item).toLowerCase();
+
+  let score = 0;
+
+  if (metadata.callFamily === requestType) score += 12;
+  if (metadata.semester === requestSemester) score += 7;
+  else if (Math.abs(Number(metadata.semester) - Number(requestSemester)) === 1) score += 3;
+
+  if (metadata.environment === requestEnvironment) score += 5;
+
+  const complexityGap = complexityDistance(metadata.complexity, requestComplexity);
+  if (complexityGap === 0) score += 6;
+  else if (complexityGap === 1) score += 2;
+
+  if (requestSemester === '2' && metadata.hasMeds) score -= 3;
+  if (requestComplexity === 'Simple' && metadata.vitalSetCount > 3) score -= 2;
+  if (requestComplexity === 'Complex' && metadata.vitalSetCount >= 3) score += 2;
+
+  if (requestSubtype && itemText.includes(requestSubtype.replace(/_/g, ' '))) {
+    score += 2;
+  }
+
+  return { score, metadata };
+}
+
+function buildFewShotBlock(fewShots, request) {
+  if (!Array.isArray(fewShots) || !fewShots.length) {
+    return { block: '', summary: ['- No few-shot examples available.'] };
+  }
+
+  const ranked = fewShots
+    .map((item) => ({ item, ...scoreFewShotMatch(item, request) }))
+    .sort((left, right) => right.score - left.score);
+
+  const selected = ranked.slice(0, 3);
+
+  return {
+    block: JSON.stringify(
+      selected.map(({ item }) => item),
+      null,
+      2
+    ),
+    summary: selected.map(
+      ({ metadata, score }) =>
+        `- ${metadata.title}: type ${metadata.callFamily}, semester ${metadata.semester}, complexity ${metadata.complexity}, env ${metadata.environment}, meds ${metadata.hasMeds ? 'yes' : 'no'}, vital sets ${metadata.vitalSetCount}, cue density ${metadata.cueDensity}, match score ${score}`
+    )
+  };
 }
 
 const ECG_WHITELIST = [
@@ -2109,13 +2436,11 @@ function defaultPhysicalExam() {
 
 function defaultGrsAnchors() {
   return {
-    situationalAwareness: { 1: [], 3: [], 5: [], 7: [] },
-    patientAssessment: { 1: [], 3: [], 5: [], 7: [] },
-    historyGathering: { 1: [], 3: [], 5: [], 7: [] },
-    decisionMaking: { 1: [], 3: [], 5: [], 7: [] },
-    proceduralSkill: { 1: [], 3: [], 5: [], 7: [] },
-    resourceUtilization: { 1: [], 3: [], 5: [], 7: [] },
-    communication: { 1: [], 3: [], 5: [], 7: [] }
+    situationalAwareness: { 3: [], 5: [], 7: [] },
+    patientAssessment: { 3: [], 5: [], 7: [] },
+    historyGathering: { 3: [], 5: [], 7: [] },
+    decisionMaking: { 3: [], 5: [], 7: [] },
+    communication: { 3: [], 5: [], 7: [] }
   };
 }
 
@@ -2201,16 +2526,8 @@ const REQUIRED_FIELDS = {
 
   secondaryAssessment: {
     generalAppearance: '',
-    airway: '',
     breathing: '',
     circulation: '',
-    neuro: '',
-    headNeck: '',
-    chest: '',
-    abdomen: '',
-    pelvis: '',
-    extremities: '',
-    skin: '',
     keyFindings: [],
     missedIfNotAssessed: [],
     evolvingFindings: []
@@ -2224,22 +2541,10 @@ const REQUIRED_FIELDS = {
     additionalSets: []
   },
 
-  midCallEvent: {
-    timing: '',
-    trigger: '',
-    event: '',
-    newInformation: '',
-    patientChange: '',
-    sceneChange: '',
-    requiredResponse: ''
-  },
-
   caseProgression: {
-    earlyCourse: '',
-    withProperTreatment: '',
-    withoutProperTreatment: '',
-    withIncorrectTreatment: '',
-    transportPhase: ''
+    withProperTreatment: [],
+    withoutProperTreatment: [],
+    withIncorrectTreatment: []
   },
 
   transportPhase: {
@@ -2258,25 +2563,9 @@ const REQUIRED_FIELDS = {
   grsAnchors: defaultGrsAnchors(),
   teachersPoints: [],
   scenarioRationale: '',
-
-  clinicalReasoning: {
-    summary: '',
-    pathophysiology: '',
-    differentialDiagnosis: [],
-    ruleInFeatures: [],
-    ruleOutFeatures: [],
-    redFlags: [],
-    treatmentPriorities: [],
-    conclusion: ''
-  }
+  clinicalReasoning: '',
+  directiveSources: []
 };
-
-router.options('/', (req, res) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type');
-  res.sendStatus(204);
-});
 
 function sanitizeOutput(raw = '') {
   return String(raw)
@@ -2289,8 +2578,640 @@ function sanitizeOutput(raw = '') {
 function splitLinesToArray(value) {
   return String(value)
     .split(/\n+/)
-    .map((line) => line.replace(/^[-•\d.)\s]+/, '').trim())
+    .map((line) => normalizeSentenceSpacing(line.replace(/^[-•\d.)\s]+/, '').trim()))
     .filter(Boolean);
+}
+
+const TEACHING_CUE_REGEX = /\*\(💡(?:([a-z]+)\|)?\s*(.+?)\s*\)\*/gi;
+const TEACHING_CUE_GENERIC_PHRASES = [
+  'monitor closely',
+  'reassess as needed',
+  'prepare for transport',
+  'continue to monitor',
+  'watch closely',
+  'keep reassessing',
+  'be prepared',
+  'stay vigilant',
+  'before committing, verbalize how'
+];
+const TEACHING_POINT_GENERIC_PHRASES = [
+  'this scenario highlights the importance',
+  'the learner should',
+  'the student should',
+  'appropriate management would include',
+  'monitor closely',
+  'reassess as needed',
+  'prepare for transport',
+  'remember to',
+  'it is important to'
+];
+const TEACHING_CUE_COACHING_VERBS = [
+  'ask',
+  'call',
+  'commit',
+  'declare',
+  'define',
+  'describe',
+  'focus',
+  'frame',
+  'go',
+  'identify',
+  'link',
+  'list',
+  'look',
+  'map',
+  'state',
+  'name',
+  'notice',
+  'pick',
+  'pressure-test',
+  'reassess',
+  'read',
+  'report',
+  'assign',
+  'say',
+  'spot',
+  'stress-test',
+  'summarize',
+  'confirm',
+  'prioritize',
+  'trend',
+  'treat',
+  'use',
+  'verify',
+  'watch',
+  'pivot',
+  'escalate',
+  'explain',
+  'decide',
+  'check'
+];
+const TEACHING_CUE_TAG_ALIASES = {
+  med: 'medication',
+  meds: 'medication',
+  medsafety: 'medication',
+  vital: 'vitals',
+  vitals: 'vitals',
+  handover: 'handoff',
+  diff: 'differential',
+  differentials: 'differential'
+};
+const TEACHING_CUE_MAX_CHARS = 150;
+const TEACHING_CUE_MIN_CHARS = 24;
+
+function stripDisallowedTeachingEmoji(value) {
+  return String(value || '')
+    .replace(/🧠/g, '')
+    .replace(/\bbrain emoji\b/gi, '')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+}
+
+function normalizeSentenceSpacing(value) {
+  return stripDisallowedTeachingEmoji(value)
+    .replace(/([.!?])(?=(?:["')\]]?[A-Za-z]))/g, '$1 ')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+}
+
+function trimToWordBoundary(value, maxLen) {
+  const normalized = normalizeSentenceSpacing(String(value || ''));
+  if (!normalized || normalized.length <= maxLen) return normalized;
+  const sliced = normalized.slice(0, maxLen + 1);
+  const boundary = sliced.lastIndexOf(' ');
+  return normalizeSentenceSpacing((boundary > 24 ? sliced.slice(0, boundary) : normalized.slice(0, maxLen)).trim());
+}
+
+function ensureCueSentenceEnding(value) {
+  const normalized = normalizeSentenceSpacing(String(value || ''))
+    .replace(/[,;:]\s*$/g, '')
+    .trim();
+  if (!normalized) return '';
+  return /[.!?]$/.test(normalized) ? normalized : `${normalized}.`;
+}
+
+function compactTeachingCueText(value, maxLen = TEACHING_CUE_MAX_CHARS) {
+  const normalized = normalizeSentenceSpacing(String(value || ''))
+    .replace(/\.{3,}/g, '.')
+    .replace(/\s*\.\s*\.\s*\.\s*/g, '. ')
+    .trim();
+
+  if (!normalized) return '';
+
+  const sentences = normalized
+    .split(/(?<=[.!?])\s+(?=[A-Z0-9])/)
+    .map((part) => normalizeSentenceSpacing(part))
+    .filter(Boolean);
+
+  if (!sentences.length) {
+    return ensureCueSentenceEnding(trimToWordBoundary(normalized, maxLen));
+  }
+
+  const kept = [];
+  for (const sentence of sentences) {
+    const candidate = [...kept, sentence].join(' ');
+    if (kept.length > 0 && candidate.length > maxLen) break;
+    kept.push(sentence);
+    if (kept.length >= 2) break;
+  }
+
+  if (kept.length) {
+    const compact = ensureCueSentenceEnding(kept.join(' '));
+    if (compact.length <= maxLen) return compact;
+    if (kept[0]) return ensureCueSentenceEnding(trimToWordBoundary(kept[0], maxLen));
+  }
+
+  return ensureCueSentenceEnding(trimToWordBoundary(normalized, maxLen));
+}
+
+function stripTeachingCueMarkup(value) {
+  return String(value || '')
+    .replace(TEACHING_CUE_REGEX, '')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+}
+
+function normalizeTeachingCueTag(tag) {
+  const normalized = String(tag || '').trim().toLowerCase();
+  if (!normalized) return '';
+  return TEACHING_CUE_TAG_ALIASES[normalized] || normalized;
+}
+
+function applyTeachingCuePreference(value, includeTeachingCues) {
+  if (Array.isArray(value)) {
+    return value
+      .map((item) => applyTeachingCuePreference(item, includeTeachingCues))
+      .filter((item) => !(typeof item === 'string' && !item.trim()));
+  }
+
+  if (value && typeof value === 'object') {
+    const normalized = {};
+    for (const [key, item] of Object.entries(value)) {
+      normalized[key] = applyTeachingCuePreference(item, includeTeachingCues);
+    }
+    return normalized;
+  }
+
+  if (typeof value === 'string') {
+    const normalized = normalizeSentenceSpacing(value);
+    return includeTeachingCues ? normalized : stripTeachingCueMarkup(normalized);
+  }
+
+  return value;
+}
+
+function getTeachingCueMatches(text) {
+  const value = String(text || '');
+  const matches = [];
+  let match;
+  TEACHING_CUE_REGEX.lastIndex = 0;
+
+  while ((match = TEACHING_CUE_REGEX.exec(value)) !== null) {
+    matches.push({
+      tag: normalizeTeachingCueTag(match[1]),
+      text: normalizeSentenceSpacing(match[2] || ''),
+      raw: match[0],
+      index: match.index
+    });
+  }
+
+  TEACHING_CUE_REGEX.lastIndex = 0;
+  return matches;
+}
+
+function fingerprintCueText(text) {
+  return String(text || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, ' ')
+    .replace(/\b(the|and|that|with|from|into|this|then|they|their|your|while|before|after|during)\b/g, ' ')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+}
+
+function fingerprintCueOpening(text) {
+  const cleaned = String(text || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, ' ')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+
+  if (!cleaned) return '';
+
+  const words = cleaned
+    .split(/\s+/)
+    .filter(Boolean)
+    .filter((word) => !['the', 'a', 'an', 'this', 'that', 'your', 'you'].includes(word));
+
+  return words.slice(0, 4).join(' ');
+}
+
+function hasRecentCueFingerprint(text) {
+  const fp = fingerprintCueText(text);
+  if (!fp) return false;
+  return recentCueFingerprints.includes(fp);
+}
+
+function hasRecentCueOpening(text) {
+  const fp = fingerprintCueOpening(text);
+  if (!fp) return false;
+  return recentCueOpenings.includes(fp);
+}
+
+function rememberScenarioCueFingerprints(scenario) {
+  if (!scenario || typeof scenario !== 'object') return;
+  const fingerprints = [];
+  const openings = [];
+
+  function walk(value) {
+    if (typeof value === 'string') {
+      const cues = getTeachingCueMatches(value);
+      for (const cue of cues) {
+        const fp = fingerprintCueText(cue.text);
+        if (fp) fingerprints.push(fp);
+        const opening = fingerprintCueOpening(cue.text);
+        if (opening) openings.push(opening);
+      }
+      return;
+    }
+
+    if (Array.isArray(value)) {
+      value.forEach((item) => walk(item));
+      return;
+    }
+
+    if (value && typeof value === 'object') {
+      Object.values(value).forEach((child) => walk(child));
+    }
+  }
+
+  walk(scenario);
+
+  const unique = [...new Set(fingerprints)];
+  const uniqueOpenings = [...new Set(openings)];
+  if (!unique.length) return;
+
+  recentCueFingerprints = [...recentCueFingerprints, ...unique].slice(-RECENT_CUE_FINGERPRINT_WINDOW);
+  recentCueOpenings = [...recentCueOpenings, ...uniqueOpenings].slice(-RECENT_CUE_OPENING_WINDOW);
+}
+
+function countGenericCueSignals(text) {
+  const lower = String(text || '').toLowerCase();
+  return TEACHING_CUE_GENERIC_PHRASES.reduce(
+    (count, phrase) => count + (lower.includes(phrase) ? 1 : 0),
+    0
+  );
+}
+
+function extractDoseMentions(text) {
+  const source = String(text || '');
+  if (!source) return [];
+
+  const pattern = /\b(?:[a-z][a-z0-9\-/ ]{0,24}\s+)?\d+(?:\.\d+)?\s?(?:mg|mcg|g|ml|mL|units?|iu)(?:\s?(?:iv|im|po|sl|neb|io|in))?\b/gi;
+  const matches = source.match(pattern) || [];
+  return [...new Set(matches.map((value) => normalizeSentenceSpacing(value).toLowerCase()))];
+}
+
+function collectSupportedDoseMentions(scenario) {
+  const sources = [
+    ...(scenario?.expectedTreatment || []),
+    ...(scenario?.protocolNotes || []),
+    ...(scenario?.initialAssessment?.immediateInterventions || []),
+    ...(scenario?.medications || []),
+    ...(scenario?.sample?.medications || [])
+  ];
+
+  return new Set(
+    sources
+      .flatMap((line) => extractDoseMentions(line))
+      .filter(Boolean)
+  );
+}
+
+function cueHasUnsupportedDoseReference(cueText, supportedDoseMentions) {
+  const cueDoseMentions = extractDoseMentions(cueText);
+  if (!cueDoseMentions.length) return false;
+  return cueDoseMentions.some((mention) => !supportedDoseMentions.has(mention));
+}
+
+function countUnsupportedDoseCueReferences(scenario) {
+  if (!scenario || typeof scenario !== 'object') return 0;
+
+  const supportedDoseMentions = collectSupportedDoseMentions(scenario);
+  let unsupportedCount = 0;
+
+  function walk(value) {
+    if (typeof value === 'string') {
+      const cues = getTeachingCueMatches(value);
+      for (const cue of cues) {
+        if (cueHasUnsupportedDoseReference(cue.text, supportedDoseMentions)) {
+          unsupportedCount += 1;
+        }
+      }
+      return;
+    }
+
+    if (Array.isArray(value)) {
+      value.forEach((item) => walk(item));
+      return;
+    }
+
+    if (value && typeof value === 'object') {
+      Object.values(value).forEach((child) => walk(child));
+    }
+  }
+
+  walk(scenario);
+  return unsupportedCount;
+}
+
+function stripUnsupportedDoseCuesFromString(value, supportedDoseMentions, counterRef) {
+  const source = String(value || '');
+  if (!source) return source;
+
+  TEACHING_CUE_REGEX.lastIndex = 0;
+  const cleaned = source
+    .replace(TEACHING_CUE_REGEX, (raw, tag, text) => {
+      if (cueHasUnsupportedDoseReference(text, supportedDoseMentions)) {
+        counterRef.removed += 1;
+        return '';
+      }
+      return raw;
+    })
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+  TEACHING_CUE_REGEX.lastIndex = 0;
+
+  return cleaned;
+}
+
+function enforceDoseCueSafety(scenario, includeTeachingCues) {
+  if (!includeTeachingCues || !scenario || typeof scenario !== 'object') {
+    return scenario;
+  }
+
+  const supportedDoseMentions = collectSupportedDoseMentions(scenario);
+  const counterRef = { removed: 0 };
+
+  function walk(value) {
+    if (typeof value === 'string') {
+      return stripUnsupportedDoseCuesFromString(value, supportedDoseMentions, counterRef);
+    }
+
+    if (Array.isArray(value)) {
+      return value.map((item) => walk(item));
+    }
+
+    if (value && typeof value === 'object') {
+      const next = {};
+      for (const [key, child] of Object.entries(value)) {
+        next[key] = walk(child);
+      }
+      return next;
+    }
+
+    return value;
+  }
+
+  const sanitized = walk(scenario);
+  if (counterRef.removed > 0) {
+    devWarn(`Removed ${counterRef.removed} teaching cue(s) with unsupported dose references.`);
+  }
+  return sanitized;
+}
+
+function cueUsesInstructorVoice(text) {
+  const lower = String(text || '').toLowerCase();
+  const hasDirectAddress = /\byou\b|\byour\b/.test(lower);
+  const escapedVerbs = TEACHING_CUE_COACHING_VERBS.map((verb) => verb.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+  const coachingVerbPattern = new RegExp(`\\b(?:${escapedVerbs.join('|')})(?:ed|ing|s)?\\b`, 'i');
+  const imperativePattern = new RegExp(`^(?:${escapedVerbs.join('|')})\\b`, 'i');
+  const hasCoachingVerb = coachingVerbPattern.test(lower);
+  const startsImperative = imperativePattern.test(lower.trim());
+  return hasDirectAddress || hasCoachingVerb || startsImperative;
+}
+
+function extractCueKeywords(text) {
+  return [...new Set(
+    String(text || '')
+      .toLowerCase()
+      .match(/[a-z]{5,}/g) || []
+  )];
+}
+
+function buildCueSpecificityTokenSet(scenario) {
+  const c = buildCueContext(scenario);
+  const seedText = [
+    c.chiefComplaint,
+    c.location,
+    c.vitalAnchor,
+    c.vitalTrendAnchor,
+    c.mechanismAnchor,
+    c.barrierAnchor,
+    c.reassessmentAnchor,
+    c.treatmentAnchor,
+    c.protocolActionAnchor,
+    c.pitfallAnchor,
+    c.progressionAnchor,
+    c.transportAnchor,
+    scenario?.callInformation?.type,
+    scenario?.patientDemographics?.chiefComplaint
+  ].join(' ');
+
+  return new Set(extractCueKeywords(seedText));
+}
+
+function cueLooksScenarioSpecific(cueText, specificityTokens) {
+  const text = String(cueText || '');
+  const lower = text.toLowerCase();
+  if (!lower.trim()) return false;
+
+  const hasConcreteSignal =
+    /\b\d+(?:\.\d+)?\b/.test(lower) ||
+    /\b(spo2|etco2|rr|hr|bp|gcs|12-lead|right-sided|contraindication|reassessment|deterioration|handoff|transport)\b/i.test(lower);
+
+  const tokenHitCount = [...specificityTokens].reduce(
+    (count, token) => count + (token.length >= 5 && lower.includes(token) ? 1 : 0),
+    0
+  );
+
+  return tokenHitCount >= 1 || hasConcreteSignal;
+}
+
+function cueSeemsCoherent(cueText) {
+  const text = normalizeSentenceSpacing(String(cueText || ''));
+  if (!text) return false;
+
+  const lower = text.toLowerCase();
+  const wordCount = lower.split(/\s+/).filter(Boolean).length;
+  const hasVerb = /\b(is|are|has|have|do|does|use|check|name|state|reassess|assign|confirm|prioritize|trend|pivot|escalate|link|explain|decide|watch|treat|ask|report|match|avoid|build|tie|keep)\b/i.test(text);
+  const hasDanglingJoin = /\b(and|or|but|because|then|if|before|after|while|with|for|to)\.?$/i.test(text);
+  const hasBrokenSymbols = /->|=>|\(|\)$/.test(text);
+
+  if (wordCount < 5) return false;
+  if (!hasVerb) return false;
+  if (hasDanglingJoin) return false;
+  if (hasBrokenSymbols) return false;
+  return /[.!?]$/.test(text);
+}
+
+function cueSpecificityStrength(cueText, specificityTokens) {
+  const lower = String(cueText || '').toLowerCase();
+  if (!lower.trim()) return 0;
+
+  const tokenHitCount = [...specificityTokens].reduce(
+    (count, token) => count + (token.length >= 5 && lower.includes(token) ? 1 : 0),
+    0
+  );
+  const concreteSignals = (lower.match(/\b\d+(?:\.\d+)?\b/g) || []).length +
+    (lower.match(/\b(spo2|etco2|rr|hr|bp|gcs|12-lead|right-sided|contraindication|reassessment|deterioration|handoff|transport|scene|history|trend)\b/gi) || []).length;
+  return tokenHitCount * 2 + Math.min(concreteSignals, 3);
+}
+
+function cuesAreTooSimilar(leftText, rightText) {
+  const left = new Set(extractCueKeywords(leftText).filter((token) => token.length >= 5));
+  const right = new Set(extractCueKeywords(rightText).filter((token) => token.length >= 5));
+  if (!left.size || !right.size) {
+    return fingerprintCueText(leftText) === fingerprintCueText(rightText);
+  }
+
+  let overlap = 0;
+  left.forEach((token) => {
+    if (right.has(token)) overlap += 1;
+  });
+
+  const similarity = overlap / Math.max(left.size, right.size);
+  return similarity >= 0.6 || fingerprintCueText(leftText) === fingerprintCueText(rightText);
+}
+
+function enforceTeachingCueSectionDiscipline(scenario, includeTeachingCues) {
+  if (!includeTeachingCues || !scenario || typeof scenario !== 'object') {
+    return scenario;
+  }
+
+  const specificityTokens = buildCueSpecificityTokenSet(scenario);
+  const sectionState = new Map();
+
+  const shouldKeepCue = (sectionKey, cue) => {
+    const state = sectionState.get(sectionKey) || { kept: [] };
+    if (state.kept.length >= 2) return false;
+    if (state.kept.some((existing) => cuesAreTooSimilar(existing.text, cue.text))) return false;
+
+    const score = cueSpecificityStrength(cue.text, specificityTokens) +
+      (cueUsesInstructorVoice(cue.text) ? 2 : 0) +
+      (cueSeemsCoherent(cue.text) ? 1 : 0);
+
+    if (score < 3) return false;
+
+    state.kept.push({ text: cue.text, score });
+    sectionState.set(sectionKey, state);
+    return true;
+  };
+
+  const sanitizeString = (value, sectionKey) => {
+    const source = String(value || '');
+    if (!source) return source;
+
+    TEACHING_CUE_REGEX.lastIndex = 0;
+    const cleaned = source
+      .replace(TEACHING_CUE_REGEX, (raw, tag, text) => {
+        const compactText = compactTeachingCueText(text);
+        if (!compactText) return '';
+        const cue = { tag: String(tag || '').toLowerCase(), text: compactText };
+        return shouldKeepCue(sectionKey, cue) ? createCue(cue.text, cue.tag) : '';
+      })
+      .replace(/\s{2,}/g, ' ')
+      .trim();
+    TEACHING_CUE_REGEX.lastIndex = 0;
+    return cleaned;
+  };
+
+  const walk = (value, sectionKey = 'root') => {
+    if (typeof value === 'string') return sanitizeString(value, sectionKey);
+    if (Array.isArray(value)) return value.map((item) => walk(item, sectionKey)).filter(Boolean);
+    if (value && typeof value === 'object') {
+      const next = {};
+      for (const [key, child] of Object.entries(value)) {
+        next[key] = walk(child, sectionKey === 'root' ? key : sectionKey);
+      }
+      return next;
+    }
+    return value;
+  };
+
+  return walk(scenario, 'root');
+}
+
+function enforceTeachingCueSpecificity(scenario, includeTeachingCues) {
+  if (!includeTeachingCues || !scenario || typeof scenario !== 'object') {
+    return scenario;
+  }
+
+  const specificityTokens = buildCueSpecificityTokenSet(scenario);
+
+  function sanitizeString(value) {
+    const source = String(value || '');
+    if (!source) return source;
+
+    TEACHING_CUE_REGEX.lastIndex = 0;
+    const cleaned = source
+      .replace(TEACHING_CUE_REGEX, (raw, tag, text) => {
+        const compactText = compactTeachingCueText(text);
+        const genericSignals = countGenericCueSignals(compactText);
+        const weakVoice = !cueUsesInstructorVoice(compactText);
+        const weakSpecificity = !cueLooksScenarioSpecific(compactText, specificityTokens);
+        const incoherent = !cueSeemsCoherent(compactText);
+        const tooShort = compactText.length < TEACHING_CUE_MIN_CHARS;
+        if (!compactText || genericSignals > 0 || weakVoice || weakSpecificity || tooShort || incoherent) {
+          return '';
+        }
+        return createCue(compactText, tag);
+      })
+      .replace(/\s{2,}/g, ' ')
+      .trim();
+    TEACHING_CUE_REGEX.lastIndex = 0;
+    return cleaned;
+  }
+
+  function walk(value) {
+    if (typeof value === 'string') return sanitizeString(value);
+    if (Array.isArray(value)) return value.map((item) => walk(item));
+    if (value && typeof value === 'object') {
+      const next = {};
+      for (const [key, child] of Object.entries(value)) {
+        next[key] = walk(child);
+      }
+      return next;
+    }
+    return value;
+  }
+
+  return walk(scenario);
+}
+
+function sanitizeCustomPrompt(value) {
+  return String(value || '')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, 320);
+}
+
+function extractPromptKeywords(prompt) {
+  return [...new Set(
+    String(prompt || '')
+      .toLowerCase()
+      .match(/[a-z]{5,}/g) || []
+  )];
+}
+
+function scenarioReflectsCustomPrompt(scenario, customPrompt) {
+  const prompt = sanitizeCustomPrompt(customPrompt);
+  if (!prompt) return true;
+
+  const keywords = extractPromptKeywords(prompt).slice(0, 8);
+  if (!keywords.length) return true;
+
+  const scenarioText = collectScenarioNarrativeText(scenario);
+  return keywords.some((keyword) => scenarioText.includes(keyword));
 }
 
 function stringifyValue(value) {
@@ -2312,14 +3233,14 @@ function coerceArray(value) {
   if (Array.isArray(value)) {
     return value
       .filter(Boolean)
-      .map((item) => String(item).trim())
+      .map((item) => normalizeSentenceSpacing(String(item).trim()))
       .filter(Boolean);
   }
 
   if (value == null || value === '') return [];
 
   if (typeof value === 'string') {
-    const trimmed = value.trim();
+    const trimmed = normalizeSentenceSpacing(value.trim());
     if (!trimmed) return [];
 
     if (trimmed.includes('\n')) {
@@ -2355,6 +3276,26 @@ function coerceArray(value) {
   return [String(value)];
 }
 
+function normalizeDirectiveSources(value) {
+  const canonicalizeDirectiveSource = (source) => {
+    const raw = normalizeSentenceSpacing(String(source || '').trim());
+    if (!raw) return '';
+
+    const lower = raw.toLowerCase();
+    if (lower.includes('bls')) return 'BLS PCS 3.4 (2023)';
+    if (lower.includes('als')) return 'ALS PCS 5.4 (2025)';
+    if (lower.includes('companion')) return 'OBHG ALS PCS Companion v5.4 (2025)';
+    return raw;
+  };
+
+  const normalized = coerceArray(value)
+    .map((item) => canonicalizeDirectiveSource(item))
+    .filter(Boolean);
+
+  const sources = [...new Set(normalized)];
+  return sources.length ? sources : [...DEFAULT_DIRECTIVE_SOURCES];
+}
+
 function mergeDeepStrict(base, incoming) {
   if (Array.isArray(base)) {
     return Array.isArray(incoming) ? incoming : base;
@@ -2374,38 +3315,31 @@ function mergeDeepStrict(base, incoming) {
 }
 
 function normalizeClinicalReasoning(value) {
-  if (!value || typeof value !== 'object' || Array.isArray(value)) {
-    return { ...REQUIRED_FIELDS.clinicalReasoning };
+  if (typeof value === 'string') return value.trim();
+  if (Array.isArray(value)) return value.map((item) => String(item).trim()).filter(Boolean).join(' ');
+  if (!value || typeof value !== 'object') return '';
+
+  const parts = [
+    value.summary,
+    value.pathophysiology,
+    value.conclusion || value.workingDiagnosis
+  ].filter(Boolean);
+
+  if (Array.isArray(value.differentialDiagnosis) && value.differentialDiagnosis.length) {
+    const differentialText = value.differentialDiagnosis
+      .map((item) => {
+        if (typeof item === 'string') return item;
+        return item?.condition || '';
+      })
+      .filter(Boolean)
+      .join(', ');
+
+    if (differentialText) {
+      parts.push(`Differentials considered: ${differentialText}.`);
+    }
   }
 
-  const differentialDiagnosis = Array.isArray(value.differentialDiagnosis)
-    ? value.differentialDiagnosis.map((item) => {
-        if (typeof item === 'string') {
-          return {
-            condition: item,
-            supportingFeatures: '',
-            rulingOutFeatures: ''
-          };
-        }
-
-        return {
-          condition: item?.condition || '',
-          supportingFeatures: item?.supportingFeatures || '',
-          rulingOutFeatures: item?.rulingOutFeatures || ''
-        };
-      })
-    : [];
-
-  return {
-    summary: value.summary || value.pathophysiologySummary || '',
-    pathophysiology: value.pathophysiology || '',
-    differentialDiagnosis,
-    ruleInFeatures: coerceArray(value.ruleInFeatures),
-    ruleOutFeatures: coerceArray(value.ruleOutFeatures),
-    redFlags: coerceArray(value.redFlags),
-    treatmentPriorities: coerceArray(value.treatmentPriorities),
-    conclusion: value.conclusion || value.workingDiagnosis || ''
-  };
+  return parts.join(' ').trim();
 }
 
 function normalizeVitalSigns(value, ecgInterpretation) {
@@ -2455,7 +3389,7 @@ function normalizeGrsAnchors(value) {
   for (const domain of Object.keys(base)) {
     if (!value[domain]) continue;
 
-    for (const score of [1, 3, 5, 7]) {
+    for (const score of [3, 5, 7]) {
       if (Array.isArray(value[domain][score])) {
         base[domain][score] = value[domain][score].map((item) => String(item).trim()).filter(Boolean);
       }
@@ -2467,33 +3401,20 @@ function normalizeGrsAnchors(value) {
 
 function normalizeCaseProgression(value) {
   if (!value || typeof value !== 'object') {
-    return { ...REQUIRED_FIELDS.caseProgression };
+    return {
+      withProperTreatment: [],
+      withoutProperTreatment: [],
+      withIncorrectTreatment: []
+    };
   }
 
   return {
-    earlyCourse:
-      value.earlyCourse ||
-      value.initialCourse ||
-      '',
-    withProperTreatment:
-      value.withProperTreatment ||
-      value.treated ||
-      value.improves ||
-      '',
-    withoutProperTreatment:
-      value.withoutProperTreatment ||
-      value.untreated ||
-      value.deteriorates ||
-      '',
-    withIncorrectTreatment:
-      value.withIncorrectTreatment ||
-      value.incorrectTreatment ||
-      value.worsensWithIncorrectCare ||
-      '',
-    transportPhase:
-      value.transportPhase ||
-      value.enRoute ||
-      ''
+    withProperTreatment: Array.isArray(value.withProperTreatment) ? value.withProperTreatment :
+      (value.withProperTreatment || value.treated || value.improves || '').split('\n').filter(s => s.trim()) || [],
+    withoutProperTreatment: Array.isArray(value.withoutProperTreatment) ? value.withoutProperTreatment :
+      (value.withoutProperTreatment || value.untreated || value.deteriorates || '').split('\n').filter(s => s.trim()) || [],
+    withIncorrectTreatment: Array.isArray(value.withIncorrectTreatment) ? value.withIncorrectTreatment :
+      (value.withIncorrectTreatment || value.incorrectTreatment || value.worsensWithIncorrectCare || '').split('\n').filter(s => s.trim()) || []
   };
 }
 
@@ -2515,6 +3436,7 @@ function normalizeScenarioData(rawData) {
   merged.learningObjectives = coerceArray(merged.learningObjectives);
   merged.selfReflectionPrompts = coerceArray(merged.selfReflectionPrompts);
   merged.teachersPoints = coerceArray(merged.teachersPoints);
+  merged.directiveSources = normalizeDirectiveSources(merged.directiveSources);
 
   merged.callInformation.dispatchNotes = coerceArray(merged.callInformation.dispatchNotes);
   merged.callInformation.hazardsOrFlags = coerceArray(merged.callInformation.hazardsOrFlags);
@@ -2547,12 +3469,33 @@ function normalizeScenarioData(rawData) {
   merged.transportPhase.transportConsiderations = coerceArray(merged.transportPhase.transportConsiderations);
   merged.transportPhase.ongoingCare = coerceArray(merged.transportPhase.ongoingCare);
   merged.transportPhase.reassessmentFocus = coerceArray(merged.transportPhase.reassessmentFocus);
-  merged.transportPhase.handoffConsiderations = coerceArray(merged.transportPhase.handoffConsiderations);
+  if (typeof merged.transportPhase.handoffConsiderations !== 'string') {
+    merged.transportPhase.handoffConsiderations = String(merged.transportPhase.handoffConsiderations || '');
+  }
 
-  merged.clinicalReasoning.ruleInFeatures = coerceArray(merged.clinicalReasoning.ruleInFeatures);
-  merged.clinicalReasoning.ruleOutFeatures = coerceArray(merged.clinicalReasoning.ruleOutFeatures);
-  merged.clinicalReasoning.redFlags = coerceArray(merged.clinicalReasoning.redFlags);
-  merged.clinicalReasoning.treatmentPriorities = coerceArray(merged.clinicalReasoning.treatmentPriorities);
+  if (typeof merged.clinicalReasoning !== 'string') {
+    const cr = merged.clinicalReasoning;
+    if (cr && typeof cr === 'object') {
+      merged.clinicalReasoning = [
+        cr.summary, cr.conclusion,
+        ...(Array.isArray(cr.ruleInFeatures) ? cr.ruleInFeatures : []),
+        ...(Array.isArray(cr.ruleOutFeatures) ? cr.ruleOutFeatures : []),
+        ...(Array.isArray(cr.redFlags) ? cr.redFlags : []),
+        ...(Array.isArray(cr.treatmentPriorities) ? cr.treatmentPriorities : [])
+      ].filter(Boolean).join(' ');
+    } else {
+      merged.clinicalReasoning = String(cr || '');
+    }
+  }
+
+  merged.scenarioIntro = normalizeSentenceSpacing(merged.scenarioIntro || '');
+  merged.patientPresentation = normalizeSentenceSpacing(merged.patientPresentation || '');
+  merged.incidentNarrative = normalizeSentenceSpacing(merged.incidentNarrative || '');
+  merged.scenarioRationale = normalizeSentenceSpacing(merged.scenarioRationale || '');
+  merged.clinicalReasoning = normalizeSentenceSpacing(merged.clinicalReasoning || '');
+  merged.transportPhase.handoffConsiderations = normalizeSentenceSpacing(
+    merged.transportPhase.handoffConsiderations || ''
+  );
 
   return merged;
 }
@@ -2909,23 +3852,13 @@ function buildEnvironmentProfile(environment) {
   };
 }
 
-function buildComplications(subtype, includeComplications = true, includeBystanders = true) {
-  if (!includeComplications) return [];
-
+function buildComplications(subtype) {
   const progression = buildCaseProgressionProfile(subtype);
 
   const baseComplications = [...(COMPLICATION_LIBRARY.moderate || [])];
   const progressionComplications = [...(progression.midComplications || [])];
 
-  const combined = [...baseComplications, ...progressionComplications];
-
-  if (!includeBystanders) {
-    return combined.filter(
-      (item) => !/bystander|family|witness|collateral/i.test(String(item))
-    );
-  }
-
-  return combined;
+  return [...baseComplications, ...progressionComplications];
 }
 
 const MID_CALL_EVENT_LIBRARY = {
@@ -3284,7 +4217,7 @@ function buildAssessmentCadenceProfile(subtype, complexity) {
   };
 }
 
-function buildMidCallEventProfile(subtype, complexity, environmentProfile, includeBystanders = true) {
+function buildMidCallEventProfile(subtype, complexity, environmentProfile) {
   const complexityProfile = buildComplexityProfile(complexity);
   const subtypeEvents = MID_CALL_EVENT_LIBRARY[subtype] || [
     'A meaningful reassessment change occurs during the call.',
@@ -3296,14 +4229,10 @@ function buildMidCallEventProfile(subtype, complexity, environmentProfile, inclu
     complexityProfile.midCallEventLikelihood === 'high' ||
     complexityProfile.midCallEventLikelihood === 'medium';
 
-  const sceneInteractionOptions = [];
-
-  if (includeBystanders) {
-    sceneInteractionOptions.push(
-      'bystander or family input changes the history',
-      'public attention or family pressure affects communication'
-    );
-  }
+  const sceneInteractionOptions = [
+    'bystander or family input changes the history',
+    'public attention or family pressure affects communication'
+  ];
 
   if (Array.isArray(environmentProfile?.accessChallenges) && environmentProfile.accessChallenges.length) {
     sceneInteractionOptions.push(
@@ -3335,8 +4264,7 @@ function buildScenarioCore({
   environmentProfile,
   complexity,
   medicationPlan,
-  semesterProfile,
-  includeBystanders
+  semesterProfile
 }) {
   const progression = buildCaseProgressionProfile(subtypeData.subtype);
   const complexityProfile = buildComplexityProfile(complexity);
@@ -3345,8 +4273,7 @@ function buildScenarioCore({
   const midCallEventProfile = buildMidCallEventProfile(
     subtypeData.subtype,
     complexity,
-    environmentProfile,
-    includeBystanders
+    environmentProfile
   );
 
   const semesterShapingText =
@@ -3466,71 +4393,1898 @@ function buildScenarioCore({
   };
 }
 
+function collectScenarioNarrativeText(scenario, { forComplexity = false } = {}) {
+  const segments = forComplexity
+    ? [
+        scenario?.scenarioIntro,
+        scenario?.title,
+        scenario?.patientPresentation,
+        scenario?.incidentNarrative,
+        scenario?.clinicalReasoning,
+        ...(scenario?.transportPhase?.transportConsiderations || []),
+        ...(scenario?.transportPhase?.ongoingCare || []),
+        ...(scenario?.historyGathering?.contradictionsOrBarriers || []),
+        ...(scenario?.sceneArrival?.hazards || [])
+      ]
+    : [
+        scenario?.scenarioIntro,
+        scenario?.title,
+        scenario?.patientPresentation,
+        scenario?.incidentNarrative,
+        scenario?.clinicalReasoning,
+        ...(scenario?.expectedTreatment || []),
+        ...(scenario?.protocolNotes || []),
+        ...(scenario?.teachersPoints || []),
+        ...(scenario?.learningObjectives || []),
+        ...(scenario?.transportPhase?.transportConsiderations || []),
+        ...(scenario?.transportPhase?.ongoingCare || []),
+        ...(scenario?.historyGathering?.contradictionsOrBarriers || []),
+        ...(scenario?.sceneArrival?.hazards || [])
+      ];
+
+  return segments
+    .filter(Boolean)
+    .map((segment) => stripTeachingCueMarkup(segment))
+    .join(' ')
+    .toLowerCase();
+}
+
+function collectTeachingCueMetrics(scenario) {
+  const sectionsWithCues = new Set();
+  const cueFingerprints = new Map();
+  const cueTags = new Set();
+  let cueCount = 0;
+  let genericCueCount = 0;
+  let weakVoiceCueCount = 0;
+
+  function walk(value, pathParts = []) {
+    if (typeof value === 'string') {
+      const matches = getTeachingCueMatches(value);
+      if (matches.length) {
+        cueCount += matches.length;
+        if (pathParts.length) {
+          sectionsWithCues.add(pathParts[0]);
+        }
+
+        for (const cue of matches) {
+          const fingerprint = fingerprintCueText(cue.text);
+          if (fingerprint) {
+            cueFingerprints.set(fingerprint, (cueFingerprints.get(fingerprint) || 0) + 1);
+          }
+          if (cue.tag) cueTags.add(cue.tag);
+          genericCueCount += countGenericCueSignals(cue.text);
+          if (!cueUsesInstructorVoice(cue.text)) {
+            weakVoiceCueCount += 1;
+          }
+        }
+      }
+      return;
+    }
+
+    if (Array.isArray(value)) {
+      value.forEach((item) => walk(item, pathParts));
+      return;
+    }
+
+    if (value && typeof value === 'object') {
+      Object.entries(value).forEach(([key, child]) => {
+        walk(child, pathParts.length ? pathParts : [key]);
+      });
+    }
+  }
+
+  walk(scenario, []);
+
+  const duplicateCueCount = [...cueFingerprints.values()]
+    .filter((count) => count > 1)
+    .reduce((acc, count) => acc + (count - 1), 0);
+
+  return {
+    cueCount,
+    sectionsWithCues: [...sectionsWithCues],
+    duplicateCueCount,
+    uniqueCueCount: cueFingerprints.size,
+    genericCueCount,
+    weakVoiceCueCount,
+    cueTags: [...cueTags]
+  };
+}
+
+function createCue(text, tag = '') {
+  const normalizedText = compactTeachingCueText(text);
+  const normalizedTag = normalizeTeachingCueTag(tag);
+  return normalizedTag
+    ? `*(💡${normalizedTag}| ${normalizedText})*`
+    : `*(💡 ${normalizedText})*`;
+}
+
+function appendCueToString(value, cueText, cueTag = '') {
+  const current = String(value || '').trim();
+  const cue = createCue(cueText, cueTag);
+  const existingCues = getTeachingCueMatches(current);
+  const incomingFingerprint = fingerprintCueText(cueText);
+  if (existingCues.some((existing) => fingerprintCueText(existing.text) === incomingFingerprint)) {
+    return current;
+  }
+  return current ? `${current} ${cue}` : cue;
+}
+
+function computeCueSeedOffset(scenario, variationSeed = 0) {
+  const seed = [
+    scenario?.title,
+    scenario?.patientDemographics?.chiefComplaint,
+    scenario?.callInformation?.type,
+    scenario?.callInformation?.location,
+    String(variationSeed || '')
+  ]
+    .filter(Boolean)
+    .join('|');
+
+  if (!seed) return 0;
+  return [...seed].reduce((sum, char) => sum + char.charCodeAt(0), 0);
+}
+
+function cleanCueAnchor(value, maxLen = 140) {
+  const cleaned = normalizeSentenceSpacing(stripTeachingCueMarkup(String(value || '')))
+    .replace(/^[-•\d.)\s]+/, '')
+    .trim();
+  if (!cleaned) return '';
+  return trimToWordBoundary(cleaned, maxLen);
+}
+
+const GENERIC_CUE_ANCHORS = new Set([
+  'the active presentation',
+  'the current working diagnosis',
+  'this response environment',
+  'the first vital trend',
+  'the reported mechanism and timeline',
+  'scene and history barriers',
+  'the next reassessment trigger',
+  'the first high-yield treatment step',
+  'worsening perfusion and fatigue signs',
+  'handoff-ready reassessment priorities',
+  'the handoff-critical clinical trajectory',
+  'the relevant ontario directive principle',
+  'the key presentation details',
+  'the first scene impression',
+  'the earliest red-flag clue',
+  'the reassessment vital context'
+]);
+
+function isConcreteCueAnchor(value) {
+  const normalized = normalizeSentenceSpacing(String(value || '')).toLowerCase();
+  if (!normalized) return false;
+  if (GENERIC_CUE_ANCHORS.has(normalized)) return false;
+  return normalized.length >= 18;
+}
+
+function seededShuffle(items, seed) {
+  const arr = [...items];
+  let state = (Math.abs(Number(seed) || 0) + 1) % 2147483647;
+  const next = () => {
+    state = (state * 48271) % 2147483647;
+    return state / 2147483647;
+  };
+
+  for (let i = arr.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(next() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function findMedicationDoseAnchor(scenario) {
+  const sources = [
+    ...(scenario?.expectedTreatment || []),
+    ...(scenario?.protocolNotes || []),
+    ...(scenario?.initialAssessment?.immediateInterventions || []),
+    ...(scenario?.medications || []),
+    ...(scenario?.sample?.medications || [])
+  ];
+
+  const dosePattern = /\b\d+(?:\.\d+)?\s?(?:mg|mcg|g|ml|mL|units?|iu)\b/i;
+  const routePattern = /\b(?:iv|im|po|sl|neb|io|in)\b/i;
+
+  const ranked = sources
+    .map((item) => cleanCueAnchor(item, 170))
+    .filter(Boolean)
+    .filter((text) => {
+      const lower = text.toLowerCase();
+      const hasMed = MEDICATION_KEYWORDS.some((keyword) => lower.includes(keyword));
+      return hasMed && dosePattern.test(text);
+    })
+    .sort((left, right) => {
+      const leftScore = (routePattern.test(left) ? 1 : 0) + (left.toLowerCase().includes('als pcs') ? 1 : 0);
+      const rightScore = (routePattern.test(right) ? 1 : 0) + (right.toLowerCase().includes('als pcs') ? 1 : 0);
+      return rightScore - leftScore;
+    });
+
+  return ranked[0] || '';
+}
+
+function findProtocolActionAnchor(scenario) {
+  const lines = [
+    ...(scenario?.protocolNotes || []),
+    ...(scenario?.expectedTreatment || [])
+  ]
+    .map((line) => cleanCueAnchor(line, 190))
+    .filter(Boolean);
+
+  const bareDirectiveOnlyPattern = /^(?:follow\s+)?(?:the\s+)?(?:relevant\s+)?(?:ontario\s+)?(?:bls|als|pcs|companion|directive|standards?)\b/i;
+  const actionVerbPattern = /\b(titrate|administer|assist|perform|obtain|repeat|reassess|trend|withhold|avoid|consider|prepare|monitor|verify|confirm|route|dose|transport)\b/i;
+  const concretePattern = /\b\d+(?:\.\d+)?\s?(?:mg|mcg|g|ml|mL|units?|iu|%)\b|\b12-lead\b|\bright-sided\b|\bcontraindication\b|\bspo2\b|\betco2\b/i;
+
+  const ranked = lines
+    .filter((line) => !bareDirectiveOnlyPattern.test(line))
+    .map((line) => {
+      const lower = line.toLowerCase();
+      let score = 0;
+      if (actionVerbPattern.test(line)) score += 3;
+      if (concretePattern.test(line)) score += 4;
+      if (lower.includes('als pcs') || lower.includes('bls pcs')) score += 1;
+      return { line, score };
+    })
+    .sort((left, right) => right.score - left.score);
+
+  return ranked[0]?.line || '';
+}
+
+function findTeachingPitfallAnchor(scenario) {
+  const candidates = [
+    ...(scenario?.secondaryAssessment?.missedIfNotAssessed || []),
+    ...(scenario?.caseProgression?.withIncorrectTreatment || []),
+    ...(scenario?.protocolNotes || []),
+    ...(scenario?.historyGathering?.contradictionsOrBarriers || [])
+  ]
+    .map((line) => cleanCueAnchor(line, 170))
+    .filter(Boolean);
+
+  const pitfallPattern = /\b(miss|delay|incorrect|wrong|avoid|withhold|contraindication|fail|worsen|deteriorat|not\s+reassess|not\s+assess)\b/i;
+  const ranked = candidates
+    .map((line) => ({ line, score: pitfallPattern.test(line) ? 4 : 1 }))
+    .sort((left, right) => right.score - left.score);
+
+  return ranked[0]?.line || '';
+}
+
+function findPresentationAnchor(scenario) {
+  return pickCueAnchor(
+    scenario?.patientPresentation,
+    scenario?.firstImpression?.generalAppearance,
+    scenario?.firstImpression?.visibleClues?.[0],
+    scenario?.incidentNarrative,
+    'the key presentation details'
+  );
+}
+
+function findSceneAnchor(scenario) {
+  return pickCueAnchor(
+    scenario?.sceneArrival?.sceneDescription,
+    scenario?.sceneArrival?.environmentDetails?.[0],
+    scenario?.sceneArrival?.hazards?.[0],
+    scenario?.firstImpression?.generalAppearance,
+    'the first scene impression'
+  );
+}
+
+function findFirstImpressionAnchor(scenario) {
+  return pickCueAnchor(
+    scenario?.firstImpression?.visibleClues?.[0],
+    scenario?.firstImpression?.initialRedFlags?.[0],
+    scenario?.firstImpression?.generalAppearance,
+    scenario?.patientPresentation,
+    'the earliest red-flag clue'
+  );
+}
+
+function findVitalSetAnchor(scenario) {
+  return pickCueAnchor(
+    scenario?.vitalSigns?.secondSet?.context,
+    scenario?.vitalSigns?.firstSet?.context,
+    scenario?.secondaryAssessment?.evolvingFindings?.[0],
+    'the reassessment vital context'
+  );
+}
+
+function pickCueAnchor(...values) {
+  for (const value of values) {
+    const anchor = cleanCueAnchor(value);
+    if (anchor) return anchor;
+  }
+  return '';
+}
+
+function cueHintSnippet(value, fallback = 'this finding', maxWords = 11, maxLen = 90) {
+  const raw = cleanCueAnchor(value, maxLen)
+    .replace(/^(?:the\s+crew\s+is\s+)?dispatched\s+to\s+/i, '')
+    .replace(/^(?:the\s+crew\s+)?is\s+dispatched\s+to\s+/i, '')
+    .replace(/^(?:the\s+)?patient\s+(?:is|was)\s+/i, '')
+    .replace(/^for\s+/i, '')
+    .replace(/[.!?]+$/g, '')
+    .trim();
+
+  if (!raw) return fallback;
+  const words = raw.split(/\s+/).filter(Boolean);
+  const clipped = words.length > maxWords ? words.slice(0, maxWords).join(' ') : raw;
+  return clipped || fallback;
+}
+
+function buildVitalTrendAnchor(firstSet, secondSet) {
+  const parseNumber = (value) => {
+    const n = Number(value);
+    return Number.isFinite(n) ? n : null;
+  };
+
+  const fSpo2 = parseNumber(firstSet?.spo2);
+  const sSpo2 = parseNumber(secondSet?.spo2);
+  if (fSpo2 != null && sSpo2 != null && fSpo2 !== sSpo2) {
+    const direction = sSpo2 > fSpo2 ? 'improves' : 'drops';
+    return `SpO2 ${direction} from ${fSpo2}% to ${sSpo2}%`;
+  }
+
+  const fHr = parseNumber(firstSet?.hr);
+  const sHr = parseNumber(secondSet?.hr);
+  if (fHr != null && sHr != null && fHr !== sHr) {
+    const direction = sHr > fHr ? 'rises' : 'falls';
+    return `HR ${direction} from ${fHr} to ${sHr}`;
+  }
+
+  const fRr = parseNumber(firstSet?.rr);
+  const sRr = parseNumber(secondSet?.rr);
+  if (fRr != null && sRr != null && fRr !== sRr) {
+    const direction = sRr > fRr ? 'rises' : 'falls';
+    return `RR ${direction} from ${fRr} to ${sRr}`;
+  }
+
+  const bp1 = cleanCueAnchor(firstSet?.bp, 40);
+  const bp2 = cleanCueAnchor(secondSet?.bp, 40);
+  if (bp1 && bp2 && bp1 !== bp2) {
+    return `BP shifts from ${bp1} to ${bp2}`;
+  }
+
+  return '';
+}
+
+function buildCueContext(scenario) {
+  const chiefComplaint =
+    scenario?.patientDemographics?.chiefComplaint ||
+    scenario?.patientPresentation ||
+    scenario?.title ||
+    'the active presentation';
+
+  const likelyDiagnosis = pickCueAnchor(
+    scenario?.clinicalReasoning,
+    Array.isArray(scenario?.differentialDiagnosis) ? scenario.differentialDiagnosis[0] : '',
+    scenario?.title,
+    'the current working diagnosis'
+  );
+
+  const location =
+    scenario?.callInformation?.location ||
+    scenario?.sceneArrival?.sceneDescription ||
+    'this response environment';
+
+  const firstSet = scenario?.vitalSigns?.firstSet || {};
+  const secondSet = scenario?.vitalSigns?.secondSet || {};
+  const abnormalSignals = [];
+  if (firstSet?.spo2 && Number(firstSet.spo2) < 94) abnormalSignals.push(`SpO2 ${firstSet.spo2}%`);
+  if (firstSet?.rr && Number(firstSet.rr) >= 24) abnormalSignals.push(`RR ${firstSet.rr}`);
+  if (firstSet?.hr && Number(firstSet.hr) >= 110) abnormalSignals.push(`HR ${firstSet.hr}`);
+  if (typeof firstSet?.bp === 'string' && firstSet.bp.trim()) abnormalSignals.push(`BP ${firstSet.bp.trim()}`);
+  const vitalAnchor = abnormalSignals[0] || buildVitalTrendAnchor(firstSet, secondSet) || 'the first vital trend';
+
+  const vitalTrendAnchor = buildVitalTrendAnchor(firstSet, secondSet) || vitalAnchor;
+
+  const mechanismAnchor = pickCueAnchor(
+    scenario?.incidentNarrative,
+    scenario?.sample?.eventsLeadingUp,
+    scenario?.opqrst?.onset,
+    scenario?.callInformation?.dispatchNotes?.[0],
+    'the reported mechanism and timeline'
+  );
+
+  const barrierAnchor = pickCueAnchor(
+    scenario?.historyGathering?.contradictionsOrBarriers?.[0],
+    scenario?.sceneArrival?.hazards?.[0],
+    scenario?.sceneArrival?.accessIssues,
+    'scene and history barriers'
+  );
+
+  const reassessmentAnchor = pickCueAnchor(
+    scenario?.secondaryAssessment?.evolvingFindings?.[0],
+    scenario?.secondaryAssessment?.keyFindings?.[0],
+    scenario?.transportPhase?.reassessmentFocus?.[0],
+    'the next reassessment trigger'
+  );
+
+  const treatmentAnchor = pickCueAnchor(
+    scenario?.expectedTreatment?.[0],
+    scenario?.initialAssessment?.immediateInterventions?.[0],
+    'the first high-yield treatment step'
+  );
+
+  const medicationDoseAnchor = findMedicationDoseAnchor(scenario);
+  const protocolActionAnchor = findProtocolActionAnchor(scenario);
+  const pitfallAnchor = findTeachingPitfallAnchor(scenario);
+  const presentationAnchor = findPresentationAnchor(scenario);
+  const sceneAnchor = findSceneAnchor(scenario);
+  const firstImpressionAnchor = findFirstImpressionAnchor(scenario);
+  const vitalSetAnchor = findVitalSetAnchor(scenario);
+
+  const progressionAnchor =
+    scenario?.caseProgression?.withoutProperTreatment?.[0] ||
+    scenario?.caseProgression?.withIncorrectTreatment?.[0] ||
+    'worsening perfusion and fatigue signs';
+
+  const transportAnchor =
+    scenario?.transportPhase?.transportConsiderations?.[0] ||
+    scenario?.transportPhase?.transportDecision ||
+    'handoff-ready reassessment priorities';
+
+  const directiveAnchor =
+    scenario?.directiveSources?.[0] ||
+    'the relevant Ontario directive principle';
+
+  const handoffAnchor = pickCueAnchor(
+    scenario?.transportPhase?.handoffConsiderations,
+    scenario?.transportPhase?.ongoingCare?.[0],
+    'the handoff-critical clinical trajectory'
+  );
+
+  const likelyDiagnosisHint = cueHintSnippet(likelyDiagnosis, 'your working diagnosis', 8, 80)
+    .replace(/^(?:this\s+patient\s+is\s+experiencing|patient\s+is\s+experiencing)\s+/i, '')
+    .replace(/\blikely\b/gi, '')
+    .replace(/\s{2,}/g, ' ')
+    .trim() || 'your working diagnosis';
+
+  return {
+    chiefComplaint: normalizeSentenceSpacing(chiefComplaint),
+    chiefComplaintHint: cueHintSnippet(chiefComplaint, 'this presentation', 8, 70),
+    likelyDiagnosis: normalizeSentenceSpacing(likelyDiagnosis),
+    likelyDiagnosisHint,
+    location: normalizeSentenceSpacing(location),
+    locationHint: cueHintSnippet(location, 'scene entry', 6, 60),
+    vitalAnchor: normalizeSentenceSpacing(vitalAnchor),
+    vitalTrendAnchor: normalizeSentenceSpacing(vitalTrendAnchor),
+    mechanismAnchor: normalizeSentenceSpacing(mechanismAnchor),
+    mechanismHint: cueHintSnippet(mechanismAnchor, 'the dispatch story', 10, 90),
+    barrierAnchor: normalizeSentenceSpacing(barrierAnchor),
+    barrierHint: cueHintSnippet(barrierAnchor, 'the biggest history gap', 10, 90),
+    reassessmentAnchor: normalizeSentenceSpacing(reassessmentAnchor),
+    reassessmentHint: cueHintSnippet(reassessmentAnchor, 'your next reassessment trigger', 9, 80),
+    treatmentAnchor: normalizeSentenceSpacing(treatmentAnchor),
+    medicationDoseAnchor: normalizeSentenceSpacing(medicationDoseAnchor),
+    protocolActionAnchor: normalizeSentenceSpacing(protocolActionAnchor),
+    protocolActionHint: cueHintSnippet(protocolActionAnchor, 'the next protocol step', 10, 90),
+    pitfallAnchor: normalizeSentenceSpacing(pitfallAnchor),
+    presentationAnchor: normalizeSentenceSpacing(presentationAnchor),
+    sceneAnchor: normalizeSentenceSpacing(sceneAnchor),
+    firstImpressionAnchor: normalizeSentenceSpacing(firstImpressionAnchor),
+    vitalSetAnchor: normalizeSentenceSpacing(vitalSetAnchor),
+    progressionAnchor: normalizeSentenceSpacing(progressionAnchor),
+    progressionHint: cueHintSnippet(progressionAnchor, 'the deterioration branch', 11, 95),
+    transportAnchor: normalizeSentenceSpacing(transportAnchor),
+    transportHint: cueHintSnippet(transportAnchor, 'the transport priority', 10, 85),
+    handoffAnchor: normalizeSentenceSpacing(handoffAnchor),
+    handoffHint: cueHintSnippet(handoffAnchor, 'the handoff trajectory', 10, 90),
+    directiveAnchor: normalizeSentenceSpacing(directiveAnchor),
+    directiveHint: cueHintSnippet(directiveAnchor, 'the governing PCS rule', 8, 70)
+  };
+}
+
+function buildContextualCueBank(scenario, variationSeed = 0) {
+  const c = buildCueContext(scenario);
+  const seed = computeCueSeedOffset(scenario, variationSeed);
+
+  // Pull call-type-specific teaching errors from scenario hooks to enrich pitfall cues
+  const hookCallType = normalizeCallFamily(scenario?.callInformation?.type || '');
+  const scenarioHookEntries = getScenarioHook(hookCallType);
+  const hookErrorPool = scenarioHookEntries.flatMap(({ hook }) => hook.commonTeachingErrors || []);
+  const primaryHookError = hookErrorPool.length
+    ? hookErrorPool[Math.abs(seed) % hookErrorPool.length]
+    : '';
+
+  const phaseOffset = {
+    presentation: 1,
+    narrative: 2,
+    arrival: 3,
+    history: 4,
+    assessment: 5,
+    treatment: 6,
+    protocol: 7,
+    progression: 8,
+    transport: 9,
+    reasoning: 10
+  };
+  const pickVariant = (phase, variants) => {
+    if (!Array.isArray(variants) || !variants.length) return '';
+    const shift = Math.abs(seed + (phaseOffset[phase] || 0));
+    const ordered = variants.map((text, idx) => ({
+      text,
+      idx,
+      score:
+        ((idx + shift) % variants.length) +
+        (hasRecentCueFingerprint(text) ? variants.length : 0) +
+        (hasRecentCueOpening(text) ? 2 : 0)
+    }));
+    ordered.sort((left, right) => left.score - right.score);
+    return ordered[0]?.text || variants[0];
+  };
+
+  const doseSupport = c.medicationDoseAnchor
+    ? ` Use the documented dose exactly: ${c.medicationDoseAnchor}.`
+    : '';
+
+  const protocolSupport = c.protocolActionAnchor
+    ? ` Protocol-check this step: ${c.protocolActionAnchor}. Name why it fits and what would stop it.`
+    : '';
+
+  const canUse = {
+    scene: isConcreteCueAnchor(c.sceneAnchor),
+    firstImpression: isConcreteCueAnchor(c.firstImpressionAnchor),
+    presentation: isConcreteCueAnchor(c.presentationAnchor),
+    narrative: isConcreteCueAnchor(c.mechanismAnchor) || isConcreteCueAnchor(c.pitfallAnchor),
+    arrival: isConcreteCueAnchor(c.location) || isConcreteCueAnchor(c.mechanismAnchor),
+    history: isConcreteCueAnchor(c.barrierAnchor),
+    assessment: isConcreteCueAnchor(c.vitalTrendAnchor) || isConcreteCueAnchor(c.reassessmentAnchor),
+    vitals: isConcreteCueAnchor(c.vitalSetAnchor) || isConcreteCueAnchor(c.vitalTrendAnchor),
+    treatment: isConcreteCueAnchor(c.treatmentAnchor),
+    protocol: Boolean(protocolSupport),
+    progression: isConcreteCueAnchor(c.progressionAnchor),
+    transport: isConcreteCueAnchor(c.transportAnchor) || isConcreteCueAnchor(c.handoffAnchor),
+    reasoning: isConcreteCueAnchor(c.likelyDiagnosis) || isConcreteCueAnchor(c.vitalTrendAnchor)
+  };
+
+  return {
+    scene: pickVariant('presentation', [
+      `Use the scene clue first: ${c.sceneAnchor}. Consider how it changes your first priority.`,
+      `Read the scene as diagnostic data: ${c.sceneAnchor}. Watch for the risk it adds before you narrow the case.`,
+      `Flag the scene risk early: ${c.sceneAnchor}. Note what it changes right now.`
+    ]) && canUse.scene
+      ? pickVariant('presentation', [
+          `Use the scene clue first: ${c.sceneAnchor}. Consider how it changes your first priority.`,
+          `Read the scene as diagnostic data: ${c.sceneAnchor}. Watch for the risk it adds before you narrow the case.`,
+          `Flag the scene risk early: ${c.sceneAnchor}. Note what it changes right now.`
+        ])
+      : '',
+    firstImpression: canUse.firstImpression ? pickVariant('arrival', [
+      `Call out the first red flag: ${c.firstImpressionAnchor}. It should change urgency before you have the full story.`,
+      `Do not rush past first impression. ${c.firstImpressionAnchor} should change urgency now. Watch for the next finding that confirms it.`,
+      `Anchor your opening decision to this clue: ${c.firstImpressionAnchor}. Explain why it raises urgency.`
+    ]) : '',
+    presentation: canUse.presentation ? pickVariant('presentation', [
+      `Start with the loudest clue: ${c.presentationAnchor}. Keep focus on why it matters now.`,
+      `Use the strongest presentation clue: ${c.presentationAnchor}. Tie it to urgency.`,
+      `Commit to the key presentation signal: ${c.presentationAnchor}. Keep focus on the first risk it points to.`
+    ]) : '',
+    narrative: canUse.narrative ? pickVariant('narrative', [
+      `Use the story to test your first impression: ${c.mechanismAnchor}. Name the trap here: ${primaryHookError || c.pitfallAnchor || 'early anchoring'}.`,
+      `Do not treat the narrative as filler: ${c.mechanismAnchor}. Watch for the clue that could overturn your first read.`,
+      `Pressure-test your first read against the story: ${c.mechanismAnchor}. Identify the reasoning trap.`
+    ]) : '',
+    arrival: canUse.arrival ? pickVariant('arrival', [
+      `At ${c.locationHint}, call the immediate threat in one line for this ${c.chiefComplaintHint} call.`,
+      `Before interventions, name what could crash first in this ${c.chiefComplaintHint} case.`,
+      `On arrival, state the immediate danger in this ${c.chiefComplaintHint} call before acting.`
+    ]) : '',
+    history: canUse.history ? pickVariant('history', [
+      `Ask one focused question about ${c.barrierHint}. Use the answer to move ${c.likelyDiagnosisHint} up or down.`,
+      `If the story is messy, pick one missing detail that changes risk or destination.`,
+      `Pin down one history gap: ${c.barrierHint}. Use it to adjust your differential rank.`
+    ]) : '',
+    assessment: canUse.assessment ? pickVariant('assessment', [
+      `Look at ${c.vitalAnchor} with ${c.vitalTrendAnchor}. Decide where this patient is heading.`,
+      `Do not get stuck on one number. Use ${c.vitalTrendAnchor} as the trend.`,
+      `Trend first, then decide: ${c.vitalTrendAnchor}. Keep the likely direction in view.`
+    ]) : '',
+    vitals: canUse.vitals ? pickVariant('assessment', [
+      `Don't just document ${c.vitalSetAnchor}. Decide whether ${c.vitalTrendAnchor} means response, deterioration, or the story is off.`,
+      `These vitals should change what you do next. Use ${c.vitalTrendAnchor} and ${c.vitalSetAnchor} to decide if the patient is actually improving.`,
+      `Read this set as a decision point: ${c.vitalSetAnchor}. Name the action it triggers.`
+    ]) : '',
+    treatment: canUse.treatment ? pickVariant('treatment', [
+      `Pick your first treatment priority: ${c.treatmentAnchor}. Watch for what should improve first.${doseSupport}`,
+      `Pick one treatment target: ${c.treatmentAnchor}. Watch for the finding that confirms benefit.${doseSupport}`,
+      `Go after the immediate treatment target: ${c.treatmentAnchor}. Watch which finding should improve first.${doseSupport}`,
+      `Treat the highest-risk feature first: ${c.treatmentAnchor}. Define failure using ${c.vitalTrendAnchor}.${doseSupport}`,
+      `Commit to one treatment goal: ${c.treatmentAnchor}. Keep the reassessment trigger explicit.${doseSupport}`
+    ]) : '',
+    protocol: canUse.protocol
+      ? pickVariant('protocol', [
+          `Protocol check: ${c.protocolActionHint}. Name the finding that supports it.${doseSupport}`,
+          `Before you move, link ${c.protocolActionHint} to one real finding: ${c.reassessmentHint}.${doseSupport}`,
+          `Quick protocol check: what in this patient supports ${c.protocolActionHint}?${doseSupport}`,
+          `Use protocol as a guardrail. Tie ${c.protocolActionHint} to ${c.vitalTrendAnchor}.${doseSupport}`,
+          `Verify the protocol step: ${c.protocolActionHint}. State the stop condition before you proceed.${doseSupport}`
+        ])
+      : '',
+    progression: canUse.progression ? pickVariant('progression', [
+      `Rehearse the no-treatment branch now: ${c.progressionHint}. ${primaryHookError ? `Watch for ${primaryHookError}.` : 'Name the first red flag.'}`,
+      `If ${c.progressionHint} starts to appear, what is your first escalation move?`,
+      `Stress-test your plan against the worsening branch: ${c.progressionHint}. Keep the escalation trigger clear.`,
+      `Before decline, rehearse the fork in the road: ${c.progressionHint}. ${primaryHookError ? `Avoid ${primaryHookError}.` : 'Name the delayed-action mistake.'}`,
+      `Map the deterioration path early: ${c.progressionHint}. Keep the trigger that changes your plan in view.`
+    ]) : '',
+    transport: canUse.transport ? pickVariant('transport', [
+      `On the move, prioritize ${c.transportHint}. Watch ${c.reassessmentHint}.`,
+      `Pick one transport monitor target: ${c.transportHint}.`,
+      `During transport, protect the priority signal: ${c.transportHint}. Keep in mind what would force escalation.`
+    ]) : '',
+    reasoning: canUse.reasoning ? pickVariant('reasoning', [
+      `Start with ${c.mechanismHint}, add ${c.vitalTrendAnchor}, then settle on your working diagnosis: ${c.likelyDiagnosisHint}.`,
+      `Give your best-fit diagnosis for this trend: ${c.likelyDiagnosisHint}. Then look for the clue that would challenge it.`,
+      `Keep your current diagnostic frame visible: ${c.likelyDiagnosisHint}. Watch for one finding that could disconfirm it.`
+    ]) : ''
+  };
+}
+
+function ensureTeachingCueCoverage(scenario, includeTeachingCues, variationSeed = 0) {
+  if (!includeTeachingCues || !scenario || typeof scenario !== 'object') {
+    return scenario;
+  }
+
+  const baseline = collectTeachingCueMetrics(scenario);
+  const qualityLooksStrong =
+    baseline.cueCount >= 6 &&
+    baseline.sectionsWithCues.length >= 4 &&
+    baseline.duplicateCueCount <= 1 &&
+    baseline.genericCueCount <= 1;
+
+  if (qualityLooksStrong) {
+    return scenario;
+  }
+
+  const addArrayCue = (obj, key, cueText, cueTag) => {
+    if (!String(cueText || '').trim()) return;
+    if (!obj || typeof obj !== 'object') return;
+    if (!Array.isArray(obj[key])) obj[key] = [];
+    const candidate = createCue(cueText, cueTag);
+    const existingFingerprints = obj[key]
+      .flatMap((entry) => getTeachingCueMatches(entry).map((cue) => fingerprintCueText(cue.text)));
+    if (!existingFingerprints.includes(fingerprintCueText(cueText))) {
+      obj[key].push(candidate);
+    }
+  };
+
+  const pushArrayCue = (arr, cueText, cueTag) => {
+    if (!String(cueText || '').trim()) return;
+    if (!Array.isArray(arr)) return;
+    const existingFingerprints = arr
+      .flatMap((entry) => getTeachingCueMatches(entry).map((cue) => fingerprintCueText(cue.text)));
+    if (!existingFingerprints.includes(fingerprintCueText(cueText))) {
+      arr.push(createCue(cueText, cueTag));
+    }
+  };
+
+  const cueBank = buildContextualCueBank(scenario, variationSeed);
+
+  const sectionsWithCues = new Set(baseline.sectionsWithCues || []);
+  const hasAny = (arr) => Array.isArray(arr) && arr.some((item) => String(item || '').trim());
+  const hasText = (value) => Boolean(String(value || '').trim());
+
+  const placementDefs = [
+    {
+      key: 'scene',
+      section: 'sceneArrival',
+      applicability: () =>
+        hasText(scenario?.sceneArrival?.sceneDescription) ||
+        hasAny(scenario?.sceneArrival?.hazards) ||
+        hasAny(scenario?.sceneArrival?.environmentDetails),
+      priority: () =>
+        (hasAny(scenario?.sceneArrival?.hazards) ? 3 : 0) +
+        (hasText(scenario?.sceneArrival?.accessIssues) ? 2 : 0),
+      apply: () => {
+        scenario.sceneArrival.sceneDescription = appendCueToString(
+          scenario?.sceneArrival?.sceneDescription,
+          cueBank.scene,
+          'arrival'
+        );
+      }
+    },
+    {
+      key: 'firstImpression',
+      section: 'firstImpression',
+      applicability: () =>
+        hasText(scenario?.firstImpression?.generalAppearance) ||
+        hasAny(scenario?.firstImpression?.initialRedFlags) ||
+        hasAny(scenario?.firstImpression?.visibleClues),
+      priority: () =>
+        (hasAny(scenario?.firstImpression?.initialRedFlags) ? 3 : 0) +
+        (hasAny(scenario?.firstImpression?.visibleClues) ? 2 : 0),
+      apply: () => {
+        scenario.firstImpression.generalAppearance = appendCueToString(
+          scenario?.firstImpression?.generalAppearance,
+          cueBank.firstImpression,
+          'arrival'
+        );
+      }
+    },
+    {
+      key: 'presentation',
+      section: 'patientPresentation',
+      applicability: () => hasText(scenario?.patientPresentation),
+      priority: () =>
+        (hasText(scenario?.patientPresentation) ? 2 : 0) +
+        (hasAny(scenario?.firstImpression?.visibleClues) ? 2 : 0),
+      apply: () => {
+        scenario.patientPresentation = appendCueToString(
+          scenario?.patientPresentation,
+          cueBank.presentation,
+          'assessment'
+        );
+      }
+    },
+    {
+      key: 'narrative',
+      section: 'incidentNarrative',
+      applicability: () => hasText(scenario?.incidentNarrative),
+      priority: () =>
+        (hasText(scenario?.incidentNarrative) ? 2 : 0) +
+        (hasAny(scenario?.historyGathering?.contradictionsOrBarriers) ? 2 : 0),
+      apply: () => {
+        scenario.incidentNarrative = appendCueToString(
+          scenario?.incidentNarrative,
+          cueBank.narrative,
+          'history'
+        );
+      }
+    },
+    {
+      key: 'arrival',
+      section: 'initialAssessment',
+      applicability: () =>
+        hasText(scenario?.initialAssessment?.generalImpression) ||
+        hasText(scenario?.firstImpression?.generalAppearance),
+      priority: () => (hasAny(scenario?.firstImpression?.initialRedFlags) ? 3 : 1),
+      apply: () => {
+        scenario.initialAssessment.generalImpression = appendCueToString(
+          scenario?.initialAssessment?.generalImpression,
+          cueBank.arrival,
+          'arrival'
+        );
+      }
+    },
+    {
+      key: 'history',
+      section: 'historyGathering',
+      applicability: () =>
+        hasAny(scenario?.historyGathering?.additionalHistory) ||
+        hasAny(scenario?.historyGathering?.contradictionsOrBarriers) ||
+        hasAny(scenario?.historyGathering?.sceneContextClues),
+      priority: () =>
+        (hasAny(scenario?.historyGathering?.contradictionsOrBarriers) ? 3 : 0) +
+        (hasAny(scenario?.historyGathering?.sceneContextClues) ? 2 : 0),
+      apply: () => addArrayCue(scenario.historyGathering, 'additionalHistory', cueBank.history, 'history')
+    },
+    {
+      key: 'assessment',
+      section: 'secondaryAssessment',
+      applicability: () =>
+        hasAny(scenario?.secondaryAssessment?.keyFindings) ||
+        hasAny(scenario?.secondaryAssessment?.evolvingFindings) ||
+        hasAny(scenario?.secondaryAssessment?.missedIfNotAssessed),
+      priority: () =>
+        (hasAny(scenario?.secondaryAssessment?.evolvingFindings) ? 3 : 0) +
+        (hasAny(scenario?.secondaryAssessment?.missedIfNotAssessed) ? 2 : 0),
+      apply: () => addArrayCue(scenario.secondaryAssessment, 'missedIfNotAssessed', cueBank.assessment, 'assessment')
+    },
+    {
+      key: 'vitals',
+      section: 'vitalSigns',
+      applicability: () =>
+        hasText(scenario?.vitalSigns?.firstSet?.context) ||
+        hasText(scenario?.vitalSigns?.secondSet?.context),
+      priority: () =>
+        ((scenario?.vitalSigns?.additionalSets || []).length > 0 ? 3 : 0) +
+        (hasText(scenario?.vitalSigns?.secondSet?.context) ? 2 : 0),
+      apply: () => {
+        scenario.vitalSigns.secondSet.context = appendCueToString(
+          scenario?.vitalSigns?.secondSet?.context,
+          cueBank.vitals,
+          'assessment'
+        );
+      }
+    },
+    {
+      key: 'treatment',
+      section: 'expectedTreatment',
+      applicability: () => hasAny(scenario?.expectedTreatment),
+      priority: () => (hasAny(scenario?.expectedTreatment) ? 2 : 0),
+      apply: () => pushArrayCue(scenario.expectedTreatment, cueBank.treatment, 'treatment')
+    },
+    {
+      key: 'protocol',
+      section: 'protocolNotes',
+      applicability: () => hasAny(scenario?.protocolNotes),
+      priority: () =>
+        (findProtocolActionAnchor(scenario) ? 4 : 0) +
+        (hasAny(scenario?.protocolNotes) ? 1 : 0),
+      apply: () => pushArrayCue(scenario.protocolNotes, cueBank.protocol, 'protocol')
+    },
+    {
+      key: 'progression',
+      section: 'caseProgression',
+      applicability: () =>
+        hasAny(scenario?.caseProgression?.withoutProperTreatment) ||
+        hasAny(scenario?.caseProgression?.withIncorrectTreatment),
+      priority: () =>
+        (hasAny(scenario?.caseProgression?.withIncorrectTreatment) ? 3 : 0) +
+        (hasAny(scenario?.caseProgression?.withoutProperTreatment) ? 2 : 0),
+      apply: () => addArrayCue(scenario.caseProgression, 'withoutProperTreatment', cueBank.progression, 'progression')
+    },
+    {
+      key: 'transport',
+      section: 'transportPhase',
+      applicability: () =>
+        hasAny(scenario?.transportPhase?.transportConsiderations) ||
+        hasAny(scenario?.transportPhase?.reassessmentFocus) ||
+        hasText(scenario?.transportPhase?.handoffConsiderations),
+      priority: () =>
+        (hasAny(scenario?.transportPhase?.transportConsiderations) ? 2 : 0) +
+        (hasAny(scenario?.transportPhase?.reassessmentFocus) ? 2 : 0) +
+        (hasText(scenario?.transportPhase?.handoffConsiderations) ? 1 : 0),
+      apply: () => addArrayCue(scenario.transportPhase, 'reassessmentFocus', cueBank.transport, 'transport')
+    },
+    {
+      key: 'reasoning',
+      section: 'clinicalReasoning',
+      applicability: () => hasText(scenario?.clinicalReasoning),
+      priority: () =>
+        (hasText(scenario?.clinicalReasoning) ? 2 : 0) +
+        ((scenario?.vitalSigns?.additionalSets || []).length > 0 ? 2 : 0),
+      apply: () => {
+        scenario.clinicalReasoning = appendCueToString(
+          scenario.clinicalReasoning,
+          cueBank.reasoning,
+          'reasoning'
+        );
+      }
+    }
+  ];
+
+  const getAtPath = (root, path) => {
+    if (!root || typeof root !== 'object') return undefined;
+    return path.reduce((current, segment) => {
+      if (!current || typeof current !== 'object') return undefined;
+      return current[segment];
+    }, root);
+  };
+
+  const setAtPath = (root, path, value) => {
+    if (!root || typeof root !== 'object' || !Array.isArray(path) || !path.length) return;
+    const parentPath = path.slice(0, -1);
+    const lastKey = path[path.length - 1];
+    const parent = parentPath.length ? getAtPath(root, parentPath) : root;
+    if (!parent || typeof parent !== 'object') return;
+    parent[lastKey] = value;
+  };
+
+  const buildStringPlacement = ({ key, section, path, cueKey, cueTag, priority = 0 }) => ({
+    key,
+    section,
+    applicability: () => hasText(getAtPath(scenario, path)),
+    priority: () => priority,
+    apply: () => {
+      const current = getAtPath(scenario, path);
+      setAtPath(scenario, path, appendCueToString(current, cueBank[cueKey], cueTag));
+    }
+  });
+
+  const buildArrayPlacement = ({ key, section, parentPath, arrayKey, cueKey, cueTag, priority = 0 }) => ({
+    key,
+    section,
+    applicability: () => hasAny(getAtPath(scenario, [...parentPath, arrayKey])),
+    priority: () => priority,
+    apply: () => {
+      const parent = getAtPath(scenario, parentPath);
+      addArrayCue(parent, arrayKey, cueBank[cueKey], cueTag);
+    }
+  });
+
+  const dynamicPlacementDefs = [
+    buildArrayPlacement({
+      key: 'arrival',
+      section: 'callInformation',
+      parentPath: ['callInformation'],
+      arrayKey: 'dispatchNotes',
+      cueKey: 'arrival',
+      cueTag: 'arrival',
+      priority: 5
+    }),
+    buildStringPlacement({
+      key: 'arrival',
+      section: 'callInformation',
+      path: ['callInformation', 'crewNotes'],
+      cueKey: 'arrival',
+      cueTag: 'arrival',
+      priority: 4
+    }),
+    buildStringPlacement({
+      key: 'presentation',
+      section: 'patientDemographics',
+      path: ['patientDemographics', 'appearance'],
+      cueKey: 'presentation',
+      cueTag: 'assessment',
+      priority: 4
+    }),
+    buildStringPlacement({
+      key: 'history',
+      section: 'patientDemographics',
+      path: ['patientDemographics', 'chiefComplaint'],
+      cueKey: 'history',
+      cueTag: 'history',
+      priority: 4
+    }),
+    buildStringPlacement({
+      key: 'history',
+      section: 'opqrst',
+      path: ['opqrst', 'onset'],
+      cueKey: 'history',
+      cueTag: 'history',
+      priority: 3
+    }),
+    buildStringPlacement({
+      key: 'assessment',
+      section: 'sample',
+      path: ['sample', 'signsAndSymptoms'],
+      cueKey: 'assessment',
+      cueTag: 'assessment',
+      priority: 4
+    }),
+    buildStringPlacement({
+      key: 'narrative',
+      section: 'sample',
+      path: ['sample', 'eventsLeadingUp'],
+      cueKey: 'narrative',
+      cueTag: 'history',
+      priority: 3
+    }),
+    buildArrayPlacement({
+      key: 'history',
+      section: 'sample',
+      parentPath: ['sample'],
+      arrayKey: 'medications',
+      cueKey: 'history',
+      cueTag: 'history',
+      priority: 3
+    }),
+    buildStringPlacement({
+      key: 'assessment',
+      section: 'physicalExam',
+      path: ['physicalExam', 'generalAppearance'],
+      cueKey: 'assessment',
+      cueTag: 'assessment',
+      priority: 4
+    }),
+    buildStringPlacement({
+      key: 'assessment',
+      section: 'physicalExam',
+      path: ['physicalExam', 'breathing'],
+      cueKey: 'assessment',
+      cueTag: 'assessment',
+      priority: 3
+    }),
+    buildStringPlacement({
+      key: 'assessment',
+      section: 'physicalExam',
+      path: ['physicalExam', 'circulation'],
+      cueKey: 'assessment',
+      cueTag: 'assessment',
+      priority: 3
+    }),
+    buildStringPlacement({
+      key: 'assessment',
+      section: 'physicalExam',
+      path: ['physicalExam', 'neuro'],
+      cueKey: 'assessment',
+      cueTag: 'assessment',
+      priority: 3
+    }),
+    buildArrayPlacement({
+      key: 'assessment',
+      section: 'initialAssessment',
+      parentPath: ['initialAssessment'],
+      arrayKey: 'immediatePriorities',
+      cueKey: 'assessment',
+      cueTag: 'assessment',
+      priority: 4
+    }),
+    buildArrayPlacement({
+      key: 'treatment',
+      section: 'initialAssessment',
+      parentPath: ['initialAssessment'],
+      arrayKey: 'immediateInterventions',
+      cueKey: 'treatment',
+      cueTag: 'treatment',
+      priority: 5
+    }),
+    buildArrayPlacement({
+      key: 'assessment',
+      section: 'secondaryAssessment',
+      parentPath: ['secondaryAssessment'],
+      arrayKey: 'keyFindings',
+      cueKey: 'assessment',
+      cueTag: 'assessment',
+      priority: 4
+    }),
+    buildArrayPlacement({
+      key: 'assessment',
+      section: 'secondaryAssessment',
+      parentPath: ['secondaryAssessment'],
+      arrayKey: 'evolvingFindings',
+      cueKey: 'vitals',
+      cueTag: 'assessment',
+      priority: 4
+    }),
+    buildArrayPlacement({
+      key: 'assessment',
+      section: 'additionalAssessments',
+      parentPath: [],
+      arrayKey: 'additionalAssessments',
+      cueKey: 'assessment',
+      cueTag: 'assessment',
+      priority: 3
+    }),
+    buildStringPlacement({
+      key: 'vitals',
+      section: 'vitalSigns',
+      path: ['vitalSigns', 'firstSet', 'context'],
+      cueKey: 'vitals',
+      cueTag: 'assessment',
+      priority: 4
+    }),
+    buildArrayPlacement({
+      key: 'progression',
+      section: 'caseProgression',
+      parentPath: ['caseProgression'],
+      arrayKey: 'withProperTreatment',
+      cueKey: 'progression',
+      cueTag: 'progression',
+      priority: 3
+    }),
+    buildArrayPlacement({
+      key: 'transport',
+      section: 'transportPhase',
+      parentPath: ['transportPhase'],
+      arrayKey: 'ongoingCare',
+      cueKey: 'transport',
+      cueTag: 'transport',
+      priority: 4
+    }),
+    buildStringPlacement({
+      key: 'transport',
+      section: 'transportPhase',
+      path: ['transportPhase', 'packaging'],
+      cueKey: 'transport',
+      cueTag: 'transport',
+      priority: 3
+    }),
+    buildStringPlacement({
+      key: 'transport',
+      section: 'transportPhase',
+      path: ['transportPhase', 'transportDecision'],
+      cueKey: 'transport',
+      cueTag: 'transport',
+      priority: 3
+    }),
+    buildArrayPlacement({
+      key: 'reasoning',
+      section: 'learningObjectives',
+      parentPath: [],
+      arrayKey: 'learningObjectives',
+      cueKey: 'reasoning',
+      cueTag: 'reasoning',
+      priority: 3
+    }),
+    buildArrayPlacement({
+      key: 'reasoning',
+      section: 'selfReflectionPrompts',
+      parentPath: [],
+      arrayKey: 'selfReflectionPrompts',
+      cueKey: 'reasoning',
+      cueTag: 'reasoning',
+      priority: 3
+    }),
+    buildArrayPlacement({
+      key: 'reasoning',
+      section: 'teachersPoints',
+      parentPath: [],
+      arrayKey: 'teachersPoints',
+      cueKey: 'reasoning',
+      cueTag: 'reasoning',
+      priority: 3
+    }),
+    buildStringPlacement({
+      key: 'reasoning',
+      section: 'scenarioRationale',
+      path: ['scenarioRationale'],
+      cueKey: 'reasoning',
+      cueTag: 'reasoning',
+      priority: 2
+    })
+  ];
+
+  const allPlacementDefs = [...placementDefs, ...dynamicPlacementDefs];
+
+  const applicable = allPlacementDefs.filter((item) => item.applicability());
+  const available = applicable.length ? applicable : allPlacementDefs;
+  const seedOffset = computeCueSeedOffset(scenario, variationSeed);
+
+  const ranked = available
+    .map((item, index) => {
+      const sectionBonus = sectionsWithCues.has(item.section) ? 0 : 4;
+      const rotationBonus = ((index - seedOffset) % available.length + available.length) % available.length;
+      const phasePenalty = baseline.cueTags.includes(item.key) ? 1.5 : 0;
+      return {
+        ...item,
+        score: item.priority() + sectionBonus - phasePenalty - rotationBonus * 0.6
+      };
+    })
+    .sort((left, right) => right.score - left.score);
+
+  const pivot = ranked.length ? seedOffset % ranked.length : 0;
+  const rotated = ranked.length
+    ? [...ranked.slice(pivot), ...ranked.slice(0, pivot)]
+    : ranked;
+  const topWindow = rotated.slice(0, Math.min(rotated.length, 8));
+  const shuffledWindow = seededShuffle(topWindow, seedOffset + baseline.cueCount + Number(variationSeed || 0));
+  const remainder = rotated.slice(topWindow.length);
+  const selectionOrder = [...shuffledWindow, ...remainder];
+
+  const targetCueCount = Math.max(6, baseline.cueCount);
+  const targetSectionCount = 4;
+  const maxPlacements = Math.min(ranked.length, Math.max(4, targetCueCount - baseline.cueCount + 2));
+  const repetitiveTriadKeys = new Set(['treatment', 'protocol', 'progression']);
+
+  let placementsApplied = 0;
+  let triadPlacements = 0;
+  for (const placement of selectionOrder) {
+    if (placementsApplied >= maxPlacements) break;
+
+    const currentMetrics = collectTeachingCueMetrics(scenario);
+    if (
+      repetitiveTriadKeys.has(placement.key) &&
+      triadPlacements >= 1 &&
+      currentMetrics.sectionsWithCues.length < targetSectionCount
+    ) {
+      continue;
+    }
+
+    if (
+      currentMetrics.cueCount >= targetCueCount &&
+      currentMetrics.sectionsWithCues.length >= targetSectionCount &&
+      currentMetrics.duplicateCueCount <= 1
+    ) {
+      break;
+    }
+
+    placement.apply();
+    placementsApplied += 1;
+    if (repetitiveTriadKeys.has(placement.key)) {
+      triadPlacements += 1;
+    }
+  }
+
+  return scenario;
+}
+
+function collectSentenceSpacingIssues(value, path = 'root', issues = []) {
+  // Flag likely sentence-boundary spacing errors while avoiding decimals like "3.4".
+  const spacingPattern = /[!?](?:["')\]]?)(?=[A-Z])|\.(?:["')\]]?)(?=[A-Z])/g;
+
+  if (typeof value === 'string') {
+    const normalized = String(value || '');
+    if (spacingPattern.test(normalized)) {
+      issues.push(path);
+    }
+    return issues;
+  }
+
+  if (Array.isArray(value)) {
+    value.forEach((item, index) => collectSentenceSpacingIssues(item, `${path}[${index}]`, issues));
+    return issues;
+  }
+
+  if (value && typeof value === 'object') {
+    Object.entries(value).forEach(([key, child]) => {
+      collectSentenceSpacingIssues(child, `${path}.${key}`, issues);
+    });
+  }
+
+  return issues;
+}
+
+function estimateScenarioComplexity(scenario) {
+  const text = collectScenarioNarrativeText(scenario, { forComplexity: true });
+  const sceneBurdenText = [
+    ...(scenario?.sceneArrival?.hazards || []),
+    ...(scenario?.historyGathering?.contradictionsOrBarriers || []),
+    ...(scenario?.transportPhase?.transportConsiderations || [])
+  ]
+    .map((value) => stripTeachingCueMarkup(String(value || '')).toLowerCase())
+    .join(' ');
+  const additionalSetCount = (scenario?.vitalSigns?.additionalSets || []).length;
+  const hazardCount = (scenario?.sceneArrival?.hazards || []).length;
+  const contradictionCount = (scenario?.historyGathering?.contradictionsOrBarriers || []).length;
+  const transportFactor = Math.min((scenario?.transportPhase?.transportConsiderations || []).length, 2);
+  const accessFactor = scenario?.sceneArrival?.accessIssues ? 1 : 0;
+  const highBurdenSignal = Math.min(countKeywordMatches(sceneBurdenText, HIGH_BURDEN_KEYWORDS), 1);
+  const withholdingSignal = Math.min(countKeywordMatches(text, WITHHOLDING_KEYWORDS), 1);
+  const acuityKeywordSignal = Math.min(countKeywordMatches(text, HIGH_ACUITY_KEYWORDS), 2);
+
+  const parseNumber = (value) => {
+    const n = Number(value);
+    return Number.isFinite(n) ? n : null;
+  };
+  const parseSystolic = (bp) => {
+    const match = String(bp || '').match(/(\d{2,3})\s*\//);
+    return match ? Number(match[1]) : null;
+  };
+  const allVitalSets = [
+    scenario?.vitalSigns?.firstSet,
+    scenario?.vitalSigns?.secondSet,
+    ...(scenario?.vitalSigns?.additionalSets || [])
+  ].filter(Boolean);
+
+  let physiologicAcuityScore = 0;
+  for (const set of allVitalSets) {
+    const spo2 = parseNumber(set?.spo2);
+    const rr = parseNumber(set?.rr);
+    const gcs = parseNumber(set?.gcs);
+    const hr = parseNumber(set?.hr);
+    const sbp = parseSystolic(set?.bp);
+
+    if (spo2 != null && spo2 < 90) physiologicAcuityScore += 2;
+    if (rr != null && rr >= 30) physiologicAcuityScore += 1;
+    if (gcs != null && gcs < 15) physiologicAcuityScore += 1;
+    if (hr != null && hr >= 130) physiologicAcuityScore += 1;
+    if (sbp != null && sbp < 100) physiologicAcuityScore += 1;
+  }
+
+  const burdenScore =
+    hazardCount +
+    contradictionCount +
+    transportFactor +
+    accessFactor +
+    additionalSetCount * 2 +
+    highBurdenSignal +
+    withholdingSignal +
+    acuityKeywordSignal +
+    Math.min(physiologicAcuityScore, 3);
+
+  if (physiologicAcuityScore >= 2 || (acuityKeywordSignal >= 1 && burdenScore >= 5)) {
+    return { estimated: 'Moderate', burdenScore, additionalSetCount };
+  }
+
+  if (burdenScore >= 8) return { estimated: 'Complex', burdenScore, additionalSetCount };
+  if (burdenScore >= 5) return { estimated: 'Moderate', burdenScore, additionalSetCount };
+  return { estimated: 'Simple', burdenScore, additionalSetCount };
+}
+
+function countMedicationMentionsInScenario(scenario) {
+  const relevantText = [
+    ...(scenario?.expectedTreatment || []),
+    ...(scenario?.protocolNotes || []),
+    ...(scenario?.learningObjectives || []),
+    ...(scenario?.teachersPoints || []),
+    ...(scenario?.caseProgression?.withProperTreatment || []),
+    ...(scenario?.caseProgression?.withoutProperTreatment || []),
+    ...(scenario?.caseProgression?.withIncorrectTreatment || []),
+    ...(scenario?.grsAnchors?.decisionMaking?.['5'] || []),
+    ...(scenario?.grsAnchors?.decisionMaking?.['7'] || [])
+  ].join(' ');
+
+  return countKeywordMatches(relevantText, MEDICATION_KEYWORDS);
+}
+
+function containsMedicationLanguage(value = '') {
+  const lower = stripTeachingCueMarkup(String(value || '')).toLowerCase();
+  return MEDICATION_KEYWORDS.some((keyword) => lower.includes(keyword));
+}
+
+function containsMedicationIntervention(value = '') {
+  // Detects only medication INTERVENTION actions (give, administer, apply, start, inject, etc.)
+  // Preserves medication context/history (e.g., "Patient takes X", "History of medications", "CHF on diuretics")
+  const lower = stripTeachingCueMarkup(String(value || '')).toLowerCase();
+  
+  // Intervention verbs (actions a medic takes)
+  const interventionVerbs = ['administer', 'give', 'provide', 'apply', 'start', 'initiate', 'inject', 'deliver', 'dispense', 'bolus'];
+  
+  // If line contains an intervention verb AND a medication keyword, it's an intervention
+  const hasInterventionVerb = interventionVerbs.some(verb => lower.includes(verb));
+  const hasMedication = MEDICATION_KEYWORDS.some(keyword => lower.includes(keyword));
+  
+  return hasInterventionVerb && hasMedication;
+}
+
+function stripMedicationItems(items, filterType = 'broad') {
+  // filterType: 'broad' removes any medication mention; 'interventionOnly' removes only intervention actions
+  if (!Array.isArray(items)) return [];
+  
+  const filterFn = filterType === 'interventionOnly' ? containsMedicationIntervention : containsMedicationLanguage;
+  
+  return items
+    .map((item) => normalizeSentenceSpacing(String(item || '').trim()))
+    .filter(Boolean)
+    .filter((item) => !filterFn(item));
+}
+
+function clampSemesterTwoVitals(set) {
+  if (!set || typeof set !== 'object') return set;
+
+  const clamped = { ...set };
+  const toNumber = (value) => {
+    const n = Number(value);
+    return Number.isFinite(n) ? n : null;
+  };
+  const parseSystolic = (bp) => {
+    const match = String(bp || '').match(/(\d{2,3})\s*\//);
+    return match ? Number(match[1]) : null;
+  };
+
+  const spo2 = toNumber(clamped.spo2);
+  const rr = toNumber(clamped.rr);
+  const gcs = toNumber(clamped.gcs);
+  const hr = toNumber(clamped.hr);
+  const sbp = parseSystolic(clamped.bp);
+
+  if (spo2 != null && spo2 < 92) clamped.spo2 = '92';
+  if (rr != null && rr >= 30) clamped.rr = '24';
+  if (gcs != null && gcs < 15) clamped.gcs = '15';
+  if (hr != null && hr >= 130) clamped.hr = '118';
+  if (sbp != null && sbp < 100) clamped.bp = '108/70';
+
+  return clamped;
+}
+
+function normalizeSimpleList(items, maxItems = 1) {
+  if (!Array.isArray(items)) return [];
+
+  return items
+    .map((item) => normalizeSentenceSpacing(String(item || '').trim()))
+    .filter(Boolean)
+    .slice(0, maxItems);
+}
+
+function enforceScenarioControls(scenario, controls) {
+  if (!scenario || typeof scenario !== 'object') return scenario;
+
+  const requestedSemester = String(controls?.semester || '3');
+  const requestedComplexity = String(controls?.complexity || 'Moderate');
+  const requestedCallType = normalizeCallFamily(controls?.callType || 'Medical');
+  const requestedEnvironment = normalizeEnvironmentTag(controls?.environment || '');
+
+  if (!scenario.callInformation || typeof scenario.callInformation !== 'object') {
+    scenario.callInformation = {};
+  }
+  scenario.callInformation.type = requestedCallType;
+  if (requestedEnvironment) {
+    scenario.callInformation.environment = requestedEnvironment;
+  }
+
+  if (requestedSemester === '2') {
+    // For Sem2: strip all med language from treatment/learning; strip only interventions from context
+    scenario.expectedTreatment = stripMedicationItems(scenario.expectedTreatment, 'broad');
+    scenario.protocolNotes = stripMedicationItems(scenario.protocolNotes, 'interventionOnly');
+    scenario.learningObjectives = stripMedicationItems(scenario.learningObjectives, 'broad');
+    scenario.teachersPoints = stripMedicationItems(scenario.teachersPoints, 'broad');
+    if (scenario?.caseProgression && typeof scenario.caseProgression === 'object') {
+      scenario.caseProgression.withProperTreatment = stripMedicationItems(scenario.caseProgression.withProperTreatment, 'interventionOnly');
+      scenario.caseProgression.withoutProperTreatment = stripMedicationItems(scenario.caseProgression.withoutProperTreatment, 'interventionOnly');
+      scenario.caseProgression.withIncorrectTreatment = stripMedicationItems(scenario.caseProgression.withIncorrectTreatment, 'interventionOnly');
+    }
+
+    if (scenario?.grsAnchors && typeof scenario.grsAnchors === 'object') {
+      Object.keys(scenario.grsAnchors).forEach((domain) => {
+        [3, 5, 7].forEach((score) => {
+          if (Array.isArray(scenario.grsAnchors?.[domain]?.[score])) {
+            scenario.grsAnchors[domain][score] = stripMedicationItems(scenario.grsAnchors[domain][score], 'interventionOnly');
+          }
+        });
+      });
+    }
+
+    if (!scenario.expectedTreatment.length) {
+      scenario.expectedTreatment = [
+        'Perform a focused primary and secondary assessment with supportive care, then reassess trends before and during transport.',
+        'Prioritize safe transport, communication, and repeated vital sign checks to detect change early.'
+      ];
+    }
+
+    if (scenario?.sceneArrival && typeof scenario.sceneArrival === 'object') {
+      scenario.sceneArrival.hazards = normalizeSimpleList(scenario.sceneArrival.hazards, 1);
+      if (scenario.sceneArrival.accessIssues) {
+        scenario.sceneArrival.accessIssues = '';
+      }
+    }
+
+    if (scenario?.historyGathering && typeof scenario.historyGathering === 'object') {
+      scenario.historyGathering.contradictionsOrBarriers =
+        normalizeSimpleList(scenario.historyGathering.contradictionsOrBarriers, 1);
+    }
+
+    if (scenario?.transportPhase && typeof scenario.transportPhase === 'object') {
+      scenario.transportPhase.transportConsiderations =
+        normalizeSimpleList(scenario.transportPhase.transportConsiderations, 1);
+    }
+
+    if (scenario?.vitalSigns && typeof scenario.vitalSigns === 'object') {
+      scenario.vitalSigns.firstSet = clampSemesterTwoVitals(scenario.vitalSigns.firstSet);
+      scenario.vitalSigns.secondSet = clampSemesterTwoVitals(scenario.vitalSigns.secondSet);
+      scenario.vitalSigns.additionalSets = [];
+    }
+  }
+
+  if (requestedComplexity === 'Simple') {
+    if (scenario?.sceneArrival && typeof scenario.sceneArrival === 'object') {
+      scenario.sceneArrival.hazards = (scenario.sceneArrival.hazards || []).slice(0, 1);
+    }
+
+    if (scenario?.historyGathering && typeof scenario.historyGathering === 'object') {
+      scenario.historyGathering.contradictionsOrBarriers =
+        (scenario.historyGathering.contradictionsOrBarriers || []).slice(0, 1);
+    }
+
+    if (scenario?.transportPhase && typeof scenario.transportPhase === 'object') {
+      scenario.transportPhase.transportConsiderations =
+        (scenario.transportPhase.transportConsiderations || []).slice(0, 1);
+    }
+
+    if (scenario?.vitalSigns && typeof scenario.vitalSigns === 'object') {
+      scenario.vitalSigns.additionalSets = (scenario.vitalSigns.additionalSets || []).slice(0, 0);
+    }
+  }
+
+  return scenario;
+}
+
+function detectControlDrift(scenario, controls) {
+  const issues = [];
+  const requestedSemester = String(controls?.semester || '3');
+  const requestedComplexity = String(controls?.complexity || 'Moderate');
+  const requestedCallType = normalizeCallFamily(controls?.callType || 'Medical');
+  const includeTeachingCues = Boolean(controls?.includeTeachingCues);
+  const requestedEnvironment = normalizeEnvironmentTag(controls?.environment || '');
+  const customPrompt = sanitizeCustomPrompt(controls?.customPrompt || '');
+  const complexityAssessment = estimateScenarioComplexity(scenario);
+  const medicationMentions = countMedicationMentionsInScenario(scenario);
+  const totalVitalSets = 2 + (scenario?.vitalSigns?.additionalSets || []).length;
+  const text = collectScenarioNarrativeText(scenario);
+  const cueMetrics = collectTeachingCueMetrics(scenario);
+  const teachingPointQuality = analyzeTeachingPointQuality(scenario);
+  const unsupportedDoseCueCount = countUnsupportedDoseCueReferences(scenario);
+  const spacingIssuePaths = collectSentenceSpacingIssues(scenario);
+  const inferredCallType = normalizeCallFamily(
+    scenario?.callInformation?.type || `${scenario?.title || ''} ${scenario?.clinicalReasoning || ''}`
+  );
+  const inferredEnvironment = normalizeEnvironmentTag(
+    [
+      scenario?.callInformation?.environment || '',
+      scenario?.callInformation?.location || '',
+      scenario?.sceneArrival?.sceneDescription || '',
+      ...(scenario?.sceneArrival?.environmentDetails || [])
+    ].join(' ')
+  );
+
+  if (requestedCallType !== inferredCallType) {
+    issues.push({
+      severity: 'high',
+      code: 'call-type-drift',
+      message: `Scenario reads as ${inferredCallType} instead of requested ${requestedCallType}.`
+    });
+  }
+
+  if (requestedEnvironment && inferredEnvironment && requestedEnvironment !== inferredEnvironment) {
+    issues.push({
+      severity: 'medium',
+      code: 'environment-drift',
+      message: `Scenario reads as ${inferredEnvironment} instead of requested ${requestedEnvironment}.`
+    });
+  }
+
+  if (requestedSemester === '2') {
+    if (medicationMentions > 0) {
+      issues.push({
+        severity: 'high',
+        code: 'semester-2-medications',
+        message: 'Semester 2 scenario includes medication-dependent expected learner actions.'
+      });
+    }
+
+    if (complexityAssessment.estimated !== 'Simple') {
+      const isClearlyTooComplex =
+        complexityAssessment.estimated === 'Complex' ||
+        complexityAssessment.burdenScore >= 8 ||
+        totalVitalSets > 2;
+
+      issues.push({
+        severity: isClearlyTooComplex ? 'high' : 'medium',
+        code: 'semester-2-too-complex',
+        message: `Semester 2 scenario feels ${complexityAssessment.estimated.toLowerCase()} instead of straightforward/simple.`
+      });
+    }
+
+    if (totalVitalSets > 2) {
+      issues.push({
+        severity: 'medium',
+        code: 'semester-2-too-many-vitals',
+        message: 'Semester 2 scenario uses more than two vital sign sets.'
+      });
+    }
+  }
+
+  if (requestedSemester === '4') {
+    const advancedReasoningScore = countKeywordMatches(text, WITHHOLDING_KEYWORDS);
+    if (complexityAssessment.estimated === 'Simple' || totalVitalSets < 3 || advancedReasoningScore === 0) {
+      issues.push({
+        severity: 'medium',
+        code: 'semester-4-not-layered-enough',
+        message: 'Semester 4 scenario lacks enough layered reassessment, withholding logic, or operational burden.'
+      });
+    }
+  }
+
+  if (requestedComplexity !== complexityAssessment.estimated) {
+    issues.push({
+      severity: complexityDistance(requestedComplexity, complexityAssessment.estimated) > 1 ? 'high' : 'medium',
+      code: 'complexity-drift',
+      message: `Scenario feels ${complexityAssessment.estimated.toLowerCase()} instead of requested ${requestedComplexity.toLowerCase()}.`
+    });
+  }
+
+  if (!Array.isArray(scenario?.directiveSources) || !scenario.directiveSources.length) {
+    issues.push({
+      severity: 'medium',
+      code: 'directive-sources-missing',
+      message: 'Directive sources are missing.'
+    });
+  }
+
+  if (customPrompt && !scenarioReflectsCustomPrompt(scenario, customPrompt)) {
+    issues.push({
+      severity: 'medium',
+      code: 'custom-prompt-not-reflected',
+      message: 'The generated scenario does not clearly reflect the instructor prompt focus.'
+    });
+  }
+
+  if (spacingIssuePaths.length) {
+    issues.push({
+      severity: spacingIssuePaths.length > 8 ? 'high' : 'medium',
+      code: 'sentence-spacing-inconsistent',
+      message: `Sentence spacing is inconsistent in ${spacingIssuePaths.length} field(s). Ensure a space follows punctuation between sentences.`
+    });
+  }
+
+  if (teachingPointQuality.total < 4) {
+    issues.push({
+      severity: 'high',
+      code: 'teaching-points-too-few',
+      message: `Teaching points are under-populated (${teachingPointQuality.total}). Provide 4-6 case-specific coaching points.`
+    });
+  }
+
+  if (teachingPointQuality.repetitiveCount > 0) {
+    issues.push({
+      severity: teachingPointQuality.repetitiveCount >= 2 ? 'high' : 'medium',
+      code: 'teaching-points-repetitive',
+      message: `Teaching points are repetitive (${teachingPointQuality.repetitiveCount} overlap signal${teachingPointQuality.repetitiveCount === 1 ? '' : 's'}). Vary each point's decision focus and action step.`
+    });
+  }
+
+  if (teachingPointQuality.runOnCount > 0) {
+    issues.push({
+      severity: teachingPointQuality.runOnCount >= 2 ? 'high' : 'medium',
+      code: 'teaching-points-run-on',
+      message: `Teaching points are too long in ${teachingPointQuality.runOnCount} item(s). Keep each point tight (typically 2 short sentences, max 3).`
+    });
+  }
+
+  if (teachingPointQuality.surfaceLevelCount > 0) {
+    issues.push({
+      severity: teachingPointQuality.surfaceLevelCount >= 2 ? 'high' : 'medium',
+      code: 'teaching-points-surface-level',
+      message: `Teaching points are surface-level in ${teachingPointQuality.surfaceLevelCount} item(s). Add concrete case detail, clinical rationale, and a specific next-call action.`
+    });
+  }
+
+  if (teachingPointQuality.genericPhraseCount > 0) {
+    issues.push({
+      severity: 'medium',
+      code: 'teaching-points-generic-language',
+      message: `Teaching points use generic boilerplate phrasing (${teachingPointQuality.genericPhraseCount} signal${teachingPointQuality.genericPhraseCount === 1 ? '' : 's'}). Replace with case-anchored coaching.`
+    });
+  }
+
+  if (includeTeachingCues) {
+    if (cueMetrics.cueCount < 6) {
+      issues.push({
+        severity: cueMetrics.cueCount === 0 ? 'high' : 'medium',
+        code: 'teaching-cues-too-few',
+        message: `Teaching cues are too sparse (${cueMetrics.cueCount} total). Add richer cues across the scenario.`
+      });
+    }
+
+    if (cueMetrics.sectionsWithCues.length < 4) {
+      issues.push({
+        severity: 'medium',
+        code: 'teaching-cues-too-narrow',
+        message: `Teaching cues appear in too few sections (${cueMetrics.sectionsWithCues.length}). Spread cues across more high-value sections.`
+      });
+    }
+
+    if (cueMetrics.duplicateCueCount > 1) {
+      issues.push({
+        severity: 'medium',
+        code: 'teaching-cues-repetitive',
+        message: `Teaching cues repeat too much (${cueMetrics.duplicateCueCount} duplicate cues). Vary cue intent by decision point.`
+      });
+    }
+
+    if (cueMetrics.genericCueCount > 1) {
+      issues.push({
+        severity: 'medium',
+        code: 'teaching-cues-too-generic',
+        message: `Teaching cues include generic phrasing signals (${cueMetrics.genericCueCount}). Anchor cues to concrete case details.`
+      });
+    }
+
+    if (cueMetrics.weakVoiceCueCount > Math.max(1, Math.floor(cueMetrics.cueCount * 0.35))) {
+      issues.push({
+        severity: 'medium',
+        code: 'teaching-cues-voice-weak',
+        message: `Teaching cues are not consistently in direct preceptor voice (${cueMetrics.weakVoiceCueCount}/${cueMetrics.cueCount}). Use explicit learner-directed coaching language.`
+      });
+    }
+
+    if (unsupportedDoseCueCount > 0) {
+      issues.push({
+        severity: 'medium',
+        code: 'teaching-cues-unsupported-dose',
+        message: `Teaching cues include ${unsupportedDoseCueCount} unsupported medication dose reference(s). Keep dose coaching only when exact dose text appears in treatment/protocol content.`
+      });
+    }
+  }
+
+  return {
+    issues,
+    metrics: {
+      estimatedComplexity: complexityAssessment.estimated,
+      burdenScore: complexityAssessment.burdenScore,
+      totalVitalSets,
+      medicationMentions,
+      inferredCallType,
+      cueCount: cueMetrics.cueCount,
+      sectionsWithCues: cueMetrics.sectionsWithCues,
+      weakVoiceCueCount: cueMetrics.weakVoiceCueCount,
+      unsupportedDoseCueCount,
+      teachingPointCount: teachingPointQuality.total,
+      teachingPointRunOnCount: teachingPointQuality.runOnCount,
+      teachingPointSurfaceLevelCount: teachingPointQuality.surfaceLevelCount,
+      teachingPointRepetitiveCount: teachingPointQuality.repetitiveCount,
+      teachingPointGenericPhraseCount: teachingPointQuality.genericPhraseCount,
+      spacingIssueCount: spacingIssuePaths.length,
+      spacingIssuePaths
+    }
+  };
+}
+
+function splitTeachingPointSentences(text) {
+  return normalizeSentenceSpacing(String(text || ''))
+    .split(/(?<=[.!?])\s+(?=[A-Z0-9])/)
+    .map((sentence) => sentence.trim())
+    .filter(Boolean);
+}
+
+function analyzeTeachingPointQuality(scenario) {
+  const rawPoints = Array.isArray(scenario?.teachersPoints) ? scenario.teachersPoints : [];
+  const points = rawPoints
+    .map((point) => normalizeSentenceSpacing(String(point || '').trim()))
+    .filter(Boolean);
+
+  let runOnCount = 0;
+  let surfaceLevelCount = 0;
+  let genericPhraseCount = 0;
+  let repetitiveCount = 0;
+
+  const normalizedPoints = points.map((point) => {
+    const sentences = splitTeachingPointSentences(point);
+    const words = point.toLowerCase().split(/\s+/).filter(Boolean);
+    const longSentenceCount = sentences.filter((sentence) => sentence.split(/\s+/).filter(Boolean).length > 24).length;
+
+    if (sentences.length > 3 || words.length > 80 || longSentenceCount > 0) {
+      runOnCount += 1;
+    }
+
+    const hasCaseAnchor = /\b(spo2|etco2|rr|hr|bp|gcs|ecg|12-lead|right-sided|contraindication|deteriorat|trend|reassess|transport|handoff|scene|history|assessment|protocol|als pcs|bls pcs)\b/i.test(point) || /\b\d+(?:\.\d+)?\b/.test(point);
+    const hasRationale = /\b(because|therefore|due to|risk|pathophysiolog|consequence|if\s+you\s+miss|if\s+missed|delayed|worsen|bias|trap|anchor)\b/i.test(point);
+    const hasAction = /\b(next call|next time|on your next call|state|name|assign|reassess|repeat|trend|confirm|check|prioritize|escalate|withhold|document|declare|verbalize)\b/i.test(point);
+
+    if (!(hasCaseAnchor && hasRationale && hasAction)) {
+      surfaceLevelCount += 1;
+    }
+
+    const lower = point.toLowerCase();
+    if (TEACHING_POINT_GENERIC_PHRASES.some((phrase) => lower.includes(phrase))) {
+      genericPhraseCount += 1;
+    }
+
+    return point;
+  });
+
+  for (let i = 0; i < normalizedPoints.length; i += 1) {
+    for (let j = i + 1; j < normalizedPoints.length; j += 1) {
+      if (cuesAreTooSimilar(normalizedPoints[i], normalizedPoints[j])) {
+        repetitiveCount += 1;
+        break;
+      }
+    }
+  }
+
+  return {
+    total: points.length,
+    runOnCount,
+    surfaceLevelCount,
+    genericPhraseCount,
+    repetitiveCount
+  };
+}
+
+async function requestScenarioJson(messages) {
+  const retries = Number.isFinite(OPENAI_MAX_RETRIES) && OPENAI_MAX_RETRIES >= 0
+    ? OPENAI_MAX_RETRIES
+    : 1;
+
+  const isRetryableError = (error) => {
+    const status = error?.status || error?.cause?.status || error?.response?.status;
+    if (!status) return true;
+    return status === 408 || status === 409 || status === 429 || status >= 500;
+  };
+
+  const wait = (delayMs) => new Promise((resolve) => setTimeout(resolve, delayMs));
+
+  for (let attempt = 0; attempt <= retries; attempt += 1) {
+    try {
+      const completion = await Promise.race([
+        openai.chat.completions.create({
+          model: OPENAI_MODEL,
+          messages,
+          temperature: 0.35
+        }),
+        new Promise((_, reject) => {
+          setTimeout(() => reject(new Error(`OpenAI request timed out after ${OPENAI_TIMEOUT_MS}ms`)), OPENAI_TIMEOUT_MS);
+        })
+      ]);
+
+      const rawOutput = completion.choices[0].message.content;
+      const cleaned = sanitizeOutput(rawOutput);
+
+      try {
+        return JSON.parse(cleaned);
+      } catch {
+        const repaired = jsonrepair(cleaned);
+        return JSON.parse(repaired);
+      }
+    } catch (error) {
+      if (attempt === retries || !isRetryableError(error)) {
+        throw error;
+      }
+
+      await wait(300 * (attempt + 1));
+    }
+  }
+
+  throw new Error('OpenAI request failed after retries.');
+}
+
+async function repairScenarioForControlDrift({ systemPrompt, scenario, controls, validation }) {
+  const repairPrompt = `
+You are repairing an already-generated paramedic scenario so it strictly matches the requested controls.
+
+Return valid JSON only.
+Do not change the canonical schema.
+Do not add commentary.
+
+Requested controls:
+- Semester: ${controls.semester}
+- Call Type: ${controls.callType}
+- Complexity: ${controls.complexity}
+- Include teaching cues: ${controls.includeTeachingCues}
+- Instructor prompt: ${sanitizeCustomPrompt(controls.customPrompt || '') || 'None provided'}
+
+Problems to fix:
+${validation.issues.map((issue) => `- ${issue.message}`).join('\n')}
+
+Repair priorities:
+- Keep the strongest existing content and structure where possible.
+- Revise the scenario so semester expectations are concrete, not implied.
+- Revise scene burden, ambiguity, reassessment burden, and treatment expectations so complexity clearly matches the request.
+- Keep teachersPoints concise, non-repetitive, and clinically deep: 4-6 distinct points, each usually 2 short sentences (max 3), with one concrete case anchor, one why-it-matters rationale, and one explicit next-call action.
+- Preserve Ontario directive references and keep directiveSources populated.
+- If teaching cues are enabled, increase cue density and section coverage while keeping cues clinically useful.
+- Fix sentence spacing consistency across all fields so there is a space after punctuation between sentences.
+- If an instructor prompt is provided, preserve schema and directives while clearly reflecting that requested focus.
+
+Current scenario JSON:
+${JSON.stringify(scenario, null, 2)}
+`.trim();
+
+  return requestScenarioJson([
+    { role: 'system', content: systemPrompt },
+    { role: 'user', content: repairPrompt }
+  ]);
+}
+
 router.post('/', async (req, res) => {
   try {
+    if (!process.env.OPENAI_API_KEY) {
+      return res.status(500).json({ error: 'Server configuration error: missing OpenAI API key.' });
+    }
+
+    const requestValidation = validateGenerationRequest(req.body || {});
+    if (!requestValidation.isValid) {
+      return res.status(400).json({
+        error: 'Invalid scenario request payload.',
+        details: requestValidation.errors.join(' ')
+      });
+    }
+
     const {
-      semester = '3',
-      callType,
-      type,
-      environment = 'Urban',
-      complexity = 'Moderate',
-      learningFocus = 'Balanced',
-      includeComplications = true,
-      includeBystanders = true,
-      includeTeachingCues = true,
-      customPrompt = ''
-    } = req.body || {};
-
-    const finalCallType = callType || type || 'Medical';
-
-    console.log('REQUEST BODY DEBUG:', req.body);
-    console.log('PARSED CONTROL DEBUG:', {
       semester,
-      callType,
-      type,
+      callType: finalCallType,
+      environment,
+      complexity,
+      includeTeachingCues,
+      customPrompt: normalizedCustomPrompt
+    } = requestValidation.value;
+    const explicitVariationSeed = Number(req?.body?.variationSeed);
+    const generationVariationSeed = Number.isFinite(explicitVariationSeed)
+      ? Math.trunc(explicitVariationSeed)
+      : Math.trunc(Date.now() + Math.random() * 1000000);
+
+    devLog('PARSED CONTROL DEBUG:', {
+      semester,
       finalCallType,
       environment,
       complexity,
-      learningFocus,
-      includeComplications,
-      includeBystanders,
       includeTeachingCues,
-      customPrompt
+      hasCustomPrompt: Boolean(normalizedCustomPrompt),
+      generationVariationSeed
     });
 
     const semesterProfile = buildSemesterDifficultyProfile(semester);
     const subtypeData = selectSubtype(finalCallType);
-    console.log('SUBTYPE DEBUG:', subtypeData);
+    devLog('SUBTYPE DEBUG:', subtypeData);
 
     const environmentProfile = buildEnvironmentProfile(environment);
-    const complicationData = buildComplications(
-      subtypeData.subtype,
-      includeComplications,
-      includeBystanders
-    );
-   const medicationPlan = buildMedicationPlan(subtypeData.subtype, semester);
-const scenarioCore = buildScenarioCore({
-  subtypeData,
-  environmentProfile,
-  complexity,
-  medicationPlan,
-  semesterProfile,
-  includeBystanders
-});
+    const complicationData = buildComplications(subtypeData.subtype);
+    const medicationPlan = buildMedicationPlan(subtypeData.subtype, semester);
+    const scenarioCore = buildScenarioCore({
+      subtypeData,
+      environmentProfile,
+      complexity,
+      medicationPlan,
+      semesterProfile
+    });
 
     const instructorProfile = await loadInstructorProfile();
     const fewShots = await loadFewShots();
-    const fewShotBlock = buildFewShotBlock(fewShots, finalCallType);
-    const directiveAddendum = buildDirectivePromptAddendum({
+    const fewShotSelection = buildFewShotBlock(fewShots, {
       callType: finalCallType,
       semester,
-      subtype: subtypeData.subtype,
-      environment,
       complexity,
-      learningFocus
+      environment,
+      subtype: subtypeData.subtype
     });
+    const directiveAddendum = buildDirectivePromptAddendum({
+      type: finalCallType,
+      semester,
+      customPrompt: normalizedCustomPrompt,
+      title: subtypeData.subtype
+    });
+    const hookAddendum = buildScenarioHookAddendum(finalCallType);
 
-     const systemPrompt = instructorProfile.trim();
+    const systemPrompt = instructorProfile.trim();
 
 const userPrompt = `
 Generate exactly one paramedic training scenario as valid JSON only.
@@ -3543,11 +6297,29 @@ Do not return commentary outside the JSON object.
 REFERENCE FEW-SHOT EXAMPLES
 Use these examples to match structure, richness, tone, teaching depth, case progression quality, and GRS specificity.
 Do not copy them directly.
+The few-shot examples define the canonical schema.
+Use the same top-level field set, nesting style, and general section shapes as the examples.
+Variety should come from clinical content, environment, progression, and teaching nuance, not from changing the JSON structure.
 
-${fewShotBlock}
+FEW-SHOT MATCH SUMMARY
+${fewShotSelection.summary.join('\n')}
+
+${fewShotSelection.block}
 
 ONTARIO DIRECTIVE ADDENDUM
 ${Array.isArray(directiveAddendum) ? directiveAddendum.join('\n') : String(directiveAddendum || '')}
+${hookAddendum.length ? `\nCLINICAL HOOK GUIDANCE\n${hookAddendum.join('\n')}` : ''}
+
+In expectedTreatment and protocolNotes, explicitly reference Ontario BLS and ALS principles (oxygen targets, cardiac ischemia workflow, stroke, trauma, etc.) when relevant.
+Note when a recommendation is standard BLS or ALS from Ontario directives.
+Use explicit phrasing like:
+- "O2 titrate 92–96% (COPD 88–92%)"
+- "12-lead before nitro in suspected ischemia"
+- "Right-sided ECG if inferior STEMI"
+- "Assess neurovascular status per ALS PCS"
+- "Pain management per BLS/ALS protocols"
+- "Consider analgesia if no contraindications per ALS PCS"
+protocolNotes must reference Ontario directives in at least 50% of items.
 
 Return these top-level fields:
 - scenarioIntro
@@ -3569,7 +6341,6 @@ Return these top-level fields:
 - secondaryAssessment
 - additionalAssessments
 - vitalSigns
-- midCallEvent
 - caseProgression
 - transportPhase
 - expectedTreatment
@@ -3580,6 +6351,7 @@ Return these top-level fields:
 - teachersPoints
 - scenarioRationale
 - clinicalReasoning
+- directiveSources
 
 Required object structure:
 - callInformation must contain:
@@ -3683,20 +6455,16 @@ Required object structure:
 - secondaryAssessment must contain:
 {
   "generalAppearance": "",
-  "airway": "",
   "breathing": "",
   "circulation": "",
-  "neuro": "",
-  "headNeck": "",
-  "chest": "",
-  "abdomen": "",
-  "pelvis": "",
-  "extremities": "",
-  "skin": "",
   "keyFindings": [],
   "missedIfNotAssessed": [],
   "evolvingFindings": []
 }
+
+Secondary assessment rules:
+- Keep this focused on what changed, clarified, or became more important after initial treatment or reassessment.
+- Do not repeat the full physical exam unless a finding materially changed.
 
 - additionalAssessments must be an array.
 - It may be empty, but it must always be present.
@@ -3718,32 +6486,17 @@ Vital signs rules:
 - Vitals must trend realistically according to the scenario and the care provided or missed.
 - Complex scenarios should usually contain 3 or more total vital sets unless the case truly does not require them.
 
-- midCallEvent must contain:
-{
-  "timing": "",
-  "trigger": "",
-  "event": "",
-  "newInformation": "",
-  "patientChange": "",
-  "sceneChange": "",
-  "requiredResponse": ""
-}
-
 - caseProgression must contain:
 {
-  "earlyCourse": "",
-  "withProperTreatment": "",
-  "withoutProperTreatment": "",
-  "withIncorrectTreatment": "",
-  "transportPhase": ""
+  "withProperTreatment": [],
+  "withoutProperTreatment": [],
+  "withIncorrectTreatment": []
 }
 
 Case progression rules:
-- earlyCourse must describe how the call begins to unfold after arrival and initial assessment.
-- withProperTreatment must describe how the patient changes with appropriate care.
-- withoutProperTreatment must describe how the patient changes if care is delayed, incomplete, or absent.
-- withIncorrectTreatment must describe how the patient changes if clinically important mistakes are made.
-- transportPhase must describe what the call looks like during packaging, transport, or ongoing reassessment.
+- withProperTreatment must be an array of 2-3 behavioral steps describing how the patient changes with appropriate care.
+- withoutProperTreatment must be an array of 2-3 behavioral steps describing how the patient changes if care is delayed, incomplete, or absent.
+- withIncorrectTreatment must be an array of 2-3 behavioral steps describing how the patient changes if clinically important mistakes are made.
 - Case progression must feel dynamic and physiologic, not scripted like a simple OSCE answer key.
 - The patient should evolve like a real call.
 
@@ -3758,32 +6511,13 @@ Case progression rules:
 }
 
 - clinicalReasoning must contain:
-{
-  "summary": "",
-  "pathophysiology": "",
-  "differentialDiagnosis": [
-    {
-      "condition": "",
-      "supportingFeatures": "",
-      "rulingOutFeatures": ""
-    }
-  ],
-  "ruleInFeatures": [],
-  "ruleOutFeatures": [],
-  "redFlags": [],
-  "treatmentPriorities": [],
-  "conclusion": ""
-}
+- a concise narrative string explaining the clinical picture, pathophysiology, and why deterioration risks matter.
+
+- directiveSources must be an array of strings indicating which Ontario documents shaped the scenario's decision points, e.g. ["BLS PCS 3.4 (2023)", "ALS PCS 5.4 (2025)", "OBHG ALS PCS Companion v5.4 (2025)"]
 
 Clinical reasoning rules:
-- summary must clearly explain the likely clinical picture.
-- pathophysiology must explain what is happening in a practical, learner-friendly way.
-- differentialDiagnosis must contain realistic competing diagnoses.
-- ruleInFeatures must name the clues that support the leading diagnosis.
-- ruleOutFeatures must name the clues that make other diagnoses less likely.
-- redFlags must highlight clinically dangerous features or findings that should raise concern.
-- treatmentPriorities must connect the reasoning to the most important actions.
-- conclusion must clearly state the best working field impression.
+- clinicalReasoning should read as one coherent teaching paragraph, not a nested object.
+- It should explain the likely process, why the patient looks the way they do, and what deterioration would look like.
 
 Dynamic call timeline rules:
 - The scenario must feel like a real call unfolding over time.
@@ -3799,44 +6533,74 @@ Dynamic call timeline rules:
   6. secondary assessment
   7. second vital set
   8. case progression through treatment / no treatment / incorrect treatment
-  9. transport-phase thinking
+  9. transport-phase thinking in the top-level transportPhase object
 - Additional assessments and additional vital sets should appear when they improve realism.
 
 GRS rules:
-- grsAnchors must contain these EXACT 7 domains:
+- grsAnchors must contain these EXACT 5 domains:
   - situationalAwareness
   - patientAssessment
   - historyGathering
   - decisionMaking
-  - proceduralSkill
-  - resourceUtilization
   - communication
-- Each of the 7 domains must contain exactly these score keys: "1", "3", "5", "7"
+- Each domain must contain exactly these score keys: "3", "5", "7"
 - Each score key must contain an array
 - Each score array must contain at least 3 short, scenario-specific behavioural bullet examples
-- Score 1 = unsafe, incomplete, harmful, or clearly weak
 - Score 3 = developing but inconsistent, delayed, hesitant, or shallow
 - Score 5 = competent semester-appropriate performance
 - Score 7 = exceptional, anticipatory, organized, calm, and highly effective
 
 ECG rules:
-Use only these exact ECG values when appropriate:
+Use ONLY these exact ECG values when appropriate:
 ${ECG_WHITELIST.map((item) => `- ${item}`).join('\n')}
-- Do not add rate, qualifiers, or extra descriptors
+- Do NOT add rate, qualifiers, extra descriptors, emojis, or any custom text.
 - If ECG is relevant, place it in vitalSigns.firstSet.ecgInterpretation
 - Update vitalSigns.secondSet.ecgInterpretation only if the rhythm changes
 - If additionalSets are used, only include ECG changes when clinically justified
-- If the case is isolated trauma, leave ecgInterpretation blank
+- If the case is isolated trauma (no cardiac component), leave ecgInterpretation blank or use "Not applicable"
+- For non-cardiac calls, ecgInterpretation should be blank, "Normal sinus rhythm", or "Not applicable"—never emoji or placeholder text.
 
 Scenario parameters:
 - Semester: ${semester}
 - Call Type: ${finalCallType}
 - Environment: ${environment}
 - Complexity: ${complexity}
-- Learning Focus: ${learningFocus}
-- Include complications: ${includeComplications}
-- Include bystanders: ${includeBystanders}
 - Include teaching cues: ${includeTeachingCues}
+- Instructor Prompt (optional): ${normalizedCustomPrompt || 'None provided'}
+
+Instructor prompt handling rules:
+- If an instructor prompt is provided, integrate its theme, setting, or emphasis across relevant sections.
+- Keep schema, semester level, complexity target, and Ontario directive compliance fully intact.
+- Instructor prompt is advisory and should shape scenario details, not override safety or protocol logic.
+
+Teaching cue behavior:
+- If Include teaching cues is true, embed practical instructor cues using format *(💡 cue text)*.
+- Keep cues simple and elegant. They should read like calm instructor hints, not labeled metadata blocks.
+- Each cue should usually be 1-2 short sentences, more like a real-time preceptor memo than a mini-paragraph.
+- Keep each cue brief and concrete, ideally under about 40 words and rarely over about 50. If there is no specific high-value coaching point, omit the cue instead of padding it.
+- Each cue should have one primary coaching objective: the key clue, why it matters, or the next action. A second short sentence can support that same objective, but do not stack unrelated lessons into one cue.
+- Cue voice should sound like an experienced preceptor coaching decision-making in real time.
+- Treat each cue as the instructor's substitute voice when no instructor is present; cues should read like direct coaching to the learner.
+- Prefer direct, learner-facing language (for example: "you", "name", "assign", "reassess", "state what changed") over neutral narration.
+- Keep cue usefulness consistently high across all semesters; semester level should change case demands, not cue value.
+- If Include teaching cues is true, aim for cues across multiple sections with roughly 6-10 total cues when the case supports that many high-value coaching moments. Fewer is better than padding weak cues.
+- Aim to spread cues across at least 4 high-value sections when clinically appropriate (assessment, vitals, progression, transport, treatment/protocol, reasoning). Do not force coverage into low-value sections.
+- Place cues where this specific case has highest teaching leverage (for example barriers, trend shifts, deterioration branches, or transport risk) rather than using a fixed section pattern every time.
+- Every cue must reference this specific case (complaint, trend, environment, progression trigger, or transport challenge) rather than generic coaching language.
+- When a medication is clearly indicated and dose/route are present in this case, treatment/protocol cues may reference that exact dose line to coach safe execution per ALS PCS.
+- Do not invent medication doses in cues; only reference doses already supported by the scenario content and directive context.
+- Avoid repeated cue intent; each cue should teach a different decision point or reassessment moment.
+- Prefer cues that sharpen reasoning, priorities, reassessment, or pitfall recognition over cues that merely restate scenario facts.
+- Avoid generic stand-alone phrases such as "monitor closely", "reassess as needed", or "prepare for transport" unless tied to concrete scenario details.
+- Do not use "..." inside cues unless the source content truly requires it; shorten the thought cleanly instead.
+- Do not use emojis inside cue text.
+- Keep readability high by avoiding cue clustering in only one section.
+- If Include teaching cues is false, do not include any cue markup anywhere in the JSON.
+
+Control summary:
+- Semester ${semester} should visibly change treatment expectations, ambiguity, and learner burden.
+- Complexity ${complexity} should visibly change scene burden, number of meaningful reassessment points, and operational strain.
+- The final scenario must be obviously different if either semester or complexity changes.
 
 Hard type enforcement:
 ${buildTypeEnforcementRules(finalCallType)}
@@ -3905,14 +6669,26 @@ Critical output rules:
 - Populate every required nested object.
 - expectedTreatment must be a practical list of paramedic actions.
 - protocolNotes must be a practical list, not a paragraph.
+  - Each item should reference Ontario standards when clinically relevant (e.g., "per BLS PCS", "per ALS PCS").
+  - At least 50% of items must include explicit directive references.
 - learningObjectives must be populated.
 - selfReflectionPrompts must be populated.
 - teachersPoints must be populated.
-- caseProgression must clearly describe early course, proper treatment, lack of proper treatment, incorrect treatment, and transport phase.
+- teachersPoints must be an educational coaching array with 4-6 distinct points.
+- Each teachersPoints item should usually be 2 concise sentences (max 3) and include: what happened in this case, why it matters clinically, and one concrete improvement action for the learner's next call.
+- Keep each teachersPoints item roughly 35-75 words. Avoid long run-on sentences.
+- Teaching points should be specific to this case and include clinically grounded rationale (pathophysiology, risk, or protocol consequence) rather than generic advice.
+- At least one teachersPoints item should call out a common pitfall or bias relevant to this case.
+- Avoid repeating the same teaching intent across points. Each point should target a different decision, reassessment trigger, communication step, or transport risk.
+- Do not use emojis in teachersPoints.
+- directiveSources must be populated as an array listing which Ontario documents shaped decision points.
+- caseProgression must clearly describe proper treatment, lack of proper treatment, and incorrect treatment.
 - initialAssessment and secondaryAssessment must not simply duplicate each other.
 - If the patient's condition changes, reassessment findings must visibly change.
 - additionalSets should be populated whenever treatment, movement, deterioration, or a mid-call event meaningfully changes the call.
-- midCallEvent must be meaningfully populated in most Moderate and Complex scenarios.
+- directiveSources is MANDATORY for every scenario.
+  - Must include at least one of: ["BLS PCS 3.4 (2023)", "ALS PCS 5.4 (2025)", "OBHG ALS PCS Companion v5.4 (2025)"].
+  - Must reflect which Ontario document(s) shaped the decision points in the scenario.
 - Dynamic calls should show consequences of treatment, delay, movement, packaging, or new information.
 - Avoid generic phrases like "monitor closely", "prepare for transport", or "reassess as needed" unless paired with a concrete finding, trigger, or transport concern.
 - The requested Call Type is mandatory, not optional.
@@ -3934,52 +6710,143 @@ Critical output rules:
 - Make the scenario realistic, educational, internally coherent, semester-appropriate, and faithful to the requested type.
 `.trim();
 
-    const completion = await openai.chat.completions.create({
-      model: 'gpt-4o',
-      messages: [
-        { role: 'system', content: systemPrompt },
-        { role: 'user', content: userPrompt }
-      ],
-      temperature: 0.35
-    });
-    const rawOutput = completion.choices[0].message.content;
-    const cleaned = sanitizeOutput(rawOutput);
+    const parsed = await requestScenarioJson([
+      { role: 'system', content: systemPrompt },
+      { role: 'user', content: userPrompt }
+    ]);
 
-    let parsed;
-    try {
-      parsed = JSON.parse(cleaned);
-    } catch {
-      const repaired = jsonrepair(cleaned);
-      parsed = JSON.parse(repaired);
+    let normalized = applyTeachingCuePreference(
+      normalizeScenarioData(parsed),
+      Boolean(includeTeachingCues)
+    );
+    normalized = enforceScenarioControls(normalized, {
+      semester,
+      complexity,
+      callType: finalCallType,
+      environment
+    });
+    normalized = enforceTeachingCueSpecificity(normalized, Boolean(includeTeachingCues));
+    normalized = enforceTeachingCueSectionDiscipline(normalized, Boolean(includeTeachingCues));
+    normalized = ensureTeachingCueCoverage(normalized, Boolean(includeTeachingCues), generationVariationSeed);
+    normalized = enforceTeachingCueSpecificity(normalized, Boolean(includeTeachingCues));
+    normalized = enforceTeachingCueSectionDiscipline(normalized, Boolean(includeTeachingCues));
+    normalized = enforceDoseCueSafety(normalized, Boolean(includeTeachingCues));
+
+    const looksEmpty =
+      !normalized.title &&
+      !normalized.scenarioIntro &&
+      !normalized.patientPresentation &&
+      !normalized.incidentNarrative &&
+      !normalized.sceneArrival?.sceneDescription &&
+      !normalized.firstImpression?.generalAppearance &&
+      !normalized.initialAssessment?.generalImpression &&
+      !normalized.callInformation?.location &&
+      !normalized.patientDemographics?.chiefComplaint &&
+      !(normalized.caseProgression?.withProperTreatment || []).length &&
+      !normalized.transportPhase?.transportDecision &&
+      !normalized.clinicalReasoning &&
+      !(normalized.expectedTreatment || []).length &&
+      !(normalized.learningObjectives || []).length &&
+      !(normalized.teachersPoints || []).length;
+
+    if (looksEmpty) {
+      console.error('Model returned structurally valid but empty scenario JSON:', parsed);
+      return res.status(500).json({
+        error: 'Scenario generation returned empty content. Prompt schema needs retry.'
+      });
     }
 
-    const normalized = normalizeScenarioData(parsed);
+    let validation = detectControlDrift(normalized, {
+      semester,
+      complexity,
+      callType: finalCallType,
+      environment,
+      includeTeachingCues,
+      customPrompt: normalizedCustomPrompt
+    });
 
-const looksEmpty =
-  !normalized.title &&
-  !normalized.scenarioIntro &&
-  !normalized.patientPresentation &&
-  !normalized.incidentNarrative &&
-  !normalized.sceneArrival?.sceneDescription &&
-  !normalized.firstImpression?.generalAppearance &&
-  !normalized.initialAssessment?.generalImpression &&
-  !normalized.callInformation?.location &&
-  !normalized.patientDemographics?.chiefComplaint &&
-  !normalized.caseProgression?.earlyCourse &&
-  !normalized.transportPhase?.transportDecision &&
-  !normalized.clinicalReasoning?.summary &&
-  !(normalized.expectedTreatment || []).length &&
-  !(normalized.learningObjectives || []).length &&
-  !(normalized.teachersPoints || []).length;
+    if (validation.issues.length) {
+      let bestScenario = normalized;
+      let bestValidation = validation;
 
-if (looksEmpty) {
-  console.error('Model returned structurally valid but empty scenario JSON:', parsed);
-  return res.status(500).json({
-    error: 'Scenario generation returned empty content. Prompt schema needs retry.'
-  });
-}
+      for (let repairAttempt = 1; repairAttempt <= CONTROL_REPAIR_MAX_ATTEMPTS; repairAttempt += 1) {
+        devWarn(`Scenario control drift detected, attempting repair ${repairAttempt}/${CONTROL_REPAIR_MAX_ATTEMPTS}:`, bestValidation);
 
-res.json(normalized);
+        const repairedParsed = await repairScenarioForControlDrift({
+          systemPrompt,
+          scenario: bestScenario,
+          controls: {
+            semester,
+            complexity,
+            callType: finalCallType,
+            environment,
+            includeTeachingCues,
+            customPrompt: normalizedCustomPrompt
+          },
+          validation: bestValidation
+        });
+
+        const repairedNormalized = applyTeachingCuePreference(
+          normalizeScenarioData(repairedParsed),
+          Boolean(includeTeachingCues)
+        );
+        enforceScenarioControls(repairedNormalized, {
+          semester,
+          complexity,
+          callType: finalCallType,
+          environment
+        });
+        const specificitySafeRepaired = enforceTeachingCueSpecificity(repairedNormalized, Boolean(includeTeachingCues));
+        const sectionDisciplinedRepaired = enforceTeachingCueSectionDiscipline(
+          specificitySafeRepaired,
+          Boolean(includeTeachingCues)
+        );
+        ensureTeachingCueCoverage(
+          sectionDisciplinedRepaired,
+          Boolean(includeTeachingCues),
+          generationVariationSeed + repairAttempt
+        );
+        const postCoverageSpecificitySafe = enforceTeachingCueSpecificity(sectionDisciplinedRepaired, Boolean(includeTeachingCues));
+        const postCoverageSectionDisciplined = enforceTeachingCueSectionDiscipline(
+          postCoverageSpecificitySafe,
+          Boolean(includeTeachingCues)
+        );
+        const doseSafeRepaired = enforceDoseCueSafety(postCoverageSectionDisciplined, Boolean(includeTeachingCues));
+
+        const repairedValidation = detectControlDrift(doseSafeRepaired, {
+          semester,
+          complexity,
+          callType: finalCallType,
+          environment,
+          includeTeachingCues,
+          customPrompt: normalizedCustomPrompt
+        });
+
+        if (repairedValidation.issues.length < bestValidation.issues.length) {
+          bestScenario = doseSafeRepaired;
+          bestValidation = repairedValidation;
+        }
+
+        if (!bestValidation.issues.length || !bestValidation.issues.some((issue) => issue.severity === 'high')) {
+          break;
+        }
+      }
+
+      normalized = bestScenario;
+      validation = bestValidation;
+    }
+
+    if (validation.issues.some((issue) => issue.severity === 'high')) {
+      console.error('Scenario generation failed control validation:', validation);
+      return res.status(500).json({
+        error: 'Scenario generation drifted from the requested semester or complexity.',
+        details: validation.issues.map((issue) => issue.message).join(' ')
+      });
+    }
+
+    normalized.customPrompt = normalizedCustomPrompt;
+    rememberScenarioCueFingerprints(normalized);
+    res.json(normalized);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Scenario generation failed.' });

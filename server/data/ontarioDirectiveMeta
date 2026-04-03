@@ -1,0 +1,49 @@
+// server/data/ontarioDirectiveMeta.js
+
+export const ONTARIO_DIRECTIVE_META = {
+  versions: {
+    bls: {
+      name: "Basic Life Support Patient Care Standards",
+      version: "3.4",
+      effectiveDate: "2023-03-10",
+      sourceType: "Ontario Ministry of Health"
+    },
+    als: {
+      name: "Advanced Life Support Patient Care Standards",
+      version: "5.4",
+      effectiveDate: "2025-06-02",
+      sourceType: "Ontario Ministry of Health"
+    },
+    companion: {
+      name: "OBHG ALS PCS v5.4 Companion Document",
+      version: "5.4",
+      effectiveDate: "2025-06",
+      sourceType: "Ontario Base Hospital Group"
+    },
+    memo: {
+      name: "OBHG ALS PCS v5.4 Update Memo",
+      version: "2025-05-26",
+      effectiveDate: "2025-05-26",
+      sourceType: "Ontario Base Hospital Group Education Subcommittee"
+    }
+  },
+
+  governance: {
+    purpose:
+      "Curated Ontario directive engine for Scenario Generator 1.0. This layer is used to improve directive accuracy, reduce legacy drift, and support prompt shaping plus future validation.",
+    principles: [
+      "Prefer current Ontario directive logic over older few-shot habits or generic EMS assumptions.",
+      "Use this layer as the main scenario-generation source of truth for directive-sensitive content.",
+      "Keep scenario realism aligned with Ontario BLS PCS, ALS PCS, and the OBHG companion clarifications.",
+      "Do not infer broader permissions than the rules represented here.",
+      "Where ambiguity exists, preserve conservative wording and require clinical support in the scenario findings."
+    ]
+  },
+
+  review: {
+    lastReviewed: "2026-03-23",
+    status: "active",
+    nextAuditTrigger:
+      "Audit when ALS PCS, companion document, or BLS PCS version changes."
+  }
+};

@@ -25,7 +25,7 @@ export const TITLE_MAP = {
   sample: "🧪 SAMPLE",
   physicalExam: "🔍 Physical Exam",
   vitalSigns: "📊 Vital Signs",
-  differentialDiagnosis: "🧠 Differential Diagnosis",
+  differentialDiagnosis: "Differential Diagnosis",
   expectedTreatment: "💉 Expected Treatment",
   protocolNotes: "📘 Protocol Notes",
   scenarioRationale: "💡 Scenario Rationale"

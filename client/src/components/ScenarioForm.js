@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import axios from "axios";
 import jsPDF from "jspdf";
 import { FaSpinner, FaFilePdf, FaLightbulb } from "react-icons/fa";
@@ -26,7 +27,6 @@ const SCENARIO_TYPES = [
   "Cardiac",
   "Respiratory",
   "Environmental",
-  "Other",
 ];
 
 const SEMESTERS = ["2", "3", "4"];
@@ -47,7 +47,6 @@ const SECTION_GROUPS = {
   ],
   Education: [
     "learningObjectives",
-    "vocationalLearningOutcomes",
     "selfReflectionPrompts",
     "grsAnchors",
   ],
@@ -72,11 +71,40 @@ const TITLE_MAP = {
   caseProgression: "Case Progression",
   expectedTreatment: "Expected Treatment",
   protocolNotes: "Protocol Notes",
-  vocationalLearningOutcomes: "Vocational Learning Outcomes (VLOs)",
   learningObjectives: "Learning Objectives",
-  teachersPoints: "Teacher's Points",
+  teachersPoints: "Teaching Points",
   scenarioRationale: "Scenario Rationale & Teaching Tips",
 };
+
+function computeCuePopoverStyle(anchorRect, isMobile) {
+  if (!anchorRect || typeof window === "undefined") return null;
+
+  const viewportWidth = window.innerWidth || 0;
+  const viewportHeight = window.innerHeight || 0;
+  const margin = isMobile ? 8 : 12;
+  const preferredWidth = isMobile ? Math.min(340, viewportWidth - margin * 2) : 360;
+  const maxAllowedWidth = Math.max(200, viewportWidth - margin * 2);
+  const width = Math.min(preferredWidth, maxAllowedWidth);
+
+  const spaceBelow = viewportHeight - anchorRect.bottom;
+  const openUpward = !isMobile && spaceBelow < 220;
+  const left = Math.max(margin, Math.min(anchorRect.left, viewportWidth - width - margin));
+  const top = openUpward
+    ? Math.max(margin, anchorRect.top - 12)
+    : Math.min(viewportHeight - margin, anchorRect.bottom + 12);
+
+  return {
+    position: "fixed",
+    left,
+    top,
+    width,
+    maxWidth: `${maxAllowedWidth}px`,
+    maxHeight: `${Math.max(160, viewportHeight - margin * 2)}px`,
+    overflowY: "auto",
+    transform: openUpward ? "translateY(-100%)" : "none",
+    zIndex: 25000,
+  };
+}
 
 const ScenarioForm = () => {
   const [formData, setFormData] = useState({
@@ -94,6 +122,11 @@ const ScenarioForm = () => {
   const [error, setError] = useState("");
   const [collapsedSections, setCollapsedSections] = useState({});
   const [selectedCue, setSelectedCue] = useState(null);
+  const [isMobile, setIsMobile] = useState(() =>
+    typeof window !== "undefined" ? window.matchMedia("(max-width: 900px)").matches : false
+  );
+
+  const styles = buildStyles(isMobile);
 
   useEffect(() => {
     const spinnerStyle = document.createElement("style");
@@ -105,6 +138,12 @@ const ScenarioForm = () => {
       .spin {
         animation: spin 1s linear infinite;
       }
+
+      .a11y-focus:focus-visible {
+        outline: 3px solid #0ea5e9;
+        outline-offset: 2px;
+        box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.25);
+      }
     `;
     document.head.appendChild(spinnerStyle);
 
@@ -114,20 +153,56 @@ const ScenarioForm = () => {
   }, []);
 
   useEffect(() => {
-    document.body.style.overflow = "hidden";
-    document.documentElement.style.overflow = "hidden";
+    const mediaQuery = window.matchMedia("(max-width: 900px)");
+    const onChange = (event) => setIsMobile(event.matches);
+
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener("change", onChange);
+    } else {
+      mediaQuery.addListener(onChange);
+    }
 
     return () => {
-      document.body.style.overflow = "";
-      document.documentElement.style.overflow = "";
+      if (mediaQuery.removeEventListener) {
+        mediaQuery.removeEventListener("change", onChange);
+      } else {
+        mediaQuery.removeListener(onChange);
+      }
     };
   }, []);
 
+  useEffect(() => {
+    const closeCueOnOutsideClick = (event) => {
+      const target = event.target;
+      if (target instanceof Element && target.closest("[data-cue-toggle='true'], [data-cue-popover='true']")) {
+        return;
+      }
+      setSelectedCue(null);
+    };
+
+    document.addEventListener("pointerdown", closeCueOnOutsideClick);
+    return () => document.removeEventListener("pointerdown", closeCueOnOutsideClick);
+  }, []);
+
+  useEffect(() => {
+    const onKeyDown = (event) => {
+      if (event.key !== "Escape") return;
+      setSelectedCue(null);
+      setSelectedECGImage(null);
+    };
+
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, []);
 
   useEffect(() => {
     const closeCue = () => setSelectedCue(null);
-    document.addEventListener("click", closeCue);
-    return () => document.removeEventListener("click", closeCue);
+    window.addEventListener("resize", closeCue);
+    window.addEventListener("scroll", closeCue, true);
+    return () => {
+      window.removeEventListener("resize", closeCue);
+      window.removeEventListener("scroll", closeCue, true);
+    };
   }, []);
 
   const handleChange = (e) => {
@@ -140,27 +215,53 @@ const ScenarioForm = () => {
 
   const capitalizeFirstLetter = (string) => string.charAt(0).toUpperCase() + string.slice(1);
 
-  const formatFieldValue = (fieldValue) => {
-    if (!fieldValue) return "";
+  const sanitizePdfText = (value) => {
+    const cueRegex = /\*\(💡(?:[a-z]+\|)?\s*(.+?)\s*\)\*/gi;
+    return String(value ?? "")
+      .replace(cueRegex, "Teaching cue: $1")
+      .replace(/[^\x09\x0A\x0D\x20-\x7E]/g, "")
+      .replace(/\r\n/g, "\n")
+      .split("\n")
+      .map((line) => line.replace(/\s{2,}/g, " ").trimEnd())
+      .join("\n")
+      .trim();
+  };
+
+  const formatFieldValue = (fieldValue, depth = 0) => {
+    if (fieldValue === null || fieldValue === undefined || fieldValue === "") return "";
+
+    const indent = "  ".repeat(depth);
 
     if (typeof fieldValue === "object" && !Array.isArray(fieldValue)) {
       return Object.entries(fieldValue)
         .map(([key, value]) => {
+          if (value === null || value === undefined || value === "") return "";
+
           if (typeof value === "object") {
-            return `• ${capitalizeFirstLetter(key)}:\n${formatFieldValue(value)}`;
+            const nested = formatFieldValue(value, depth + 1);
+            return nested ? `${indent}${formatLabel(key)}:\n${nested}` : "";
           }
-          return `• ${capitalizeFirstLetter(key)}: ${value}`;
+          return `${indent}${formatLabel(key)}: ${sanitizePdfText(value)}`;
         })
+        .filter(Boolean)
         .join("\n");
     }
 
     if (Array.isArray(fieldValue)) {
       return fieldValue
-        .map((item) => (typeof item === "object" ? `• ${formatFieldValue(item)}` : `• ${item}`))
+        .map((item) => {
+          if (item === null || item === undefined || item === "") return "";
+          if (typeof item === "object") {
+            const nested = formatFieldValue(item, depth + 1);
+            return nested ? `${indent}-\n${nested}` : "";
+          }
+          return `${indent}- ${sanitizePdfText(item)}`;
+        })
+        .filter(Boolean)
         .join("\n");
     }
 
-    return `• ${fieldValue}`;
+    return `${indent}${sanitizePdfText(fieldValue)}`;
   };
 
   const formatLabel = (label) =>
@@ -191,7 +292,6 @@ const ScenarioForm = () => {
       }
 
       setScenario(generated);
-      console.log("Received scenario:", generated);
     } catch (err) {
       const message =
         err?.response?.data?.details ||
@@ -207,53 +307,202 @@ const ScenarioForm = () => {
   const exportToPDF = () => {
     if (!scenario) return;
 
-    const doc = new jsPDF();
-    doc.setFontSize(12);
-    doc.text(`Scenario: ${scenario.title || "Untitled"}`, 10, 10);
-    let y = 20;
+    const doc = new jsPDF({ unit: "mm", format: "a4" });
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const marginX = 20;
+    const marginY = 20;
+    const maxLineWidth = pageWidth - marginX * 2;
+    const bodySize = 10;
+    const bodyLH = 5.8;
+    const footerY = pageHeight - 12;
+    let y = marginY;
 
-    Object.entries(scenario).forEach(([key, value]) => {
-      if (key === "teachersPoints") return;
+    const documentTitle = sanitizePdfText(scenario.title || "Untitled Scenario") || "Untitled Scenario";
+    const exportedAt = new Date().toLocaleString();
 
-      const label = TITLE_MAP[key] || capitalizeFirstLetter(key);
-      doc.setFont(undefined, "bold");
-      doc.text(`${label}:`, 10, y);
-      y += 6;
-      doc.setFont(undefined, "normal");
+    const safeFileName = sanitizePdfText(documentTitle)
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "") || "scenario";
 
-      const formattedValue = formatFieldValue(value);
-      const lines = doc.splitTextToSize(formattedValue, 180);
-      doc.text(lines, 10, y);
-      y += lines.length * 6;
+    const preferredOrder = [
+      "scenarioIntro",
+      "title",
+      "callInformation",
+      "patientDemographics",
+      "patientPresentation",
+      "incidentNarrative",
+      "sceneArrival",
+      "firstImpression",
+      "initialAssessment",
+      "historyGathering",
+      "opqrst",
+      "sample",
+      "medications",
+      "allergies",
+      "pastMedicalHistory",
+      "physicalExam",
+      "secondaryAssessment",
+      "additionalAssessments",
+      "vitalSigns",
+      "caseProgression",
+      "transportPhase",
+      "expectedTreatment",
+      "protocolNotes",
+      "learningObjectives",
+      "selfReflectionPrompts",
+      "grsAnchors",
+      "teachersPoints",
+      "scenarioRationale",
+      "clinicalReasoning",
+      "directiveSources",
+      "customPrompt"
+    ];
 
-      if (y > 270) {
+    const orderedKeys = [...new Set([...preferredOrder, ...Object.keys(scenario)])];
+    const sectionEntries = orderedKeys
+      .filter((key) => key in scenario)
+      .map((key) => {
+        const formattedValue = formatFieldValue(scenario[key]);
+        if (!formattedValue) return null;
+        return { key, label: TITLE_MAP[key] || capitalizeFirstLetter(key), formattedValue };
+      })
+      .filter(Boolean);
+
+    const needsNewPage = (h) => {
+      if (y + h > footerY - 4) {
         doc.addPage();
-        y = 20;
+        y = marginY;
+        return true;
       }
+      return false;
+    };
+
+    const printLine = (text, size, bold, color) => {
+      doc.setFont(undefined, bold ? "bold" : "normal");
+      doc.setFontSize(size);
+      doc.setTextColor(...color);
+      const wrapped = doc.splitTextToSize(sanitizePdfText(text), maxLineWidth);
+      wrapped.forEach((line) => {
+        needsNewPage(bodyLH);
+        doc.text(line, marginX, y);
+        y += bodyLH;
+      });
+    };
+
+    const drawPageFooter = (pageNum, total) => {
+      doc.setFont(undefined, "normal");
+      doc.setFontSize(8);
+      doc.setTextColor(150, 150, 150);
+      doc.setDrawColor(180, 180, 180);
+      doc.setLineWidth(0.2);
+      doc.line(marginX, footerY, pageWidth - marginX, footerY);
+      doc.text(documentTitle, marginX, footerY + 4.5);
+      doc.text(`Page ${pageNum} of ${total}`, pageWidth - marginX, footerY + 4.5, { align: "right" });
+    };
+
+    // ── Cover page ──────────────────────────────────────────────────────────
+    doc.setFont(undefined, "bold");
+    doc.setFontSize(22);
+    doc.setTextColor(20, 20, 20);
+    const titleWrapped = doc.splitTextToSize(documentTitle, maxLineWidth);
+    doc.text(titleWrapped, marginX, y);
+    y += titleWrapped.length * 9 + 4;
+
+    doc.setDrawColor(60, 60, 60);
+    doc.setLineWidth(0.4);
+    doc.line(marginX, y, pageWidth - marginX, y);
+    y += 7;
+
+    const metaFields = [
+      ["Semester", sanitizePdfText(formData.semester)],
+      ["Call Type", sanitizePdfText(scenario?.callInformation?.type || formData.type)],
+      ["Environment", sanitizePdfText(formData.environment)],
+      ["Complexity", sanitizePdfText(formData.complexity)],
+    ];
+    metaFields.forEach(([label, val]) => {
+      if (!val) return;
+      doc.setFont(undefined, "bold");
+      doc.setFontSize(9.5);
+      doc.setTextColor(80, 80, 80);
+      doc.text(`${label}:`, marginX, y);
+      doc.setFont(undefined, "normal");
+      doc.setTextColor(20, 20, 20);
+      doc.text(val, marginX + 30, y);
+      y += 5.8;
     });
 
-    if (scenario.teachersPoints) {
-      if (y > 250) {
-        doc.addPage();
-        y = 20;
-      }
+    y += 4;
+    doc.setDrawColor(60, 60, 60);
+    doc.setLineWidth(0.2);
+    doc.line(marginX, y, pageWidth - marginX, y);
+    y += 6;
 
+    doc.setFont(undefined, "normal");
+    doc.setFontSize(8.5);
+    doc.setTextColor(130, 130, 130);
+    doc.text(`Generated: ${exportedAt}`, marginX, y);
+    y += 10;
+
+    // ── Sections ─────────────────────────────────────────────────────────────
+    sectionEntries.forEach((entry) => {
+      // Section heading
+      needsNewPage(12);
+      y += 4;
       doc.setFont(undefined, "bold");
-      doc.text("Teacher's Points:", 10, y);
-      y += 6;
-      doc.setFont(undefined, "normal");
+      doc.setFontSize(12);
+      doc.setTextColor(20, 20, 20);
+      doc.text(entry.label, marginX, y);
+      y += 2.5;
+      doc.setDrawColor(60, 60, 60);
+      doc.setLineWidth(0.25);
+      doc.line(marginX, y, pageWidth - marginX, y);
+      y += 5;
 
-      const lines = doc.splitTextToSize(scenario.teachersPoints, 180);
-      doc.text(lines, 10, y);
+      // Body content
+      const rawLines = String(entry.formattedValue).split("\n");
+      rawLines.forEach((rawLine) => {
+        const expanded = rawLine.replace(/\t/g, "  ");
+        const trimmed = expanded.trim();
+        if (!trimmed) {
+          y += 2.5;
+          return;
+        }
+        const isBullet = trimmed.startsWith("- ");
+        const displayText = isBullet ? `\u2022  ${trimmed.slice(2)}` : trimmed;
+        const indent = isBullet ? 4 : 0;
+        const textX = marginX + indent;
+        const textWidth = maxLineWidth - indent;
+
+        const isLabelLine = /^[A-Z][^:]{1,35}:\s*$/.test(trimmed);
+        doc.setFont(undefined, isLabelLine ? "bold" : "normal");
+        doc.setFontSize(bodySize);
+        doc.setTextColor(30, 30, 30);
+
+        const wrapped = doc.splitTextToSize(sanitizePdfText(displayText), textWidth);
+        wrapped.forEach((line) => {
+          needsNewPage(bodyLH);
+          doc.text(line, textX, y);
+          y += bodyLH;
+        });
+      });
+    });
+
+    // ── Footer on every page ─────────────────────────────────────────────────
+    const totalPages = doc.getNumberOfPages();
+    for (let p = 1; p <= totalPages; p += 1) {
+      doc.setPage(p);
+      drawPageFooter(p, totalPages);
     }
 
-    doc.save("scenario.pdf");
+    doc.save(`${safeFileName}.pdf`);
   };
 
   const renderSafeContent = (data, parentKey = "root") => {
     if (typeof data === "string") {
       const parts = [];
-      const cueRegex = /\*\(💡(?:[a-z]+\|)?\s*(.+?)\s*\)\*/gi;
+      const cueRegex = /\*\(💡(?:([a-z]+)\|)?\s*(.+?)\s*\)\*/gi;
       let lastIndex = 0;
       let match;
       let localCueIndex = 0;
@@ -261,8 +510,11 @@ const ScenarioForm = () => {
       while ((match = cueRegex.exec(data)) !== null) {
         const matchStart = match.index;
         const matchEnd = cueRegex.lastIndex;
-        const cueText = match[1];
-        const id = `cue-${parentKey}-${matchStart}-${localCueIndex++}`;
+        const cueTag = String(match[1] || "").toLowerCase();
+        const cueText = match[2];
+        const cueIndex = localCueIndex++;
+        const id = `cue-${parentKey}-${cueTag || "general"}-${matchStart}-${cueIndex}`;
+        const isCueOpen = selectedCue?.id === id;
 
         if (matchStart > lastIndex) {
           parts.push(<span key={`text-${id}`}>{data.slice(lastIndex, matchStart)}</span>);
@@ -270,40 +522,46 @@ const ScenarioForm = () => {
 
         parts.push(
           <span key={`cue-${id}`} style={{ position: "relative", display: "inline-block" }}>
-            <FaLightbulb
+            <button
+              type="button"
+              className="a11y-focus"
+              aria-label={isCueOpen ? "Hide teaching cue" : "Show teaching cue"}
+              aria-pressed={isCueOpen}
+              title={isCueOpen ? "Hide teaching cue" : "Show teaching cue"}
+              data-cue-toggle="true"
               style={{
                 cursor: "pointer",
                 marginLeft: "4px",
-                color: selectedCue === id ? "#facc15" : "#eab308",
+                color: isCueOpen ? "#facc15" : "#eab308",
                 verticalAlign: "middle",
+                background: "transparent",
+                border: "none",
+                padding: isMobile ? "0.35rem" : "0.2rem",
+                minWidth: isMobile ? "36px" : "28px",
+                minHeight: isMobile ? "36px" : "28px",
+                borderRadius: "6px",
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
               }}
               onClick={(e) => {
                 e.stopPropagation();
-                setSelectedCue((prev) => (prev === id ? null : id));
+                const rect = e.currentTarget.getBoundingClientRect();
+                setSelectedCue((prev) =>
+                  prev?.id === id
+                    ? null
+                    : {
+                        id,
+                        cueTag,
+                        cueText,
+                        cueIndex,
+                        anchorRect: rect,
+                      }
+                );
               }}
-            />
-            {selectedCue === id && (
-              <div
-                style={{
-                  position: "absolute",
-                  background: "#fef9c3",
-                  color: "#1f2937",
-                  border: "1px solid #fcd34d",
-                  padding: "0.5rem 0.75rem",
-                  borderRadius: "8px",
-                  zIndex: 10000,
-                  top: "1.8rem",
-                  left: 0,
-                  minWidth: "240px",
-                  maxWidth: "420px",
-                  whiteSpace: "normal",
-                  boxShadow: "0 6px 12px rgba(0,0,0,0.25)",
-                }}
-                onClick={(e) => e.stopPropagation()}
-              >
-                {cueText}
-              </div>
-            )}
+            >
+              <FaLightbulb aria-hidden="true" />
+            </button>
           </span>
         );
 
@@ -351,13 +609,21 @@ const ScenarioForm = () => {
                     {labelPrefix ? `${labelPrefix} ECG Interpretation` : "ECG Interpretation"}:
                   </strong>{" "}
                   {ecgImageUrl ? (
-                    <span
+                    <button
+                      type="button"
+                      className="a11y-focus"
+                      aria-label="Open ECG image"
+                      title="Open ECG image"
                       style={{
                         cursor: "pointer",
                         textDecoration: "underline",
                         color: "#0ea5e9",
                         marginLeft: "6px",
                         marginRight: "6px",
+                        background: "transparent",
+                        border: "none",
+                        padding: isMobile ? "0.2rem 0.35rem" : "0.1rem 0.25rem",
+                        borderRadius: "6px",
                       }}
                       onClick={(e) => {
                         e.stopPropagation();
@@ -365,13 +631,25 @@ const ScenarioForm = () => {
                       }}
                     >
                       📈
-                    </span>
+                    </button>
                   ) : (
                     "📈"
                   )}
                   {interpretation}
                 </li>
               );
+            }
+
+            if (key === "additionalSets" && Array.isArray(value)) {
+              return value.map((setItem, setIndex) => (
+                <li key={`additionalSet-${setIndex}`}>
+                  <strong>Additional Set {setIndex + 1}{setItem?.context ? ` — ${setItem.context}` : ""}:</strong>
+                  {renderSafeContent(
+                    Object.fromEntries(Object.entries(setItem).filter(([k]) => k !== "context")),
+                    `${contextKey}-${setIndex}`
+                  )}
+                </li>
+              ));
             }
 
             return (
@@ -420,27 +698,43 @@ const ScenarioForm = () => {
   return (
     <div style={styles.container}>
       <div style={styles.headerBar}>
-        <h1 style={styles.heading}>Scenario Generator 1.0</h1>
-        <div>
-          {scenario && (
-            <button onClick={exportToPDF} style={styles.toggle}>
+        <div style={styles.headerInner}>
+          <h1 style={styles.heading}>Scenario Generator 1.0</h1>
+          <div>
+            <button
+              onClick={exportToPDF}
+              style={{
+                ...styles.toggle,
+                opacity: scenario ? 1 : 0.6,
+                cursor: scenario ? "pointer" : "not-allowed"
+              }}
+              className="a11y-focus"
+              disabled={!scenario}
+              title={scenario ? "Export current scenario to PDF" : "Generate a scenario first to enable export"}
+            >
               <FaFilePdf /> Export
             </button>
-          )}
+          </div>
         </div>
       </div>
 
       <div style={styles.mainLayout}>
         <div style={styles.leftPanel}>
           <div style={styles.formBox}>
-            <button onClick={handleSubmit} disabled={loading} style={styles.button}>
+            <button onClick={handleSubmit} disabled={loading} style={styles.button} className="a11y-focus">
               {loading ? <FaSpinner className="spin" /> : "Generate Scenario"}
             </button>
 
             {["semester", "type", "environment", "complexity"].map((field) => (
               <div key={field} style={styles.fieldRow}>
                 <label>{capitalizeFirstLetter(field)}:</label>
-                <select name={field} value={formData[field]} onChange={handleChange} style={styles.select}>
+                <select
+                  name={field}
+                  value={formData[field]}
+                  onChange={handleChange}
+                  style={styles.select}
+                  className="a11y-focus"
+                >
                   {(field === "semester"
                     ? SEMESTERS
                     : field === "type"
@@ -465,6 +759,7 @@ const ScenarioForm = () => {
                   checked={formData.includeTeachingCues}
                   onChange={handleChange}
                   style={{ marginRight: "0.5rem" }}
+                  className="a11y-focus"
                 />
                 Include 💡 Teaching Cues
               </label>
@@ -479,8 +774,13 @@ const ScenarioForm = () => {
                 onChange={handleChange}
                 placeholder="e.g. 'Make this a sports injury in a teen with subtle signs of head trauma.'"
                 rows={3}
+                maxLength={320}
                 style={styles.textarea}
+                className="a11y-focus"
               />
+              <small style={styles.helperText}>
+                Optional theme/focus. Keep it specific (setting, patient profile, or teaching emphasis). {formData.customPrompt.length}/320
+              </small>
             </div>
 
             {error && <p style={styles.error}>{error}</p>}
@@ -507,8 +807,20 @@ const ScenarioForm = () => {
 
               {Object.entries(SECTION_GROUPS).map(([groupName, keys]) => (
                 <div key={groupName}>
-                  <h2 style={styles.sectionHeading} onClick={() => toggleSection(groupName)}>
-                    {collapsedSections[groupName] ? "▶️" : "🔽"} {groupName}
+                  <h2 style={styles.sectionHeadingWrap}>
+                    <button
+                      type="button"
+                      className="a11y-focus"
+                      style={styles.sectionHeadingButton}
+                      onClick={() => toggleSection(groupName)}
+                      aria-expanded={!collapsedSections[groupName]}
+                      aria-label={`${collapsedSections[groupName] ? "Expand" : "Collapse"} ${groupName}`}
+                    >
+                      <span aria-hidden="true" style={styles.sectionHeadingIcon}>
+                        {collapsedSections[groupName] ? "▶️" : "🔽"}
+                      </span>
+                      {groupName}
+                    </button>
                   </h2>
 
                   {groupName === "Education" && scenario.teachersPoints && (
@@ -528,9 +840,11 @@ const ScenarioForm = () => {
                           fontSize: "1rem",
                         }}
                       >
-                        🧠 Teacher's Points
+                        Teaching Points
                       </h3>
-                      <p style={{ fontStyle: "italic" }}>{scenario.teachersPoints}</p>
+                      <div style={{ fontStyle: "italic" }}>
+                        {renderSafeContent(scenario.teachersPoints, "teachersPoints")}
+                      </div>
                     </div>
                   )}
 
@@ -550,7 +864,7 @@ const ScenarioForm = () => {
           <div style={styles.loadingBox}>
             <FaSpinner className="spin" style={styles.loadingSpinner} />
             <div style={styles.loadingTitle}>Generating Scenario...</div>
-            <div style={styles.loadingSubtext}>Building a full case now.</div>
+            <div style={styles.loadingSubtext}>This will take a minute.</div>
           </div>
         </div>
       )}
@@ -591,6 +905,7 @@ const ScenarioForm = () => {
             />
             <button
               onClick={() => setSelectedECGImage(null)}
+              className="a11y-focus"
               style={{
                 marginTop: "0.75rem",
                 padding: "0.5rem 1rem",
@@ -606,19 +921,43 @@ const ScenarioForm = () => {
           </div>
         </div>
       )}
+
+      {selectedCue &&
+        typeof document !== "undefined" &&
+        createPortal(
+          <div
+            data-cue-popover="true"
+            style={{
+              ...computeCuePopoverStyle(selectedCue.anchorRect, isMobile),
+              background: "#fef9c3",
+              color: "#1f2937",
+              border: "1px solid #fcd34d",
+              padding: "0.6rem 0.8rem",
+              borderRadius: "10px",
+              whiteSpace: "normal",
+              boxShadow: "0 10px 24px rgba(0,0,0,0.28)",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {selectedCue.cueText}
+          </div>,
+          document.body
+        )}
     </div>
   );
 };
 
-const styles = {
+const buildStyles = (isMobile) => ({
   container: {
-    padding: "2rem",
+    padding: isMobile ? "0.6rem" : "0.75rem 1rem 1.5rem",
     backgroundColor: "#f8fafc",
     color: "#1e293b",
     fontFamily: "Arial, sans-serif",
     fontSize: "14px",
-    height: "100vh",
-    overflow: "hidden",
+    minHeight: "100vh",
+    height: "auto",
+    overflow: "visible",
+    overflowAnchor: "none",
     boxSizing: "border-box",
     lineHeight: "1.5",
   },
@@ -664,22 +1003,32 @@ const styles = {
     color: "#475569",
   },
   headerBar: {
-    position: "sticky",
-    top: 0,
+    position: isMobile ? "static" : "fixed",
+    top: isMobile ? "auto" : 0,
+    left: isMobile ? "auto" : 0,
+    right: isMobile ? "auto" : 0,
+    marginBottom: isMobile ? "0.85rem" : "0.35rem",
+    backgroundColor: "#e2e8f0",
+    padding: isMobile ? "0.65rem 0.8rem" : "0.7rem 0",
+    borderRadius: isMobile ? "10px" : 0,
+    boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
+    zIndex: 1000,
+    boxSizing: "border-box",
+  },
+
+  headerInner: {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: "0.05rem",
-    backgroundColor: "#e2e8f0",
-    padding: "0.75rem 1.25rem",
-    borderRadius: "10px",
-    boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
-    zIndex: 1000,
-    borderLeft: "6px solid #0d9488",
+    width: isMobile ? "100%" : "calc(100% - 2rem)",
+    margin: "0 auto",
+    padding: isMobile ? 0 : "0 0 0 0.9rem",
+    borderLeft: isMobile ? "6px solid #0d9488" : "6px solid #0d9488",
+    boxSizing: "border-box",
   },
 
   heading: {
-    fontSize: "1.4rem",
+    fontSize: isMobile ? "1.1rem" : "1.4rem",
     fontWeight: "bold",
     margin: 0,
   },
@@ -695,23 +1044,28 @@ const styles = {
     fontSize: "0.9rem",
   },
 
-   mainLayout: {
-    display: "grid",
-    gridTemplateColumns: "320px 1fr",
-    gap: "0.5rem",
+  mainLayout: {
+    display: isMobile ? "grid" : "block",
+    gridTemplateColumns: isMobile ? "1fr" : "none",
+    gap: isMobile ? "0.75rem" : "0.75rem",
     alignItems: "start",
-    height: "calc(100vh - 110px)",
-    overflow: "hidden",
+    height: "auto",
+    overflow: "visible",
+    paddingTop: isMobile ? 0 : "4.85rem",
   },
 
   leftPanel: {
-    position: "sticky",
-    top: "80px",
+    position: isMobile ? "static" : "fixed",
+    top: isMobile ? "auto" : "5.1rem",
+    left: isMobile ? "auto" : "1rem",
+    width: isMobile ? "auto" : "320px",
+    zIndex: isMobile ? "auto" : 900,
     height: "fit-content",
   },
 
   rightPanel: {
     minWidth: 0,
+    marginLeft: isMobile ? 0 : "332px",
   },
 
   formBox: {
@@ -721,7 +1075,7 @@ const styles = {
     backgroundColor: "#e2e8f0",
     padding: "1.25rem",
     borderRadius: "14px",
-    marginBottom: "1rem",
+    marginBottom: isMobile ? "0.5rem" : "1rem",
     boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
   },
 
@@ -748,6 +1102,12 @@ const styles = {
     resize: "vertical",
   },
 
+  helperText: {
+    color: "#475569",
+    fontSize: "0.8rem",
+    marginTop: "0.2rem",
+  },
+
   button: {
     padding: "0.85rem",
     fontSize: "1rem",
@@ -761,10 +1121,10 @@ const styles = {
   },
 
   outputBox: {
-    maxHeight: "calc(100vh - 140px)",
-    overflowY: "auto",
+    maxHeight: "none",
+    overflowY: "visible",
     backgroundColor: "#ffffff",
-    padding: "1.5rem",
+    padding: isMobile ? "1rem" : "1.5rem",
     borderRadius: "14px",
     boxShadow: "0 2px 8px rgba(0,0,0,0.12)",
   },
@@ -797,12 +1157,38 @@ const styles = {
   },
 
   sectionHeading: {
-    fontSize: "1.15rem",
-    cursor: "pointer",
+    fontSize: isMobile ? "1rem" : "1.15rem",
     marginTop: "0.5rem",
-    paddingBottom: "0.4rem",
+    marginBottom: "0.35rem",
+  },
+
+  sectionHeadingWrap: {
+    marginTop: "0.5rem",
+    marginBottom: "0.35rem",
+  },
+
+  sectionHeadingButton: {
+    width: "100%",
+    display: "flex",
+    alignItems: "center",
+    gap: "0.5rem",
+    background: "transparent",
+    border: "none",
+    textAlign: "left",
+    color: "#1e293b",
+    fontSize: isMobile ? "1rem" : "1.15rem",
+    fontWeight: 700,
+    cursor: "pointer",
+    padding: isMobile ? "0.55rem 0.2rem" : "0.35rem 0.1rem",
+    borderRadius: "8px",
     borderBottom: "2px solid #0d9488",
   },
-};
+
+  sectionHeadingIcon: {
+    display: "inline-flex",
+    minWidth: "1.1rem",
+    justifyContent: "center",
+  },
+});
 
 export default ScenarioForm;

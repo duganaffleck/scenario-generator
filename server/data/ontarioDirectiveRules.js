@@ -4,7 +4,7 @@ export const ONTARIO_DIRECTIVE_RULES = {
   global: {
     tags: ["global", "governance"],
     appliesTo: {
-      scenarioTypes: ["Medical", "Trauma", "Cardiac", "Respiratory", "Environmental", "Other"]
+      scenarioTypes: ["Medical", "Trauma", "Cardiac", "Respiratory", "Environmental"]
     },
     meta: {
       sourcePriority: ["companion", "als", "bls", "memo"],
@@ -14,7 +14,11 @@ export const ONTARIO_DIRECTIVE_RULES = {
       "Scenarios must reflect current Ontario BLS PCS and ALS PCS expectations.",
       "When relevant, BLS and ALS care should be treated as simultaneous rather than separate layers.",
       "Do not let outdated few-shot habits override these rules.",
-      "Expected treatment and protocol notes should reflect Ontario directive logic rather than generic EMS habits."
+      "Expected treatment and protocol notes should reflect Ontario directive logic rather than generic EMS habits.",
+      "Reference Ontario standards URLs in reasoning and briefs:",
+      "- https://files.ontario.ca/moh_2/moh-standards-basic-life-support-patient-care-standards-v3-4-en-2023-03-10.pdf",
+      "- https://www.ontario.ca/files/2025-04/moh-advanced-life-support-als-patient-care-standards-pcs-5.4-en-2025-04-23.pdf",
+      "- https://ontariobasehospitalgroup.ca/wp-content/uploads/2023/03/2023-02-01_v5.1_Companion-Document.pdf"
     ],
     commonDriftErrors: [
       "Generic North American EMS advice replacing Ontario-specific logic.",
@@ -85,6 +89,12 @@ export const ONTARIO_DIRECTIVE_RULES = {
         ifTreatmentMentionsAny: ["oxygen", "o2"],
         shouldPreferOneOf: ["92-96%", "88-92%"],
         severity: "medium"
+      },
+      {
+        id: "protocol-notes-explicit",
+        ifField: "protocolNotes",
+        shouldContainOneOf: ["O2 titrate 92–96%", "12-lead before nitro", "Right-sided ECG if inferior STEMI"],
+        severity: "low"
       }
     ],
     semesterGuidance: {
@@ -183,6 +193,12 @@ export const ONTARIO_DIRECTIVE_RULES = {
         ifScenarioMentionsAny: ["inferior STEMI"],
         shouldAlsoMentionOneOf: ["V4R", "right-sided"],
         severity: "high"
+      },
+      {
+        id: "protocol-notes-ischemia",
+        ifField: "protocolNotes",
+        shouldContainOneOf: ["12-lead before nitro", "Right-sided ECG if inferior STEMI"],
+        severity: "medium"
       }
     ],
     semesterGuidance: {
@@ -384,7 +400,7 @@ export const ONTARIO_DIRECTIVE_RULES = {
   nauseaVomiting: {
     tags: ["nausea", "vomiting", "antiemetic"],
     appliesTo: {
-      scenarioTypes: ["Medical", "Environmental", "Other"],
+      scenarioTypes: ["Medical", "Environmental"],
       likelyChiefComplaints: [
         "nausea",
         "vomiting",
@@ -433,7 +449,7 @@ export const ONTARIO_DIRECTIVE_RULES = {
   cardiacArrest: {
     tags: ["arrest", "vsa", "resuscitation"],
     appliesTo: {
-      scenarioTypes: ["Cardiac", "Medical", "Other"],
+      scenarioTypes: ["Cardiac", "Medical"],
       likelyChiefComplaints: ["cardiac arrest", "collapse", "VSA", "pulseless"]
     },
     meta: {
