@@ -1,6 +1,8 @@
-# Getting Started with Create React App
+# VitalNotes Scenario Generator
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Build realistic, protocol-aligned simulation scenarios with instructor-grade teaching cues in minutes.
+
+The client app in this repository was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
 

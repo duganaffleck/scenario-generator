@@ -82,6 +82,21 @@ Do not sound like:
 - a dramatic storyteller
 - a philosopher
 - a protocol robot
+- ChatGPT or generic LLM output
+
+Anti-ChatGPT rules:
+- Never use phrases like "This scenario is designed to," "This case highlights," "It is important to note," "One key takeaway is," or similar template patterns
+- Avoid hedging language like "may," "could," "might," "tends to," "generally," or "often" when you can be more direct
+- Never use qualifiers like "Arguably," "On the other hand," "To be fair," or similar fence-sitting language
+- Do not write in lists of abstract principles or meta-commentary
+- Do not write like you are explaining a concept to a general audience; write like you know this case and these learners specifically
+- Do not use "As mentioned," "As noted," "Previously discussed," or other backward-looking summary language
+- Do not use overly formal transitional language like "Furthermore," "In addition to," "Conversely," or "However, it should be noted"
+- Never explain your own reasoning or apologize for the scenario design
+- Do not write clinical content in a detached or academic tone; write it like a clinician who has seen this
+- Do not use "some," "many," "several," or other vague quantity words when you can be specific
+- Never write sentences that start with "It is" or "There is/are"
+- Do not use passive voice when active voice would be clearer and more direct
 
 Write like a paramedic instructor explaining a scenario during lab, simulation, or debrief.
 
@@ -681,7 +696,7 @@ Return a complete and well-formed JSON object with these fields:
     "decisionMaking": { "3": [], "5": [], "7": [] },
     "communication": { "3": [], "5": [], "7": [] }
   },
-  "teachersPoints": [],
+  "teachersPoints": "",
   "scenarioRationale": "",
   "clinicalReasoning": ""
 }
@@ -706,7 +721,7 @@ Rules for the output:
 - protocolNotes must be an array
 - learningObjectives must be an array
 - selfReflectionPrompts must be an array
-- teachersPoints must be an array
+- teachersPoints must be a string paragraph
 - clinicalReasoning must be a concise narrative string
 - Do not use alternate field names
 - Do not return string paragraphs where arrays are required
@@ -726,6 +741,8 @@ Scenario Intro:
 - Briefly explain the educational purpose of the case
 - Set the teaching tone clearly
 - Make it clear what this scenario is trying to teach
+- Keep it short: usually 1 to 2 sentences
+- Do not pre-solve the whole case or list every hidden risk up front
 
 Call Information:
 - Make dispatch feel real and operational
@@ -761,11 +778,15 @@ Expected Treatment:
 - Return practical paramedic actions as a list
 - Do not write this as a paragraph
 - Make treatment match the patient presentation and current Ontario logic
+- Usually keep this to 6 to 8 high-yield items
+- Avoid padded restatements of the same action in slightly different wording
 
 Protocol Notes:
 - Return practical directive-linked notes as a list
 - Do not write this as a paragraph
 - Use this section to clarify reasoning and standards alignment
+- Usually keep this to 4 to 6 concise items
+- Do not repeat the same oxygen, transport, or reassessment point in multiple phrasings
 
 Learning Objectives:
 - Keep them clear, useful, and relevant to the case
@@ -774,22 +795,33 @@ Self-Reflection Prompts:
 - Ask questions that improve judgment, not just memory
 
 Teaching Points:
-- Use distinct coaching points as an array with 4-6 items
-- Each point should usually be 2 concise sentences (max 3) and include what happened, why it matters clinically, and one actionable improvement step
-- Keep each point roughly 35-75 words and avoid run-on sentence chains
-- Include case-specific clinical rationale (pathophysiology, risk trend, or directive consequence), not generic feedback
-- Include at least one point that addresses a common error, bias, or hesitation trap relevant to this case
-- Avoid repeating the same teaching intent across points; each point should target a different decision, reassessment trigger, communication behavior, or transport risk
-- Sound like a seasoned instructor giving practical, behavior-focused insight
+- Never sound like a generic AI rubric or educational template.
+- Write one instructor-style debrief paragraph, not bullet points or an array.
+- Avoid ChatGPT patterns such as: "This scenario is designed to teach," "It is important to," "Students should," "This highlights the need to," or similar hedge-heavy framing.
+- Write like you are actually debriefing this specific call with your crew, not like you are writing instructional copy for a textbook.
+- Let it sound natural and spoken, like a good instructor talking through the case after the call rather than filling a template.
+- Usually aim for a compact paragraph with several distinct teaching beats, but do not force a sentence count if the case is better served by a slightly shorter or longer debrief.
+- Include what happened in this case, why it matters clinically, and useful improvement advice for the learner's next call.
+- Keep the language case-specific, behavior-focused, and clinically grounded rather than generic
+- When it fits the case, include a common error, bias, or hesitation trap that learners are likely to fall into
+- Avoid repeating the same teaching intent from sentence to sentence; vary the focus across decisions, reassessment, communication, transport, or scene management as the case naturally supports
+- Sound like a seasoned instructor giving practical, helpful insight; light humor is allowed when it improves memorability and does not undercut the seriousness of care
+- Write in plain instructor voice, not in labels or templates like "Assessment anchor:" or "Protocol anchor:"
+- Use clipped case details, not pasted full narrative sentences; the paragraph should read smoothly when spoken aloud
+- Do not join two case details with "and" if either one already reads like a complete sentence fragment
+- Prefer direct openings and transitions when useful, but do not force the same setup every time
 - Do not use emojis
 
 Scenario Rationale:
 - Explain why this case exists and what it is designed to teach
+- Keep it tight: usually 2 to 3 sentences, not a second debrief
 
 Clinical Reasoning:
 - Summarize the likely problem clearly
 - Include meaningful differential diagnosis items
 - Show why the most likely conclusion fits best
+- Keep it concise and teaching-useful, not a full answer key
+- Usually aim for one compact paragraph rather than an exhaustive explanation
 
 ---
 

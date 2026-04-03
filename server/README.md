@@ -1,4 +1,6 @@
-# Scenario Generator Server
+# VitalNotes Scenario Generator Server
+
+Build realistic, protocol-aligned simulation scenarios with instructor-grade teaching cues in minutes.
 
 ## Runtime Safety Note
 

@@ -11,16 +11,18 @@ import { buildScenarioHookAddendum, getScenarioHook } from '../data/ontarioScena
 const router = express.Router();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const OPENAI_MODEL = 'gpt-4o';
+const OPENAI_MODEL = 'gpt-5.4';
 const DEFAULT_DIRECTIVE_SOURCES = [
   'BLS PCS 3.4 (2023)',
   'ALS PCS 5.4 (2025)',
   'OBHG ALS PCS Companion v5.4 (2025)'
 ];
-const OPENAI_TIMEOUT_MS = Number(process.env.OPENAI_TIMEOUT_MS || 60_000);
+const OPENAI_TIMEOUT_MS = Number(process.env.OPENAI_TIMEOUT_MS || 180_000);
 const OPENAI_MAX_RETRIES = Number(process.env.OPENAI_MAX_RETRIES || 1);
 const CONTROL_REPAIR_MAX_ATTEMPTS = Math.max(1, Number(process.env.CONTROL_REPAIR_MAX_ATTEMPTS || 2));
+const FEW_SHOT_EXAMPLE_COUNT = Math.max(1, Number(process.env.FEW_SHOT_EXAMPLE_COUNT || 2));
 const IS_PRODUCTION = process.env.NODE_ENV === 'production';
+const ROUTE_BUILD_TAG = '2026-04-03-teaching-runon-medium-v2';
 const ALLOWED_SEMESTERS = ['2', '3', '4'];
 const ALLOWED_COMPLEXITIES = ['Simple', 'Moderate', 'Complex'];
 const ALLOWED_ENVIRONMENTS = ['Urban', 'Rural', 'Wilderness', 'Industrial', 'Home', 'Public Space'];
@@ -368,7 +370,7 @@ function buildFewShotBlock(fewShots, request) {
     .map((item) => ({ item, ...scoreFewShotMatch(item, request) }))
     .sort((left, right) => right.score - left.score);
 
-  const selected = ranked.slice(0, 3);
+  const selected = ranked.slice(0, FEW_SHOT_EXAMPLE_COUNT);
 
   return {
     block: JSON.stringify(
@@ -2548,12 +2550,10 @@ const REQUIRED_FIELDS = {
   },
 
   transportPhase: {
-    packaging: '',
-    transportDecision: '',
     transportConsiderations: [],
     ongoingCare: [],
     reassessmentFocus: [],
-    handoffConsiderations: []
+    handoffConsiderations: ''
   },
 
   expectedTreatment: [],
@@ -2561,7 +2561,7 @@ const REQUIRED_FIELDS = {
   learningObjectives: [],
   selfReflectionPrompts: [],
   grsAnchors: defaultGrsAnchors(),
-  teachersPoints: [],
+  teachersPoints: '',
   scenarioRationale: '',
   clinicalReasoning: '',
   directiveSources: []
@@ -3276,6 +3276,31 @@ function coerceArray(value) {
   return [String(value)];
 }
 
+function normalizeTeachersPoints(value) {
+  if (value == null || value === '') return '';
+
+  if (Array.isArray(value)) {
+    return normalizeSentenceSpacing(
+      value
+        .map((item) => normalizeSentenceSpacing(String(item || '').trim()))
+        .filter(Boolean)
+        .join(' ')
+    );
+  }
+
+  return normalizeSentenceSpacing(
+    String(value)
+      .replace(/\s*\n+\s*/g, ' ')
+      .trim()
+  );
+}
+
+function teachingPointBeats(value) {
+  const paragraph = normalizeTeachersPoints(value);
+  if (!paragraph) return [];
+  return splitTeachingPointSentences(paragraph);
+}
+
 function normalizeDirectiveSources(value) {
   const canonicalizeDirectiveSource = (source) => {
     const raw = normalizeSentenceSpacing(String(source || '').trim());
@@ -3342,6 +3367,85 @@ function normalizeClinicalReasoning(value) {
   return parts.join(' ').trim();
 }
 
+function normalizeEcgInterpretation(value) {
+  const raw = normalizeSentenceSpacing(String(value || ''));
+  if (!raw) return '';
+
+  const cleaned = raw
+    .replace(/[📈📉🫀❤️💓💔]/g, ' ')
+    .replace(/\b(?:ecg|rhythm|interpretation|strip|12\s*-?\s*lead)\b/gi, ' ')
+    .replace(/[^a-z0-9\s]/gi, ' ')
+    .replace(/\s{2,}/g, ' ')
+    .trim()
+    .toLowerCase();
+
+  if (!cleaned) return '';
+  if (cleaned === 'not applicable') return 'Not applicable';
+
+  for (const allowed of ECG_WHITELIST) {
+    if (cleaned === allowed.toLowerCase()) {
+      return allowed;
+    }
+  }
+
+  return '';
+}
+
+function clampListItemText(value, { maxWords = 24, maxChars = 170 } = {}) {
+  const normalized = normalizeSentenceSpacing(String(value || '').trim());
+  if (!normalized) return '';
+
+  const words = normalized.split(/\s+/).filter(Boolean);
+  if (words.length <= maxWords && normalized.length <= maxChars) {
+    return ensureCueSentenceEnding(normalized);
+  }
+
+  // Do not hard-truncate list items mid-thought; let caller limit item count instead.
+  return ensureCueSentenceEnding(normalized);
+}
+
+function selectSentencesWithinLimits(sentences, { maxSentences = 4, maxWords = 120, maxChars = 760 } = {}) {
+  const cleaned = (Array.isArray(sentences) ? sentences : [])
+    .map((sentence) => ensureCueSentenceEnding(normalizeSentenceSpacing(String(sentence || '').trim())))
+    .filter(Boolean);
+
+  if (!cleaned.length) return [];
+
+  const selected = [];
+  let wordCount = 0;
+  let charCount = 0;
+
+  for (const sentence of cleaned) {
+    if (selected.length >= maxSentences) break;
+
+    const sentenceWords = sentence.split(/\s+/).filter(Boolean).length;
+    const projectedWords = wordCount + sentenceWords;
+    const projectedChars = charCount + sentence.length + (selected.length ? 1 : 0);
+
+    if (selected.length > 0 && (projectedWords > maxWords || projectedChars > maxChars)) {
+      break;
+    }
+
+    selected.push(sentence);
+    wordCount = projectedWords;
+    charCount = projectedChars;
+  }
+
+  return selected.length ? selected : [cleaned[0]];
+}
+
+function clampParagraphText(value, { maxSentences = 4, maxWords = 120, maxChars = 760 } = {}) {
+  const normalized = normalizeSentenceSpacing(String(value || '').trim());
+  if (!normalized) return '';
+
+  const selected = selectSentencesWithinLimits(splitTeachingPointSentences(normalized), {
+    maxSentences,
+    maxWords,
+    maxChars
+  });
+  return normalizeSentenceSpacing(selected.join(' '));
+}
+
 function normalizeVitalSigns(value, ecgInterpretation) {
   const source = value && typeof value === 'object' ? value : {};
   const firstRaw = source.firstSet || source.first || {};
@@ -3353,30 +3457,20 @@ function normalizeVitalSigns(value, ecgInterpretation) {
   const additionalSets = additionalRaw.map((set) => {
     const normalizedSet = { ...defaultVitalSet(), ...(set || {}) };
 
-    if (
-      normalizedSet.ecgInterpretation &&
-      !ECG_WHITELIST.includes(normalizedSet.ecgInterpretation)
-    ) {
-      normalizedSet.ecgInterpretation = '';
-    }
+    normalizedSet.ecgInterpretation = normalizeEcgInterpretation(normalizedSet.ecgInterpretation);
 
     return normalizedSet;
   });
 
+  firstSet.ecgInterpretation = normalizeEcgInterpretation(firstSet.ecgInterpretation);
+  secondSet.ecgInterpretation = normalizeEcgInterpretation(secondSet.ecgInterpretation);
+  const normalizedRootEcg = normalizeEcgInterpretation(ecgInterpretation);
+
   if (
-    ecgInterpretation &&
-    ECG_WHITELIST.includes(ecgInterpretation) &&
+    normalizedRootEcg &&
     !firstSet.ecgInterpretation
   ) {
-    firstSet.ecgInterpretation = ecgInterpretation;
-  }
-
-  if (firstSet.ecgInterpretation && !ECG_WHITELIST.includes(firstSet.ecgInterpretation)) {
-    firstSet.ecgInterpretation = '';
-  }
-
-  if (secondSet.ecgInterpretation && !ECG_WHITELIST.includes(secondSet.ecgInterpretation)) {
-    secondSet.ecgInterpretation = '';
+    firstSet.ecgInterpretation = normalizedRootEcg;
   }
 
   return { firstSet, secondSet, additionalSets };
@@ -3420,6 +3514,9 @@ function normalizeCaseProgression(value) {
 
 function normalizeScenarioData(rawData) {
   const merged = mergeDeepStrict(REQUIRED_FIELDS, rawData || {});
+  const rawTransportPhase = rawData?.transportPhase && typeof rawData.transportPhase === 'object'
+    ? rawData.transportPhase
+    : {};
 
   const ecgInterpretation =
     merged.vitalSigns?.firstSet?.ecgInterpretation ||
@@ -3435,7 +3532,7 @@ function normalizeScenarioData(rawData) {
   merged.protocolNotes = coerceArray(merged.protocolNotes);
   merged.learningObjectives = coerceArray(merged.learningObjectives);
   merged.selfReflectionPrompts = coerceArray(merged.selfReflectionPrompts);
-  merged.teachersPoints = coerceArray(merged.teachersPoints);
+  merged.teachersPoints = normalizeTeachersPoints(merged.teachersPoints);
   merged.directiveSources = normalizeDirectiveSources(merged.directiveSources);
 
   merged.callInformation.dispatchNotes = coerceArray(merged.callInformation.dispatchNotes);
@@ -3466,12 +3563,22 @@ function normalizeScenarioData(rawData) {
 
   merged.additionalAssessments = coerceArray(merged.additionalAssessments);
 
-  merged.transportPhase.transportConsiderations = coerceArray(merged.transportPhase.transportConsiderations);
+  merged.transportPhase.transportConsiderations = coerceArray([
+    ...coerceArray(merged.transportPhase.transportConsiderations),
+    ...coerceArray(rawTransportPhase.packaging),
+    ...coerceArray(rawTransportPhase.transportDecision)
+  ]);
   merged.transportPhase.ongoingCare = coerceArray(merged.transportPhase.ongoingCare);
   merged.transportPhase.reassessmentFocus = coerceArray(merged.transportPhase.reassessmentFocus);
-  if (typeof merged.transportPhase.handoffConsiderations !== 'string') {
-    merged.transportPhase.handoffConsiderations = String(merged.transportPhase.handoffConsiderations || '');
-  }
+  merged.transportPhase.handoffConsiderations = normalizeSentenceSpacing(
+    stringifyValue(
+      pickFirstDefined(
+        merged.transportPhase.handoffConsiderations,
+        rawTransportPhase.handoffConsiderations,
+        ''
+      )
+    )
+  );
 
   if (typeof merged.clinicalReasoning !== 'string') {
     const cr = merged.clinicalReasoning;
@@ -4414,7 +4521,7 @@ function collectScenarioNarrativeText(scenario, { forComplexity = false } = {}) 
         scenario?.clinicalReasoning,
         ...(scenario?.expectedTreatment || []),
         ...(scenario?.protocolNotes || []),
-        ...(scenario?.teachersPoints || []),
+      scenario?.teachersPoints,
         ...(scenario?.learningObjectives || []),
         ...(scenario?.transportPhase?.transportConsiderations || []),
         ...(scenario?.transportPhase?.ongoingCare || []),
@@ -4818,7 +4925,6 @@ function buildCueContext(scenario) {
 
   const transportAnchor =
     scenario?.transportPhase?.transportConsiderations?.[0] ||
-    scenario?.transportPhase?.transportDecision ||
     'handoff-ready reassessment priorities';
 
   const directiveAnchor =
@@ -5451,22 +5557,6 @@ function ensureTeachingCueCoverage(scenario, includeTeachingCues, variationSeed 
       cueTag: 'transport',
       priority: 4
     }),
-    buildStringPlacement({
-      key: 'transport',
-      section: 'transportPhase',
-      path: ['transportPhase', 'packaging'],
-      cueKey: 'transport',
-      cueTag: 'transport',
-      priority: 3
-    }),
-    buildStringPlacement({
-      key: 'transport',
-      section: 'transportPhase',
-      path: ['transportPhase', 'transportDecision'],
-      cueKey: 'transport',
-      cueTag: 'transport',
-      priority: 3
-    }),
     buildArrayPlacement({
       key: 'reasoning',
       section: 'learningObjectives',
@@ -5481,15 +5571,6 @@ function ensureTeachingCueCoverage(scenario, includeTeachingCues, variationSeed 
       section: 'selfReflectionPrompts',
       parentPath: [],
       arrayKey: 'selfReflectionPrompts',
-      cueKey: 'reasoning',
-      cueTag: 'reasoning',
-      priority: 3
-    }),
-    buildArrayPlacement({
-      key: 'reasoning',
-      section: 'teachersPoints',
-      parentPath: [],
-      arrayKey: 'teachersPoints',
       cueKey: 'reasoning',
       cueTag: 'reasoning',
       priority: 3
@@ -5666,7 +5747,7 @@ function countMedicationMentionsInScenario(scenario) {
     ...(scenario?.expectedTreatment || []),
     ...(scenario?.protocolNotes || []),
     ...(scenario?.learningObjectives || []),
-    ...(scenario?.teachersPoints || []),
+    scenario?.teachersPoints,
     ...(scenario?.caseProgression?.withProperTreatment || []),
     ...(scenario?.caseProgression?.withoutProperTreatment || []),
     ...(scenario?.caseProgression?.withIncorrectTreatment || []),
@@ -5699,11 +5780,12 @@ function containsMedicationIntervention(value = '') {
 
 function stripMedicationItems(items, filterType = 'broad') {
   // filterType: 'broad' removes any medication mention; 'interventionOnly' removes only intervention actions
-  if (!Array.isArray(items)) return [];
+  const normalizedItems = Array.isArray(items) ? items : coerceArray(items);
+  if (!normalizedItems.length) return [];
   
   const filterFn = filterType === 'interventionOnly' ? containsMedicationIntervention : containsMedicationLanguage;
   
-  return items
+  return normalizedItems
     .map((item) => normalizeSentenceSpacing(String(item || '').trim()))
     .filter(Boolean)
     .filter((item) => !filterFn(item));
@@ -5746,6 +5828,190 @@ function normalizeSimpleList(items, maxItems = 1) {
     .slice(0, maxItems);
 }
 
+function ensureTeachingPointCoverage(scenario) {
+  if (!scenario || typeof scenario !== 'object') return scenario;
+
+  const existing = teachingPointBeats(scenario?.teachersPoints || '');
+  const kept = [];
+  const seen = new Set();
+  for (const point of existing) {
+    const normalized = normalizeSentenceSpacing(String(point || '').trim());
+    if (!normalized) continue;
+    const fp = fingerprintCueText(normalized);
+    if (!fp || seen.has(fp)) continue;
+    seen.add(fp);
+    kept.push(normalized);
+  }
+
+  const c = buildCueContext(scenario);
+  const candidates = [
+    `Anchor your first decision to ${c.presentationAnchor || c.chiefComplaint}. This matters because early framing errors delay risk recognition, so on your next call state your top risk out loud in the first minute.`,
+    `Use ${c.vitalTrendAnchor || c.vitalAnchor} as a trend, not a single datapoint. Trend-based decisions reduce missed deterioration, so on your next call name the expected next change before reassessment.`,
+    `Treat ${c.barrierAnchor || 'history gaps'} as a clinical threat, not a documentation issue. Missing context can produce the wrong treatment path, so on your next call ask one focused question that could change destination or urgency.`,
+    `Build transport around ${c.transportAnchor || c.reassessmentAnchor}. Transport planning prevents late-call deterioration, so on your next call declare one monitor target and one escalation trigger before moving.`,
+    `Use protocol deliberately around ${c.protocolActionAnchor || c.treatmentAnchor}. Protocol adherence protects safety only when tied to findings, so on your next call verbalize what supports your step and what would make you stop.`,
+    `During handoff, prioritize ${c.handoffAnchor || c.vitalTrendAnchor} over generic summaries. Specific trend communication improves continuity, so on your next call give one-line trajectory language: improved, unchanged, or worsening with evidence.`
+  ].map((line) => normalizeSentenceSpacing(line));
+
+  for (const candidate of candidates) {
+    if (kept.length >= 5) break;
+    const fp = fingerprintCueText(candidate);
+    if (!fp || seen.has(fp)) continue;
+    seen.add(fp);
+    kept.push(candidate);
+  }
+
+  scenario.teachersPoints = normalizeTeachersPoints(kept.slice(0, 6));
+  return scenario;
+}
+
+function buildDeterministicDeepTeachingPoints(scenario) {
+  const c = buildCueContext(scenario);
+  const presentationHint = cueHintSnippet(c.presentationAnchor || c.chiefComplaint, 'the first clue', 8, 70);
+  const vitalTrendHint = cueHintSnippet(c.vitalTrendAnchor || c.vitalAnchor, 'the trend that changed the call', 9, 78);
+  const protocolHint = cueHintSnippet(c.protocolActionAnchor || c.treatmentAnchor, 'the next protocol step', 10, 84);
+  const historyHint = cueHintSnippet(c.barrierAnchor || c.reassessmentAnchor, 'the missing history piece', 9, 78);
+  const pitfallHint = cueHintSnippet(c.pitfallAnchor || c.progressionAnchor, 'the reassurance trap', 10, 86);
+  const transportHint = cueHintSnippet(c.transportAnchor || c.handoffAnchor, 'the transport problem', 10, 86);
+
+  const beats = [
+    `${presentationHint} looked manageable for a minute, but ${vitalTrendHint} should have changed the tone of the call fast.`,
+    `${pitfallHint} is where crews get in trouble because the first reassuring story starts outranking the reassessment.`,
+    `${historyHint} should have tightened the differential and made ${protocolHint} a deliberate step instead of busywork.`,
+    `On the next call, say the main risk out loud early, tell your partner what change you expect next, and build transport around ${transportHint}.`
+  ].map((item) => normalizeSentenceSpacing(item));
+
+  return normalizeTeachersPoints(beats);
+}
+
+function teachingPointsLookCaseSpecific(scenario) {
+  const paragraph = normalizeTeachersPoints(scenario?.teachersPoints || '');
+  if (!paragraph) return false;
+
+  const specificityTokens = [...buildCueSpecificityTokenSet(scenario)].filter((token) => token.length >= 5);
+  const lower = paragraph.toLowerCase();
+  const tokenHits = specificityTokens.reduce((count, token) => count + (lower.includes(token) ? 1 : 0), 0);
+  const concreteSignals = /\b(spo2|etco2|rr|hr|bp|gcs|12-lead|transport|handoff|scene|history|movement|deterioration|trend)\b/i.test(paragraph);
+  return tokenHits >= 2 || concreteSignals;
+}
+
+function ensureTeachingPointsConcise(scenario) {
+  if (!scenario || typeof scenario !== 'object') return scenario;
+  const paragraph = normalizeTeachersPoints(scenario?.teachersPoints || '');
+  if (!paragraph) return scenario;
+
+  const selected = selectSentencesWithinLimits(splitTeachingPointSentences(paragraph), {
+    maxSentences: 5,
+    maxWords: 130,
+    maxChars: 900
+  });
+
+  scenario.teachersPoints = normalizeTeachersPoints(selected.join(' '));
+  return scenario;
+}
+
+function enforceTeachingPointQuality(scenario) {
+  if (!scenario || typeof scenario !== 'object') return scenario;
+
+  const quality = analyzeTeachingPointQuality(scenario);
+  if (
+    quality.total >= 3 &&
+    quality.repetitiveCount === 0 &&
+    quality.genericPhraseCount === 0 &&
+    teachingPointsLookCaseSpecific(scenario)
+  ) {
+    return ensureTeachingPointsConcise(scenario);
+  }
+
+  scenario.teachersPoints = buildDeterministicDeepTeachingPoints(scenario);
+  return ensureTeachingPointsConcise(scenario);
+}
+
+function enforceScenarioSectionConciseness(scenario) {
+  if (!scenario || typeof scenario !== 'object') return scenario;
+
+  scenario.scenarioIntro = clampParagraphText(scenario.scenarioIntro, { maxSentences: 2, maxWords: 60, maxChars: 360 });
+  scenario.scenarioRationale = clampParagraphText(scenario.scenarioRationale, { maxSentences: 2, maxWords: 75, maxChars: 420 });
+  scenario.clinicalReasoning = clampParagraphText(scenario.clinicalReasoning, { maxSentences: 5, maxWords: 150, maxChars: 900 });
+
+  scenario.expectedTreatment = (scenario.expectedTreatment || [])
+    .map((item) => ensureCueSentenceEnding(normalizeSentenceSpacing(String(item || '').trim())))
+    .filter(Boolean)
+    .slice(0, 8);
+
+  scenario.protocolNotes = (scenario.protocolNotes || [])
+    .map((item) => ensureCueSentenceEnding(normalizeSentenceSpacing(String(item || '').trim())))
+    .filter(Boolean)
+    .slice(0, 6);
+
+  scenario.learningObjectives = normalizeSimpleList(scenario.learningObjectives, 5);
+  scenario.selfReflectionPrompts = normalizeSimpleList(scenario.selfReflectionPrompts, 5);
+
+  return scenario;
+}
+
+function ensureDeterministicMinimumCueCoverage(scenario, includeTeachingCues) {
+  if (!includeTeachingCues || !scenario || typeof scenario !== 'object') return scenario;
+
+  const metrics = collectTeachingCueMetrics(scenario);
+  if (metrics.cueCount >= 6 && metrics.sectionsWithCues.length >= 4) return scenario;
+
+  const c = buildCueContext(scenario);
+  const injectors = [
+    () => {
+      scenario.callInformation = scenario.callInformation || {};
+      scenario.callInformation.crewNotes = appendCueToString(
+        scenario?.callInformation?.crewNotes,
+        `Start with ${c.sceneAnchor || 'scene clues'} and state the immediate risk before action.`,
+        'arrival'
+      );
+    },
+    () => {
+      scenario.patientPresentation = appendCueToString(
+        scenario?.patientPresentation,
+        `Use ${c.presentationAnchor || c.chiefComplaint} to frame urgency and name one reassessment trigger.`,
+        'assessment'
+      );
+    },
+    () => {
+      scenario.initialAssessment = scenario.initialAssessment || {};
+      scenario.initialAssessment.generalImpression = appendCueToString(
+        scenario?.initialAssessment?.generalImpression,
+        'Before treatment, state what could deteriorate first and why.',
+        'assessment'
+      );
+    },
+    () => {
+      if (!Array.isArray(scenario.protocolNotes)) scenario.protocolNotes = [];
+      scenario.protocolNotes.push(createCue('Link the next protocol step to one concrete finding and one stop condition.', 'protocol'));
+    },
+    () => {
+      scenario.clinicalReasoning = appendCueToString(
+        scenario?.clinicalReasoning,
+        'Give your working diagnosis, then name one finding that could disconfirm it.',
+        'reasoning'
+      );
+    },
+    () => {
+      scenario.transportPhase = scenario.transportPhase || {};
+      if (!Array.isArray(scenario.transportPhase.reassessmentFocus)) {
+        scenario.transportPhase.reassessmentFocus = [];
+      }
+      scenario.transportPhase.reassessmentFocus.push(
+        createCue('During transport, protect one monitor target and state the escalation trigger.', 'transport')
+      );
+    }
+  ];
+
+  for (const inject of injectors) {
+    const current = collectTeachingCueMetrics(scenario);
+    if (current.cueCount >= 6 && current.sectionsWithCues.length >= 4) break;
+    inject();
+  }
+
+  return scenario;
+}
+
 function enforceScenarioControls(scenario, controls) {
   if (!scenario || typeof scenario !== 'object') return scenario;
 
@@ -5767,7 +6033,7 @@ function enforceScenarioControls(scenario, controls) {
     scenario.expectedTreatment = stripMedicationItems(scenario.expectedTreatment, 'broad');
     scenario.protocolNotes = stripMedicationItems(scenario.protocolNotes, 'interventionOnly');
     scenario.learningObjectives = stripMedicationItems(scenario.learningObjectives, 'broad');
-    scenario.teachersPoints = stripMedicationItems(scenario.teachersPoints, 'broad');
+    scenario.teachersPoints = normalizeTeachersPoints(stripMedicationItems(scenario.teachersPoints, 'broad'));
     if (scenario?.caseProgression && typeof scenario.caseProgression === 'object') {
       scenario.caseProgression.withProperTreatment = stripMedicationItems(scenario.caseProgression.withProperTreatment, 'interventionOnly');
       scenario.caseProgression.withoutProperTreatment = stripMedicationItems(scenario.caseProgression.withoutProperTreatment, 'interventionOnly');
@@ -5835,6 +6101,29 @@ function enforceScenarioControls(scenario, controls) {
     }
   }
 
+  if (requestedComplexity === 'Moderate') {
+    if (scenario?.sceneArrival && typeof scenario.sceneArrival === 'object') {
+      scenario.sceneArrival.hazards = normalizeSimpleList(scenario.sceneArrival.hazards, 1);
+      if (scenario.sceneArrival.accessIssues) {
+        scenario.sceneArrival.accessIssues = '';
+      }
+    }
+
+    if (scenario?.historyGathering && typeof scenario.historyGathering === 'object') {
+      scenario.historyGathering.contradictionsOrBarriers =
+        normalizeSimpleList(scenario.historyGathering.contradictionsOrBarriers, 1);
+    }
+
+    if (scenario?.transportPhase && typeof scenario.transportPhase === 'object') {
+      scenario.transportPhase.transportConsiderations =
+        normalizeSimpleList(scenario.transportPhase.transportConsiderations, 1);
+    }
+
+    if (scenario?.vitalSigns && typeof scenario.vitalSigns === 'object') {
+      scenario.vitalSigns.additionalSets = (scenario.vitalSigns.additionalSets || []).slice(0, 0);
+    }
+  }
+
   return scenario;
 }
 
@@ -5857,9 +6146,9 @@ function detectControlDrift(scenario, controls) {
   const inferredCallType = normalizeCallFamily(
     scenario?.callInformation?.type || `${scenario?.title || ''} ${scenario?.clinicalReasoning || ''}`
   );
-  const inferredEnvironment = normalizeEnvironmentTag(
+  const explicitEnvironment = normalizeEnvironmentTag(scenario?.callInformation?.environment || '');
+  const inferredEnvironment = explicitEnvironment || normalizeEnvironmentTag(
     [
-      scenario?.callInformation?.environment || '',
       scenario?.callInformation?.location || '',
       scenario?.sceneArrival?.sceneDescription || '',
       ...(scenario?.sceneArrival?.environmentDetails || [])
@@ -5960,7 +6249,7 @@ function detectControlDrift(scenario, controls) {
     issues.push({
       severity: 'high',
       code: 'teaching-points-too-few',
-      message: `Teaching points are under-populated (${teachingPointQuality.total}). Provide 4-6 case-specific coaching points.`
+      message: `Instructor debrief is underdeveloped (${teachingPointQuality.total} teaching beat${teachingPointQuality.total === 1 ? '' : 's'}). Provide one case-specific paragraph with 4-6 strong teaching beats.`
     });
   }
 
@@ -5968,23 +6257,23 @@ function detectControlDrift(scenario, controls) {
     issues.push({
       severity: teachingPointQuality.repetitiveCount >= 2 ? 'high' : 'medium',
       code: 'teaching-points-repetitive',
-      message: `Teaching points are repetitive (${teachingPointQuality.repetitiveCount} overlap signal${teachingPointQuality.repetitiveCount === 1 ? '' : 's'}). Vary each point's decision focus and action step.`
+      message: `Instructor debrief is repetitive (${teachingPointQuality.repetitiveCount} overlap signal${teachingPointQuality.repetitiveCount === 1 ? '' : 's'}). Vary the teaching beats instead of repeating the same coaching idea.`
     });
   }
 
   if (teachingPointQuality.runOnCount > 0) {
     issues.push({
-      severity: teachingPointQuality.runOnCount >= 2 ? 'high' : 'medium',
+      severity: 'medium',
       code: 'teaching-points-run-on',
-      message: `Teaching points are too long in ${teachingPointQuality.runOnCount} item(s). Keep each point tight (typically 2 short sentences, max 3).`
+      message: `Instructor debrief has ${teachingPointQuality.runOnCount} overlong teaching beat${teachingPointQuality.runOnCount === 1 ? '' : 's'}. Keep the paragraph conversational but tight.`
     });
   }
 
   if (teachingPointQuality.surfaceLevelCount > 0) {
     issues.push({
-      severity: teachingPointQuality.surfaceLevelCount >= 2 ? 'high' : 'medium',
+      severity: 'medium',
       code: 'teaching-points-surface-level',
-      message: `Teaching points are surface-level in ${teachingPointQuality.surfaceLevelCount} item(s). Add concrete case detail, clinical rationale, and a specific next-call action.`
+      message: `Instructor debrief is surface-level in ${teachingPointQuality.surfaceLevelCount} teaching beat${teachingPointQuality.surfaceLevelCount === 1 ? '' : 's'}. Add concrete case detail, clinical rationale, and a specific next-call action.`
     });
   }
 
@@ -5992,7 +6281,7 @@ function detectControlDrift(scenario, controls) {
     issues.push({
       severity: 'medium',
       code: 'teaching-points-generic-language',
-      message: `Teaching points use generic boilerplate phrasing (${teachingPointQuality.genericPhraseCount} signal${teachingPointQuality.genericPhraseCount === 1 ? '' : 's'}). Replace with case-anchored coaching.`
+      message: `Instructor debrief uses generic boilerplate phrasing (${teachingPointQuality.genericPhraseCount} signal${teachingPointQuality.genericPhraseCount === 1 ? '' : 's'}). Replace it with case-anchored coaching.`
     });
   }
 
@@ -6076,9 +6365,49 @@ function splitTeachingPointSentences(text) {
     .filter(Boolean);
 }
 
+function trimDanglingTeachingWords(value) {
+  let trimmed = normalizeSentenceSpacing(String(value || ''))
+    .replace(/[,:;\-]+\s*$/g, '')
+    .trim();
+
+  const danglingPattern = /\b(?:and|or|but|so|because|with|without|to|of|for|per|via|the|a|an|your|their|this|that)\.?$/i;
+  while (danglingPattern.test(trimmed)) {
+    trimmed = trimmed.replace(danglingPattern, '').trim();
+  }
+
+  return trimmed;
+}
+
+function clampTeachingPointSentence(sentence, { maxWords = 22, maxChars = 150 } = {}) {
+  const normalized = normalizeSentenceSpacing(String(sentence || ''))
+    .replace(/[,:;]\s*$/, '')
+    .trim();
+
+  if (!normalized) return '';
+
+  const words = normalized.split(/\s+/).filter(Boolean);
+  if (words.length <= maxWords && normalized.length <= maxChars) {
+    return ensureCueSentenceEnding(normalized);
+  }
+
+  const lower = normalized.toLowerCase();
+  const clauseBreakers = [', so ', ', but ', ', and ', ' because ', ' which ', ' while ', '; ', ': '];
+  let bestSegment = '';
+
+  clauseBreakers.forEach((breaker) => {
+    const index = lower.indexOf(breaker.trim().toLowerCase());
+    if (index > 0 && index <= maxChars && index > bestSegment.length) {
+      bestSegment = normalized.slice(0, index);
+    }
+  });
+
+  const candidate = bestSegment || words.slice(0, maxWords).join(' ');
+  const cleanedCandidate = trimDanglingTeachingWords(trimToWordBoundary(candidate, maxChars));
+  return ensureCueSentenceEnding(cleanedCandidate || normalized);
+}
+
 function analyzeTeachingPointQuality(scenario) {
-  const rawPoints = Array.isArray(scenario?.teachersPoints) ? scenario.teachersPoints : [];
-  const points = rawPoints
+  const points = teachingPointBeats(scenario?.teachersPoints)
     .map((point) => normalizeSentenceSpacing(String(point || '').trim()))
     .filter(Boolean);
 
@@ -6199,7 +6528,7 @@ Repair priorities:
 - Keep the strongest existing content and structure where possible.
 - Revise the scenario so semester expectations are concrete, not implied.
 - Revise scene burden, ambiguity, reassessment burden, and treatment expectations so complexity clearly matches the request.
-- Keep teachersPoints concise, non-repetitive, and clinically deep: 4-6 distinct points, each usually 2 short sentences (max 3), with one concrete case anchor, one why-it-matters rationale, and one explicit next-call action.
+- Keep teachersPoints as one instructor-style paragraph with a few distinct teaching beats, direct coaching voice, concrete case anchors, clinical rationale, and clear next-call improvement advice. Let it read naturally instead of like a fixed template.
 - Preserve Ontario directive references and keep directiveSources populated.
 - If teaching cues are enabled, increase cue density and section coverage while keeping cues clinically useful.
 - Fix sentence spacing consistency across all fields so there is a space after punctuation between sentences.
@@ -6243,6 +6572,7 @@ router.post('/', async (req, res) => {
       : Math.trunc(Date.now() + Math.random() * 1000000);
 
     devLog('PARSED CONTROL DEBUG:', {
+      routeBuildTag: ROUTE_BUILD_TAG,
       semester,
       finalCallType,
       environment,
@@ -6502,12 +6832,10 @@ Case progression rules:
 
 - transportPhase must contain:
 {
-  "packaging": "",
-  "transportDecision": "",
   "transportConsiderations": [],
   "ongoingCare": [],
   "reassessmentFocus": [],
-  "handoffConsiderations": []
+  "handoffConsiderations": ""
 }
 
 - clinicalReasoning must contain:
@@ -6558,7 +6886,7 @@ ${ECG_WHITELIST.map((item) => `- ${item}`).join('\n')}
 - Update vitalSigns.secondSet.ecgInterpretation only if the rhythm changes
 - If additionalSets are used, only include ECG changes when clinically justified
 - If the case is isolated trauma (no cardiac component), leave ecgInterpretation blank or use "Not applicable"
-- For non-cardiac calls, ecgInterpretation should be blank, "Normal sinus rhythm", or "Not applicable"—never emoji or placeholder text.
+- For non-cardiac calls, ecgInterpretation should be blank, "Normal Sinus Rhythm", or "Not applicable"; never emoji or placeholder text.
 
 Scenario parameters:
 - Semester: ${semester}
@@ -6668,24 +6996,31 @@ Critical output rules:
 - Populate every top-level field.
 - Populate every required nested object.
 - expectedTreatment must be a practical list of paramedic actions.
+- Keep expectedTreatment concise: usually 6-8 high-yield items, no padded restatements.
 - protocolNotes must be a practical list, not a paragraph.
   - Each item should reference Ontario standards when clinically relevant (e.g., "per BLS PCS", "per ALS PCS").
   - At least 50% of items must include explicit directive references.
+- Keep protocolNotes concise: usually 4-6 short items.
 - learningObjectives must be populated.
 - selfReflectionPrompts must be populated.
 - teachersPoints must be populated.
-- teachersPoints must be an educational coaching array with 4-6 distinct points.
-- Each teachersPoints item should usually be 2 concise sentences (max 3) and include: what happened in this case, why it matters clinically, and one concrete improvement action for the learner's next call.
-- Keep each teachersPoints item roughly 35-75 words. Avoid long run-on sentences.
-- Teaching points should be specific to this case and include clinically grounded rationale (pathophysiology, risk, or protocol consequence) rather than generic advice.
-- At least one teachersPoints item should call out a common pitfall or bias relevant to this case.
-- Avoid repeating the same teaching intent across points. Each point should target a different decision, reassessment trigger, communication step, or transport risk.
+- teachersPoints must be one instructor-style debrief paragraph, not an array.
+- The paragraph should usually be compact and natural, with several distinct teaching beats woven together without sounding formulaic.
+- Use direct preceptor voice that sounds helpful, clear, and practical. Light humor is allowed when it improves memorability and does not undercut safety.
+- Include what happened in this case, why it matters clinically, and concrete improvement advice for the learner's next call.
+- Keep the paragraph case-specific and clinically grounded; include a common pitfall, bias, or hesitation trap when it genuinely fits the case.
+- Avoid repeating the same teaching intent from sentence to sentence.
+- NEVER sound like a generic AI template or textbook rubric. Never use phrases like "This scenario is designed to teach," "It is important to," "Students should," "This highlights the need to," or similar hedge-heavy framing.
+- Write like you are actually debriefing this specific call with your crew after it happened, not like you are writing instructional copy.
 - Do not use emojis in teachersPoints.
 - directiveSources must be populated as an array listing which Ontario documents shaped decision points.
 - caseProgression must clearly describe proper treatment, lack of proper treatment, and incorrect treatment.
 - initialAssessment and secondaryAssessment must not simply duplicate each other.
 - If the patient's condition changes, reassessment findings must visibly change.
 - additionalSets should be populated whenever treatment, movement, deterioration, or a mid-call event meaningfully changes the call.
+- scenarioIntro should be 1-2 short sentences and should not pre-solve the whole case.
+- scenarioRationale should be 2-3 short sentences, not a second full debrief.
+- clinicalReasoning should stay concise and teaching-useful, not a full answer key.
 - directiveSources is MANDATORY for every scenario.
   - Must include at least one of: ["BLS PCS 3.4 (2023)", "ALS PCS 5.4 (2025)", "OBHG ALS PCS Companion v5.4 (2025)"].
   - Must reflect which Ontario document(s) shaped the decision points in the scenario.
@@ -6731,6 +7066,11 @@ Critical output rules:
     normalized = enforceTeachingCueSpecificity(normalized, Boolean(includeTeachingCues));
     normalized = enforceTeachingCueSectionDiscipline(normalized, Boolean(includeTeachingCues));
     normalized = enforceDoseCueSafety(normalized, Boolean(includeTeachingCues));
+    normalized = ensureTeachingCueCoverage(normalized, Boolean(includeTeachingCues), generationVariationSeed + 101);
+    normalized = ensureDeterministicMinimumCueCoverage(normalized, Boolean(includeTeachingCues));
+    normalized = ensureTeachingPointCoverage(normalized);
+    normalized = enforceTeachingPointQuality(normalized);
+    normalized = enforceScenarioSectionConciseness(normalized);
 
     const looksEmpty =
       !normalized.title &&
@@ -6743,7 +7083,8 @@ Critical output rules:
       !normalized.callInformation?.location &&
       !normalized.patientDemographics?.chiefComplaint &&
       !(normalized.caseProgression?.withProperTreatment || []).length &&
-      !normalized.transportPhase?.transportDecision &&
+      !(normalized.transportPhase?.transportConsiderations || []).length &&
+      !normalized.transportPhase?.handoffConsiderations &&
       !normalized.clinicalReasoning &&
       !(normalized.expectedTreatment || []).length &&
       !(normalized.learningObjectives || []).length &&
@@ -6812,8 +7153,20 @@ Critical output rules:
           Boolean(includeTeachingCues)
         );
         const doseSafeRepaired = enforceDoseCueSafety(postCoverageSectionDisciplined, Boolean(includeTeachingCues));
+        const finalCueCoveredRepaired = ensureTeachingCueCoverage(
+          doseSafeRepaired,
+          Boolean(includeTeachingCues),
+          generationVariationSeed + repairAttempt + 101
+        );
+        const deterministicCueCoveredRepaired = ensureDeterministicMinimumCueCoverage(
+          finalCueCoveredRepaired,
+          Boolean(includeTeachingCues)
+        );
+        const teachingPointSafeRepaired = ensureTeachingPointCoverage(deterministicCueCoveredRepaired);
+        const deepTeachingPointSafeRepaired = enforceTeachingPointQuality(teachingPointSafeRepaired);
+        const conciseRepaired = enforceScenarioSectionConciseness(deepTeachingPointSafeRepaired);
 
-        const repairedValidation = detectControlDrift(doseSafeRepaired, {
+        const repairedValidation = detectControlDrift(conciseRepaired, {
           semester,
           complexity,
           callType: finalCallType,
@@ -6823,7 +7176,7 @@ Critical output rules:
         });
 
         if (repairedValidation.issues.length < bestValidation.issues.length) {
-          bestScenario = doseSafeRepaired;
+          bestScenario = conciseRepaired;
           bestValidation = repairedValidation;
         }
 
@@ -6834,6 +7187,40 @@ Critical output rules:
 
       normalized = bestScenario;
       validation = bestValidation;
+    }
+
+    // Final deterministic quality fail-safe: if only teaching-point quality remains high,
+    // rewrite points in-process and revalidate once before returning a hard failure.
+    if (validation.issues.some((issue) => issue.severity === 'high')) {
+      const hasTeachingPointHigh = validation.issues.some((issue) =>
+        issue.code === 'teaching-points-surface-level' ||
+        issue.code === 'teaching-points-too-few' ||
+        issue.code === 'teaching-points-run-on' ||
+        issue.code === 'teaching-points-repetitive' ||
+        issue.code === 'teaching-points-generic-language'
+      );
+
+      if (hasTeachingPointHigh) {
+        normalized = ensureDeterministicMinimumCueCoverage(normalized, Boolean(includeTeachingCues));
+        normalized = ensureTeachingPointCoverage(normalized);
+        normalized = enforceTeachingPointQuality(normalized);
+        normalized = enforceScenarioSectionConciseness(normalized);
+        normalized = enforceScenarioControls(normalized, {
+          semester,
+          complexity,
+          callType: finalCallType,
+          environment
+        });
+
+        validation = detectControlDrift(normalized, {
+          semester,
+          complexity,
+          callType: finalCallType,
+          environment,
+          includeTeachingCues,
+          customPrompt: normalizedCustomPrompt
+        });
+      }
     }
 
     if (validation.issues.some((issue) => issue.severity === 'high')) {

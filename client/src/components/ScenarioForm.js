@@ -72,7 +72,7 @@ const TITLE_MAP = {
   expectedTreatment: "Expected Treatment",
   protocolNotes: "Protocol Notes",
   learningObjectives: "Learning Objectives",
-  teachersPoints: "Teaching Points",
+  teachersPoints: "Instructor Debrief",
   scenarioRationale: "Scenario Rationale & Teaching Tips",
 };
 
@@ -112,7 +112,7 @@ const ScenarioForm = () => {
     type: "Medical",
     environment: "Urban",
     complexity: "Moderate",
-    includeTeachingCues: true,
+    includeTeachingCues: false,
     customPrompt: "",
   });
 
@@ -687,7 +687,7 @@ const ScenarioForm = () => {
     <div style={styles.container}>
       <div style={styles.headerBar}>
         <div style={styles.headerInner}>
-          <h1 style={styles.heading}>Scenario Generator 1.0</h1>
+          <h1 style={styles.heading}>VitalNotes Workspace</h1>
           <div>
             <button
               onClick={exportToPDF}
@@ -739,6 +739,8 @@ const ScenarioForm = () => {
               </div>
             ))}
 
+            {/* Teaching Cues disabled for redesign - revisit later */}
+            {/* 
             <div style={styles.fieldRow}>
               <label>
                 <input
@@ -752,6 +754,7 @@ const ScenarioForm = () => {
                 Include 💡 Teaching Cues
               </label>
             </div>
+            */}
 
             <div style={styles.fieldRow}>
               <label htmlFor="customPrompt">Instructor Prompt (Optional)</label>
@@ -828,7 +831,7 @@ const ScenarioForm = () => {
                           fontSize: "1rem",
                         }}
                       >
-                        Teaching Points
+                        Instructor Debrief
                       </h3>
                       <div style={{ fontStyle: "italic" }}>
                         {renderSafeContent(scenario.teachersPoints, "teachersPoints")}
@@ -852,7 +855,7 @@ const ScenarioForm = () => {
           <div style={styles.loadingBox}>
             <FaSpinner className="spin" style={styles.loadingSpinner} />
             <div style={styles.loadingTitle}>Generating Scenario...</div>
-            <div style={styles.loadingSubtext}>This will take a minute.</div>
+            <div style={styles.loadingSubtext}>This will take a minute (or several).</div>
           </div>
         </div>
       )}
@@ -937,10 +940,10 @@ const ScenarioForm = () => {
 
 const buildStyles = (isMobile) => ({
   container: {
-    padding: isMobile ? "0.6rem" : "0.75rem 1rem 1.5rem",
-    backgroundColor: "#f8fafc",
-    color: "#1e293b",
-    fontFamily: "Arial, sans-serif",
+    padding: isMobile ? "0.2rem" : "0.22rem 0.7rem 1rem",
+    backgroundColor: "transparent",
+    color: "#123047",
+    fontFamily: "var(--vn-font-body, Manrope, Segoe UI, sans-serif)",
     fontSize: "14px",
     minHeight: "100vh",
     height: "auto",
@@ -977,47 +980,50 @@ const buildStyles = (isMobile) => ({
 
   loadingSpinner: {
     fontSize: "1.75rem",
-    color: "#0d9488",
+    color: "#0d8b8b",
   },
 
   loadingTitle: {
     fontSize: "1.05rem",
     fontWeight: "bold",
-    color: "#1e293b",
+    color: "#123047",
   },
 
   loadingSubtext: {
     fontSize: "0.9rem",
-    color: "#475569",
+    color: "#426272",
   },
   headerBar: {
-    position: isMobile ? "static" : "fixed",
-    top: isMobile ? "auto" : 0,
-    left: isMobile ? "auto" : 0,
-    right: isMobile ? "auto" : 0,
-    marginBottom: isMobile ? "0.85rem" : "0.35rem",
-    backgroundColor: "#e2e8f0",
+    position: "sticky",
+    top: 0,
+    left: "auto",
+    right: "auto",
+    marginBottom: isMobile ? "0.45rem" : "0.18rem",
+    background: "linear-gradient(140deg, rgba(18, 48, 71, 0.92), rgba(13, 139, 139, 0.92))",
     padding: isMobile ? "0.65rem 0.8rem" : "0.7rem 0",
-    borderRadius: isMobile ? "10px" : 0,
-    boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
+    borderRadius: "12px",
+    boxShadow: "0 8px 20px rgba(18,48,71,0.24)",
     zIndex: 1000,
     boxSizing: "border-box",
+    border: "1px solid rgba(211, 234, 238, 0.5)",
   },
 
   headerInner: {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    width: isMobile ? "100%" : "calc(100% - 2rem)",
+    width: isMobile ? "100%" : "calc(100% - 1.2rem)",
     margin: "0 auto",
-    padding: isMobile ? 0 : "0 0 0 0.9rem",
-    borderLeft: isMobile ? "6px solid #0d9488" : "6px solid #0d9488",
+    padding: isMobile ? 0 : "0 0 0 0.65rem",
+    borderLeft: "5px solid #f28c28",
     boxSizing: "border-box",
   },
 
   heading: {
     fontSize: isMobile ? "1.1rem" : "1.4rem",
     fontWeight: "bold",
+    fontFamily: "var(--vn-font-heading, Spectral, Georgia, serif)",
+    color: "#f6fbfc",
     margin: 0,
   },
 
@@ -1027,44 +1033,47 @@ const buildStyles = (isMobile) => ({
     borderRadius: "8px",
     border: "none",
     cursor: "pointer",
-    backgroundColor: "#cbd5e1",
-    color: "#1e293b",
+    backgroundColor: "#f28c28",
+    color: "#112d43",
     fontSize: "0.9rem",
+    fontWeight: 700,
   },
 
   mainLayout: {
-    display: isMobile ? "grid" : "block",
-    gridTemplateColumns: isMobile ? "1fr" : "none",
-    gap: isMobile ? "0.75rem" : "0.75rem",
+    display: "grid",
+    gridTemplateColumns: isMobile ? "1fr" : "320px minmax(0, 1fr)",
+    gap: isMobile ? "0.55rem" : "0.55rem",
     alignItems: "start",
     height: "auto",
     overflow: "visible",
-    paddingTop: isMobile ? 0 : "4.85rem",
+    paddingTop: 0,
   },
 
   leftPanel: {
-    position: isMobile ? "static" : "fixed",
-    top: isMobile ? "auto" : "5.1rem",
-    left: isMobile ? "auto" : "1rem",
+    position: isMobile ? "static" : "sticky",
+    top: isMobile ? "auto" : "4.15rem",
+    left: "auto",
     width: isMobile ? "auto" : "320px",
-    zIndex: isMobile ? "auto" : 900,
+    zIndex: isMobile ? "auto" : 500,
     height: "fit-content",
   },
 
   rightPanel: {
     minWidth: 0,
-    marginLeft: isMobile ? 0 : "332px",
+    marginLeft: 0,
   },
 
   formBox: {
     display: "grid",
     gridTemplateColumns: "1fr",
     gap: "0.85rem",
-    backgroundColor: "#e2e8f0",
+    backgroundColor: "rgba(255,255,255,0.82)",
     padding: "1.25rem",
     borderRadius: "14px",
-    marginBottom: isMobile ? "0.5rem" : "1rem",
-    boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
+    marginBottom: isMobile ? "0.35rem" : "0.5rem",
+    boxShadow: "0 10px 24px rgba(18,48,71,0.12)",
+    border: "1px solid #c7d9df",
+    backdropFilter: "blur(5px)",
   },
 
   fieldRow: {
@@ -1076,7 +1085,7 @@ const buildStyles = (isMobile) => ({
   select: {
     padding: "0.45rem",
     borderRadius: "8px",
-    border: "1px solid #94a3b8",
+    border: "1px solid #97b6c2",
     backgroundColor: "#ffffff",
     color: "#1e293b",
   },
@@ -1084,7 +1093,7 @@ const buildStyles = (isMobile) => ({
   textarea: {
     padding: "0.5rem",
     borderRadius: "8px",
-    border: "1px solid #94a3b8",
+    border: "1px solid #97b6c2",
     backgroundColor: "#ffffff",
     color: "#1e293b",
     resize: "vertical",
@@ -1094,6 +1103,7 @@ const buildStyles = (isMobile) => ({
     color: "#475569",
     fontSize: "0.8rem",
     marginTop: "0.2rem",
+    lineHeight: "1.45",
   },
 
   button: {
@@ -1102,44 +1112,45 @@ const buildStyles = (isMobile) => ({
     fontWeight: "bold",
     borderRadius: "10px",
     border: "none",
-    backgroundColor: "#0d9488",
+    backgroundColor: "#0d8b8b",
     color: "#ffffff",
     cursor: "pointer",
-    boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
+    boxShadow: "0 8px 18px rgba(13,139,139,0.28)",
   },
 
   outputBox: {
     maxHeight: "none",
     overflowY: "visible",
-    backgroundColor: "#ffffff",
+    backgroundColor: "rgba(255,255,255,0.93)",
     padding: isMobile ? "1rem" : "1.5rem",
     borderRadius: "14px",
-    boxShadow: "0 2px 8px rgba(0,0,0,0.12)",
+    boxShadow: "0 14px 30px rgba(18,48,71,0.12)",
+    border: "1px solid #c7d9df",
   },
 
   card: {
-    backgroundColor: "#f9fafb",
+    backgroundColor: "#fbfdfd",
     padding: "1rem",
     borderRadius: "10px",
     marginBottom: "1rem",
-    border: "1px solid #e5e7eb",
+    border: "1px solid #d6e3e8",
   },
 
   cardTitle: {
     marginBottom: "0.5rem",
     fontWeight: "bold",
     fontSize: "1.05rem",
-    color: "#0d9488",
+    color: "#0a6e72",
   },
 
   error: {
-    color: "#dc2626",
+    color: "#c64545",
     fontWeight: "bold",
     marginTop: "0.5rem",
   },
 
   loading: {
-    color: "#1e293b",
+    color: "#123047",
     fontWeight: "bold",
     marginTop: "0.5rem",
   },
@@ -1163,13 +1174,13 @@ const buildStyles = (isMobile) => ({
     background: "transparent",
     border: "none",
     textAlign: "left",
-    color: "#1e293b",
+    color: "#123047",
     fontSize: isMobile ? "1rem" : "1.15rem",
     fontWeight: 700,
     cursor: "pointer",
     padding: isMobile ? "0.55rem 0.2rem" : "0.35rem 0.1rem",
     borderRadius: "8px",
-    borderBottom: "2px solid #0d9488",
+    borderBottom: "2px solid #0d8b8b",
   },
 
   sectionHeadingIcon: {
