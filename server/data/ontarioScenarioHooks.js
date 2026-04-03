@@ -66,7 +66,8 @@ export const ONTARIO_SCENARIO_HOOKS = {
       "Treating any chest pain as automatic nitro candidate.",
       "Skipping the 12-lead thought process.",
       "Failing to appreciate atypical ischemia presentations.",
-      "Ignoring right-sided lead implications in inferior STEMI logic."
+      "Ignoring right-sided lead implications in inferior STEMI logic.",
+      "Writing generic transport plans that do not reflect changing ischemia risk or reassessment findings."
     ]
   },
 
@@ -111,7 +112,8 @@ export const ONTARIO_SCENARIO_HOOKS = {
       "Using CPAP language too broadly for asthma.",
       "Centering dexamethasone as the immediate rescue intervention.",
       "Failing to distinguish asthma from COPD in the treatment plan.",
-      "Underestimating fatigue and worsening air entry."
+      "Underestimating fatigue and worsening air entry.",
+      "Using flat progression branches that do not show respiratory response or decline over time."
     ]
   },
 
@@ -133,7 +135,8 @@ export const ONTARIO_SCENARIO_HOOKS = {
       "Treating every nauseated patient automatically.",
       "Ignoring dimenhydrinate-to-ondansetron sequencing logic.",
       "Pairing dimenhydrinate with diphenhydramine.",
-      "Ignoring sedation/confusion concerns in older adults."
+      "Ignoring sedation/confusion concerns in older adults.",
+      "Providing vague handoff language instead of naming reassessment trends and transport-risk changes."
     ],
     protocolNoteHooks: [
       "If medication is used, ensure the scenario supports it and sequencing is coherent.",

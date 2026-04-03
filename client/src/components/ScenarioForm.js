@@ -310,12 +310,23 @@ const ScenarioForm = () => {
     const doc = new jsPDF({ unit: "mm", format: "a4" });
     const pageHeight = doc.internal.pageSize.getHeight();
     const pageWidth = doc.internal.pageSize.getWidth();
-    const marginX = 20;
-    const marginY = 20;
+    const marginX = 16;
+    const marginY = 16;
     const maxLineWidth = pageWidth - marginX * 2;
-    const bodySize = 10;
-    const bodyLH = 5.8;
-    const footerY = pageHeight - 12;
+    const bodySize = 9.8;
+    const bodyLH = 5.4;
+    const footerY = pageHeight - 10;
+    const palette = {
+      ink: [18, 48, 71],
+      teal: [13, 139, 139],
+      tealSoft: [223, 240, 245],
+      paper: [247, 244, 238],
+      orange: [242, 140, 40],
+      neutralLine: [201, 214, 220],
+      neutralText: [54, 78, 90],
+      darkText: [20, 29, 35],
+      white: [255, 255, 255],
+    };
     let y = marginY;
 
     const documentTitle = sanitizePdfText(scenario.title || "Untitled Scenario") || "Untitled Scenario";
@@ -373,35 +384,79 @@ const ScenarioForm = () => {
     const needsNewPage = (h) => {
       if (y + h > footerY - 4) {
         doc.addPage();
-        y = marginY;
+        y = marginY + 9;
         return true;
       }
       return false;
     };
 
+    const drawPageHeader = (pageNum) => {
+      if (pageNum === 1) return;
+      doc.setFillColor(...palette.paper);
+      doc.rect(0, 0, pageWidth, 10.5, "F");
+
+      doc.setDrawColor(...palette.neutralLine);
+      doc.setLineWidth(0.2);
+      doc.line(marginX, 10.5, pageWidth - marginX, 10.5);
+
+      doc.setFont(undefined, "bold");
+      doc.setFontSize(8.2);
+      doc.setTextColor(...palette.ink);
+      doc.text("VitalNotes Scenario Generator", marginX, 6.8);
+
+      doc.setFont(undefined, "normal");
+      doc.setFontSize(7.8);
+      doc.setTextColor(...palette.neutralText);
+      doc.text("Instructor Export", pageWidth - marginX, 6.8, { align: "right" });
+    };
+
     const drawPageFooter = (pageNum, total) => {
       doc.setFont(undefined, "normal");
       doc.setFontSize(8);
-      doc.setTextColor(150, 150, 150);
-      doc.setDrawColor(180, 180, 180);
+      doc.setTextColor(...palette.neutralText);
+      doc.setDrawColor(...palette.neutralLine);
       doc.setLineWidth(0.2);
       doc.line(marginX, footerY, pageWidth - marginX, footerY);
       doc.text(documentTitle, marginX, footerY + 4.5);
       doc.text(`Page ${pageNum} of ${total}`, pageWidth - marginX, footerY + 4.5, { align: "right" });
     };
 
-    // ── Cover page ──────────────────────────────────────────────────────────
-    doc.setFont(undefined, "bold");
-    doc.setFontSize(22);
-    doc.setTextColor(20, 20, 20);
-    const titleWrapped = doc.splitTextToSize(documentTitle, maxLineWidth);
-    doc.text(titleWrapped, marginX, y);
-    y += titleWrapped.length * 9 + 4;
+    // Cover page
+    doc.setFillColor(...palette.ink);
+    doc.rect(0, 0, pageWidth, 42, "F");
 
-    doc.setDrawColor(60, 60, 60);
-    doc.setLineWidth(0.4);
-    doc.line(marginX, y, pageWidth - marginX, y);
-    y += 7;
+    doc.setFillColor(...palette.orange);
+    doc.rect(0, 42, pageWidth, 2.2, "F");
+
+    doc.setFont(undefined, "bold");
+    doc.setFontSize(11);
+    doc.setTextColor(...palette.white);
+    doc.text("VitalNotes Scenario Generator", marginX, 12);
+
+    doc.setFont(undefined, "bold");
+    doc.setFontSize(20);
+    doc.setTextColor(...palette.white);
+    const titleWrapped = doc.splitTextToSize(documentTitle, maxLineWidth);
+    doc.text(titleWrapped, marginX, 23);
+
+    doc.setFont(undefined, "normal");
+    doc.setFontSize(9.5);
+    doc.setTextColor(225, 239, 245);
+    doc.text("Protocol-aligned scenario export for simulation and debrief.", marginX, 35);
+
+    y = 52;
+
+    doc.setFillColor(...palette.paper);
+    doc.roundedRect(marginX, y, pageWidth - marginX * 2, 32, 2.5, 2.5, "F");
+    doc.setDrawColor(...palette.neutralLine);
+    doc.setLineWidth(0.25);
+    doc.roundedRect(marginX, y, pageWidth - marginX * 2, 32, 2.5, 2.5, "S");
+
+    const cardY = y + 6.5;
+    const colA = marginX + 6;
+    const colB = marginX + 54;
+    const colC = marginX + 102;
+    const colD = marginX + 148;
 
     const metaFields = [
       ["Semester", sanitizePdfText(formData.semester)],
@@ -409,52 +464,63 @@ const ScenarioForm = () => {
       ["Environment", sanitizePdfText(formData.environment)],
       ["Complexity", sanitizePdfText(formData.complexity)],
     ];
-    metaFields.forEach(([label, val]) => {
-      if (!val) return;
+
+    const positions = [
+      [colA, cardY],
+      [colB, cardY],
+      [colC, cardY],
+      [colD, cardY],
+    ];
+
+    metaFields.forEach(([label, val], index) => {
+      const [xPos, yPos] = positions[index];
       doc.setFont(undefined, "bold");
-      doc.setFontSize(9.5);
-      doc.setTextColor(80, 80, 80);
-      doc.text(`${label}:`, marginX, y);
-      doc.setFont(undefined, "normal");
-      doc.setTextColor(20, 20, 20);
-      doc.text(val, marginX + 30, y);
-      y += 5.8;
+      doc.setFontSize(8.4);
+      doc.setTextColor(...palette.neutralText);
+      doc.text(label, xPos, yPos);
+
+      doc.setFont(undefined, "bold");
+      doc.setFontSize(10);
+      doc.setTextColor(...palette.ink);
+      const wrappedVal = doc.splitTextToSize(val || "-", 42);
+      doc.text(wrappedVal, xPos, yPos + 5);
     });
 
-    y += 4;
-    doc.setDrawColor(60, 60, 60);
-    doc.setLineWidth(0.2);
-    doc.line(marginX, y, pageWidth - marginX, y);
-    y += 6;
+    y += 37;
 
     doc.setFont(undefined, "normal");
-    doc.setFontSize(8.5);
-    doc.setTextColor(130, 130, 130);
+    doc.setFontSize(8.2);
+    doc.setTextColor(...palette.neutralText);
     doc.text(`Generated: ${exportedAt}`, marginX, y);
-    y += 10;
+    y += 5;
 
-    // ── Sections ─────────────────────────────────────────────────────────────
+    doc.setDrawColor(...palette.neutralLine);
+    doc.setLineWidth(0.22);
+    doc.line(marginX, y, pageWidth - marginX, y);
+    y += 4;
+
+    // Content sections
     sectionEntries.forEach((entry) => {
-      // Section heading
-      needsNewPage(12);
-      y += 4;
-      doc.setFont(undefined, "bold");
-      doc.setFontSize(12);
-      doc.setTextColor(20, 20, 20);
-      doc.text(entry.label, marginX, y);
-      y += 2.5;
-      doc.setDrawColor(60, 60, 60);
-      doc.setLineWidth(0.25);
-      doc.line(marginX, y, pageWidth - marginX, y);
-      y += 5;
+      needsNewPage(13.5);
 
-      // Body content
+      doc.setFillColor(...palette.tealSoft);
+      doc.roundedRect(marginX, y, pageWidth - marginX * 2, 8.3, 1.5, 1.5, "F");
+      doc.setDrawColor(...palette.neutralLine);
+      doc.setLineWidth(0.2);
+      doc.roundedRect(marginX, y, pageWidth - marginX * 2, 8.3, 1.5, 1.5, "S");
+
+      doc.setFont(undefined, "bold");
+      doc.setFontSize(10.2);
+      doc.setTextColor(...palette.ink);
+      doc.text(entry.label, marginX + 2.6, y + 5.5);
+      y += 11.3;
+
       const rawLines = String(entry.formattedValue).split("\n");
       rawLines.forEach((rawLine) => {
         const expanded = rawLine.replace(/\t/g, "  ");
         const trimmed = expanded.trim();
         if (!trimmed) {
-          y += 2.5;
+          y += 2.1;
           return;
         }
         const isBullet = trimmed.startsWith("- ");
@@ -466,7 +532,7 @@ const ScenarioForm = () => {
         const isLabelLine = /^[A-Z][^:]{1,35}:\s*$/.test(trimmed);
         doc.setFont(undefined, isLabelLine ? "bold" : "normal");
         doc.setFontSize(bodySize);
-        doc.setTextColor(30, 30, 30);
+        doc.setTextColor(...palette.darkText);
 
         const wrapped = doc.splitTextToSize(sanitizePdfText(displayText), textWidth);
         wrapped.forEach((line) => {
@@ -475,12 +541,15 @@ const ScenarioForm = () => {
           y += bodyLH;
         });
       });
+
+      y += 1.2;
     });
 
-    // ── Footer on every page ─────────────────────────────────────────────────
+    // Footer and header on every page
     const totalPages = doc.getNumberOfPages();
     for (let p = 1; p <= totalPages; p += 1) {
       doc.setPage(p);
+      drawPageHeader(p);
       drawPageFooter(p, totalPages);
     }
 
@@ -938,9 +1007,12 @@ const ScenarioForm = () => {
   );
 };
 
-const buildStyles = (isMobile) => ({
+const buildStyles = (isMobile) => {
+  const headerPanelGap = "0.22rem";
+
+  return ({
   container: {
-    padding: isMobile ? "0.2rem" : "0.22rem 0.7rem 1rem",
+    padding: `${headerPanelGap} 0 1rem`,
     backgroundColor: "transparent",
     color: "#123047",
     fontFamily: "var(--vn-font-body, Manrope, Segoe UI, sans-serif)",
@@ -998,9 +1070,9 @@ const buildStyles = (isMobile) => ({
     top: 0,
     left: "auto",
     right: "auto",
-    marginBottom: isMobile ? "0.45rem" : "0.18rem",
+    marginBottom: headerPanelGap,
     background: "linear-gradient(140deg, rgba(18, 48, 71, 0.92), rgba(13, 139, 139, 0.92))",
-    padding: isMobile ? "0.65rem 0.8rem" : "0.7rem 0",
+    padding: isMobile ? "0.65rem 0.8rem" : "0.7rem 0.7rem",
     borderRadius: "12px",
     boxShadow: "0 8px 20px rgba(18,48,71,0.24)",
     zIndex: 1000,
@@ -1012,9 +1084,9 @@ const buildStyles = (isMobile) => ({
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    width: isMobile ? "100%" : "calc(100% - 1.2rem)",
+    width: "100%",
     margin: "0 auto",
-    padding: isMobile ? 0 : "0 0 0 0.65rem",
+    padding: isMobile ? 0 : "0 0 0 0.55rem",
     borderLeft: "5px solid #f28c28",
     boxSizing: "border-box",
   },
@@ -1042,7 +1114,7 @@ const buildStyles = (isMobile) => ({
   mainLayout: {
     display: "grid",
     gridTemplateColumns: isMobile ? "1fr" : "320px minmax(0, 1fr)",
-    gap: isMobile ? "0.55rem" : "0.55rem",
+    gap: isMobile ? "0.55rem" : "0.7rem",
     alignItems: "start",
     height: "auto",
     overflow: "visible",
@@ -1188,6 +1260,7 @@ const buildStyles = (isMobile) => ({
     minWidth: "1.1rem",
     justifyContent: "center",
   },
-});
+  });
+};
 
 export default ScenarioForm;

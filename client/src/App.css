@@ -58,7 +58,7 @@ body {
   position: relative;
   z-index: 1;
   max-width: 1320px;
-  margin: 0 auto 0.24rem;
+  margin: 0 auto 0.22rem;
   padding: 0.82rem 1rem;
   border-radius: 18px;
   background: linear-gradient(138deg, rgba(18, 48, 71, 0.95), rgba(10, 110, 114, 0.92));
@@ -136,7 +136,7 @@ body {
   .brand-hero {
     border-radius: 14px;
     padding: 0.72rem;
-    margin: 0 auto 0.18rem;
+    margin: 0 auto 0.22rem;
   }
 
   .brand-heading-row {

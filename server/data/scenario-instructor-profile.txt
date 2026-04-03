@@ -57,6 +57,13 @@ A strong scenario should help a student think:
 - The scenario should generate a good debrief.
 - The scenario should remain useful even when no instructor is present.
 
+Output quality gate before finalizing any scenario:
+- Core timeline continuity: dispatch -> arrival -> first impression -> initial assessment -> history -> reassessment -> transport/handoff should read as one coherent call.
+- Case progression depth: each branch (with proper treatment / without proper treatment / with incorrect treatment) should contain concrete 2-3 step patient changes tied to decisions.
+- Transport depth: include practical movement constraints, ongoing care priorities, reassessment targets, and a handoff focus that reflects the call trajectory.
+- Section completeness: expectedTreatment and protocolNotes should be actionable and concise; learningObjectives and selfReflectionPrompts should be specific and useful.
+- Coherence check: avoid contradictions between narrative, vitals trend, treatment choices, and debrief teaching points.
+
 ---
 
 ## TONE AND WRITING STYLE

@@ -22,7 +22,7 @@ const OPENAI_MAX_RETRIES = Number(process.env.OPENAI_MAX_RETRIES || 1);
 const CONTROL_REPAIR_MAX_ATTEMPTS = Math.max(1, Number(process.env.CONTROL_REPAIR_MAX_ATTEMPTS || 2));
 const FEW_SHOT_EXAMPLE_COUNT = Math.max(1, Number(process.env.FEW_SHOT_EXAMPLE_COUNT || 2));
 const IS_PRODUCTION = process.env.NODE_ENV === 'production';
-const ROUTE_BUILD_TAG = '2026-04-03-teaching-runon-medium-v2';
+const ROUTE_BUILD_TAG = '2026-04-03-generation-quality-rubric-v1';
 const ALLOWED_SEMESTERS = ['2', '3', '4'];
 const ALLOWED_COMPLEXITIES = ['Simple', 'Moderate', 'Complex'];
 const ALLOWED_ENVIRONMENTS = ['Urban', 'Rural', 'Wilderness', 'Industrial', 'Home', 'Public Space'];
@@ -5758,6 +5758,98 @@ function countMedicationMentionsInScenario(scenario) {
   return countKeywordMatches(relevantText, MEDICATION_KEYWORDS);
 }
 
+function getNestedValue(source, path) {
+  if (!source || typeof source !== 'object') return '';
+  return path.split('.').reduce((current, segment) => {
+    if (!current || typeof current !== 'object') return '';
+    return current[segment];
+  }, source);
+}
+
+function asTrimmedText(value) {
+  return normalizeSentenceSpacing(stripTeachingCueMarkup(stringifyValue(value))).trim();
+}
+
+function computeScenarioQualityProfile(scenario) {
+  const requiredStringPaths = [
+    'scenarioIntro',
+    'title',
+    'patientPresentation',
+    'incidentNarrative',
+    'sceneArrival.sceneDescription',
+    'firstImpression.generalAppearance',
+    'initialAssessment.generalImpression',
+    'historyGathering.historySource',
+    'clinicalReasoning',
+    'transportPhase.handoffConsiderations',
+    'scenarioRationale'
+  ];
+
+  const missingCoreFields = requiredStringPaths.filter((path) => !asTrimmedText(getNestedValue(scenario, path)));
+  const progressionBranchCounts = {
+    withProperTreatment: (scenario?.caseProgression?.withProperTreatment || []).filter(Boolean).length,
+    withoutProperTreatment: (scenario?.caseProgression?.withoutProperTreatment || []).filter(Boolean).length,
+    withIncorrectTreatment: (scenario?.caseProgression?.withIncorrectTreatment || []).filter(Boolean).length
+  };
+
+  const totalProgressionSteps =
+    progressionBranchCounts.withProperTreatment +
+    progressionBranchCounts.withoutProperTreatment +
+    progressionBranchCounts.withIncorrectTreatment;
+
+  const expectedTreatmentCount = (scenario?.expectedTreatment || []).filter(Boolean).length;
+  const protocolNoteCount = (scenario?.protocolNotes || []).filter(Boolean).length;
+  const directiveCount = (scenario?.directiveSources || []).filter(Boolean).length;
+  const learningObjectiveCount = (scenario?.learningObjectives || []).filter(Boolean).length;
+  const selfReflectionCount = (scenario?.selfReflectionPrompts || []).filter(Boolean).length;
+
+  const transportPlanDepth =
+    (scenario?.transportPhase?.transportConsiderations || []).filter(Boolean).length +
+    (scenario?.transportPhase?.ongoingCare || []).filter(Boolean).length +
+    (scenario?.transportPhase?.reassessmentFocus || []).filter(Boolean).length +
+    (asTrimmedText(scenario?.transportPhase?.handoffConsiderations) ? 1 : 0);
+
+  const clinicalReasoningWordCount = asTrimmedText(scenario?.clinicalReasoning)
+    .split(/\s+/)
+    .filter(Boolean).length;
+
+  const cueMetrics = collectTeachingCueMetrics(scenario);
+
+  let score = 100;
+  score -= missingCoreFields.length * 4;
+  if (progressionBranchCounts.withProperTreatment < 2) score -= 7;
+  if (progressionBranchCounts.withoutProperTreatment < 2) score -= 7;
+  if (progressionBranchCounts.withIncorrectTreatment < 2) score -= 7;
+  if (totalProgressionSteps < 6) score -= 8;
+  if (transportPlanDepth < 4) score -= 6;
+  if (expectedTreatmentCount < 5) score -= 5;
+  if (protocolNoteCount < 4) score -= 4;
+  if (directiveCount < 1) score -= 8;
+  if (learningObjectiveCount < 4) score -= 4;
+  if (selfReflectionCount < 4) score -= 4;
+  if (clinicalReasoningWordCount < 35) score -= 6;
+
+  score = Math.max(0, Math.min(100, score));
+  const tier = score >= 85 ? 'strong' : score >= 70 ? 'acceptable' : 'weak';
+
+  return {
+    score,
+    tier,
+    missingCoreFields,
+    progressionBranchCounts,
+    totalProgressionSteps,
+    transportPlanDepth,
+    expectedTreatmentCount,
+    protocolNoteCount,
+    directiveCount,
+    learningObjectiveCount,
+    selfReflectionCount,
+    clinicalReasoningWordCount,
+    cueCount: cueMetrics.cueCount,
+    cueSectionCount: cueMetrics.sectionsWithCues.length
+  };
+}
+
 function containsMedicationLanguage(value = '') {
   const lower = stripTeachingCueMarkup(String(value || '')).toLowerCase();
   return MEDICATION_KEYWORDS.some((keyword) => lower.includes(keyword));
@@ -6141,6 +6233,7 @@ function detectControlDrift(scenario, controls) {
   const text = collectScenarioNarrativeText(scenario);
   const cueMetrics = collectTeachingCueMetrics(scenario);
   const teachingPointQuality = analyzeTeachingPointQuality(scenario);
+  const qualityProfile = computeScenarioQualityProfile(scenario);
   const unsupportedDoseCueCount = countUnsupportedDoseCueReferences(scenario);
   const spacingIssuePaths = collectSentenceSpacingIssues(scenario);
   const inferredCallType = normalizeCallFamily(
@@ -6242,6 +6335,43 @@ function detectControlDrift(scenario, controls) {
       severity: spacingIssuePaths.length > 8 ? 'high' : 'medium',
       code: 'sentence-spacing-inconsistent',
       message: `Sentence spacing is inconsistent in ${spacingIssuePaths.length} field(s). Ensure a space follows punctuation between sentences.`
+    });
+  }
+
+  if (qualityProfile.missingCoreFields.length >= 4) {
+    issues.push({
+      severity: 'medium',
+      code: 'core-sections-sparse',
+      message: `Core scenario narrative fields are underdeveloped (${qualityProfile.missingCoreFields.length} missing/weak fields). Strengthen scene, impression, assessment, progression, and rationale continuity.`
+    });
+  }
+
+  if (
+    qualityProfile.progressionBranchCounts.withProperTreatment < 2 ||
+    qualityProfile.progressionBranchCounts.withoutProperTreatment < 2 ||
+    qualityProfile.progressionBranchCounts.withIncorrectTreatment < 2 ||
+    qualityProfile.totalProgressionSteps < 6
+  ) {
+    issues.push({
+      severity: 'medium',
+      code: 'progression-underdeveloped',
+      message: 'Case progression is underdeveloped. Each branch should contain concrete 2-3 step patient changes tied to decisions and reassessment.'
+    });
+  }
+
+  if (qualityProfile.transportPlanDepth < 4) {
+    issues.push({
+      severity: 'medium',
+      code: 'transport-phase-thin',
+      message: 'Transport phase lacks depth. Add transport considerations, ongoing care priorities, reassessment focus, and handoff-critical detail.'
+    });
+  }
+
+  if (qualityProfile.score < 70) {
+    issues.push({
+      severity: 'medium',
+      code: 'overall-quality-below-target',
+      message: `Overall scenario quality score is ${qualityProfile.score}/100 (${qualityProfile.tier}). Improve continuity, progression detail, and section completeness.`
     });
   }
 
@@ -6352,6 +6482,11 @@ function detectControlDrift(scenario, controls) {
       teachingPointSurfaceLevelCount: teachingPointQuality.surfaceLevelCount,
       teachingPointRepetitiveCount: teachingPointQuality.repetitiveCount,
       teachingPointGenericPhraseCount: teachingPointQuality.genericPhraseCount,
+      qualityScore: qualityProfile.score,
+      qualityTier: qualityProfile.tier,
+      missingCoreFieldCount: qualityProfile.missingCoreFields.length,
+      progressionStepCount: qualityProfile.totalProgressionSteps,
+      transportPlanDepth: qualityProfile.transportPlanDepth,
       spacingIssueCount: spacingIssuePaths.length,
       spacingIssuePaths
     }
@@ -6507,6 +6642,7 @@ async function requestScenarioJson(messages) {
 }
 
 async function repairScenarioForControlDrift({ systemPrompt, scenario, controls, validation }) {
+  const qualityProfile = computeScenarioQualityProfile(scenario);
   const repairPrompt = `
 You are repairing an already-generated paramedic scenario so it strictly matches the requested controls.
 
@@ -6524,6 +6660,15 @@ Requested controls:
 Problems to fix:
 ${validation.issues.map((issue) => `- ${issue.message}`).join('\n')}
 
+Current quality profile:
+- Quality score: ${qualityProfile.score}/100 (${qualityProfile.tier})
+- Missing/weak core fields: ${qualityProfile.missingCoreFields.length ? qualityProfile.missingCoreFields.join(', ') : 'none'}
+- Progression branch counts: proper ${qualityProfile.progressionBranchCounts.withProperTreatment}, without proper ${qualityProfile.progressionBranchCounts.withoutProperTreatment}, incorrect ${qualityProfile.progressionBranchCounts.withIncorrectTreatment}
+- Transport plan depth: ${qualityProfile.transportPlanDepth}
+- Expected treatment items: ${qualityProfile.expectedTreatmentCount}
+- Protocol note items: ${qualityProfile.protocolNoteCount}
+- Clinical reasoning word count: ${qualityProfile.clinicalReasoningWordCount}
+
 Repair priorities:
 - Keep the strongest existing content and structure where possible.
 - Revise the scenario so semester expectations are concrete, not implied.
@@ -6531,6 +6676,9 @@ Repair priorities:
 - Keep teachersPoints as one instructor-style paragraph with a few distinct teaching beats, direct coaching voice, concrete case anchors, clinical rationale, and clear next-call improvement advice. Let it read naturally instead of like a fixed template.
 - Preserve Ontario directive references and keep directiveSources populated.
 - If teaching cues are enabled, increase cue density and section coverage while keeping cues clinically useful.
+- Close narrative gaps in any missing core fields so the call reads as one coherent timeline from dispatch through handoff.
+- Strengthen caseProgression with concrete physiologic or behavioral changes in all three branches (proper, delayed/absent, incorrect care).
+- Expand transportPhase to include practical movement constraints, monitoring priorities, and a useful handoff focus.
 - Fix sentence spacing consistency across all fields so there is a space after punctuation between sentences.
 - If an instructor prompt is provided, preserve schema and directives while clearly reflecting that requested focus.
 
@@ -6863,6 +7011,16 @@ Dynamic call timeline rules:
   8. case progression through treatment / no treatment / incorrect treatment
   9. transport-phase thinking in the top-level transportPhase object
 - Additional assessments and additional vital sets should appear when they improve realism.
+
+Quality rubric (target before returning JSON):
+- Overall quality score target: >= 85/100.
+- Keep all core narrative fields concrete and call-specific.
+- caseProgression should contain at least 2 meaningful steps in each branch.
+- transportPhase should include practical detail in transportConsiderations, ongoingCare, reassessmentFocus, and handoffConsiderations.
+- expectedTreatment should usually contain 6-8 actionable items.
+- protocolNotes should usually contain 4-6 concise items with Ontario references.
+- learningObjectives and selfReflectionPrompts should each have at least 4 substantive entries.
+- clinicalReasoning should be concise but complete enough to explain pathophysiology and deterioration logic.
 
 GRS rules:
 - grsAnchors must contain these EXACT 5 domains:
