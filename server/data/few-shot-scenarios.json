@@ -14,16 +14,11 @@
     "callInformation": {
       "type": "Respiratory Distress",
       "location": "Second floor apartment",
-      "time": "1900",
-      "dispatchCode": "Priority Red",
-      "dispatchNotes": ["24-year-old male, shortness of breath, history of asthma"],
-      "hazardsOrFlags": ["Narrow staircase", "Warm apartment"],
-      "crewNotes": "Movement may worsen respiratory distress; follow BLS/ALS PCS for asthma management."
+      "ecgInterpretation": "Sinus Tachycardia"
     },
     "incidentNarrative": "Crew is dispatched to a second floor apartment for a male with shortness of breath. On arrival, patient is found sitting on a couch leaning forward in tripod position. He is speaking in short sentences and appears anxious. Audible wheezing is heard from across the room. Patient states he has asthma and forgot his inhaler at work. He reports symptoms started about an hour ago after cleaning a dusty storage room and have gradually worsened. Scene is complicated by narrow stairs and warm environment.",
     "patientPresentation": "Patient sitting upright leaning forward, using accessory muscles. Audible wheezing present. Patient appears anxious and speaks in short sentences. Skin slightly diaphoretic. Accessory muscle use and fatigue are evident.",
     "patientDemographics": {
-      "name": "Jason Miller",
       "sex": "Male",
       "age": "24",
       "height": "178 cm",
@@ -32,15 +27,11 @@
       "chiefComplaint": "Shortness of breath"
     },
     "sceneArrival": {
-      "sceneDescription": "Second floor apartment living room in moderate clutter",
-      "environmentDetails": ["Narrow staircase", "Warm apartment"],
-      "hazards": ["Dust exposure", "Stair movement risk"],
       "accessIssues": "Second floor access via narrow stairs",
       "bystandersPresent": "None",
       "sceneEnergy": "Mildly tense"
     },
     "firstImpression": {
-      "generalAppearance": "Anxious, in moderate to severe respiratory distress",
       "levelOfDistress": "Moderate",
       "apparentSeverity": "Potentially time-sensitive, risk of rapid deterioration",
       "positionFound": "Sitting upright in tripod",
@@ -48,14 +39,10 @@
       "initialRedFlags": ["Increased work of breathing", "Fatigue", "Quiet chest"]
     },
     "initialAssessment": {
-      "airway": "Patent",
-      "breathing": "Rapid, labored, wheezing, accessory muscle use",
-      "circulation": "Warm, perfused, tachycardic",
-      "disability": "Alert and oriented, anxious",
+      "ecgInterpretation": "Normal Sinus Rhythm",
       "exposure": "No acute trauma",
       "generalImpression": "Asthma exacerbation, risk of respiratory failure",
-      "immediatePriorities": ["Oxygen titration as per BLS PCS", "Bronchodilator (salbutamol) as per ALS PCS"],
-      "immediateInterventions": ["Positioning of comfort", "Inhaled bronchodilator", "Monitor for fatigue and silent chest"]
+      "immediatePriorities": ["Oxygen titration as per BLS PCS", "Bronchodilator (salbutamol) as per ALS PCS"]
     },
     "historyGathering": {
       "historySource": "Patient",
@@ -65,9 +52,7 @@
       "sceneContextClues": ["Dust in room", "No smoking", "No pets"]
     },
     "secondaryAssessment": {
-      "generalAppearance": "Less anxious after bronchodilator but still fatigued",
-      "breathing": "Air entry improved, persistent wheeze, fatigue risk remains",
-      "circulation": "Tachycardia improving with treatment",
+      "ecgInterpretation": "Sinus Tachycardia",
       "keyFindings": ["Improved SpO2 and air entry after bronchodilator"],
       "missedIfNotAssessed": ["Silent chest", "Fatigue"],
       "evolvingFindings": ["Risk of recurrent distress with movement or fatigue"]
@@ -114,8 +99,8 @@
     "vitalSigns": {
       "firstSet": {
         "context": "Initial presentation (pre-treatment)",
-        "hr": 118,
-        "rr": 28,
+        "hr": "118, regular, strong",
+        "rr": "28, regular, full",
         "bp": "132/84",
         "spo2": 93,
         "etco2": 42,
@@ -126,8 +111,8 @@
       },
       "secondSet": {
         "context": "After first bronchodilator and positioning of comfort",
-        "hr": 108,
-        "rr": 24,
+        "hr": "108, regular, strong",
+        "rr": "24, regular, full",
         "bp": "128/80",
         "spo2": 96,
         "etco2": 38,
@@ -139,8 +124,8 @@
       "additionalSets": [
         {
           "context": "After rapid stair movement without rest (deterioration)",
-          "hr": 126,
-          "rr": 32,
+          "hr": "126, regular, strong",
+          "rr": "32, regular, shallow",
           "bp": "124/78",
           "spo2": 89,
           "etco2": 48,
@@ -151,8 +136,8 @@
         },
         {
           "context": "After second bronchodilator during transport (improvement)",
-          "hr": 104,
-          "rr": 22,
+          "hr": "104, regular, strong",
+          "rr": "22, regular, full",
           "bp": "126/78",
           "spo2": 96,
           "etco2": 38,
@@ -350,8 +335,6 @@
       "generalAppearance": "Elderly patient in pain with stable airway but concerning pallor",
       "levelOfDistress": "Moderate",
       "apparentSeverity": "Possible pelvic fracture with internal bleeding risk",
-      "positionFound": "Side-lying on floor beside bed",
-      "visibleClues": ["Shortened externally rotated right leg", "Pale cool skin"],
       "initialRedFlags": ["Anticoagulation therapy", "Possible pelvic fracture", "Shock risk if moved poorly"]
     },
     "initialAssessment": {
@@ -421,8 +404,8 @@
     "vitalSigns": {
       "firstSet": {
         "context": "Initial assessment on bedroom floor",
-        "hr": 96,
-        "rr": 18,
+        "hr": "96, irregular, strong",
+        "rr": "18, regular, full",
         "bp": "138/84",
         "spo2": 97,
         "etco2": 36,
@@ -433,8 +416,8 @@
       },
       "secondSet": {
         "context": "After initial packaging and reassessment",
-        "hr": 110,
-        "rr": 22,
+        "hr": "110, irregular, strong",
+        "rr": "22, regular, full",
         "bp": "118/72",
         "spo2": 97,
         "etco2": 34,
@@ -446,8 +429,8 @@
       "additionalSets": [
         {
           "context": "After movement to stretcher without ideal stabilization",
-          "hr": 124,
-          "rr": 24,
+          "hr": "124, irregular, weak",
+          "rr": "24, regular, full",
           "bp": "98/64",
           "spo2": 96,
           "etco2": 32,
@@ -458,8 +441,8 @@
         },
         {
           "context": "During transport after stabilization and reassessment",
-          "hr": 112,
-          "rr": 22,
+          "hr": "112, irregular, strong",
+          "rr": "22, regular, full",
           "bp": "104/68",
           "spo2": 97,
           "etco2": 33,
@@ -725,7 +708,7 @@
       "firstSet": {
         "context": "Initial paramedic rhythm check during arrest",
         "hr": "N/A",
-        "rr": "Assisted via BVM",
+        "rr": "Assisted via BVM, regular, assisted",
         "bp": "N/A",
         "spo2": "Not reading",
         "etco2": 18,
@@ -737,7 +720,7 @@
       "secondSet": {
         "context": "After continued CPR and next rhythm analysis",
         "hr": "N/A",
-        "rr": "Assisted via BVM",
+        "rr": "Assisted via BVM, regular, assisted",
         "bp": "N/A",
         "spo2": "Not reading",
         "etco2": 22,
@@ -750,7 +733,7 @@
         {
           "context": "After further shock and medication cycle with improving CPR effectiveness",
           "hr": "N/A",
-          "rr": "Assisted via BVM",
+          "rr": "Assisted via BVM, regular, assisted",
           "bp": "N/A",
           "spo2": "Not reading",
           "etco2": 28,
@@ -761,8 +744,8 @@
         },
         {
           "context": "ROSC achieved",
-          "hr": 110,
-          "rr": "Assisted ventilations",
+          "hr": "110, regular, weak",
+          "rr": "Assisted ventilations, regular, assisted",
           "bp": "96/60",
           "spo2": 94,
           "etco2": 35,
@@ -1029,8 +1012,8 @@
     "vitalSigns": {
       "firstSet": {
         "context": "Initial roadside assessment before dextrose",
-        "hr": 110,
-        "rr": 18,
+        "hr": "110, regular, strong",
+        "rr": "18, regular, full",
         "bp": "140/90",
         "spo2": 98,
         "etco2": 38,
@@ -1041,8 +1024,8 @@
       },
       "secondSet": {
         "context": "After dextrose administration and reassessment",
-        "hr": 90,
-        "rr": 16,
+        "hr": "90, regular, strong",
+        "rr": "16, regular, full",
         "bp": "130/80",
         "spo2": 98,
         "etco2": 36,
@@ -1054,8 +1037,8 @@
       "additionalSets": [
         {
           "context": "Thirty minutes after treatment during transport",
-          "hr": 80,
-          "rr": 16,
+          "hr": "80, regular, strong",
+          "rr": "16, regular, full",
           "bp": "125/75",
           "spo2": 98,
           "etco2": 36,
@@ -1319,8 +1302,8 @@
     "vitalSigns": {
       "firstSet": {
         "context": "Initial assessment on scene before any treatment",
-        "hr": 88,
-        "rr": 18,
+        "hr": "88, regular, strong",
+        "rr": "18, regular, full",
         "bp": "152/92",
         "spo2": 97,
         "etco2": 36,
@@ -1331,8 +1314,8 @@
       },
       "secondSet": {
         "context": "After ASA and 12-lead acquisition, before nitroglycerin",
-        "hr": 82,
-        "rr": 18,
+        "hr": "82, regular, strong",
+        "rr": "18, regular, full",
         "bp": "138/88",
         "spo2": 97,
         "etco2": 35,
@@ -1344,8 +1327,8 @@
       "additionalSets": [
         {
           "context": "After one nitroglycerin dose with appropriate blood pressure monitoring",
-          "hr": 90,
-          "rr": 18,
+          "hr": "90, regular, strong",
+          "rr": "18, regular, full",
           "bp": "118/74",
           "spo2": 97,
           "etco2": 35,
@@ -1356,8 +1339,8 @@
         },
         {
           "context": "After repeated nitroglycerin given without careful reassessment",
-          "hr": 104,
-          "rr": 20,
+          "hr": "104, regular, weak",
+          "rr": "20, regular, full",
           "bp": "92/60",
           "spo2": 96,
           "etco2": 33,
@@ -1625,8 +1608,8 @@
     "vitalSigns": {
       "firstSet": {
         "context": "Immediately post-ictal on arrival",
-        "hr": 168,
-        "rr": 34,
+        "hr": "168, regular, strong",
+        "rr": "34, regular, shallow",
         "bp": "102/64",
         "spo2": 96,
         "etco2": 34,
@@ -1637,8 +1620,8 @@
       },
       "secondSet": {
         "context": "After initial stabilization and reassessment",
-        "hr": 152,
-        "rr": 30,
+        "hr": "152, regular, strong",
+        "rr": "30, regular, shallow",
         "bp": "100/62",
         "spo2": 97,
         "etco2": 35,
@@ -1650,8 +1633,8 @@
       "additionalSets": [
         {
           "context": "During transport with improved responsiveness",
-          "hr": 142,
-          "rr": 28,
+          "hr": "142, regular, weak",
+          "rr": "28, regular, full",
           "bp": "98/60",
           "spo2": 98,
           "etco2": 36,
@@ -1662,8 +1645,8 @@
         },
         {
           "context": "If recurrent seizure occurs en route",
-          "hr": 172,
-          "rr": 10,
+          "hr": "172, regular, weak",
+          "rr": "10, regular, shallow",
           "bp": "96/58",
           "spo2": 90,
           "etco2": 50,
@@ -1929,8 +1912,8 @@
     "vitalSigns": {
       "firstSet": {
         "context": "Initial assessment before treatment",
-        "hr": 132,
-        "rr": 30,
+        "hr": "132, regular, strong",
+        "rr": "30, regular, shallow",
         "bp": "108/68",
         "spo2": 93,
         "etco2": 32,
@@ -1941,8 +1924,8 @@
       },
       "secondSet": {
         "context": "After first epinephrine dose and immediate reassessment",
-        "hr": 124,
-        "rr": 26,
+        "hr": "124, regular, strong",
+        "rr": "26, regular, full",
         "bp": "112/70",
         "spo2": 96,
         "etco2": 34,
@@ -1954,8 +1937,8 @@
       "additionalSets": [
         {
           "context": "After diphenhydramine and salbutamol for persistent wheeze",
-          "hr": 118,
-          "rr": 22,
+          "hr": "118, regular, strong",
+          "rr": "22, regular, full",
           "bp": "114/72",
           "spo2": 97,
           "etco2": 35,
@@ -1966,8 +1949,8 @@
         },
         {
           "context": "If recurrence during transport",
-          "hr": 140,
-          "rr": 32,
+          "hr": "140, regular, weak",
+          "rr": "32, regular, shallow",
           "bp": "94/60",
           "spo2": 91,
           "etco2": 30,
@@ -2233,8 +2216,8 @@
     "vitalSigns": {
       "firstSet": {
         "context": "Initial post-extrication assessment",
-        "hr": 126,
-        "rr": 28,
+        "hr": "126, regular, strong",
+        "rr": "28, regular, full",
         "bp": "102/66",
         "spo2": 95,
         "etco2": 33,
@@ -2245,8 +2228,8 @@
       },
       "secondSet": {
         "context": "After packaging and movement to ambulance",
-        "hr": 138,
-        "rr": 30,
+        "hr": "138, regular, weak",
+        "rr": "30, regular, shallow",
         "bp": "90/58",
         "spo2": 94,
         "etco2": 31,
@@ -2258,8 +2241,8 @@
       "additionalSets": [
         {
           "context": "Early transport after FTG destination decision and TXA administration",
-          "hr": 132,
-          "rr": 28,
+          "hr": "132, regular, weak",
+          "rr": "28, regular, full",
           "bp": "94/60",
           "spo2": 95,
           "etco2": 32,
@@ -2270,8 +2253,8 @@
         },
         {
           "context": "If transport delayed or destination decision downgraded inappropriately",
-          "hr": 148,
-          "rr": 34,
+          "hr": "148, regular, weak",
+          "rr": "34, regular, shallow",
           "bp": "78/50",
           "spo2": 92,
           "etco2": 29,
@@ -2540,8 +2523,8 @@
     "vitalSigns": {
       "firstSet": {
         "context": "Initial contact in direct sun",
-        "hr": 148,
-        "rr": 32,
+        "hr": "148, regular, weak",
+        "rr": "32, regular, shallow",
         "bp": "98/62",
         "spo2": 97,
         "etco2": 31,
@@ -2552,8 +2535,8 @@
       },
       "secondSet": {
         "context": "After immediate shade and active cooling",
-        "hr": 136,
-        "rr": 28,
+        "hr": "136, regular, strong",
+        "rr": "28, regular, full",
         "bp": "102/64",
         "spo2": 98,
         "etco2": 33,
@@ -2565,8 +2548,8 @@
       "additionalSets": [
         {
           "context": "During transport with ongoing cooling",
-          "hr": 126,
-          "rr": 24,
+          "hr": "126, regular, strong",
+          "rr": "24, regular, full",
           "bp": "108/68",
           "spo2": 98,
           "etco2": 34,
@@ -2577,8 +2560,8 @@
         },
         {
           "context": "If cooling is delayed or interrupted",
-          "hr": 156,
-          "rr": 34,
+          "hr": "156, regular, weak",
+          "rr": "34, regular, shallow",
           "bp": "88/54",
           "spo2": 95,
           "etco2": 29,
@@ -2843,8 +2826,8 @@
     "vitalSigns": {
       "firstSet": {
         "context": "Initial postpartum hemorrhage assessment",
-        "hr": 132,
-        "rr": 28,
+        "hr": "132, regular, weak",
+        "rr": "28, regular, full",
         "bp": "94/58",
         "spo2": 97,
         "etco2": 31,
@@ -2855,8 +2838,8 @@
       },
       "secondSet": {
         "context": "After fundal massage and oxytocin initiation",
-        "hr": 122,
-        "rr": 24,
+        "hr": "122, regular, strong",
+        "rr": "24, regular, full",
         "bp": "100/62",
         "spo2": 98,
         "etco2": 33,
@@ -2868,8 +2851,8 @@
       "additionalSets": [
         {
           "context": "During transport with partial bleeding control",
-          "hr": 116,
-          "rr": 22,
+          "hr": "116, regular, strong",
+          "rr": "22, regular, full",
           "bp": "102/64",
           "spo2": 98,
           "etco2": 34,
@@ -2880,8 +2863,8 @@
         },
         {
           "context": "If bleeding re-accelerates during movement or delayed transport",
-          "hr": 142,
-          "rr": 30,
+          "hr": "142, regular, weak",
+          "rr": "30, regular, shallow",
           "bp": "82/50",
           "spo2": 95,
           "etco2": 28,
@@ -3146,8 +3129,8 @@
     "vitalSigns": {
       "firstSet": {
         "context": "Initial stroke assessment on scene",
-        "hr": 88,
-        "rr": 18,
+        "hr": "88, irregular, strong",
+        "rr": "18, regular, full",
         "bp": "178/96",
         "spo2": 97,
         "etco2": 37,
@@ -3158,8 +3141,8 @@
       },
       "secondSet": {
         "context": "After rapid packaging and stroke bypass decision",
-        "hr": 92,
-        "rr": 18,
+        "hr": "92, irregular, strong",
+        "rr": "18, regular, full",
         "bp": "182/98",
         "spo2": 97,
         "etco2": 36,
@@ -3171,8 +3154,8 @@
       "additionalSets": [
         {
           "context": "During transport with ongoing stroke team pre-alert",
-          "hr": 90,
-          "rr": 18,
+          "hr": "90, irregular, strong",
+          "rr": "18, regular, full",
           "bp": "176/94",
           "spo2": 97,
           "etco2": 36,
@@ -3183,8 +3166,8 @@
         },
         {
           "context": "If scene delay causes neurologic progression",
-          "hr": 96,
-          "rr": 20,
+          "hr": "96, irregular, strong",
+          "rr": "20, regular, full",
           "bp": "188/102",
           "spo2": 96,
           "etco2": 35,
@@ -3449,8 +3432,8 @@
     "vitalSigns": {
       "firstSet": {
         "context": "Initial high-distress contact",
-        "hr": 126,
-        "rr": 30,
+        "hr": "126, regular, strong",
+        "rr": "30, regular, shallow",
         "bp": "148/92",
         "spo2": 98,
         "etco2": 30,
@@ -3461,8 +3444,8 @@
       },
       "secondSet": {
         "context": "After verbal de-escalation and breathing coaching",
-        "hr": 108,
-        "rr": 22,
+        "hr": "108, regular, strong",
+        "rr": "22, regular, full",
         "bp": "136/86",
         "spo2": 99,
         "etco2": 34,
@@ -3474,8 +3457,8 @@
       "additionalSets": [
         {
           "context": "During cooperative transport with consistent communication",
-          "hr": 96,
-          "rr": 18,
+          "hr": "96, regular, strong",
+          "rr": "18, regular, full",
           "bp": "128/82",
           "spo2": 99,
           "etco2": 36,
@@ -3486,8 +3469,8 @@
         },
         {
           "context": "If communication becomes confrontational and crowd stimulation returns",
-          "hr": 138,
-          "rr": 34,
+          "hr": "138, regular, strong",
+          "rr": "34, regular, shallow",
           "bp": "160/98",
           "spo2": 97,
           "etco2": 28,
@@ -3752,8 +3735,8 @@
     "vitalSigns": {
       "firstSet": {
         "context": "Initial contact before rewarming",
-        "hr": 52,
-        "rr": 12,
+        "hr": "52, regular, weak",
+        "rr": "12, regular, full",
         "bp": "98/60",
         "spo2": 95,
         "etco2": 37,
@@ -3764,8 +3747,8 @@
       },
       "secondSet": {
         "context": "After insulation and active warming initiation",
-        "hr": 56,
-        "rr": 12,
+        "hr": "56, regular, strong",
+        "rr": "12, regular, full",
         "bp": "102/64",
         "spo2": 96,
         "etco2": 36,
@@ -3777,8 +3760,8 @@
       "additionalSets": [
         {
           "context": "During transport with continued warming",
-          "hr": 60,
-          "rr": 14,
+          "hr": "60, regular, strong",
+          "rr": "14, regular, full",
           "bp": "108/68",
           "spo2": 97,
           "etco2": 35,
@@ -3789,8 +3772,8 @@
         },
         {
           "context": "If rough handling or delayed warming worsens instability",
-          "hr": 44,
-          "rr": 10,
+          "hr": "44, regular, weak",
+          "rr": "10, regular, shallow",
           "bp": "84/52",
           "spo2": 92,
           "etco2": 39,
@@ -4055,8 +4038,8 @@
     "vitalSigns": {
       "firstSet": {
         "context": "Initial contact while distressed",
-        "hr": 154,
-        "rr": 36,
+        "hr": "154, regular, strong",
+        "rr": "36, regular, shallow",
         "bp": "102/64",
         "spo2": 94,
         "etco2": 33,
@@ -4067,8 +4050,8 @@
       },
       "secondSet": {
         "context": "After calming measures and protocol treatment",
-        "hr": 138,
-        "rr": 30,
+        "hr": "138, regular, strong",
+        "rr": "30, regular, shallow",
         "bp": "100/62",
         "spo2": 96,
         "etco2": 35,
@@ -4080,8 +4063,8 @@
       "additionalSets": [
         {
           "context": "During transport while remaining calm on caregiver lap",
-          "hr": 128,
-          "rr": 26,
+          "hr": "128, regular, weak",
+          "rr": "26, regular, full",
           "bp": "98/60",
           "spo2": 97,
           "etco2": 36,
@@ -4092,8 +4075,8 @@
         },
         {
           "context": "If agitation spikes during movement",
-          "hr": 166,
-          "rr": 40,
+          "hr": "166, regular, strong",
+          "rr": "40, regular, shallow",
           "bp": "106/66",
           "spo2": 90,
           "etco2": 31,
@@ -4361,8 +4344,8 @@
     "vitalSigns": {
       "firstSet": {
         "context": "Initial assessment indoors",
-        "hr": 108,
-        "rr": 22,
+        "hr": "108, regular, strong",
+        "rr": "22, regular, full",
         "bp": "146/88",
         "spo2": 99,
         "etco2": 34,
@@ -4373,8 +4356,8 @@
       },
       "secondSet": {
         "context": "After source removal and oxygen initiation",
-        "hr": 98,
-        "rr": 20,
+        "hr": "98, regular, strong",
+        "rr": "20, regular, full",
         "bp": "138/84",
         "spo2": 100,
         "etco2": 35,
@@ -4386,8 +4369,8 @@
       "additionalSets": [
         {
           "context": "During transport with continuous oxygen",
-          "hr": 92,
-          "rr": 18,
+          "hr": "92, regular, strong",
+          "rr": "18, regular, full",
           "bp": "132/82",
           "spo2": 100,
           "etco2": 36,
@@ -4398,8 +4381,8 @@
         },
         {
           "context": "If source recognition is delayed and exposure continues",
-          "hr": 122,
-          "rr": 26,
+          "hr": "122, regular, strong",
+          "rr": "26, regular, full",
           "bp": "154/92",
           "spo2": 99,
           "etco2": 32,
@@ -4663,8 +4646,8 @@
     "vitalSigns": {
       "firstSet": {
         "context": "Initial severe distress before treatment",
-        "hr": 126,
-        "rr": 34,
+        "hr": "126, regular, strong",
+        "rr": "34, regular, shallow",
         "bp": "162/92",
         "spo2": 86,
         "etco2": 50,
@@ -4675,8 +4658,8 @@
       },
       "secondSet": {
         "context": "After initial bronchodilator and dexamethasone",
-        "hr": 118,
-        "rr": 30,
+        "hr": "118, regular, strong",
+        "rr": "30, regular, shallow",
         "bp": "154/88",
         "spo2": 90,
         "etco2": 48,
@@ -4688,8 +4671,8 @@
       "additionalSets": [
         {
           "context": "After CPAP initiation and reassessment",
-          "hr": 108,
-          "rr": 24,
+          "hr": "108, regular, strong",
+          "rr": "24, regular, full",
           "bp": "146/84",
           "spo2": 94,
           "etco2": 42,
@@ -4700,8 +4683,8 @@
         },
         {
           "context": "If CPAP is delayed and movement forced too early",
-          "hr": 136,
-          "rr": 38,
+          "hr": "136, regular, strong",
+          "rr": "38, regular, shallow",
           "bp": "170/96",
           "spo2": 82,
           "etco2": 58,
@@ -4966,8 +4949,8 @@
     "vitalSigns": {
       "firstSet": {
         "context": "Initial severe pulmonary edema presentation",
-        "hr": 122,
-        "rr": 36,
+        "hr": "122, regular, strong",
+        "rr": "36, regular, shallow",
         "bp": "196/112",
         "spo2": 84,
         "etco2": 31,
@@ -4978,8 +4961,8 @@
       },
       "secondSet": {
         "context": "After first nitroglycerin dose and oxygen optimization",
-        "hr": 114,
-        "rr": 32,
+        "hr": "114, regular, strong",
+        "rr": "32, regular, shallow",
         "bp": "178/100",
         "spo2": 89,
         "etco2": 33,
@@ -4991,8 +4974,8 @@
       "additionalSets": [
         {
           "context": "After repeat nitroglycerin with ongoing upright oxygen support",
-          "hr": 106,
-          "rr": 28,
+          "hr": "106, regular, strong",
+          "rr": "28, regular, full",
           "bp": "162/94",
           "spo2": 92,
           "etco2": 34,
@@ -5003,8 +4986,8 @@
         },
         {
           "context": "If nitroglycerin delayed and transport rushed without stabilization",
-          "hr": 132,
-          "rr": 40,
+          "hr": "132, regular, strong",
+          "rr": "40, regular, shallow",
           "bp": "210/118",
           "spo2": 80,
           "etco2": 29,
@@ -5268,8 +5251,8 @@
     "vitalSigns": {
       "firstSet": {
         "context": "Initial assessment before maneuver",
-        "hr": 188,
-        "rr": 22,
+        "hr": "188, regular, strong",
+        "rr": "22, regular, full",
         "bp": "112/74",
         "spo2": 99,
         "etco2": 34,
@@ -5280,8 +5263,8 @@
       },
       "secondSet": {
         "context": "After first poorly executed standard strain attempt",
-        "hr": 182,
-        "rr": 22,
+        "hr": "182, regular, strong",
+        "rr": "22, regular, full",
         "bp": "108/72",
         "spo2": 99,
         "etco2": 34,
@@ -5293,8 +5276,8 @@
       "additionalSets": [
         {
           "context": "After correctly performed modified Valsalva (15-second strain then supine reposition with passive leg raise)",
-          "hr": 104,
-          "rr": 18,
+          "hr": "104, regular, strong",
+          "rr": "18, regular, full",
           "bp": "118/76",
           "spo2": 99,
           "etco2": 35,
@@ -5305,8 +5288,8 @@
         },
         {
           "context": "If maneuver technique is poor and reassessment delayed",
-          "hr": 196,
-          "rr": 26,
+          "hr": "196, regular, weak",
+          "rr": "26, regular, full",
           "bp": "94/62",
           "spo2": 97,
           "etco2": 31,
@@ -5570,8 +5553,8 @@
     "vitalSigns": {
       "firstSet": {
         "context": "Initial presentation before airway support",
-        "hr": 58,
-        "rr": 6,
+        "hr": "58, regular, weak",
+        "rr": "6, regular, shallow",
         "bp": "98/60",
         "spo2": 78,
         "etco2": 58,
@@ -5582,8 +5565,8 @@
       },
       "secondSet": {
         "context": "After airway repositioning, BVM support, and initial naloxone response",
-        "hr": 72,
-        "rr": 12,
+        "hr": "72, regular, strong",
+        "rr": "12, regular, full",
         "bp": "112/68",
         "spo2": 93,
         "etco2": 44,
@@ -5595,8 +5578,8 @@
       "additionalSets": [
         {
           "context": "During transport after partial awakening with nausea and confusion",
-          "hr": 88,
-          "rr": 14,
+          "hr": "88, regular, strong",
+          "rr": "14, regular, full",
           "bp": "118/72",
           "spo2": 96,
           "etco2": 40,
@@ -5607,8 +5590,8 @@
         },
         {
           "context": "If reassessment is poor and re-sedation develops",
-          "hr": 64,
-          "rr": 8,
+          "hr": "64, regular, strong",
+          "rr": "8, regular, shallow",
           "bp": "102/62",
           "spo2": 86,
           "etco2": 52,
@@ -5873,8 +5856,8 @@
     "vitalSigns": {
       "firstSet": {
         "context": "Initial LTC bedside assessment",
-        "hr": 112,
-        "rr": 24,
+        "hr": "112, regular, weak",
+        "rr": "24, regular, full",
         "bp": "98/60",
         "spo2": 92,
         "etco2": 31,
@@ -5885,8 +5868,8 @@
       },
       "secondSet": {
         "context": "After initial packaging and hallway movement",
-        "hr": 118,
-        "rr": 26,
+        "hr": "118, regular, weak",
+        "rr": "26, regular, full",
         "bp": "90/54",
         "spo2": 93,
         "etco2": 30,
@@ -5898,8 +5881,8 @@
       "additionalSets": [
         {
           "context": "En route after continued supportive care",
-          "hr": 122,
-          "rr": 27,
+          "hr": "122, regular, weak",
+          "rr": "27, regular, full",
           "bp": "84/50",
           "spo2": 94,
           "etco2": 29,
@@ -6164,8 +6147,8 @@
     "vitalSigns": {
       "firstSet": {
         "context": "Initial on-scene assessment",
-        "hr": 52,
-        "rr": 22,
+        "hr": "52, regular, strong",
+        "rr": "22, regular, full",
         "bp": "102/64",
         "spo2": 95,
         "etco2": 30,
@@ -6176,8 +6159,8 @@
       },
       "secondSet": {
         "context": "After packaging and movement toward elevator",
-        "hr": 48,
-        "rr": 24,
+        "hr": "48, regular, weak",
+        "rr": "24, regular, full",
         "bp": "92/58",
         "spo2": 95,
         "etco2": 29,
@@ -6189,8 +6172,8 @@
       "additionalSets": [
         {
           "context": "En route after continued monitoring",
-          "hr": 44,
-          "rr": 24,
+          "hr": "44, regular, weak",
+          "rr": "24, regular, full",
           "bp": "84/52",
           "spo2": 94,
           "etco2": 28,
@@ -6455,8 +6438,8 @@
     "vitalSigns": {
       "firstSet": {
         "context": "Initial assessment",
-        "hr": 132,
-        "rr": 20,
+        "hr": "132, regular, strong",
+        "rr": "20, regular, full",
         "bp": "124/76",
         "spo2": 99,
         "etco2": 35,
@@ -6467,8 +6450,8 @@
       },
       "secondSet": {
         "context": "After rest and reassurance",
-        "hr": 116,
-        "rr": 18,
+        "hr": "116, regular, strong",
+        "rr": "18, regular, full",
         "bp": "120/74",
         "spo2": 99,
         "etco2": 35,
@@ -6760,8 +6743,8 @@
     "vitalSigns": {
       "firstSet": {
         "context": "Initial assessment",
-        "hr": 92,
-        "rr": 18,
+        "hr": "92, regular, strong",
+        "rr": "18, regular, full",
         "bp": "122/78",
         "spo2": 99,
         "etco2": 36,
@@ -6772,8 +6755,8 @@
       },
       "secondSet": {
         "context": "After splinting and assisted movement",
-        "hr": 88,
-        "rr": 18,
+        "hr": "88, regular, strong",
+        "rr": "18, regular, full",
         "bp": "120/76",
         "spo2": 99,
         "etco2": 36,
@@ -7065,8 +7048,8 @@
     "vitalSigns": {
       "firstSet": {
         "context": "Initial seated assessment",
-        "hr": 104,
-        "rr": 18,
+        "hr": "104, regular, strong",
+        "rr": "18, regular, full",
         "bp": "108/68",
         "spo2": 99,
         "etco2": 36,
@@ -7077,8 +7060,8 @@
       },
       "secondSet": {
         "context": "After rest and reassessment",
-        "hr": 92,
-        "rr": 16,
+        "hr": "92, regular, strong",
+        "rr": "16, regular, full",
         "bp": "112/70",
         "spo2": 99,
         "etco2": 36,
@@ -7370,8 +7353,8 @@
     "vitalSigns": {
       "firstSet": {
         "context": "Initial assessment",
-        "hr": 102,
-        "rr": 24,
+        "hr": "102, regular, strong",
+        "rr": "24, regular, full",
         "bp": "118/72",
         "spo2": 97,
         "etco2": 35,
@@ -7382,8 +7365,8 @@
       },
       "secondSet": {
         "context": "After rest and breathing coaching",
-        "hr": 94,
-        "rr": 20,
+        "hr": "94, regular, strong",
+        "rr": "20, regular, full",
         "bp": "116/70",
         "spo2": 98,
         "etco2": 35,
@@ -7675,8 +7658,8 @@
     "vitalSigns": {
       "firstSet": {
         "context": "Initial shaded assessment",
-        "hr": 106,
-        "rr": 20,
+        "hr": "106, regular, strong",
+        "rr": "20, regular, full",
         "bp": "110/70",
         "spo2": 99,
         "etco2": 35,
@@ -7687,8 +7670,8 @@
       },
       "secondSet": {
         "context": "After rest and cooling",
-        "hr": 94,
-        "rr": 18,
+        "hr": "94, regular, strong",
+        "rr": "18, regular, full",
         "bp": "114/72",
         "spo2": 99,
         "etco2": 35,
@@ -7896,8 +7879,8 @@
     "vitalSigns": {
       "firstSet": {
         "context": "Initial assessment",
-        "hr": 182,
-        "rr": 24,
+        "hr": "182, regular, strong",
+        "rr": "24, regular, full",
         "bp": "116/74",
         "spo2": 99,
         "etco2": 34,
@@ -7908,8 +7891,8 @@
       },
       "secondSet": {
         "context": "After seated reassessment",
-        "hr": 176,
-        "rr": 22,
+        "hr": "176, regular, strong",
+        "rr": "22, regular, full",
         "bp": "110/70",
         "spo2": 99,
         "etco2": 34,
@@ -7921,8 +7904,8 @@
       "additionalSets": [
         {
           "context": "During transport after movement",
-          "hr": 188,
-          "rr": 24,
+          "hr": "188, regular, strong",
+          "rr": "24, regular, full",
           "bp": "102/66",
           "spo2": 98,
           "etco2": 33,
@@ -8099,8 +8082,8 @@
     "vitalSigns": {
       "firstSet": {
         "context": "Initial assessment",
-        "hr": 104,
-        "rr": 22,
+        "hr": "104, regular, strong",
+        "rr": "22, regular, full",
         "bp": "128/80",
         "spo2": 98,
         "etco2": 35,
@@ -8111,8 +8094,8 @@
       },
       "secondSet": {
         "context": "After movement to stretcher",
-        "hr": 110,
-        "rr": 24,
+        "hr": "110, regular, strong",
+        "rr": "24, regular, full",
         "bp": "124/78",
         "spo2": 97,
         "etco2": 35,
@@ -8124,8 +8107,8 @@
       "additionalSets": [
         {
           "context": "En route reassessment",
-          "hr": 106,
-          "rr": 22,
+          "hr": "106, regular, strong",
+          "rr": "22, regular, full",
           "bp": "122/76",
           "spo2": 98,
           "etco2": 35,
@@ -8302,8 +8285,8 @@
     "vitalSigns": {
       "firstSet": {
         "context": "Initial assessment",
-        "hr": 112,
-        "rr": 24,
+        "hr": "112, regular, strong",
+        "rr": "24, regular, full",
         "bp": "108/66",
         "spo2": 97,
         "etco2": 33,
@@ -8314,8 +8297,8 @@
       },
       "secondSet": {
         "context": "After movement to stretcher",
-        "hr": 118,
-        "rr": 25,
+        "hr": "118, regular, strong",
+        "rr": "25, regular, full",
         "bp": "100/60",
         "spo2": 97,
         "etco2": 32,
@@ -8327,8 +8310,8 @@
       "additionalSets": [
         {
           "context": "En route reassessment",
-          "hr": 122,
-          "rr": 26,
+          "hr": "122, regular, weak",
+          "rr": "26, regular, full",
           "bp": "94/56",
           "spo2": 96,
           "etco2": 31,
@@ -8555,8 +8538,8 @@
     "vitalSigns": {
       "firstSet": {
         "context": "Initial assessment",
-        "hr": 116,
-        "rr": 28,
+        "hr": "116, regular, strong",
+        "rr": "28, regular, full",
         "bp": "134/82",
         "spo2": 93,
         "etco2": 40,
@@ -8567,8 +8550,8 @@
       },
       "secondSet": {
         "context": "After initial support",
-        "hr": 108,
-        "rr": 24,
+        "hr": "108, regular, strong",
+        "rr": "24, regular, full",
         "bp": "130/80",
         "spo2": 95,
         "etco2": 38,
@@ -8580,8 +8563,8 @@
       "additionalSets": [
         {
           "context": "En route reassessment",
-          "hr": 112,
-          "rr": 25,
+          "hr": "112, regular, strong",
+          "rr": "25, regular, full",
           "bp": "128/78",
           "spo2": 94,
           "etco2": 39,
@@ -8808,8 +8791,8 @@
     "vitalSigns": {
       "firstSet": {
         "context": "Initial assessment",
-        "hr": 102,
-        "rr": 22,
+        "hr": "102, regular, strong",
+        "rr": "22, regular, full",
         "bp": "106/68",
         "spo2": 97,
         "etco2": 34,
@@ -8820,8 +8803,8 @@
       },
       "secondSet": {
         "context": "After initial warming",
-        "hr": 96,
-        "rr": 20,
+        "hr": "96, regular, strong",
+        "rr": "20, regular, full",
         "bp": "110/70",
         "spo2": 98,
         "etco2": 35,
@@ -8833,8 +8816,8 @@
       "additionalSets": [
         {
           "context": "En route reassessment",
-          "hr": 92,
-          "rr": 18,
+          "hr": "92, regular, strong",
+          "rr": "18, regular, full",
           "bp": "114/72",
           "spo2": 98,
           "etco2": 35,
@@ -9061,8 +9044,8 @@
     "vitalSigns": {
       "firstSet": {
         "context": "Initial assessment on scene",
-        "hr": 110,
-        "rr": 20,
+        "hr": "110, regular, strong",
+        "rr": "20, regular, full",
         "bp": "130/80",
         "spo2": 98,
         "etco2": 36,
@@ -9073,8 +9056,8 @@
       },
       "secondSet": {
         "context": "After initial splinting and pain assessment",
-        "hr": 105,
-        "rr": 18,
+        "hr": "105, regular, strong",
+        "rr": "18, regular, full",
         "bp": "128/78",
         "spo2": 98,
         "etco2": 36,
@@ -9086,8 +9069,8 @@
       "additionalSets": [
         {
           "context": "During transport preparation",
-          "hr": 100,
-          "rr": 18,
+          "hr": "100, regular, strong",
+          "rr": "18, regular, full",
           "bp": "126/76",
           "spo2": 98,
           "etco2": 36,

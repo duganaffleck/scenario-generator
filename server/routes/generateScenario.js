@@ -2396,6 +2396,7 @@ function buildCaseProgressionProfile(subtype) {
 
 function defaultVitalSet() {
   return {
+    context: '',
     hr: '',
     rr: '',
     bp: '',
@@ -3446,24 +3447,89 @@ function clampParagraphText(value, { maxSentences = 4, maxWords = 120, maxChars 
   return normalizeSentenceSpacing(selected.join(' '));
 }
 
+function pickVitalField(rawSet, aliases) {
+  if (!rawSet || typeof rawSet !== 'object') return '';
+
+  for (const key of aliases) {
+    const value = rawSet[key];
+    if (value != null && String(value).trim() !== '') {
+      return value;
+    }
+  }
+
+  return '';
+}
+
+function stripLeadingVitalLabel(value) {
+  return normalizeSentenceSpacing(String(value || '').trim())
+    .replace(/^(?:hr|rr)\s*:?\s*/i, '')
+    .trim();
+}
+
+function composeCompositeVitalLine(rateValue, volumeValue, rhythmValue) {
+  const rate = stripLeadingVitalLabel(rateValue);
+  const volume = normalizeSentenceSpacing(String(volumeValue || '').trim());
+  const rhythm = normalizeSentenceSpacing(String(rhythmValue || '').trim());
+
+  if (!volume && !rhythm) {
+    return rate;
+  }
+
+  const rateComponent = rate.includes(',') ? rate.split(',')[0].trim() : rate;
+  return [rateComponent, volume, rhythm].filter(Boolean).join(', ');
+}
+
+function extractLeadingVitalNumber(value) {
+  const match = stripLeadingVitalLabel(value).match(/-?\d+(?:\.\d+)?/);
+  return match ? Number(match[0]) : null;
+}
+
+function normalizeVitalSet(rawSet) {
+  const source = rawSet && typeof rawSet === 'object' ? rawSet : {};
+  const hrRate = stringifyValue(pickVitalField(source, ['hr', 'heartRate', 'heart_rate', 'HR'])).trim();
+  const hrRhythm = stringifyValue(
+    pickVitalField(source, ['hrRhythm', 'heartRateRhythm', 'heart_rate_rhythm', 'HRRhythm', 'pulseRhythm'])
+  ).trim();
+  const hrVolume = stringifyValue(
+    pickVitalField(source, ['hrVolume', 'heartRateVolume', 'heart_rate_volume', 'HRVolume', 'pulseVolume', 'pulseStrength'])
+  ).trim();
+  const rrRate = stringifyValue(pickVitalField(source, ['rr', 'respiratoryRate', 'respRate', 'resp_rate', 'RR'])).trim();
+  const rrRhythm = stringifyValue(
+    pickVitalField(source, ['rrRhythm', 'respiratoryRhythm', 'respRateRhythm', 'respiratory_rate_rhythm', 'RRRhythm'])
+  ).trim();
+  const rrVolume = stringifyValue(
+    pickVitalField(source, ['rrVolume', 'respiratoryVolume', 'respRateVolume', 'respiratory_rate_volume', 'RRVolume'])
+  ).trim();
+
+  const normalized = {
+    context: stringifyValue(pickVitalField(source, ['context'])).trim(),
+    hr: composeCompositeVitalLine(hrRate, hrVolume, hrRhythm),
+    rr: composeCompositeVitalLine(rrRate, rrVolume, rrRhythm),
+    bp: stringifyValue(pickVitalField(source, ['bp', 'BP', 'bloodPressure', 'blood_pressure'])).trim(),
+    spo2: stringifyValue(pickVitalField(source, ['spo2', 'SpO2', 'spO2', 'oxygenSaturation', 'oxygen_saturation'])).trim(),
+    etco2: stringifyValue(pickVitalField(source, ['etco2', 'EtCO2', 'ETCO2'])).trim(),
+    temp: stringifyValue(pickVitalField(source, ['temp', 'temperature'])).trim(),
+    gcs: stringifyValue(pickVitalField(source, ['gcs', 'GCS'])).trim(),
+    bgl: stringifyValue(pickVitalField(source, ['bgl', 'BGL', 'glucose', 'bloodGlucose', 'blood_glucose'])).trim(),
+    ecgInterpretation: stringifyValue(
+      pickVitalField(source, ['ecgInterpretation', 'ecg', 'ECG', 'rhythm', 'rhythmInterpretation'])
+    ).trim()
+  };
+
+  normalized.ecgInterpretation = normalizeEcgInterpretation(normalized.ecgInterpretation);
+
+  return normalized;
+}
+
 function normalizeVitalSigns(value, ecgInterpretation) {
   const source = value && typeof value === 'object' ? value : {};
   const firstRaw = source.firstSet || source.first || {};
   const secondRaw = source.secondSet || source.second || {};
   const additionalRaw = Array.isArray(source.additionalSets) ? source.additionalSets : [];
 
-  const firstSet = { ...defaultVitalSet(), ...firstRaw };
-  const secondSet = { ...defaultVitalSet(), ...secondRaw };
-  const additionalSets = additionalRaw.map((set) => {
-    const normalizedSet = { ...defaultVitalSet(), ...(set || {}) };
-
-    normalizedSet.ecgInterpretation = normalizeEcgInterpretation(normalizedSet.ecgInterpretation);
-
-    return normalizedSet;
-  });
-
-  firstSet.ecgInterpretation = normalizeEcgInterpretation(firstSet.ecgInterpretation);
-  secondSet.ecgInterpretation = normalizeEcgInterpretation(secondSet.ecgInterpretation);
+  const firstSet = normalizeVitalSet(firstRaw);
+  const secondSet = normalizeVitalSet(secondRaw);
+  const additionalSets = additionalRaw.map((set) => normalizeVitalSet(set));
   const normalizedRootEcg = normalizeEcgInterpretation(ecgInterpretation);
 
   if (
@@ -5888,7 +5954,7 @@ function clampSemesterTwoVitals(set) {
 
   const clamped = { ...set };
   const toNumber = (value) => {
-    const n = Number(value);
+    const n = extractLeadingVitalNumber(value);
     return Number.isFinite(n) ? n : null;
   };
   const parseSystolic = (bp) => {
@@ -6958,6 +7024,8 @@ Secondary assessment rules:
 
 Vital signs rules:
 - Every scenario must contain at least firstSet and secondSet.
+- hr must be one string that combines rate, rhythm, and volume in that order, for example "118, regular, strong".
+- rr must be one string that combines rate, rhythm, and volume in that order, for example "28, regular, full".
 - Some scenarios should contain one or more additionalSets when clinically appropriate.
 - Use additionalSets for evolving calls, treatment response, deterioration, movement-related change, longer transport, or meaningful reassessment changes.
 - Do not force additionalSets into every case.

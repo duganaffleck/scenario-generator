@@ -288,8 +288,8 @@ Spinal Motion Restriction:
 
 Vital Signs:
 Always include:
-- HR
-- RR
+- HR as one line containing rate, rhythm, and volume, for example "118, regular, strong"
+- RR as one line containing rate, rhythm, and volume, for example "18, regular, full"
 - BP
 - SpO2
 - ETCO2 when relevant
@@ -722,7 +722,7 @@ Rules for the output:
 - allergies must be an array
 - pastMedicalHistory must be an array
 - physicalExam must be an object
-- vitalSigns must use firstSet and secondSet exactly; each set must include a context string describing the clinical moment
+- vitalSigns must use firstSet and secondSet exactly; each set must include a context string plus hr and rr written as single lines that combine rate, rhythm, and volume
 - transportPhase must be an object with transportConsiderations, ongoingCare, and reassessmentFocus as arrays and handoffConsiderations as a string; do not include packaging or transportDecision as separate fields
 - expectedTreatment must be an array
 - protocolNotes must be an array

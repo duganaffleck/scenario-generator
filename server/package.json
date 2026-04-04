@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "start": "node index.js",
+    "migrate:vitals:one-line": "node scripts/migrateFewShotVitalsOneLine.js",
     "audit:few-shots": "node scripts/auditFewShots.js",
     "audit:few-shots:strict": "node scripts/auditFewShots.js --strict",
     "audit:few-shots:ci": "node scripts/auditFewShots.js --strict --require-metadata"

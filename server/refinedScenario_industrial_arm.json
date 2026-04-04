@@ -113,8 +113,8 @@
   "vitalSigns": {
     "firstSet": {
       "context": "Initial assessment on scene",
-      "hr": 110,
-      "rr": 20,
+      "hr": "110, regular, strong",
+      "rr": "20, regular, full",
       "bp": "130/80",
       "spo2": 98,
       "etco2": 36,
@@ -125,8 +125,8 @@
     },
     "secondSet": {
       "context": "After initial splinting and pain assessment",
-      "hr": 105,
-      "rr": 18,
+      "hr": "105, regular, strong",
+      "rr": "18, regular, full",
       "bp": "128/78",
       "spo2": 98,
       "etco2": 36,
@@ -138,8 +138,8 @@
     "additionalSets": [
       {
         "context": "During transport preparation",
-        "hr": 100,
-        "rr": 18,
+        "hr": "100, regular, strong",
+        "rr": "18, regular, full",
         "bp": "126/76",
         "spo2": 98,
         "etco2": 36,

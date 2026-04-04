@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { createPortal } from "react-dom";
 import axios from "axios";
 import jsPDF from "jspdf";
 import { FaSpinner, FaFilePdf, FaLightbulb } from "react-icons/fa";
@@ -59,9 +58,18 @@ const TITLE_MAP = {
   patientDemographics: "Patient Demographics",
   patientPresentation: "Patient Presentation",
   incidentNarrative: "Incident History",
+  sceneArrival: "Scene Arrival",
+  firstImpression: "First Impression",
+  initialAssessment: "Initial Assessment",
+  historyGathering: "History Gathering",
   sample: "SAMPLE",
+  medications: "Medications",
+  allergies: "Allergies",
+  pastMedicalHistory: "Past Medical History",
   pathophysiology: "Pathophysiology",
   differentialDiagnosis: "Differential Diagnosis",
+  secondaryAssessment: "Secondary Assessment",
+  additionalAssessments: "Additional Assessments",
   clinicalReasoning: "Integrated Clinical Reasoning",
   grsAnchors: "GRS Anchors",
   selfReflectionPrompts: "Self-Reflective Questions",
@@ -69,41 +77,49 @@ const TITLE_MAP = {
   physicalExam: "Physical Assessment",
   vitalSigns: "Vital Signs",
   caseProgression: "Case Progression",
+  transportPhase: "Transport Phase",
   expectedTreatment: "Expected Treatment",
   protocolNotes: "Protocol Notes",
   learningObjectives: "Learning Objectives",
-  teachersPoints: "Instructor Debrief",
+  teachersPoints: "Teaching Points",
+  directiveSources: "Directive Sources",
+  customPrompt: "Custom Prompt",
   scenarioRationale: "Scenario Rationale & Teaching Tips",
 };
 
-function computeCuePopoverStyle(anchorRect, isMobile) {
-  if (!anchorRect || typeof window === "undefined") return null;
+const cuePhaseLabelMap = {
+  arrival: "Arrival",
+  history: "History",
+  assessment: "Assessment",
+  treatment: "Treatment",
+  protocol: "Protocol",
+  progression: "Progression",
+  transport: "Transport",
+  reasoning: "Reasoning",
+};
 
-  const viewportWidth = window.innerWidth || 0;
-  const viewportHeight = window.innerHeight || 0;
-  const margin = isMobile ? 8 : 12;
-  const preferredWidth = isMobile ? Math.min(340, viewportWidth - margin * 2) : 360;
-  const maxAllowedWidth = Math.max(200, viewportWidth - margin * 2);
-  const width = Math.min(preferredWidth, maxAllowedWidth);
+function getCuePopoverPlacement(cueTag, cueIndex, isMobile) {
+  if (isMobile) {
+    return {
+      top: "1.8rem",
+      bottom: "auto",
+      left: 0,
+      right: "auto",
+    };
+  }
 
-  const spaceBelow = viewportHeight - anchorRect.bottom;
-  const openUpward = !isMobile && spaceBelow < 220;
-  const left = Math.max(margin, Math.min(anchorRect.left, viewportWidth - width - margin));
-  const top = openUpward
-    ? Math.max(margin, anchorRect.top - 12)
-    : Math.min(viewportHeight - margin, anchorRect.bottom + 12);
-
-  return {
-    position: "fixed",
-    left,
-    top,
-    width,
-    maxWidth: `${maxAllowedWidth}px`,
-    maxHeight: `${Math.max(160, viewportHeight - margin * 2)}px`,
-    overflowY: "auto",
-    transform: openUpward ? "translateY(-100%)" : "none",
-    zIndex: 25000,
+  const opening = {
+    transport: { top: "auto", bottom: "1.9rem", left: 0, right: "auto" },
+    progression: { top: "auto", bottom: "1.9rem", left: 0, right: "auto" },
+    protocol: { top: "auto", bottom: "1.9rem", left: 0, right: "auto" },
+    reasoning: { top: "1.9rem", bottom: "auto", left: "auto", right: 0 },
   };
+
+  if (opening[cueTag]) return opening[cueTag];
+
+  return cueIndex % 2 === 0
+    ? { top: "1.8rem", bottom: "auto", left: 0, right: "auto" }
+    : { top: "auto", bottom: "1.9rem", left: 0, right: "auto" };
 }
 
 const ScenarioForm = () => {
@@ -112,7 +128,7 @@ const ScenarioForm = () => {
     type: "Medical",
     environment: "Urban",
     complexity: "Moderate",
-    includeTeachingCues: false,
+    includeTeachingCues: true,
     customPrompt: "",
   });
 
@@ -172,6 +188,22 @@ const ScenarioForm = () => {
   }, []);
 
   useEffect(() => {
+    if (isMobile) {
+      document.body.style.overflow = "auto";
+      document.documentElement.style.overflow = "auto";
+    } else {
+      document.body.style.overflow = "hidden";
+      document.documentElement.style.overflow = "hidden";
+    }
+
+    return () => {
+      document.body.style.overflow = "";
+      document.documentElement.style.overflow = "";
+    };
+  }, [isMobile]);
+
+
+  useEffect(() => {
     const closeCueOnOutsideClick = (event) => {
       const target = event.target;
       if (target instanceof Element && target.closest("[data-cue-toggle='true'], [data-cue-popover='true']")) {
@@ -195,16 +227,6 @@ const ScenarioForm = () => {
     return () => document.removeEventListener("keydown", onKeyDown);
   }, []);
 
-  useEffect(() => {
-    const closeCue = () => setSelectedCue(null);
-    window.addEventListener("resize", closeCue);
-    window.addEventListener("scroll", closeCue, true);
-    return () => {
-      window.removeEventListener("resize", closeCue);
-      window.removeEventListener("scroll", closeCue, true);
-    };
-  }, []);
-
   const handleChange = (e) => {
     const { name, type, checked, value } = e.target;
     setFormData((prev) => ({
@@ -213,13 +235,19 @@ const ScenarioForm = () => {
     }));
   };
 
-  const capitalizeFirstLetter = (string) => string.charAt(0).toUpperCase() + string.slice(1);
+  const capitalizeFirstLetter = (string) =>
+    String(string || "")
+      .replace(/[_-]+/g, " ")
+      .replace(/([a-z0-9])([A-Z])/g, "$1 $2")
+      .replace(/\s+/g, " ")
+      .trim()
+      .replace(/^./, (ch) => ch.toUpperCase());
 
   const sanitizePdfText = (value) => {
     const cueRegex = /\*\(💡(?:[a-z]+\|)?\s*(.+?)\s*\)\*/gi;
     return String(value ?? "")
       .replace(cueRegex, "Teaching cue: $1")
-      .replace(/[^\t\n\r\x20-\x7E]/g, "")
+      .replace(/[^\x09\x0A\x0D\x20-\x7E]/g, "")
       .replace(/\r\n/g, "\n")
       .split("\n")
       .map((line) => line.replace(/\s{2,}/g, " ").trimEnd())
@@ -310,23 +338,12 @@ const ScenarioForm = () => {
     const doc = new jsPDF({ unit: "mm", format: "a4" });
     const pageHeight = doc.internal.pageSize.getHeight();
     const pageWidth = doc.internal.pageSize.getWidth();
-    const marginX = 16;
-    const marginY = 16;
+    const marginX = 20;
+    const marginY = 20;
     const maxLineWidth = pageWidth - marginX * 2;
-    const bodySize = 9.8;
-    const bodyLH = 5.4;
-    const footerY = pageHeight - 10;
-    const palette = {
-      ink: [18, 48, 71],
-      teal: [13, 139, 139],
-      tealSoft: [223, 240, 245],
-      paper: [247, 244, 238],
-      orange: [242, 140, 40],
-      neutralLine: [201, 214, 220],
-      neutralText: [54, 78, 90],
-      darkText: [20, 29, 35],
-      white: [255, 255, 255],
-    };
+    const bodySize = 10;
+    const bodyLH = 5.8;
+    const footerY = pageHeight - 12;
     let y = marginY;
 
     const documentTitle = sanitizePdfText(scenario.title || "Untitled Scenario") || "Untitled Scenario";
@@ -384,79 +401,47 @@ const ScenarioForm = () => {
     const needsNewPage = (h) => {
       if (y + h > footerY - 4) {
         doc.addPage();
-        y = marginY + 9;
+        y = marginY;
         return true;
       }
       return false;
     };
 
-    const drawPageHeader = (pageNum) => {
-      if (pageNum === 1) return;
-      doc.setFillColor(...palette.paper);
-      doc.rect(0, 0, pageWidth, 10.5, "F");
-
-      doc.setDrawColor(...palette.neutralLine);
-      doc.setLineWidth(0.2);
-      doc.line(marginX, 10.5, pageWidth - marginX, 10.5);
-
-      doc.setFont(undefined, "bold");
-      doc.setFontSize(8.2);
-      doc.setTextColor(...palette.ink);
-      doc.text("VitalNotes Scenario Generator", marginX, 6.8);
-
-      doc.setFont(undefined, "normal");
-      doc.setFontSize(7.8);
-      doc.setTextColor(...palette.neutralText);
-      doc.text("Instructor Export", pageWidth - marginX, 6.8, { align: "right" });
+    const printLine = (text, size, bold, color) => {
+      doc.setFont(undefined, bold ? "bold" : "normal");
+      doc.setFontSize(size);
+      doc.setTextColor(...color);
+      const wrapped = doc.splitTextToSize(sanitizePdfText(text), maxLineWidth);
+      wrapped.forEach((line) => {
+        needsNewPage(bodyLH);
+        doc.text(line, marginX, y);
+        y += bodyLH;
+      });
     };
 
     const drawPageFooter = (pageNum, total) => {
       doc.setFont(undefined, "normal");
       doc.setFontSize(8);
-      doc.setTextColor(...palette.neutralText);
-      doc.setDrawColor(...palette.neutralLine);
+      doc.setTextColor(150, 150, 150);
+      doc.setDrawColor(180, 180, 180);
       doc.setLineWidth(0.2);
       doc.line(marginX, footerY, pageWidth - marginX, footerY);
       doc.text(documentTitle, marginX, footerY + 4.5);
       doc.text(`Page ${pageNum} of ${total}`, pageWidth - marginX, footerY + 4.5, { align: "right" });
     };
 
-    // Cover page
-    doc.setFillColor(...palette.ink);
-    doc.rect(0, 0, pageWidth, 42, "F");
-
-    doc.setFillColor(...palette.orange);
-    doc.rect(0, 42, pageWidth, 2.2, "F");
-
+    // ── Cover page ──────────────────────────────────────────────────────────
     doc.setFont(undefined, "bold");
-    doc.setFontSize(11);
-    doc.setTextColor(...palette.white);
-    doc.text("VitalNotes Scenario Generator", marginX, 12);
-
-    doc.setFont(undefined, "bold");
-    doc.setFontSize(20);
-    doc.setTextColor(...palette.white);
+    doc.setFontSize(22);
+    doc.setTextColor(20, 20, 20);
     const titleWrapped = doc.splitTextToSize(documentTitle, maxLineWidth);
-    doc.text(titleWrapped, marginX, 23);
+    doc.text(titleWrapped, marginX, y);
+    y += titleWrapped.length * 9 + 4;
 
-    doc.setFont(undefined, "normal");
-    doc.setFontSize(9.5);
-    doc.setTextColor(225, 239, 245);
-    doc.text("Protocol-aligned scenario export for simulation and debrief.", marginX, 35);
-
-    y = 52;
-
-    doc.setFillColor(...palette.paper);
-    doc.roundedRect(marginX, y, pageWidth - marginX * 2, 32, 2.5, 2.5, "F");
-    doc.setDrawColor(...palette.neutralLine);
-    doc.setLineWidth(0.25);
-    doc.roundedRect(marginX, y, pageWidth - marginX * 2, 32, 2.5, 2.5, "S");
-
-    const cardY = y + 6.5;
-    const colA = marginX + 6;
-    const colB = marginX + 54;
-    const colC = marginX + 102;
-    const colD = marginX + 148;
+    doc.setDrawColor(60, 60, 60);
+    doc.setLineWidth(0.4);
+    doc.line(marginX, y, pageWidth - marginX, y);
+    y += 7;
 
     const metaFields = [
       ["Semester", sanitizePdfText(formData.semester)],
@@ -464,63 +449,52 @@ const ScenarioForm = () => {
       ["Environment", sanitizePdfText(formData.environment)],
       ["Complexity", sanitizePdfText(formData.complexity)],
     ];
-
-    const positions = [
-      [colA, cardY],
-      [colB, cardY],
-      [colC, cardY],
-      [colD, cardY],
-    ];
-
-    metaFields.forEach(([label, val], index) => {
-      const [xPos, yPos] = positions[index];
+    metaFields.forEach(([label, val]) => {
+      if (!val) return;
       doc.setFont(undefined, "bold");
-      doc.setFontSize(8.4);
-      doc.setTextColor(...palette.neutralText);
-      doc.text(label, xPos, yPos);
-
-      doc.setFont(undefined, "bold");
-      doc.setFontSize(10);
-      doc.setTextColor(...palette.ink);
-      const wrappedVal = doc.splitTextToSize(val || "-", 42);
-      doc.text(wrappedVal, xPos, yPos + 5);
+      doc.setFontSize(9.5);
+      doc.setTextColor(80, 80, 80);
+      doc.text(`${label}:`, marginX, y);
+      doc.setFont(undefined, "normal");
+      doc.setTextColor(20, 20, 20);
+      doc.text(val, marginX + 30, y);
+      y += 5.8;
     });
 
-    y += 37;
+    y += 4;
+    doc.setDrawColor(60, 60, 60);
+    doc.setLineWidth(0.2);
+    doc.line(marginX, y, pageWidth - marginX, y);
+    y += 6;
 
     doc.setFont(undefined, "normal");
-    doc.setFontSize(8.2);
-    doc.setTextColor(...palette.neutralText);
+    doc.setFontSize(8.5);
+    doc.setTextColor(130, 130, 130);
     doc.text(`Generated: ${exportedAt}`, marginX, y);
-    y += 5;
+    y += 10;
 
-    doc.setDrawColor(...palette.neutralLine);
-    doc.setLineWidth(0.22);
-    doc.line(marginX, y, pageWidth - marginX, y);
-    y += 4;
-
-    // Content sections
+    // ── Sections ─────────────────────────────────────────────────────────────
     sectionEntries.forEach((entry) => {
-      needsNewPage(13.5);
-
-      doc.setFillColor(...palette.tealSoft);
-      doc.roundedRect(marginX, y, pageWidth - marginX * 2, 8.3, 1.5, 1.5, "F");
-      doc.setDrawColor(...palette.neutralLine);
-      doc.setLineWidth(0.2);
-      doc.roundedRect(marginX, y, pageWidth - marginX * 2, 8.3, 1.5, 1.5, "S");
-
+      // Section heading
+      needsNewPage(12);
+      y += 4;
       doc.setFont(undefined, "bold");
-      doc.setFontSize(10.2);
-      doc.setTextColor(...palette.ink);
-      doc.text(entry.label, marginX + 2.6, y + 5.5);
-      y += 11.3;
+      doc.setFontSize(12);
+      doc.setTextColor(20, 20, 20);
+      doc.text(entry.label, marginX, y);
+      y += 2.5;
+      doc.setDrawColor(60, 60, 60);
+      doc.setLineWidth(0.25);
+      doc.line(marginX, y, pageWidth - marginX, y);
+      y += 5;
 
+      // Body content
       const rawLines = String(entry.formattedValue).split("\n");
       rawLines.forEach((rawLine) => {
         const expanded = rawLine.replace(/\t/g, "  ");
         const trimmed = expanded.trim();
         if (!trimmed) {
-          y += 2.1;
+          y += 2.5;
           return;
         }
         const isBullet = trimmed.startsWith("- ");
@@ -532,7 +506,7 @@ const ScenarioForm = () => {
         const isLabelLine = /^[A-Z][^:]{1,35}:\s*$/.test(trimmed);
         doc.setFont(undefined, isLabelLine ? "bold" : "normal");
         doc.setFontSize(bodySize);
-        doc.setTextColor(...palette.darkText);
+        doc.setTextColor(30, 30, 30);
 
         const wrapped = doc.splitTextToSize(sanitizePdfText(displayText), textWidth);
         wrapped.forEach((line) => {
@@ -541,15 +515,12 @@ const ScenarioForm = () => {
           y += bodyLH;
         });
       });
-
-      y += 1.2;
     });
 
-    // Footer and header on every page
+    // ── Footer on every page ─────────────────────────────────────────────────
     const totalPages = doc.getNumberOfPages();
     for (let p = 1; p <= totalPages; p += 1) {
       doc.setPage(p);
-      drawPageHeader(p);
       drawPageFooter(p, totalPages);
     }
 
@@ -571,7 +542,8 @@ const ScenarioForm = () => {
         const cueText = match[2];
         const cueIndex = localCueIndex++;
         const id = `cue-${parentKey}-${cueTag || "general"}-${matchStart}-${cueIndex}`;
-        const isCueOpen = selectedCue?.id === id;
+        const placement = getCuePopoverPlacement(cueTag, cueIndex, isMobile);
+        const phaseLabel = cuePhaseLabelMap[cueTag] || "Teaching Cue";
 
         if (matchStart > lastIndex) {
           parts.push(<span key={`text-${id}`}>{data.slice(lastIndex, matchStart)}</span>);
@@ -582,14 +554,14 @@ const ScenarioForm = () => {
             <button
               type="button"
               className="a11y-focus"
-              aria-label={isCueOpen ? "Hide teaching cue" : "Show teaching cue"}
-              aria-pressed={isCueOpen}
-              title={isCueOpen ? "Hide teaching cue" : "Show teaching cue"}
+              aria-label={selectedCue === id ? "Hide teaching cue" : "Show teaching cue"}
+              aria-pressed={selectedCue === id}
+              title={selectedCue === id ? "Hide teaching cue" : "Show teaching cue"}
               data-cue-toggle="true"
               style={{
                 cursor: "pointer",
                 marginLeft: "4px",
-                color: isCueOpen ? "#facc15" : "#eab308",
+                color: selectedCue === id ? "#facc15" : "#eab308",
                 verticalAlign: "middle",
                 background: "transparent",
                 border: "none",
@@ -603,22 +575,48 @@ const ScenarioForm = () => {
               }}
               onClick={(e) => {
                 e.stopPropagation();
-                const rect = e.currentTarget.getBoundingClientRect();
-                setSelectedCue((prev) =>
-                  prev?.id === id
-                    ? null
-                    : {
-                        id,
-                        cueTag,
-                        cueText,
-                        cueIndex,
-                        anchorRect: rect,
-                      }
-                );
+                setSelectedCue((prev) => (prev === id ? null : id));
               }}
             >
               <FaLightbulb aria-hidden="true" />
             </button>
+            {selectedCue === id && (
+              <div
+                data-cue-popover="true"
+                style={{
+                  position: "absolute",
+                  background: "#fef9c3",
+                  color: "#1f2937",
+                  border: "1px solid #fcd34d",
+                  padding: "0.5rem 0.75rem",
+                  borderRadius: "8px",
+                  zIndex: 10000,
+                  top: placement.top,
+                  bottom: placement.bottom,
+                  left: placement.left,
+                  right: placement.right,
+                  minWidth: isMobile ? "180px" : "240px",
+                  maxWidth: isMobile ? "90vw" : "420px",
+                  whiteSpace: "normal",
+                  boxShadow: "0 6px 12px rgba(0,0,0,0.25)",
+                }}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div
+                  style={{
+                    fontSize: "0.72rem",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.04em",
+                    color: "#92400e",
+                    marginBottom: "0.35rem",
+                    fontWeight: 700,
+                  }}
+                >
+                  {phaseLabel}
+                </div>
+                {cueText}
+              </div>
+            )}
           </span>
         );
 
@@ -755,23 +753,21 @@ const ScenarioForm = () => {
   return (
     <div style={styles.container}>
       <div style={styles.headerBar}>
-        <div style={styles.headerInner}>
-          <h1 style={styles.heading}>VitalNotes Workspace</h1>
-          <div>
-            <button
-              onClick={exportToPDF}
-              style={{
-                ...styles.toggle,
-                opacity: scenario ? 1 : 0.6,
-                cursor: scenario ? "pointer" : "not-allowed"
-              }}
-              className="a11y-focus"
-              disabled={!scenario}
-              title={scenario ? "Export current scenario to PDF" : "Generate a scenario first to enable export"}
-            >
-              <FaFilePdf /> Export
-            </button>
-          </div>
+        <h1 style={styles.heading}>Scenario Generator 1.0</h1>
+        <div>
+          <button
+            onClick={exportToPDF}
+            style={{
+              ...styles.toggle,
+              opacity: scenario ? 1 : 0.6,
+              cursor: scenario ? "pointer" : "not-allowed"
+            }}
+            className="a11y-focus"
+            disabled={!scenario}
+            title={scenario ? "Export current scenario to PDF" : "Generate a scenario first to enable export"}
+          >
+            <FaFilePdf /> Export
+          </button>
         </div>
       </div>
 
@@ -808,8 +804,6 @@ const ScenarioForm = () => {
               </div>
             ))}
 
-            {/* Teaching Cues disabled for redesign - revisit later */}
-            {/* 
             <div style={styles.fieldRow}>
               <label>
                 <input
@@ -823,7 +817,6 @@ const ScenarioForm = () => {
                 Include 💡 Teaching Cues
               </label>
             </div>
-            */}
 
             <div style={styles.fieldRow}>
               <label htmlFor="customPrompt">Instructor Prompt (Optional)</label>
@@ -900,7 +893,7 @@ const ScenarioForm = () => {
                           fontSize: "1rem",
                         }}
                       >
-                        Instructor Debrief
+                        Teaching Points
                       </h3>
                       <div style={{ fontStyle: "italic" }}>
                         {renderSafeContent(scenario.teachersPoints, "teachersPoints")}
@@ -924,7 +917,7 @@ const ScenarioForm = () => {
           <div style={styles.loadingBox}>
             <FaSpinner className="spin" style={styles.loadingSpinner} />
             <div style={styles.loadingTitle}>Generating Scenario...</div>
-            <div style={styles.loadingSubtext}>This will take a minute (or several).</div>
+            <div style={styles.loadingSubtext}>This will take a minute.</div>
           </div>
         </div>
       )}
@@ -981,46 +974,20 @@ const ScenarioForm = () => {
           </div>
         </div>
       )}
-
-      {selectedCue &&
-        typeof document !== "undefined" &&
-        createPortal(
-          <div
-            data-cue-popover="true"
-            style={{
-              ...computeCuePopoverStyle(selectedCue.anchorRect, isMobile),
-              background: "#fef9c3",
-              color: "#1f2937",
-              border: "1px solid #fcd34d",
-              padding: "0.6rem 0.8rem",
-              borderRadius: "10px",
-              whiteSpace: "normal",
-              boxShadow: "0 10px 24px rgba(0,0,0,0.28)",
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            {selectedCue.cueText}
-          </div>,
-          document.body
-        )}
     </div>
   );
 };
 
-const buildStyles = (isMobile) => {
-  const headerPanelGap = "0.22rem";
-
-  return ({
+const buildStyles = (isMobile) => ({
   container: {
-    padding: `${headerPanelGap} 0 1rem`,
-    backgroundColor: "transparent",
-    color: "#123047",
-    fontFamily: "var(--vn-font-body, Manrope, Segoe UI, sans-serif)",
+    padding: isMobile ? "0.6rem" : "1rem 2rem 2rem",
+    backgroundColor: "#f8fafc",
+    color: "#1e293b",
+    fontFamily: "Arial, sans-serif",
     fontSize: "14px",
     minHeight: "100vh",
-    height: "auto",
-    overflow: "visible",
-    overflowAnchor: "none",
+    height: isMobile ? "auto" : "100vh",
+    overflow: isMobile ? "auto" : "hidden",
     boxSizing: "border-box",
     lineHeight: "1.5",
   },
@@ -1052,50 +1019,37 @@ const buildStyles = (isMobile) => {
 
   loadingSpinner: {
     fontSize: "1.75rem",
-    color: "#0d8b8b",
+    color: "#0d9488",
   },
 
   loadingTitle: {
     fontSize: "1.05rem",
     fontWeight: "bold",
-    color: "#123047",
+    color: "#1e293b",
   },
 
   loadingSubtext: {
     fontSize: "0.9rem",
-    color: "#426272",
+    color: "#475569",
   },
   headerBar: {
-    position: "sticky",
+    position: isMobile ? "static" : "sticky",
     top: 0,
-    left: "auto",
-    right: "auto",
-    marginBottom: headerPanelGap,
-    background: "linear-gradient(140deg, rgba(18, 48, 71, 0.92), rgba(13, 139, 139, 0.92))",
-    padding: isMobile ? "0.65rem 0.8rem" : "0.7rem 0.7rem",
-    borderRadius: "12px",
-    boxShadow: "0 8px 20px rgba(18,48,71,0.24)",
-    zIndex: 1000,
-    boxSizing: "border-box",
-    border: "1px solid rgba(211, 234, 238, 0.5)",
-  },
-
-  headerInner: {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    width: "100%",
-    margin: "0 auto",
-    padding: isMobile ? 0 : "0 0 0 0.55rem",
-    borderLeft: "5px solid #f28c28",
-    boxSizing: "border-box",
+    marginBottom: isMobile ? "0.85rem" : "0.35rem",
+    backgroundColor: "#e2e8f0",
+    padding: isMobile ? "0.65rem 0.8rem" : "0.75rem 1.25rem",
+    borderRadius: "10px",
+    boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
+    zIndex: 1000,
+    borderLeft: "6px solid #0d9488",
   },
 
   heading: {
     fontSize: isMobile ? "1.1rem" : "1.4rem",
     fontWeight: "bold",
-    fontFamily: "var(--vn-font-heading, Spectral, Georgia, serif)",
-    color: "#f6fbfc",
     margin: 0,
   },
 
@@ -1105,47 +1059,39 @@ const buildStyles = (isMobile) => {
     borderRadius: "8px",
     border: "none",
     cursor: "pointer",
-    backgroundColor: "#f28c28",
-    color: "#112d43",
+    backgroundColor: "#cbd5e1",
+    color: "#1e293b",
     fontSize: "0.9rem",
-    fontWeight: 700,
   },
 
   mainLayout: {
     display: "grid",
-    gridTemplateColumns: isMobile ? "1fr" : "320px minmax(0, 1fr)",
-    gap: isMobile ? "0.55rem" : "0.7rem",
+    gridTemplateColumns: isMobile ? "1fr" : "320px 1fr",
+    gap: isMobile ? "0.75rem" : "0.5rem",
     alignItems: "start",
-    height: "auto",
-    overflow: "visible",
-    paddingTop: 0,
+    height: isMobile ? "auto" : "calc(100vh - 110px)",
+    overflow: isMobile ? "visible" : "hidden",
   },
 
   leftPanel: {
     position: isMobile ? "static" : "sticky",
-    top: isMobile ? "auto" : "4.15rem",
-    left: "auto",
-    width: isMobile ? "auto" : "320px",
-    zIndex: isMobile ? "auto" : 500,
+    top: isMobile ? "auto" : "80px",
     height: "fit-content",
   },
 
   rightPanel: {
     minWidth: 0,
-    marginLeft: 0,
   },
 
   formBox: {
     display: "grid",
     gridTemplateColumns: "1fr",
     gap: "0.85rem",
-    backgroundColor: "rgba(255,255,255,0.82)",
+    backgroundColor: "#e2e8f0",
     padding: "1.25rem",
     borderRadius: "14px",
-    marginBottom: isMobile ? "0.35rem" : "0.5rem",
-    boxShadow: "0 10px 24px rgba(18,48,71,0.12)",
-    border: "1px solid #c7d9df",
-    backdropFilter: "blur(5px)",
+    marginBottom: isMobile ? "0.5rem" : "1rem",
+    boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
   },
 
   fieldRow: {
@@ -1157,7 +1103,7 @@ const buildStyles = (isMobile) => {
   select: {
     padding: "0.45rem",
     borderRadius: "8px",
-    border: "1px solid #97b6c2",
+    border: "1px solid #94a3b8",
     backgroundColor: "#ffffff",
     color: "#1e293b",
   },
@@ -1165,7 +1111,7 @@ const buildStyles = (isMobile) => {
   textarea: {
     padding: "0.5rem",
     borderRadius: "8px",
-    border: "1px solid #97b6c2",
+    border: "1px solid #94a3b8",
     backgroundColor: "#ffffff",
     color: "#1e293b",
     resize: "vertical",
@@ -1175,7 +1121,6 @@ const buildStyles = (isMobile) => {
     color: "#475569",
     fontSize: "0.8rem",
     marginTop: "0.2rem",
-    lineHeight: "1.45",
   },
 
   button: {
@@ -1184,45 +1129,44 @@ const buildStyles = (isMobile) => {
     fontWeight: "bold",
     borderRadius: "10px",
     border: "none",
-    backgroundColor: "#0d8b8b",
+    backgroundColor: "#0d9488",
     color: "#ffffff",
     cursor: "pointer",
-    boxShadow: "0 8px 18px rgba(13,139,139,0.28)",
+    boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
   },
 
   outputBox: {
-    maxHeight: "none",
-    overflowY: "visible",
-    backgroundColor: "rgba(255,255,255,0.93)",
+    maxHeight: isMobile ? "none" : "calc(100vh - 140px)",
+    overflowY: isMobile ? "visible" : "auto",
+    backgroundColor: "#ffffff",
     padding: isMobile ? "1rem" : "1.5rem",
     borderRadius: "14px",
-    boxShadow: "0 14px 30px rgba(18,48,71,0.12)",
-    border: "1px solid #c7d9df",
+    boxShadow: "0 2px 8px rgba(0,0,0,0.12)",
   },
 
   card: {
-    backgroundColor: "#fbfdfd",
+    backgroundColor: "#f9fafb",
     padding: "1rem",
     borderRadius: "10px",
     marginBottom: "1rem",
-    border: "1px solid #d6e3e8",
+    border: "1px solid #e5e7eb",
   },
 
   cardTitle: {
     marginBottom: "0.5rem",
     fontWeight: "bold",
     fontSize: "1.05rem",
-    color: "#0a6e72",
+    color: "#0d9488",
   },
 
   error: {
-    color: "#c64545",
+    color: "#dc2626",
     fontWeight: "bold",
     marginTop: "0.5rem",
   },
 
   loading: {
-    color: "#123047",
+    color: "#1e293b",
     fontWeight: "bold",
     marginTop: "0.5rem",
   },
@@ -1246,13 +1190,13 @@ const buildStyles = (isMobile) => {
     background: "transparent",
     border: "none",
     textAlign: "left",
-    color: "#123047",
+    color: "#1e293b",
     fontSize: isMobile ? "1rem" : "1.15rem",
     fontWeight: 700,
     cursor: "pointer",
     padding: isMobile ? "0.55rem 0.2rem" : "0.35rem 0.1rem",
     borderRadius: "8px",
-    borderBottom: "2px solid #0d8b8b",
+    borderBottom: "2px solid #0d9488",
   },
 
   sectionHeadingIcon: {
@@ -1260,7 +1204,6 @@ const buildStyles = (isMobile) => {
     minWidth: "1.1rem",
     justifyContent: "center",
   },
-  });
-};
+});
 
 export default ScenarioForm;
