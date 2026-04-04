@@ -232,6 +232,7 @@ const ScenarioForm = () => {
 
   const isNightShift = formData.shiftMode === "Night Shift";
   const nextShiftModeLabel = isNightShift ? "Day Shift" : "Night Shift";
+  const isShiftToggleDisabled = Boolean(scenario);
   const shiftToggleTitle = isNightShift
     ? "Switch to Day Shift: brighter theme and daytime call flavor"
     : "Switch to Night Shift: dark theme and overnight call flavor";
@@ -760,18 +761,23 @@ const ScenarioForm = () => {
           y += 2.5;
           return;
         }
+
         const isBullet = trimmed.startsWith("- ");
-        const displayText = isBullet ? `\u2022  ${trimmed.slice(2)}` : trimmed;
-        const indent = isBullet ? 4 : 0;
+        const isLabelLine = /^[A-Z][^:]{1,35}:\s*$/.test(trimmed);
+        const sanitizedLine = sanitizePdfText(isBullet ? trimmed.slice(2) : trimmed);
+
+        // Keep pure label lines as headings; render all other content as point-form lines.
+        const shouldBulletize = !isLabelLine;
+        const displayText = shouldBulletize ? `- ${sanitizedLine}` : sanitizedLine;
+        const indent = shouldBulletize ? 3.5 : 0;
         const textX = textColumnX + indent;
         const textWidth = maxLineWidth - indent;
 
-        const isLabelLine = /^[A-Z][^:]{1,35}:\s*$/.test(trimmed);
         doc.setFont(undefined, isLabelLine ? "bold" : "normal");
         doc.setFontSize(bodySize);
         doc.setTextColor(...palette.neutralText);
 
-        const wrapped = doc.splitTextToSize(sanitizePdfText(displayText), textWidth);
+        const wrapped = doc.splitTextToSize(displayText, textWidth);
         wrapped.forEach((line) => {
           needsNewPage(bodyLH);
           doc.text(line, textX, y);
@@ -1030,10 +1036,15 @@ const ScenarioForm = () => {
           <button
             type="button"
             onClick={toggleShiftMode}
-            style={styles.shiftToggle}
+            style={{
+              ...styles.shiftToggle,
+              opacity: isShiftToggleDisabled ? 0.55 : 1,
+              cursor: isShiftToggleDisabled ? "not-allowed" : "pointer",
+            }}
             className="a11y-focus"
-            title={shiftToggleTitle}
-            aria-label={shiftToggleTitle}
+            title={isShiftToggleDisabled ? "Shift is locked for the current scenario. Generate again to change it." : shiftToggleTitle}
+            aria-label={isShiftToggleDisabled ? "Shift locked for current scenario" : shiftToggleTitle}
+            disabled={isShiftToggleDisabled}
           >
             {isNightShift ? <FaSun aria-hidden="true" /> : <FaMoon aria-hidden="true" />}
             <span>{nextShiftModeLabel}</span>
