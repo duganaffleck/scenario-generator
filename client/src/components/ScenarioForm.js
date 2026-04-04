@@ -231,7 +231,10 @@ const ScenarioForm = () => {
   );
 
   const isNightShift = formData.shiftMode === "Night Shift";
-  const nextShiftModeLabel = isNightShift ? "Day Mode" : "Night Mode";
+  const nextShiftModeLabel = isNightShift ? "Day Shift" : "Night Shift";
+  const shiftToggleTitle = isNightShift
+    ? "Switch to Day Shift: brighter theme and daytime call flavor"
+    : "Switch to Night Shift: dark theme and overnight call flavor";
   const styles = buildStyles(isMobile);
 
   useEffect(() => {
@@ -1029,7 +1032,8 @@ const ScenarioForm = () => {
             onClick={toggleShiftMode}
             style={styles.shiftToggle}
             className="a11y-focus"
-            title={isNightShift ? "Switch to day mode" : "Switch to night mode"}
+            title={shiftToggleTitle}
+            aria-label={shiftToggleTitle}
           >
             {isNightShift ? <FaSun aria-hidden="true" /> : <FaMoon aria-hidden="true" />}
             <span>{nextShiftModeLabel}</span>
