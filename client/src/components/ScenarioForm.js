@@ -341,8 +341,34 @@ const ScenarioForm = () => {
     return `${indent}${sanitizePdfText(fieldValue)}`;
   };
 
-  const formatLabel = (label) =>
-    label.replace(/([a-z])([A-Z])/g, "$1 $2").replace(/^./, (str) => str.toUpperCase());
+  const formatLabel = (label) => {
+    const normalized = String(label || "")
+      .replace(/[_-]+/g, " ")
+      .replace(/([a-z0-9])([A-Z])/g, "$1 $2")
+      .replace(/\s+/g, " ")
+      .trim();
+
+    const acronyms = new Map([
+      ["ecg", "ECG"],
+      ["gcs", "GCS"],
+      ["bp", "BP"],
+      ["hr", "HR"],
+      ["rr", "RR"],
+      ["spo2", "SpO2"],
+      ["opqrst", "OPQRST"],
+      ["sample", "SAMPLE"],
+      ["iv", "IV"]
+    ]);
+
+    return normalized
+      .split(" ")
+      .map((word) => {
+        const lower = word.toLowerCase();
+        if (acronyms.has(lower)) return acronyms.get(lower);
+        return lower.charAt(0).toUpperCase() + lower.slice(1);
+      })
+      .join(" ");
+  };
 
   const toggleSection = (section) => {
     setCollapsedSections((prev) => ({

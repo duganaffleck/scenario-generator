@@ -6395,6 +6395,100 @@ function enforceScenarioSectionConciseness(scenario) {
   return scenario;
 }
 
+function scenarioHasTwoSetTrendNarrative(scenario) {
+  const firstSet = scenario?.vitalSigns?.firstSet || {};
+  const secondSet = scenario?.vitalSigns?.secondSet || {};
+  const additionalCount = Array.isArray(scenario?.vitalSigns?.additionalSets)
+    ? scenario.vitalSigns.additionalSets.length
+    : 0;
+
+  if (additionalCount > 0) return true;
+
+  const firstSpo2 = extractLeadingVitalNumber(firstSet?.spo2);
+  const secondSpo2 = extractLeadingVitalNumber(secondSet?.spo2);
+  const firstRr = extractLeadingVitalNumber(firstSet?.rr);
+  const secondRr = extractLeadingVitalNumber(secondSet?.rr);
+  const firstHr = extractLeadingVitalNumber(firstSet?.hr);
+  const secondHr = extractLeadingVitalNumber(secondSet?.hr);
+
+  const hasObjectiveTrend =
+    (Number.isFinite(firstSpo2) && Number.isFinite(secondSpo2) && Math.abs(secondSpo2 - firstSpo2) >= 2) ||
+    (Number.isFinite(firstRr) && Number.isFinite(secondRr) && Math.abs(secondRr - firstRr) >= 2) ||
+    (Number.isFinite(firstHr) && Number.isFinite(secondHr) && Math.abs(secondHr - firstHr) >= 6);
+
+  const narrativeText = [
+    ...(scenario?.caseProgression?.withProperTreatment || []),
+    ...(scenario?.caseProgression?.withoutProperTreatment || []),
+    ...(scenario?.caseProgression?.withIncorrectTreatment || []),
+    ...(scenario?.expectedTreatment || []),
+    ...(scenario?.transportPhase?.reassessmentFocus || []),
+    ...(scenario?.transportPhase?.ongoingCare || []),
+    scenario?.transportPhase?.handoffConsiderations || ''
+  ]
+    .map((value) => stripTeachingCueMarkup(String(value || '')).toLowerCase())
+    .join(' ');
+
+  const hasTrendLanguage =
+    /reassess|serial|trend|response|change|changed|improv|worsen|deteriorat|after movement|during movement|after treatment/.test(narrativeText) &&
+    /vital|spo2|rr|hr|bp|work of breathing|speech|perfusion|neurovascular|pain|mental status|air entry/.test(narrativeText);
+
+  return hasObjectiveTrend && hasTrendLanguage;
+}
+
+function ensureTwoSetTrendCoverage(scenario) {
+  if (!scenario || typeof scenario !== 'object') return scenario;
+
+  const additionalCount = Array.isArray(scenario?.vitalSigns?.additionalSets)
+    ? scenario.vitalSigns.additionalSets.length
+    : 0;
+
+  if (additionalCount > 0 || scenarioHasTwoSetTrendNarrative(scenario)) {
+    return scenario;
+  }
+
+  const firstContext = normalizeSentenceSpacing(String(scenario?.vitalSigns?.firstSet?.context || '')).trim();
+  const secondContext = normalizeSentenceSpacing(String(scenario?.vitalSigns?.secondSet?.context || '')).trim();
+  const trendLine =
+    firstContext && secondContext
+      ? `Use the first-to-second vital trend (${firstContext} to ${secondContext}) to explain response to treatment or movement during reassessment.`
+      : 'Use the first-to-second vital trend to explain response to treatment or movement during reassessment.';
+
+  if (!Array.isArray(scenario.expectedTreatment)) {
+    scenario.expectedTreatment = coerceArray(scenario.expectedTreatment);
+  }
+  if (!Array.isArray(scenario.transportPhase?.reassessmentFocus)) {
+    scenario.transportPhase = scenario.transportPhase && typeof scenario.transportPhase === 'object'
+      ? scenario.transportPhase
+      : {};
+    scenario.transportPhase.reassessmentFocus = coerceArray(scenario.transportPhase.reassessmentFocus);
+  }
+
+  const existingText = [
+    ...(scenario.expectedTreatment || []),
+    ...(scenario.transportPhase?.reassessmentFocus || []),
+    ...(scenario.caseProgression?.withProperTreatment || []),
+    ...(scenario.caseProgression?.withoutProperTreatment || []),
+    ...(scenario.caseProgression?.withIncorrectTreatment || [])
+  ]
+    .map((value) => stripTeachingCueMarkup(String(value || '')).toLowerCase())
+    .join(' ');
+
+  if (!existingText.includes('trend')) {
+    scenario.expectedTreatment.push(ensureCueSentenceEnding(trendLine));
+  }
+
+  if (!existingText.includes('reassess')) {
+    scenario.transportPhase.reassessmentFocus.push(
+      ensureCueSentenceEnding('Reassess after treatment and after movement, then communicate whether the trend is improving, unchanged, or worsening.')
+    );
+  }
+
+  scenario.expectedTreatment = normalizeSimpleList(scenario.expectedTreatment, 8);
+  scenario.transportPhase.reassessmentFocus = normalizeSimpleList(scenario.transportPhase.reassessmentFocus, 5);
+
+  return scenario;
+}
+
 function ensureDeterministicMinimumCueCoverage(scenario, includeTeachingCues) {
   if (!includeTeachingCues || !scenario || typeof scenario !== 'object') return scenario;
 
@@ -6664,6 +6758,14 @@ function detectControlDrift(scenario, controls) {
       severity: complexityDistance(requestedComplexity, complexityAssessment.estimated) > 1 ? 'high' : 'medium',
       code: 'complexity-drift',
       message: `Scenario feels ${complexityAssessment.estimated.toLowerCase()} instead of requested ${requestedComplexity.toLowerCase()}.`
+    });
+  }
+
+  if (totalVitalSets === 2 && !scenarioHasTwoSetTrendNarrative(scenario)) {
+    issues.push({
+      severity: 'medium',
+      code: 'two-set-vitals-trend-thin',
+      message: 'Scenario uses only two vital sets but does not clearly document reassessment trend impact in progression, treatment, or transport sections.'
     });
   }
 
@@ -7355,6 +7457,7 @@ Vital signs rules:
 - hr must be one string that combines rate, rhythm, and volume in that order, for example "118, regular, strong".
 - rr must be one string that combines rate, rhythm, and volume in that order, for example "28, regular, full".
 - Some scenarios should contain one or more additionalSets when clinically appropriate.
+- Two vital sets are acceptable when the scenario clearly documents trend-based reassessment elsewhere (caseProgression, expectedTreatment, and transport reassessment focus).
 - Use additionalSets for evolving calls, treatment response, deterioration, movement-related change, longer transport, or meaningful reassessment changes.
 - Do not force additionalSets into every case.
 - Vitals must trend realistically according to the scenario and the care provided or missed.
@@ -7623,6 +7726,7 @@ Critical output rules:
     normalized = ensureDeterministicMinimumCueCoverage(normalized, Boolean(includeTeachingCues));
     normalized = ensureTeachingPointCoverage(normalized);
     normalized = enforceTeachingPointQuality(normalized);
+    normalized = ensureTwoSetTrendCoverage(normalized);
     normalized = enforceScenarioSectionConciseness(normalized);
 
     const looksEmpty =
@@ -7721,7 +7825,8 @@ Critical output rules:
         );
         const teachingPointSafeRepaired = ensureTeachingPointCoverage(deterministicCueCoveredRepaired);
         const deepTeachingPointSafeRepaired = enforceTeachingPointQuality(teachingPointSafeRepaired);
-        const conciseRepaired = enforceScenarioSectionConciseness(deepTeachingPointSafeRepaired);
+        const trendSafeRepaired = ensureTwoSetTrendCoverage(deepTeachingPointSafeRepaired);
+        const conciseRepaired = enforceScenarioSectionConciseness(trendSafeRepaired);
 
         const repairedValidation = detectControlDrift(conciseRepaired, {
           semester,
@@ -7763,6 +7868,7 @@ Critical output rules:
         normalized = ensureDeterministicMinimumCueCoverage(normalized, Boolean(includeTeachingCues));
         normalized = ensureTeachingPointCoverage(normalized);
         normalized = enforceTeachingPointQuality(normalized);
+        normalized = ensureTwoSetTrendCoverage(normalized);
         normalized = enforceScenarioSectionConciseness(normalized);
         normalized = enforceScenarioControls(normalized, {
           semester,
