@@ -1374,7 +1374,7 @@ const ScenarioForm = () => {
         </>
       )}
       <div style={styles.headerBar}>
-        <h1 style={styles.heading}>Scenario Generator 1.0</h1>
+        <h1 style={styles.heading}>Scenario Generator 1.5.0</h1>
         <div style={styles.headerActionWrap}>
           <button
             type="button"
