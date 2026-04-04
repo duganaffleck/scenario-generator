@@ -1617,7 +1617,7 @@ const ScenarioForm = () => {
             <div style={styles.loadingTitle}>
               Generating Scenario<span style={{ display: "inline-block", minWidth: "1.7rem", textAlign: "left" }}>{".".repeat(dotCount)}</span>
             </div>
-            <div style={styles.loadingSubtext}>This will take a minute.</div>
+            <div style={styles.loadingSubtext}>This will take a minute... or three.</div>
             <div style={{ ...styles.loadingSubtext, marginTop: "0.4rem", fontSize: "0.8rem", color: "var(--vn-loading-muted)", textAlign: "center" }}>
               The AI is building your scenario, vitals, and teaching cues.<br />
               Complex cases may take a little longer.
