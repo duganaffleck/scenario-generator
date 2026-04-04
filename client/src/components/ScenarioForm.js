@@ -616,41 +616,208 @@ const ScenarioForm = () => {
       formData.customPrompt.trim().toLowerCase() === "howl"
     ) {
       setScenario({
-        title: "Full Moon Fiasco: The Werewolf in the Woods",
-        scenarioIntro: "It's a dark, foggy night in the deep wilderness. The full moon is high, and your radio crackles with a call for help. Locals whisper of strange howls echoing through the trees...",
-        callInformation: "Dispatched to remote forest campsite. Multiple reports of 'unusual animal activity.'",
-        patientDemographics: "Age: ??? (appears 30s, but suspiciously hairy), Gender: 'Lycanthropic', Weight: fluctuates with lunar cycle.",
-        patientPresentation: "Patient is found howling at the moon, covered in fur, with torn clothing and a mischievous grin. Complains of 'sudden urge to chase squirrels and an insatiable hunger for rare steak.'",
-        incidentNarrative: "Patient was camping with friends when the full moon rose. Friends report he became 'extra hairy' and started reciting Shakespeare in a deep, growly voice.",
-        physicalExam: "Vitals: HR 120 (excited), RR 24 (panting), BP 140/90, Temp: 38.5°C, SpO2: 99%. Notable: Elongated canines, excessive body hair, glowing yellow eyes, tail wagging. No obvious injuries except pride.",
-        vitalSigns: {
-          hr: 120,
-          rr: 24,
-          bp: "140/90",
-          temp: "38.5°C",
-          spo2: "99%",
-          ecgInterpretation: "Sinus tachycardia with occasional howls."
+        title: "Night Shift: Full Moon Lycanthropy in the Wilderness",
+        generationMetadata: {
+          semester: "4",
+          complexity: "Complex",
+          callType: "Environmental",
+          environment: "Wilderness",
+          hasMeds: false,
+          vitalSetCount: 3,
+          cueDensity: 0
         },
-        caseProgression: "Patient attempts to flee when offered a silver medical bracelet. Responds well to gentle petting and moon-shaped cookies.",
-        differentialDiagnosis: [
-          "Acute lycanthropy (werewolf transformation)",
-          "Rabies (unlikely, patient prefers jazz to biting)",
-          "Extreme hair growth disorder",
-          "Full-moon-induced party syndrome"
+        scenarioIntro: "A foggy night in the deep woods. The full moon is high, and your radio crackles: 'Unusual animal activity, possible medical emergency.' Locals whisper of howls and glowing eyes...",
+        callInformation: {
+          type: "Environmental",
+          location: "Remote forest campsite",
+          time: "00:13",
+          dispatchNotes: "Camper howling, excessive hair, torn clothing, friends terrified",
+          hazardsOrFlags: "Dense forest, full moon, risk of fleas, silver jewelry present",
+          crewNotes: "Night shift lycanthropy. Prioritize scene safety, humor, and lunar protocol compliance.",
+          environment: "Wilderness",
+          ecgInterpretation: "Sinus tachycardia with occasional howls"
+        },
+        incidentNarrative: "Crew arrives to find a 30-something camper, now suspiciously hairy, howling at the moon and chasing squirrels. Friends report he became 'extra furry' and started quoting Shakespeare in a Transylvanian accent. Patient denies alcohol, but requests a rare steak and a brush.",
+        patientPresentation: "Patient is upright, pacing in circles, tail wagging, eyes glowing yellow. Complains of 'sudden urge to chase wildlife and an insatiable hunger for moon pies.'",
+        patientDemographics: {
+          age: "??? (appears 30s, but lunar-dependent)",
+          sex: "Lycanthropic",
+          weight: "Varies with lunar cycle",
+          appearance: "Extremely hirsute, elongated canines, stylish torn flannel",
+          chiefComplaint: "Howling, excessive hair, existential dread"
+        },
+        sceneArrival: {
+          sceneEnergy: "Eerie, foggy, friends hiding in tent, squirrels on high alert"
+        },
+        firstImpression: {
+          initialRedFlags: ["Howling at moon", "Glowing eyes", "Tail present", "Nighttime presentation"]
+        },
+        initialAssessment: {
+          immediatePriorities: ["Scene safety (avoid silver)", "De-escalation with treats", "Assess for fleas", "Monitor for transformation"]
+        },
+        historyGathering: {
+          sceneContextClues: ["Recent full moon", "No prior history of lycanthropy", "Friends report sudden hair growth"]
+        },
+        secondaryAssessment: {
+          evolvingFindings: ["Howling intensifies with moonrise; risk of chasing ambulance"]
+        },
+        additionalAssessments: ["Check for collar, rabies tag, or silver allergy"],
+        transportPhase: {
+          handoffConsiderations: "Communicate lunar phase, fur density, and response to belly rubs."
+        },
+        opqrst: {
+          onset: "At moonrise",
+          provocation: "Worse with silver, better with beef jerky",
+          quality: "Howling, furry, hungry",
+          radiation: "Tail, ears, and ego",
+          severity: "Severe (by local squirrel report)",
+          time: "Acute full moon event"
+        },
+        sample: {
+          signsAndSymptoms: "Howling, fur, glowing eyes, hunger",
+          allergies: "Silver, garlic bread",
+          medications: "None (prefers herbal remedies)",
+          pastMedicalHistory: "No prior transformations",
+          lastOralIntake: "Raw steak, possibly a shoe",
+          eventsLeadingUp: "Camping, then sudden moonrise and transformation"
+        },
+        medications: [],
+        allergies: ["Silver", "Garlic bread"],
+        pastMedicalHistory: [],
+        physicalExam: {
+          airway: "Patent, occasional howling",
+          breathing: "Panting, RR 24",
+          circulation: "Tachycardic, strong pulse, BP 140/90",
+          neuro: "Alert, oriented to lunar cycle, distractible by tennis balls",
+          skin: "Warm, furry, diaphoretic, flea risk"
+        },
+        vitalSigns: {
+          HR: 120,
+          RR: 24,
+          BP: "140/90",
+          SpO2: 99,
+          Temp: 38.5,
+          GCS: 15,
+          Bgl: 5.2,
+          ecgInterpretation: "Sinus tachycardia with P-waves occasionally replaced by 'AWOOO'"
+        },
+        caseProgression: {
+          withProperTreatment: "Patient calms with beef jerky, howling subsides, agrees to transport if allowed to stick head out ambulance window.",
+          withoutProperTreatment: "Attempts to flee, may bite tires, risk of full pack transformation.",
+          withIncorrectTreatment: "If offered silver stethoscope, patient howls and flees into woods."
+        },
+        expectedTreatment: [
+          "Avoid silver instruments",
+          "Offer calming words, beef jerky, and a safe space to howl",
+          "Monitor until sunrise",
+          "Play 'Werewolves of London' if requested"
         ],
-        expectedTreatment: "Avoid silver instruments. Offer calming words, beef jerky, and a safe space to howl. Monitor until sunrise. If patient requests, play 'Werewolves of London' on your phone.",
-        protocolNotes: "No protocol for supernatural transformations. Consult folklore as needed.",
+        protocolNotes: [
+          "No protocol for supernatural transformations. Consult folklore as needed.",
+          "Scene safety: Avoid silver, garlic, and full moons on shift bid."
+        ],
+        teachersPoints: "Lycanthropy requires creative scene management, humor, and a willingness to improvise. Always check the lunar calendar before your shift.",
+        clinicalReasoning: "This patient is experiencing acute full-moon-induced lycanthropy. Early application of humor, snacks, and scene safety are critical. Ontario BLS/ALS PCS compliance is recommended, but folklore consultation may be required.",
+        scenarioRationale: "Teaches adaptation, improvisation, and the importance of laughter in paramedicine. Also, never underestimate the power of a good treat.",
         learningObjectives: [
-          "Recognize and manage rare supernatural presentations",
-          "Maintain sense of humor under pressure",
-          "Avoid full moon shifts if possible"
+          "Recognize supernatural presentations and maintain professionalism",
+          "Apply scene safety and creative problem-solving",
+          "Communicate effectively with anxious bystanders and woodland creatures"
         ],
-        teachersPoints: [
-          "Sometimes, the best medicine is a good laugh.",
-          "Always check the lunar calendar before your shift."
+        selfReflectionPrompts: [
+          "How did you keep the patient and crew safe?",
+          "What clues pointed to lycanthropy versus other causes?",
+          "How did you manage the scene and bystanders?",
+          "What would you do differently if the patient transformed again?"
         ],
-        customPrompt: "Howl",
-        scenarioRationale: "This scenario is designed to test your ability to adapt, improvise, and have fun—even when your patient is a werewolf."
+        grsAnchors: {
+          situationalAwareness: {
+            3: [
+              "Recognizes howling but underestimates lunar risk.",
+              "Misses silver jewelry as a hazard.",
+              "Delays beef jerky administration."
+            ],
+            5: [
+              "Identifies lycanthropy and scene risk.",
+              "Maintains calm, manages friends, and plans for sunrise.",
+              "Balances scene control with clinical care and humor."
+            ],
+            7: [
+              "Anticipates rapid transformation and leads a coordinated snack-based response.",
+              "Integrates lunar, physiologic, and social factors.",
+              "Maintains high awareness of subtle changes and adjusts care dynamically."
+            ]
+          },
+          historyGathering: {
+            3: [
+              "Obtains only a partial story from friends (too busy hiding).",
+              "Misses timeline and prior full moons.",
+              "Relies on patient for answers despite howling."
+            ],
+            5: [
+              "Uses friends to clarify timeline, symptoms, and prior transformations.",
+              "Confirms no prior history and identifies sudden onset.",
+              "Integrates collateral history into risk assessment."
+            ],
+            7: [
+              "Extracts a concise, high-value timeline despite scene stress.",
+              "Uses friend support efficiently to clarify risk and guide care.",
+              "Integrates history directly into lycanthropy and transport decisions."
+            ]
+          },
+          patientAssessment: {
+            3: [
+              "Performs a basic assessment but incompletely trends fur density and risk status.",
+              "Misses the significance of tail as a red flag.",
+              "Reassessment is inconsistent."
+            ],
+            5: [
+              "Performs structured lycanthropy and risk assessment.",
+              "Uses serial reassessment to track improvement or worsening.",
+              "Recognizes tail as a warning sign and escalates care."
+            ],
+            7: [
+              "Builds a coherent assessment from lycanthropy, risk, and scene context.",
+              "Detects subtle changes early and adjusts plan proactively.",
+              "Maintains high-quality reassessment cadence."
+            ]
+          },
+          decisionMaking: {
+            3: [
+              "Removes friends from scene but delays beef jerky.",
+              "Anchors on rabies as cause rather than lycanthropy.",
+              "Transport decision is delayed or not adjusted after persistent howling."
+            ],
+            5: [
+              "Keeps scene safe, initiates beef jerky, and plans for sunrise.",
+              "Plans rapid transport and keeps friends informed.",
+              "Adjusts care plan based on reassessment."
+            ],
+            7: [
+              "Executes a decisive, well-sequenced plan prioritizing snacks, safety, and transport.",
+              "Anticipates escalation and prepares for escalation before instability occurs.",
+              "Leads team and friends in a coordinated, high-quality response."
+            ]
+          },
+          communication: {
+            3: [
+              "Provides basic updates but does not clearly explain urgency to friends.",
+              "Role allocation during management is inconsistent.",
+              "Handoff omits key lunar and trend details."
+            ],
+            5: [
+              "Communicates clearly with friends about lycanthropy, beef jerky, and transport plan.",
+              "Keeps friends informed and calm.",
+              "Delivers organized handoff with timeline, lycanthropy, and response."
+            ],
+            7: [
+              "Uses calm, directive communication to coordinate care in a stressful night setting.",
+              "Maintains closed-loop communication across all phases.",
+              "Provides a concise, high-value handoff for lycanthropy management."
+            ]
+          }
+        },
+        customPrompt: "Howl"
       });
       setError("");
       setSelectedCue(null);
