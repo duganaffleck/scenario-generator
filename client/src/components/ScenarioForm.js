@@ -98,6 +98,8 @@ const cuePhaseLabelMap = {
   reasoning: "Reasoning",
 };
 
+const UI_TEACHING_CUES_ENABLED = false;
+
 function getCuePopoverPlacement(cueTag, cueIndex, isMobile) {
   if (isMobile) {
     return {
@@ -128,7 +130,7 @@ const ScenarioForm = () => {
     type: "Medical",
     environment: "Urban",
     complexity: "Moderate",
-    includeTeachingCues: true,
+    includeTeachingCues: UI_TEACHING_CUES_ENABLED,
     customPrompt: "",
   });
 
@@ -188,19 +190,14 @@ const ScenarioForm = () => {
   }, []);
 
   useEffect(() => {
-    if (isMobile) {
-      document.body.style.overflow = "auto";
-      document.documentElement.style.overflow = "auto";
-    } else {
-      document.body.style.overflow = "hidden";
-      document.documentElement.style.overflow = "hidden";
-    }
+    document.body.style.overflowY = "auto";
+    document.documentElement.style.overflowY = "auto";
 
     return () => {
-      document.body.style.overflow = "";
-      document.documentElement.style.overflow = "";
+      document.body.style.overflowY = "";
+      document.documentElement.style.overflowY = "";
     };
-  }, [isMobile]);
+  }, []);
 
 
   useEffect(() => {
@@ -254,7 +251,7 @@ const ScenarioForm = () => {
         .join("");
 
     return String(value ?? "")
-      .replace(cueRegex, "Teaching cue: $1")
+      .replace(cueRegex, UI_TEACHING_CUES_ENABLED ? "Teaching cue: $1" : "")
       .replace(/\r\n/g, "\n")
       .replace(/\r/g, "\n")
       .split("\n")
@@ -322,9 +319,13 @@ const ScenarioForm = () => {
     setSelectedECGImage(null);
 
     const baseURL = process.env.REACT_APP_API_BASE_URL || "http://localhost:10000";
+    const payload = {
+      ...formData,
+      includeTeachingCues: UI_TEACHING_CUES_ENABLED ? formData.includeTeachingCues : false,
+    };
 
     try {
-      const response = await axios.post(`${baseURL}/api/generate-scenario`, formData);
+      const response = await axios.post(`${baseURL}/api/generate-scenario`, payload);
       const generated = response.data;
 
       if (generated.ecgInterpretation && generated.vitalSigns && !generated.vitalSigns.ecgInterpretation) {
@@ -348,6 +349,17 @@ const ScenarioForm = () => {
     if (!scenario) return;
 
     const doc = new jsPDF({ unit: "mm", format: "a4" });
+    const palette = {
+      ink: [18, 48, 71],
+      teal: [13, 139, 139],
+      tealDeep: [10, 110, 114],
+      orange: [242, 140, 40],
+      paper: [247, 244, 238],
+      softBlue: [223, 240, 245],
+      neutralText: [40, 58, 76],
+      mutedText: [95, 116, 133],
+      line: [193, 214, 220],
+    };
     const pageHeight = doc.internal.pageSize.getHeight();
     const pageWidth = doc.internal.pageSize.getWidth();
     const marginX = 20;
@@ -414,16 +426,44 @@ const ScenarioForm = () => {
       if (y + h > footerY - 4) {
         doc.addPage();
         y = marginY;
+        drawContentHeader();
         return true;
       }
       return false;
     };
 
+    const drawCoverBackground = () => {
+      doc.setFillColor(249, 253, 255);
+      doc.rect(0, 0, pageWidth, pageHeight, "F");
+    };
+
+    const drawContentHeader = () => {
+      const headerBarWidth = 3;
+      const headerTextX = marginX + 10;
+      doc.setFillColor(...palette.ink);
+      doc.rect(0, 0, pageWidth, 16, "F");
+      doc.setFillColor(...palette.orange);
+      doc.rect(0, 0, headerBarWidth, 16, "F");
+      doc.setFont(undefined, "bold");
+      doc.setFontSize(8.8);
+      doc.setTextColor(244, 252, 255);
+      doc.text("VitalNotes Scenario Generator", headerTextX, 10.2);
+
+      doc.setFont(undefined, "normal");
+      doc.setFontSize(7.8);
+      doc.setTextColor(206, 230, 238);
+      doc.text("Protocol-aligned simulation scenario", headerTextX, 14.1);
+
+      doc.setDrawColor(...palette.line);
+      doc.setLineWidth(0.2);
+      doc.line(0, 16, pageWidth, 16);
+    };
+
     const drawPageFooter = (pageNum, total) => {
       doc.setFont(undefined, "normal");
       doc.setFontSize(8);
-      doc.setTextColor(150, 150, 150);
-      doc.setDrawColor(180, 180, 180);
+      doc.setTextColor(...palette.mutedText);
+      doc.setDrawColor(...palette.line);
       doc.setLineWidth(0.2);
       doc.line(marginX, footerY, pageWidth - marginX, footerY);
       doc.text(documentTitle, marginX, footerY + 4.5);
@@ -431,15 +471,19 @@ const ScenarioForm = () => {
     };
 
     // ── Cover page ──────────────────────────────────────────────────────────
+    drawCoverBackground();
+    drawContentHeader();
+
+    y = 30;
     doc.setFont(undefined, "bold");
-    doc.setFontSize(22);
-    doc.setTextColor(20, 20, 20);
+    doc.setFontSize(20);
+    doc.setTextColor(...palette.ink);
     const titleWrapped = doc.splitTextToSize(documentTitle, maxLineWidth);
     doc.text(titleWrapped, marginX, y);
-    y += titleWrapped.length * 9 + 4;
+    y += titleWrapped.length * 8.4 + 5;
 
-    doc.setDrawColor(60, 60, 60);
-    doc.setLineWidth(0.4);
+    doc.setDrawColor(...palette.line);
+    doc.setLineWidth(0.3);
     doc.line(marginX, y, pageWidth - marginX, y);
     y += 7;
 
@@ -449,41 +493,70 @@ const ScenarioForm = () => {
       ["Environment", sanitizePdfText(formData.environment)],
       ["Complexity", sanitizePdfText(formData.complexity)],
     ];
-    metaFields.forEach(([label, val]) => {
-      if (!val) return;
+    const visibleMetaFields = metaFields.filter(([, val]) => Boolean(val));
+    const metaRowHeight = 6.7;
+    const metaPaddingTop = 4.8;
+    const metaPaddingBottom = 3.8;
+    const metaCardY = y - 3.5;
+    const metaCardHeight = metaPaddingTop + metaPaddingBottom + (visibleMetaFields.length * metaRowHeight);
+    const metaLabelX = marginX + 2;
+    const metaValueX = marginX + 38;
+
+    doc.setFillColor(...palette.softBlue);
+    doc.roundedRect(marginX - 2, metaCardY, pageWidth - marginX * 2 + 4, metaCardHeight, 3, 3, "F");
+    doc.setDrawColor(...palette.line);
+    doc.roundedRect(marginX - 2, metaCardY, pageWidth - marginX * 2 + 4, metaCardHeight, 3, 3, "S");
+
+    let metaY = metaCardY + metaPaddingTop;
+    visibleMetaFields.forEach(([label, val], idx) => {
       doc.setFont(undefined, "bold");
       doc.setFontSize(9.5);
-      doc.setTextColor(80, 80, 80);
-      doc.text(`${label}:`, marginX, y);
+      doc.setTextColor(...palette.tealDeep);
+      doc.text(`${label}:`, metaLabelX, metaY);
       doc.setFont(undefined, "normal");
-      doc.setTextColor(20, 20, 20);
-      doc.text(val, marginX + 30, y);
-      y += 5.8;
+      doc.setTextColor(...palette.neutralText);
+      doc.text(val, metaValueX, metaY);
+
+      if (idx < visibleMetaFields.length - 1) {
+        doc.setDrawColor(210, 226, 233);
+        doc.setLineWidth(0.12);
+        doc.line(metaLabelX, metaY + 2.2, pageWidth - marginX - 2, metaY + 2.2);
+      }
+
+      metaY += metaRowHeight;
     });
 
-    y += 4;
-    doc.setDrawColor(60, 60, 60);
+    y = metaCardY + metaCardHeight + 5;
+    doc.setDrawColor(...palette.line);
     doc.setLineWidth(0.2);
     doc.line(marginX, y, pageWidth - marginX, y);
     y += 6;
 
     doc.setFont(undefined, "normal");
     doc.setFontSize(8.5);
-    doc.setTextColor(130, 130, 130);
+    doc.setTextColor(...palette.mutedText);
     doc.text(`Generated: ${exportedAt}`, marginX, y);
     y += 10;
 
     // ── Sections ─────────────────────────────────────────────────────────────
     sectionEntries.forEach((entry) => {
+      const sectionBarWidth = 2.2;
+      const sectionTextX = marginX + 5;
       // Section heading
-      needsNewPage(12);
+      needsNewPage(16);
       y += 4;
+
+      doc.setFillColor(...palette.softBlue);
+      doc.roundedRect(marginX - 1.5, y - 5.5, pageWidth - marginX * 2 + 3, 8.5, 2.2, 2.2, "F");
+      doc.setFillColor(...palette.orange);
+      doc.rect(marginX - 1.5, y - 5.5, sectionBarWidth, 8.5, "F");
+
       doc.setFont(undefined, "bold");
       doc.setFontSize(12);
-      doc.setTextColor(20, 20, 20);
-      doc.text(entry.label, marginX, y);
+      doc.setTextColor(...palette.ink);
+      doc.text(entry.label, sectionTextX, y);
       y += 2.5;
-      doc.setDrawColor(60, 60, 60);
+      doc.setDrawColor(...palette.line);
       doc.setLineWidth(0.25);
       doc.line(marginX, y, pageWidth - marginX, y);
       y += 5;
@@ -506,7 +579,7 @@ const ScenarioForm = () => {
         const isLabelLine = /^[A-Z][^:]{1,35}:\s*$/.test(trimmed);
         doc.setFont(undefined, isLabelLine ? "bold" : "normal");
         doc.setFontSize(bodySize);
-        doc.setTextColor(30, 30, 30);
+        doc.setTextColor(...palette.neutralText);
 
         const wrapped = doc.splitTextToSize(sanitizePdfText(displayText), textWidth);
         wrapped.forEach((line) => {
@@ -529,6 +602,15 @@ const ScenarioForm = () => {
 
   const renderSafeContent = (data, parentKey = "root") => {
     if (typeof data === "string") {
+      if (!UI_TEACHING_CUES_ENABLED) {
+        const textWithoutCues = data
+          .replace(/\*\(💡(?:[a-z]+\|)?\s*.+?\s*\)\*/gi, "")
+          .replace(/\s{2,}/g, " ")
+          .trim();
+
+        return <span>{textWithoutCues}</span>;
+      }
+
       const parts = [];
       const cueRegex = /\*\(💡(?:([a-z]+)\|)?\s*(.+?)\s*\)\*/gi;
       let lastIndex = 0;
@@ -754,7 +836,7 @@ const ScenarioForm = () => {
     <div style={styles.container}>
       <div style={styles.headerBar}>
         <h1 style={styles.heading}>Scenario Generator 1.0</h1>
-        <div>
+        <div style={styles.headerActionWrap}>
           <button
             onClick={exportToPDF}
             style={{
@@ -804,19 +886,21 @@ const ScenarioForm = () => {
               </div>
             ))}
 
-            <div style={styles.fieldRow}>
-              <label>
-                <input
-                  type="checkbox"
-                  name="includeTeachingCues"
-                  checked={formData.includeTeachingCues}
-                  onChange={handleChange}
-                  style={{ marginRight: "0.5rem" }}
-                  className="a11y-focus"
-                />
-                Include 💡 Teaching Cues
-              </label>
-            </div>
+            {UI_TEACHING_CUES_ENABLED && (
+              <div style={styles.fieldRow}>
+                <label>
+                  <input
+                    type="checkbox"
+                    name="includeTeachingCues"
+                    checked={formData.includeTeachingCues}
+                    onChange={handleChange}
+                    style={{ marginRight: "0.5rem" }}
+                    className="a11y-focus"
+                  />
+                  Include 💡 Teaching Cues
+                </label>
+              </div>
+            )}
 
             <div style={styles.fieldRow}>
               <label htmlFor="customPrompt">Instructor Prompt (Optional)</label>
@@ -980,16 +1064,18 @@ const ScenarioForm = () => {
 
 const buildStyles = (isMobile) => ({
   container: {
-    padding: isMobile ? "0.6rem" : "1rem 2rem 2rem",
-    backgroundColor: "#f8fafc",
+    padding: isMobile ? "0.62rem 0" : "0.28rem 0 1rem",
+    backgroundColor: "transparent",
     color: "#1e293b",
-    fontFamily: "Arial, sans-serif",
+    fontFamily: '"Manrope", "Segoe UI", sans-serif',
     fontSize: "14px",
     minHeight: "100vh",
-    height: isMobile ? "auto" : "100vh",
-    overflow: isMobile ? "auto" : "hidden",
+    height: "auto",
+    overflow: "visible",
     boxSizing: "border-box",
     lineHeight: "1.5",
+    maxWidth: "1320px",
+    margin: "0 auto",
   },
   loadingOverlay: {
     position: "fixed",
@@ -1038,44 +1124,59 @@ const buildStyles = (isMobile) => ({
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: isMobile ? "0.85rem" : "0.35rem",
-    backgroundColor: "#e2e8f0",
-    padding: isMobile ? "0.65rem 0.8rem" : "0.75rem 1.25rem",
-    borderRadius: "10px",
-    boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
+    gap: "0.7rem",
+    flexWrap: isMobile ? "wrap" : "nowrap",
+    marginBottom: isMobile ? "0.85rem" : "0.75rem",
+    background: "linear-gradient(122deg, #123047 0%, #2a7ba2 52%, #9fd3e6 100%)",
+    padding: isMobile ? "0.7rem 0.85rem" : "0.78rem 1rem",
+    borderRadius: "14px",
+    boxShadow: "0 10px 24px rgba(18,48,71,0.22)",
     zIndex: 1000,
-    borderLeft: "6px solid #0d9488",
+    border: "1px solid rgba(183, 219, 233, 0.95)",
+    borderLeft: "6px solid #f28c28",
+    overflow: "hidden",
   },
 
   heading: {
     fontSize: isMobile ? "1.1rem" : "1.4rem",
-    fontWeight: "bold",
+    fontWeight: 800,
     margin: 0,
+    color: "#f6fbfc",
+    letterSpacing: "0.01em",
+    position: "relative",
+    zIndex: 1,
+  },
+
+  headerActionWrap: {
+    position: "relative",
+    zIndex: 1,
   },
 
   toggle: {
-    padding: "0.5rem 0.75rem",
+    padding: "0.5rem 0.78rem",
     marginLeft: "0.5rem",
-    borderRadius: "8px",
-    border: "none",
+    borderRadius: "999px",
+    border: "1px solid rgba(255,255,255,0.28)",
     cursor: "pointer",
-    backgroundColor: "#cbd5e1",
-    color: "#1e293b",
+    background: "linear-gradient(135deg, #f28c28, #d97706)",
+    color: "#fffaf0",
     fontSize: "0.9rem",
+    fontWeight: 700,
+    boxShadow: "0 6px 14px rgba(217,119,6,0.34)",
   },
 
   mainLayout: {
     display: "grid",
     gridTemplateColumns: isMobile ? "1fr" : "320px 1fr",
-    gap: isMobile ? "0.75rem" : "0.5rem",
+    gap: isMobile ? "0.78rem" : "1rem",
     alignItems: "start",
-    height: isMobile ? "auto" : "calc(100vh - 110px)",
-    overflow: isMobile ? "visible" : "hidden",
+    height: "auto",
+    overflow: "visible",
   },
 
   leftPanel: {
     position: isMobile ? "static" : "sticky",
-    top: isMobile ? "auto" : "80px",
+    top: isMobile ? "auto" : "74px",
     height: "fit-content",
   },
 
@@ -1087,11 +1188,13 @@ const buildStyles = (isMobile) => ({
     display: "grid",
     gridTemplateColumns: "1fr",
     gap: "0.85rem",
-    backgroundColor: "#e2e8f0",
+    background: "linear-gradient(180deg, #eaf5fb 0%, #f8fcff 100%)",
     padding: "1.25rem",
     borderRadius: "14px",
     marginBottom: isMobile ? "0.5rem" : "1rem",
-    boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
+    boxShadow: "0 8px 22px rgba(18,48,71,0.1)",
+    border: "1px solid #bdd7e2",
+    backdropFilter: "blur(2px)",
   },
 
   fieldRow: {
@@ -1129,27 +1232,28 @@ const buildStyles = (isMobile) => ({
     fontWeight: "bold",
     borderRadius: "10px",
     border: "none",
-    backgroundColor: "#0d9488",
+    background: "linear-gradient(135deg, #0d8b8b, #0a6e72)",
     color: "#ffffff",
     cursor: "pointer",
-    boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
+    boxShadow: "0 8px 16px rgba(10,110,114,0.25)",
   },
 
   outputBox: {
-    maxHeight: isMobile ? "none" : "calc(100vh - 140px)",
-    overflowY: isMobile ? "visible" : "auto",
-    backgroundColor: "#ffffff",
+    maxHeight: "none",
+    overflowY: "visible",
+    background: "linear-gradient(180deg, #ffffff 0%, #f1f8fc 100%)",
     padding: isMobile ? "1rem" : "1.5rem",
     borderRadius: "14px",
-    boxShadow: "0 2px 8px rgba(0,0,0,0.12)",
+    boxShadow: "0 10px 24px rgba(18,48,71,0.12)",
+    border: "1px solid #b8d2de",
   },
 
   card: {
-    backgroundColor: "#f9fafb",
+    backgroundColor: "#ffffff",
     padding: "1rem",
     borderRadius: "10px",
     marginBottom: "1rem",
-    border: "1px solid #e5e7eb",
+    border: "1px solid #d8e7ef",
   },
 
   cardTitle: {
