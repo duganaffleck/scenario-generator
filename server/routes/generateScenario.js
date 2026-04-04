@@ -5,6 +5,7 @@ import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { jsonrepair } from 'jsonrepair';
+import { ONTARIO_DIRECTIVE_META } from '../data/ontarioDirectiveMeta';
 import { buildDirectivePromptAddendum } from '../data/ontarioDirectiveRules.js';
 import { buildScenarioHookAddendum, getScenarioHook } from '../data/ontarioScenarioHooks.js';
 
@@ -31,6 +32,16 @@ const RECENT_CUE_OPENING_WINDOW = 180;
 let recentCueFingerprints = [];
 let recentCueOpenings = [];
 
+const MEDIUM_REPAIR_TRIGGER_CODES = new Set([
+  'call-type-drift',
+  'complexity-drift',
+  'environment-drift',
+  'semester-2-medications',
+  'semester-2-too-complex',
+  'semester-4-not-layered-enough',
+  'custom-prompt-not-reflected'
+]);
+
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 const INSTRUCTOR_PROFILE_PATH = path.resolve(
@@ -43,8 +54,26 @@ const FEW_SHOTS_PATH = path.resolve(
   '../data/few-shot-scenarios.json'
 );
 
+const SCENARIO_MODIFIERS_PATH = path.resolve(
+  __dirname,
+  '../data/scenario-modifiers.json'
+);
+
+const ALS_STANDARDS_PATH = path.resolve(
+  __dirname,
+  '../data/als-standards.txt'
+);
+
+const BLS_STANDARDS_PATH = path.resolve(
+  __dirname,
+  '../data/bls-standards.txt'
+);
+
 let instructorProfileCache = null;
 let fewShotsCache = null;
+let scenarioModifiersCache = null;
+let alsStandardsCache = null;
+let blsStandardsCache = null;
 
 async function loadInstructorProfile() {
   if (instructorProfileCache) return instructorProfileCache;
@@ -57,6 +86,266 @@ async function loadFewShots() {
   const raw = await fs.readFile(FEW_SHOTS_PATH, 'utf8');
   fewShotsCache = JSON.parse(raw);
   return fewShotsCache;
+}
+
+async function loadScenarioModifiers() {
+  if (scenarioModifiersCache) return scenarioModifiersCache;
+  const raw = await fs.readFile(SCENARIO_MODIFIERS_PATH, 'utf8');
+  scenarioModifiersCache = JSON.parse(raw);
+  return scenarioModifiersCache;
+}
+
+async function loadAlsStandards() {
+  if (alsStandardsCache) return alsStandardsCache;
+  alsStandardsCache = await fs.readFile(ALS_STANDARDS_PATH, 'utf8');
+  return alsStandardsCache;
+}
+
+async function loadBlsStandards() {
+  if (blsStandardsCache) return blsStandardsCache;
+  blsStandardsCache = await fs.readFile(BLS_STANDARDS_PATH, 'utf8');
+  return blsStandardsCache;
+}
+
+function stableHash(value = '') {
+  const text = String(value || '');
+  let hash = 0;
+  for (let i = 0; i < text.length; i += 1) {
+    hash = (hash * 31 + text.charCodeAt(i)) | 0;
+  }
+  return Math.abs(hash);
+}
+
+function pickRotating(items, maxItems, seed, bucket) {
+  const pool = Array.from(
+    new Set((items || []).map((item) => String(item || '').trim()).filter(Boolean))
+  );
+
+  if (!pool.length || maxItems <= 0) return [];
+  if (pool.length <= maxItems) return pool;
+
+  const start = stableHash(`${bucket}|${seed}`) % pool.length;
+  const picked = [];
+  for (let index = 0; index < pool.length && picked.length < maxItems; index += 1) {
+    picked.push(pool[(start + index) % pool.length]);
+  }
+  return picked;
+}
+
+function parseAlsStandardSections(raw = '') {
+  const lines = String(raw || '').split(/\r?\n/);
+  const sections = [];
+  let current = null;
+
+  for (const rawLine of lines) {
+    const line = rawLine.trim();
+    if (!line || /^─+$/.test(line) || /^Source:|^Scope:/.test(line)) continue;
+
+    const headingMatch = line.match(/^\d+\.\s+(.+)$/);
+    if (headingMatch) {
+      if (current) sections.push(current);
+      current = { title: headingMatch[1].trim(), lines: [] };
+      continue;
+    }
+
+    if (!current) continue;
+    current.lines.push(line);
+  }
+
+  if (current) sections.push(current);
+  return sections;
+}
+
+function parseBlsStandardSections(raw = '') {
+  const lines = String(raw || '').split(/\r?\n/);
+  const sections = [];
+  let current = null;
+
+  for (const rawLine of lines) {
+    const line = rawLine.trim();
+    if (!line || /^#\s+/.test(line)) continue;
+
+    const markdownHeading = line.match(/^##\s+(.+)$/);
+    const inlineHeading = line.match(/^[A-Z][A-Za-z0-9 /&()\-]+:$/);
+
+    if (markdownHeading || inlineHeading) {
+      if (current) sections.push(current);
+      current = {
+        title: (markdownHeading?.[1] || inlineHeading?.[0].slice(0, -1) || '').trim(),
+        lines: []
+      };
+      continue;
+    }
+
+    if (!current) continue;
+    current.lines.push(line);
+  }
+
+  if (current) sections.push(current);
+  return sections;
+}
+
+function summarizeStandardSection(section, maxItems = 2) {
+  if (!section?.lines?.length || maxItems <= 0) return [];
+
+  const bullets = [];
+  let currentLabel = '';
+
+  for (const line of section.lines) {
+    if (/^(Indications|Treatment|Conditions|Contraindications|Transport if|Notes)$/i.test(line.replace(/:$/, ''))) {
+      currentLabel = line.replace(/:$/, '');
+      continue;
+    }
+
+    if (!/^[-•]/.test(line)) continue;
+
+    const text = line.replace(/^[-•]\s*/, '').trim();
+    if (!text || /^or$/i.test(text)) continue;
+
+    bullets.push(currentLabel ? `${currentLabel}: ${text}` : text);
+    if (bullets.length >= maxItems) break;
+  }
+
+  return bullets;
+}
+
+function findSectionsByTitle(sections, titleFragments = []) {
+  return titleFragments
+    .map((fragment) => sections.find((section) => section.title.toLowerCase().includes(fragment.toLowerCase())))
+    .filter(Boolean);
+}
+
+function buildDirectiveMetaAddendum() {
+  const versions = ONTARIO_DIRECTIVE_META?.versions || {};
+  const principles = (ONTARIO_DIRECTIVE_META?.governance?.principles || []).slice(0, 3);
+  const lines = [];
+
+  const versionSummary = [versions.bls, versions.als, versions.companion, versions.memo]
+    .filter(Boolean)
+    .map((entry) => `${entry.name} ${entry.version} (${entry.effectiveDate})`)
+    .join('; ');
+
+  if (versionSummary) {
+    lines.push(`Use these Ontario directive references as current: ${versionSummary}.`);
+  }
+
+  for (const principle of principles) {
+    lines.push(principle);
+  }
+
+  return lines;
+}
+
+function buildStandardsPromptAddendum({ callType, semester, alsText, blsText }) {
+  const lines = [];
+  const alsSections = parseAlsStandardSections(alsText);
+  const blsSections = parseBlsStandardSections(blsText);
+  const normalizedType = normalizeCallFamily(callType);
+  const includeMedicationDetails = String(semester) !== '2';
+
+  const blsTitleMap = {
+    Cardiac: ['Oxygen Administration (BLS PCS)', 'Transport Decision Rules'],
+    Respiratory: ['Oxygen Administration (BLS PCS)', 'Airway Management', 'Transport Decision Rules'],
+    Trauma: ['Spinal Motion Restriction (SMR) Standard', 'Transport Decision Rules'],
+    Environmental: ['Scene Safety and PPE Requirements', 'Oxygen Administration (BLS PCS)', 'Transport Decision Rules'],
+    Medical: ['Blood Glucose Testing', 'Transport Decision Rules', 'Refusal of Service Criteria']
+  };
+
+  const alsTitleMap = {
+    Cardiac: includeMedicationDetails
+      ? ['Cardiac Ischemia (PCP + PCP-IV)', 'ROSC – Return of Spontaneous Circulation (PCP)']
+      : ['Medical Cardiac Arrest (PCP)', 'ROSC – Return of Spontaneous Circulation (PCP)'],
+    Respiratory: includeMedicationDetails
+      ? ['Bronchoconstriction (PCP)', 'CPAP (PCP-Certified)']
+      : ['CPAP (PCP-Certified)'],
+    Trauma: includeMedicationDetails
+      ? ['TXA – Tranexamic Acid (PCP-IV)', 'Pain Management (PCP-IV)']
+      : [],
+    Environmental: includeMedicationDetails
+      ? ['Allergic Reaction / Anaphylaxis (PCP + PCP-IV)']
+      : [],
+    Medical: includeMedicationDetails
+      ? ['Hypoglycemia (PCP + PCP-IV)', 'Stroke / TIA (PCP)', 'Pain Management (PCP-IV)']
+      : ['Stroke / TIA (PCP)']
+  };
+
+  if (!includeMedicationDetails) {
+    lines.push('Semester 2: keep Ontario assessment, transport, and reassessment logic, but do not add medication administration.');
+  }
+
+  const selectedBlsSections = findSectionsByTitle(blsSections, ['Vital Signs Required', ...(blsTitleMap[normalizedType] || [])]);
+  if (selectedBlsSections.length) {
+    lines.push('Ontario BLS snippets to reflect when relevant:');
+    for (const section of selectedBlsSections.slice(0, 3)) {
+      const isVitalSignsSection = section.title.includes('Vital Signs');
+      const isSmrSection = section.title.includes('Spinal Motion Restriction');
+      const bullets = summarizeStandardSection(section, isVitalSignsSection ? 3 : isSmrSection ? 4 : 2);
+      for (const bullet of bullets) {
+        lines.push(`- ${section.title}: ${bullet}`);
+      }
+
+      if (isSmrSection) {
+        lines.push('- Spinal Motion Restriction (SMR) Standard: Age over 65 with a history of a fall independently meets Ontario SMR criteria; do not dismiss collar/SMR because the fall seems minor.');
+      }
+    }
+  }
+
+  const selectedAlsSections = findSectionsByTitle(alsSections, alsTitleMap[normalizedType] || []);
+  if (selectedAlsSections.length) {
+    lines.push('Ontario ALS snippets to reflect when relevant:');
+    for (const section of selectedAlsSections.slice(0, 2)) {
+      const bullets = summarizeStandardSection(section, 2);
+      for (const bullet of bullets) {
+        lines.push(`- ${section.title}: ${bullet}`);
+      }
+    }
+  }
+
+  return lines;
+}
+
+function buildScenarioModifierAddendum(modifiers, {
+  callType,
+  environment,
+  complexity,
+  variationSeed = 0
+} = {}) {
+  const normalizedType = normalizeCallFamily(callType);
+  const normalizedComplexity = normalizeComplexity(complexity) || 'Moderate';
+  const normalizedEnvironment = normalizeEnvironment(environment) || 'Urban';
+  const categoryMap = {
+    Cardiac: ['interpersonalChaos', 'equipmentIssues', 'unexpectedPatientBehavior'],
+    Respiratory: ['equipmentIssues', 'interpersonalChaos', 'unexpectedPatientBehavior'],
+    Trauma: ['environmentalComplications', 'equipmentIssues', 'interpersonalChaos'],
+    Environmental: ['environmentalComplications', 'equipmentIssues', 'ethicalDilemmas'],
+    Medical: ['interpersonalChaos', 'ethicalDilemmas', 'unexpectedPatientBehavior']
+  };
+  const environmentBoost = {
+    Wilderness: 'environmentalComplications',
+    Industrial: 'environmentalComplications',
+    Rural: 'environmentalComplications',
+    'Public Space': 'interpersonalChaos',
+    Home: 'ethicalDilemmas'
+  };
+  const targetCount = normalizedComplexity === 'Simple' ? 1 : normalizedComplexity === 'Moderate' ? 2 : 3;
+  const preferredCategories = [
+    environmentBoost[normalizedEnvironment],
+    ...(categoryMap[normalizedType] || [])
+  ].filter(Boolean);
+  const selectedCategories = pickRotating(preferredCategories, targetCount, `${normalizedType}|${normalizedEnvironment}|${variationSeed}`, 'modifier-categories');
+
+  const lines = [
+    `Use ${normalizedComplexity === 'Simple' ? 'at most 1' : normalizedComplexity === 'Moderate' ? '1 or 2' : '2 or 3'} optional complication modifiers only if they materially deepen assessment, access, communication, or transport.`
+  ];
+
+  for (const category of selectedCategories) {
+    const options = pickRotating(modifiers?.[category] || [], 1, `${category}|${variationSeed}|${normalizedType}`, 'modifier-options');
+    for (const option of options) {
+      lines.push(`- ${option}`);
+    }
+  }
+
+  return lines;
 }
 
 const CALL_TYPE_FAMILIES = ['Medical', 'Trauma', 'Cardiac', 'Respiratory', 'Environmental'];
@@ -4498,8 +4787,6 @@ function buildScenarioCore({
 
   return {
     progressionInstructions: [
-      semesterShapingText,
-      '',
       complexityShapingText,
       '',
       'Case progression rules:',
@@ -6559,6 +6846,19 @@ function detectControlDrift(scenario, controls) {
   };
 }
 
+function shouldRunModelRepair(validation) {
+  const issues = Array.isArray(validation?.issues) ? validation.issues : [];
+  if (!issues.length) return false;
+
+  if (issues.some((issue) => issue?.severity === 'high')) {
+    return true;
+  }
+
+  return issues.some(
+    (issue) => issue?.severity === 'medium' && MEDIUM_REPAIR_TRIGGER_CODES.has(issue?.code)
+  );
+}
+
 function splitTeachingPointSentences(text) {
   return normalizeSentenceSpacing(String(text || ''))
     .split(/(?<=[.!?])\s+(?=[A-Z0-9])/)
@@ -6811,8 +7111,19 @@ router.post('/', async (req, res) => {
       semesterProfile
     });
 
-    const instructorProfile = await loadInstructorProfile();
-    const fewShots = await loadFewShots();
+    const [
+      instructorProfile,
+      fewShots,
+      scenarioModifiers,
+      alsStandardsText,
+      blsStandardsText
+    ] = await Promise.all([
+      loadInstructorProfile(),
+      loadFewShots(),
+      loadScenarioModifiers(),
+      loadAlsStandards(),
+      loadBlsStandards()
+    ]);
     const fewShotSelection = buildFewShotBlock(fewShots, {
       callType: finalCallType,
       semester,
@@ -6826,7 +7137,21 @@ router.post('/', async (req, res) => {
       customPrompt: normalizedCustomPrompt,
       title: subtypeData.subtype
     });
-    const hookAddendum = buildScenarioHookAddendum(finalCallType);
+    const directiveMetaAddendum = buildDirectiveMetaAddendum();
+    const standardsAddendum = buildStandardsPromptAddendum({
+      callType: finalCallType,
+      semester,
+      complexity,
+      alsText: alsStandardsText,
+      blsText: blsStandardsText
+    });
+    const hookAddendum = buildScenarioHookAddendum(finalCallType, generationVariationSeed);
+    const modifierAddendum = buildScenarioModifierAddendum(scenarioModifiers, {
+      callType: finalCallType,
+      environment,
+      complexity,
+      variationSeed: generationVariationSeed
+    });
 
     const systemPrompt = instructorProfile.trim();
 
@@ -6852,7 +7177,10 @@ ${fewShotSelection.block}
 
 ONTARIO DIRECTIVE ADDENDUM
 ${Array.isArray(directiveAddendum) ? directiveAddendum.join('\n') : String(directiveAddendum || '')}
+${directiveMetaAddendum.length ? `\nONTARIO DIRECTIVE GOVERNANCE\n${directiveMetaAddendum.join('\n')}` : ''}
+${standardsAddendum.length ? `\nONTARIO STANDARDS SNIPPETS\n${standardsAddendum.join('\n')}` : ''}
 ${hookAddendum.length ? `\nCLINICAL HOOK GUIDANCE\n${hookAddendum.join('\n')}` : ''}
+${modifierAddendum.length ? `\nSCENARIO VARIETY MODIFIERS\n${modifierAddendum.join('\n')}` : ''}
 
 In expectedTreatment and protocolNotes, explicitly reference Ontario BLS and ALS principles (oxygen targets, cardiac ischemia workflow, stroke, trauma, etc.) when relevant.
 Note when a recommendation is standard BLS or ALS from Ontario directives.
@@ -7289,7 +7617,6 @@ Critical output rules:
     normalized = enforceTeachingCueSpecificity(normalized, Boolean(includeTeachingCues));
     normalized = enforceTeachingCueSectionDiscipline(normalized, Boolean(includeTeachingCues));
     normalized = ensureTeachingCueCoverage(normalized, Boolean(includeTeachingCues), generationVariationSeed);
-    normalized = enforceTeachingCueSpecificity(normalized, Boolean(includeTeachingCues));
     normalized = enforceTeachingCueSectionDiscipline(normalized, Boolean(includeTeachingCues));
     normalized = enforceDoseCueSafety(normalized, Boolean(includeTeachingCues));
     normalized = ensureTeachingCueCoverage(normalized, Boolean(includeTeachingCues), generationVariationSeed + 101);
@@ -7332,12 +7659,17 @@ Critical output rules:
       customPrompt: normalizedCustomPrompt
     });
 
-    if (validation.issues.length) {
+    const shouldAttemptModelRepair = shouldRunModelRepair(validation);
+
+    if (shouldAttemptModelRepair) {
       let bestScenario = normalized;
       let bestValidation = validation;
+      const repairAttemptLimit = bestValidation.issues.some((issue) => issue.severity === 'high')
+        ? CONTROL_REPAIR_MAX_ATTEMPTS
+        : 1;
 
-      for (let repairAttempt = 1; repairAttempt <= CONTROL_REPAIR_MAX_ATTEMPTS; repairAttempt += 1) {
-        devWarn(`Scenario control drift detected, attempting repair ${repairAttempt}/${CONTROL_REPAIR_MAX_ATTEMPTS}:`, bestValidation);
+      for (let repairAttempt = 1; repairAttempt <= repairAttemptLimit; repairAttempt += 1) {
+        devWarn(`Scenario control drift detected, attempting repair ${repairAttempt}/${repairAttemptLimit}:`, bestValidation);
 
         const repairedParsed = await repairScenarioForControlDrift({
           systemPrompt,
@@ -7373,9 +7705,8 @@ Critical output rules:
           Boolean(includeTeachingCues),
           generationVariationSeed + repairAttempt
         );
-        const postCoverageSpecificitySafe = enforceTeachingCueSpecificity(sectionDisciplinedRepaired, Boolean(includeTeachingCues));
         const postCoverageSectionDisciplined = enforceTeachingCueSectionDiscipline(
-          postCoverageSpecificitySafe,
+          sectionDisciplinedRepaired,
           Boolean(includeTeachingCues)
         );
         const doseSafeRepaired = enforceDoseCueSafety(postCoverageSectionDisciplined, Boolean(includeTeachingCues));
@@ -7413,6 +7744,8 @@ Critical output rules:
 
       normalized = bestScenario;
       validation = bestValidation;
+    } else if (validation.issues.length) {
+      devWarn('Skipping model repair loop because only non-critical medium issues were detected.');
     }
 
     // Final deterministic quality fail-safe: if only teaching-point quality remains high,

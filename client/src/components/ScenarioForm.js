@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import jsPDF from "jspdf";
 import { FaSpinner, FaFilePdf, FaLightbulb } from "react-icons/fa";
@@ -137,6 +137,46 @@ const ScenarioForm = () => {
   const [selectedECGImage, setSelectedECGImage] = useState(null);
   const [scenario, setScenario] = useState(null);
   const [loading, setLoading] = useState(false);
+  const abortControllerRef = useRef(null);
+  const [jokeIndex, setJokeIndex] = useState(0);
+
+  const loadingJokes = [
+    "Consulting the medical textbook we definitely didn't just skim...",
+    "Diagnosing the problem... it's probably not lupus.",
+    "Teaching the AI what a stethoscope is.",
+    "Arguing with GPT about whether SpO2 of 94% counts as 'fine'.",
+    "Generating vitals. Patient is surprisingly stable for someone made of JSON.",
+    "Checking if the patient remembered to take their meds. They didn't.",
+    "Summoning a paramedic from the void...",
+    "Running differential diagnoses. Top guess: anxiety. Second guess: more anxiety.",
+    "The AI is currently on its coffee break. Please hold.",
+    "Asking the patient if it hurts when they do that. They said 'only emotionally'.",
+    "Calibrating vague abdominal pain to maximum ambiguity.",
+    "12-lead incoming. Please pretend you remember how to read it.",
+    "Patient is alert and oriented x3, which is more than can be said for the dev.",
+    "Inventing backstory. The patient definitely did not sign a waiver.",
+    "Consulting the on-call AI. It's also confused.",
+    "Assigning teaching cues with unhelpful but confident energy.",
+    "Running vitals through the algorithm. It suggests more fluids.",
+    "Asking the patient to rate their pain 1–10. They said 11. Classic.",
+    "Checking SAMPLE history. The patient's allergies are listed as 'mornings'.",
+    "Placing the patient in the position of comfort. They chose fetal.",
+    "Administering oxygen because honestly, when in doubt.",
+    "Trying to remember if 'GCS of 15' is good or bad. It's good. Probably.",
+    "Scene safe? The AI said yes but it seemed nervous.",
+    "Estimated time of arrival: soon-ish. Confidence interval: wide.",
+    "Noting the patient has a pertinent negative attitude toward being assessed.",
+  ];
+
+  useEffect(() => {
+    if (!loading) return;
+    setJokeIndex(Math.floor(Math.random() * loadingJokes.length));
+    const interval = setInterval(() => {
+      setJokeIndex((prev) => (prev + 1) % loadingJokes.length);
+    }, 11000);
+    return () => clearInterval(interval);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading]);
   const [error, setError] = useState("");
   const [collapsedSections, setCollapsedSections] = useState({});
   const [selectedCue, setSelectedCue] = useState(null);
@@ -311,12 +351,21 @@ const ScenarioForm = () => {
     }));
   };
 
+  const handleCancel = () => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+  };
+
   const handleSubmit = async () => {
     setLoading(true);
     setError("");
     setScenario(null);
     setSelectedCue(null);
     setSelectedECGImage(null);
+
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
 
     const baseURL = process.env.REACT_APP_API_BASE_URL || "http://localhost:10000";
     const payload = {
@@ -325,7 +374,7 @@ const ScenarioForm = () => {
     };
 
     try {
-      const response = await axios.post(`${baseURL}/api/generate-scenario`, payload);
+      const response = await axios.post(`${baseURL}/api/generate-scenario`, payload, { signal: controller.signal });
       const generated = response.data;
 
       if (generated.ecgInterpretation && generated.vitalSigns && !generated.vitalSigns.ecgInterpretation) {
@@ -334,13 +383,18 @@ const ScenarioForm = () => {
 
       setScenario(generated);
     } catch (err) {
-      const message =
-        err?.response?.data?.details ||
-        err?.response?.data?.error ||
-        err?.message ||
-        "Scenario generation failed. Please check backend server.";
-      setError(message);
+      if (axios.isCancel(err) || err?.name === "CanceledError" || err?.code === "ERR_CANCELED") {
+        // User cancelled — silently dismiss
+      } else {
+        const message =
+          err?.response?.data?.details ||
+          err?.response?.data?.error ||
+          err?.message ||
+          "Scenario generation failed. Please check backend server.";
+        setError(message);
+      }
     } finally {
+      abortControllerRef.current = null;
       setLoading(false);
     }
   };
@@ -364,7 +418,8 @@ const ScenarioForm = () => {
     const pageWidth = doc.internal.pageSize.getWidth();
     const marginX = 20;
     const marginY = 20;
-    const maxLineWidth = pageWidth - marginX * 2;
+    const textColumnX = marginX + 5;
+    const maxLineWidth = pageWidth - marginX - textColumnX;
     const bodySize = 10;
     const bodyLH = 5.8;
     const footerY = pageHeight - 12;
@@ -439,7 +494,6 @@ const ScenarioForm = () => {
 
     const drawContentHeader = () => {
       const headerBarWidth = 3;
-      const headerTextX = marginX + 10;
       doc.setFillColor(...palette.ink);
       doc.rect(0, 0, pageWidth, 16, "F");
       doc.setFillColor(...palette.orange);
@@ -447,12 +501,12 @@ const ScenarioForm = () => {
       doc.setFont(undefined, "bold");
       doc.setFontSize(8.8);
       doc.setTextColor(244, 252, 255);
-      doc.text("VitalNotes Scenario Generator", headerTextX, 10.2);
+      doc.text("VitalNotes Scenario Generator", textColumnX, 10.2);
 
       doc.setFont(undefined, "normal");
       doc.setFontSize(7.8);
       doc.setTextColor(206, 230, 238);
-      doc.text("Protocol-aligned simulation scenario", headerTextX, 14.1);
+      doc.text("Protocol-aligned simulation scenario", textColumnX, 14.1);
 
       doc.setDrawColor(...palette.line);
       doc.setLineWidth(0.2);
@@ -479,12 +533,12 @@ const ScenarioForm = () => {
     doc.setFontSize(20);
     doc.setTextColor(...palette.ink);
     const titleWrapped = doc.splitTextToSize(documentTitle, maxLineWidth);
-    doc.text(titleWrapped, marginX, y);
+    doc.text(titleWrapped, textColumnX, y);
     y += titleWrapped.length * 8.4 + 5;
 
     doc.setDrawColor(...palette.line);
     doc.setLineWidth(0.3);
-    doc.line(marginX, y, pageWidth - marginX, y);
+    doc.line(textColumnX, y, pageWidth - marginX, y);
     y += 7;
 
     const metaFields = [
@@ -499,8 +553,8 @@ const ScenarioForm = () => {
     const metaPaddingBottom = 3.8;
     const metaCardY = y - 3.5;
     const metaCardHeight = metaPaddingTop + metaPaddingBottom + (visibleMetaFields.length * metaRowHeight);
-    const metaLabelX = marginX + 2;
-    const metaValueX = marginX + 38;
+    const metaLabelX = textColumnX;
+    const metaValueX = textColumnX + 36;
 
     doc.setFillColor(...palette.softBlue);
     doc.roundedRect(marginX - 2, metaCardY, pageWidth - marginX * 2 + 4, metaCardHeight, 3, 3, "F");
@@ -529,19 +583,19 @@ const ScenarioForm = () => {
     y = metaCardY + metaCardHeight + 5;
     doc.setDrawColor(...palette.line);
     doc.setLineWidth(0.2);
-    doc.line(marginX, y, pageWidth - marginX, y);
+    doc.line(textColumnX, y, pageWidth - marginX, y);
     y += 6;
 
     doc.setFont(undefined, "normal");
     doc.setFontSize(8.5);
     doc.setTextColor(...palette.mutedText);
-    doc.text(`Generated: ${exportedAt}`, marginX, y);
+    doc.text(`Generated: ${exportedAt}`, textColumnX, y);
     y += 10;
 
     // ── Sections ─────────────────────────────────────────────────────────────
     sectionEntries.forEach((entry) => {
       const sectionBarWidth = 2.2;
-      const sectionTextX = marginX + 5;
+      const sectionTextX = textColumnX;
       // Section heading
       needsNewPage(16);
       y += 4;
@@ -558,7 +612,7 @@ const ScenarioForm = () => {
       y += 2.5;
       doc.setDrawColor(...palette.line);
       doc.setLineWidth(0.25);
-      doc.line(marginX, y, pageWidth - marginX, y);
+      doc.line(textColumnX, y, pageWidth - marginX, y);
       y += 5;
 
       // Body content
@@ -573,7 +627,7 @@ const ScenarioForm = () => {
         const isBullet = trimmed.startsWith("- ");
         const displayText = isBullet ? `\u2022  ${trimmed.slice(2)}` : trimmed;
         const indent = isBullet ? 4 : 0;
-        const textX = marginX + indent;
+        const textX = textColumnX + indent;
         const textWidth = maxLineWidth - indent;
 
         const isLabelLine = /^[A-Z][^:]{1,35}:\s*$/.test(trimmed);
@@ -1002,6 +1056,37 @@ const ScenarioForm = () => {
             <FaSpinner className="spin" style={styles.loadingSpinner} />
             <div style={styles.loadingTitle}>Generating Scenario...</div>
             <div style={styles.loadingSubtext}>This will take a minute.</div>
+            <div style={{ ...styles.loadingSubtext, marginTop: "0.4rem", fontSize: "0.8rem", color: "#94a3b8", textAlign: "center" }}>
+              The AI is building your scenario, vitals, and teaching cues.<br />
+              Complex cases may take a little longer.
+            </div>
+            <div style={{
+              marginTop: "1.2rem",
+              minHeight: "2.5rem",
+              fontSize: "0.78rem",
+              color: "#a0aec0",
+              fontStyle: "italic",
+              textAlign: "center",
+              maxWidth: "300px",
+              transition: "opacity 0.4s ease",
+            }}>
+              {loadingJokes[jokeIndex]}
+            </div>
+            <button
+              onClick={handleCancel}
+              style={{
+                marginTop: "0.8rem",
+                padding: "0.4rem 1.2rem",
+                background: "transparent",
+                border: "1px solid #ccc",
+                borderRadius: "4px",
+                color: "#555",
+                cursor: "pointer",
+                fontSize: "0.85rem",
+              }}
+            >
+              Cancel
+            </button>
           </div>
         </div>
       )}

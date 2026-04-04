@@ -68,7 +68,19 @@ export const ONTARIO_SCENARIO_HOOKS = {
       "Failing to appreciate atypical ischemia presentations.",
       "Ignoring right-sided lead implications in inferior STEMI logic.",
       "Writing generic transport plans that do not reflect changing ischemia risk or reassessment findings."
-    ]
+    ],
+    grsHooks: {
+      assessment: [
+        "Recognizes ischemic red flags even when symptoms are subtle or atypical.",
+        "Obtains serial vitals and ECG-oriented reassessment that meaningfully affect care.",
+        "Tracks perfusion, diaphoresis, dyspnea, and symptom radiation rather than documenting chest pain in isolation."
+      ],
+      decisionMaking: [
+        "Uses a 12-lead-first ischemia workflow and explains when nitro should be withheld.",
+        "Adjusts transport priority based on evolving ischemia risk, not just initial pain severity.",
+        "Synthesizes ECG, hemodynamics, and symptom trend into a defensible treatment plan."
+      ]
+    }
   },
 
   bronchoconstriction: {
@@ -114,7 +126,141 @@ export const ONTARIO_SCENARIO_HOOKS = {
       "Failing to distinguish asthma from COPD in the treatment plan.",
       "Underestimating fatigue and worsening air entry.",
       "Using flat progression branches that do not show respiratory response or decline over time."
-    ]
+    ],
+    grsHooks: {
+      assessment: [
+        "Recognizes worsening work of breathing, fatigue, and reduced air entry early.",
+        "Differentiates severity using speech, posture, accessory muscle use, and breath sounds.",
+        "Uses serial reassessment to show whether bronchodilator therapy is working or failing."
+      ],
+      decisionMaking: [
+        "Chooses bronchodilator, oxygen, and ventilatory support strategy that matches the likely pathology.",
+        "Avoids inappropriate CPAP or delayed escalation when respiratory fatigue is emerging.",
+        "Builds transport urgency around response to treatment and exhaustion risk."
+      ]
+    }
+  },
+
+  traumaPatterns: {
+    patientQuotes: [
+      "I don't want to move it.",
+      "It hurts more when I try to stand.",
+      "I hit my head, but I didn't pass out.",
+      "My leg feels numb now."
+    ],
+    bystanderQuotes: [
+      "He fell from the second rung of the ladder.",
+      "She was wearing a helmet, but she landed hard.",
+      "He got pinned for a few seconds before we moved the object."
+    ],
+    sceneContexts: [
+      "residential fall with tight stair access",
+      "workplace blunt-force mechanism with noisy bystander scene",
+      "roadside collision with weather and visibility limitations",
+      "sports field with delayed collateral history"
+    ],
+    physicalFindings: [
+      "localized tenderness with guarded movement",
+      "visible deformity or swelling",
+      "possible distracting injuries",
+      "neurovascular concern distal to injury",
+      "pain-limited exam findings"
+    ],
+    progressionPatterns: {
+      withProperTreatment: [
+        "Pain remains significant but movement-related worsening is reduced with appropriate stabilization and handling.",
+        "Serial reassessment clarifies whether neurovascular findings are stable or changing.",
+        "Transport plan reflects mechanism risk and evolving exam findings."
+      ],
+      withoutProperTreatment: [
+        "Unnecessary movement increases pain, anxiety, and risk of secondary worsening.",
+        "Missed reassessment can delay recognition of neurovascular decline.",
+        "Transport and handoff become vague when mechanism and trend data are not synthesized."
+      ]
+    },
+    commonTeachingErrors: [
+      "Fixating on pain score while under-weighting mechanism and trend findings.",
+      "Using generic immobilization language without tying it to exam findings.",
+      "Missing repeated distal neurovascular reassessment after movement or splinting.",
+      "Writing transport plans that ignore access, extraction, or scene constraints."
+    ],
+    protocolNoteHooks: [
+      "Tie movement minimization and stabilization choices to mechanism and exam findings.",
+      "Document pre- and post-intervention neurovascular status when relevant."
+    ],
+    grsHooks: {
+      assessment: [
+        "Links mechanism, anatomy, and serial neurovascular findings instead of documenting pain alone.",
+        "Detects red flags that would change packaging, transport priority, or spinal precautions.",
+        "Reassesses after movement or splinting to identify improvement or deterioration."
+      ],
+      decisionMaking: [
+        "Chooses stabilization and movement strategy that reflects mechanism, access limits, and evolving exam findings.",
+        "Avoids generic immobilization language by naming what is being protected and why.",
+        "Uses scene constraints and reassessment trend to justify transport planning."
+      ]
+    }
+  },
+
+  environmentalExposure: {
+    patientQuotes: [
+      "I was in the heat all day and then got dizzy.",
+      "We were using a heater in the garage.",
+      "I can't get warm even with blankets.",
+      "My headache started after being near the generator."
+    ],
+    bystanderQuotes: [
+      "A few people in the room felt sick at the same time.",
+      "He was outside in the cold for a long time before we found him.",
+      "She seemed fine earlier, then suddenly got confused."
+    ],
+    sceneContexts: [
+      "enclosed space with possible combustion source",
+      "outdoor prolonged exposure with limited shelter",
+      "multi-patient scene with shared environmental trigger",
+      "remote setting with delayed definitive care"
+    ],
+    physicalFindings: [
+      "headache and nausea with nonspecific malaise",
+      "confusion or slowed responses",
+      "temperature-related skin signs",
+      "fatigue with exertional intolerance",
+      "vital sign pattern suggesting systemic stress"
+    ],
+    progressionPatterns: {
+      withProperTreatment: [
+        "Clinical trend stabilizes with source control, supportive care, and focused reassessment.",
+        "Symptom trajectory and environment history remain central to transport urgency.",
+        "Handoff clearly links scene exposure clues to observed response."
+      ],
+      withoutProperTreatment: [
+        "Failure to identify the exposure context leads to delayed targeted management.",
+        "Symptoms may broaden from nonspecific complaints to worsening mental status or perfusion concerns.",
+        "Incomplete scene-risk communication undermines receiving-team anticipation."
+      ]
+    },
+    commonTeachingErrors: [
+      "Treating environmental complaints as isolated symptoms without scene synthesis.",
+      "Underemphasizing source control and responder safety actions.",
+      "Using vague exposure language instead of naming likely mechanism and timeline.",
+      "Neglecting multi-patient or shared-exposure implications when present."
+    ],
+    protocolNoteHooks: [
+      "Tie oxygen and supportive care choices to suspected exposure mechanism and objective findings.",
+      "Include scene-source control and risk communication actions when relevant."
+    ],
+    grsHooks: {
+      assessment: [
+        "Identifies the likely exposure source, timeline, and shared-scene clues early.",
+        "Recognizes when nonspecific symptoms still imply a hazardous environmental process.",
+        "Uses repeated mental status, perfusion, and respiratory reassessment to track exposure impact."
+      ],
+      decisionMaking: [
+        "Prioritizes responder safety and source control alongside patient care.",
+        "Explains transport urgency using exposure risk, scene persistence, and symptom trend.",
+        "Communicates environmental risk clearly to receiving staff and partner agencies."
+      ]
+    }
   },
 
   analgesia: {
@@ -157,12 +303,50 @@ function getRelevantHookKeys(callType) {
     keys.push('cardiacIschemia');
   } else if (normalized === 'respiratory') {
     keys.push('bronchoconstriction');
+  } else if (normalized === 'trauma') {
+    keys.push('traumaPatterns', 'analgesia', 'nauseaVomiting');
+  } else if (normalized === 'environmental') {
+    keys.push('environmentalExposure', 'nauseaVomiting');
   } else {
-    // Medical / Trauma / Environmental all benefit from analgesia and nausea guidance
+    // Medical calls benefit from symptom-control hooks by default
     keys.push('analgesia', 'nauseaVomiting');
   }
 
   return keys;
+}
+
+function stableHash(value) {
+  const text = String(value || '');
+  let hash = 0;
+  for (let i = 0; i < text.length; i += 1) {
+    hash = (hash * 31 + text.charCodeAt(i)) | 0;
+  }
+  return Math.abs(hash);
+}
+
+function dedupe(items) {
+  const seen = new Set();
+  const out = [];
+  for (const item of items || []) {
+    const text = String(item || '').trim();
+    if (!text || seen.has(text)) continue;
+    seen.add(text);
+    out.push(text);
+  }
+  return out;
+}
+
+function pickRotating(items, maxItems, seed, bucket) {
+  const pool = dedupe(items);
+  if (!pool.length || maxItems <= 0) return [];
+  if (pool.length <= maxItems) return pool;
+
+  const start = stableHash(`${bucket}|${seed}`) % pool.length;
+  const picked = [];
+  for (let i = 0; i < pool.length && picked.length < maxItems; i += 1) {
+    picked.push(pool[(start + i) % pool.length]);
+  }
+  return picked;
 }
 
 /**
@@ -180,14 +364,20 @@ export function getScenarioHook(callType) {
  * Ontario EMS teaching errors and toward realistic, protocol-anchored content.
  * Mirrors the shape of buildDirectivePromptAddendum() from ontarioDirectiveRules.js.
  */
-export function buildScenarioHookAddendum(callType) {
+export function buildScenarioHookAddendum(callType, variationSeed = 0) {
   const hooks = getScenarioHook(callType);
   if (!hooks.length) return [];
 
   const lines = [];
+  const rotationSeed = `${String(callType || '').toLowerCase()}|${variationSeed}`;
 
   // -- Teaching error avoidance (highest value: directly steers model output) --
-  const allTeachingErrors = hooks.flatMap(({ hook }) => hook.commonTeachingErrors || []);
+  const allTeachingErrors = pickRotating(
+    hooks.flatMap(({ hook }) => hook.commonTeachingErrors || []),
+    6,
+    rotationSeed,
+    'teaching-errors'
+  );
   if (allTeachingErrors.length) {
     lines.push(
       'Avoid these known Ontario EMS teaching errors in teachersPoints, protocolNotes, caseProgression, and grsAnchors:'
@@ -198,7 +388,12 @@ export function buildScenarioHookAddendum(callType) {
   }
 
   // -- Protocol note hooks (supplement the directive addendum) --
-  const allProtocolHooks = hooks.flatMap(({ hook }) => hook.protocolNoteHooks || []);
+  const allProtocolHooks = pickRotating(
+    hooks.flatMap(({ hook }) => hook.protocolNoteHooks || []),
+    4,
+    rotationSeed,
+    'protocol-hooks'
+  );
   if (allProtocolHooks.length) {
     lines.push('Protocol note guidance:');
     for (const note of allProtocolHooks) {
@@ -207,8 +402,18 @@ export function buildScenarioHookAddendum(callType) {
   }
 
   // -- GRS hooks (steer per-domain anchor quality for this call family) --
-  const allGrsAssessment = hooks.flatMap(({ hook }) => hook.grsHooks?.assessment || []);
-  const allGrsDecision = hooks.flatMap(({ hook }) => hook.grsHooks?.decisionMaking || []);
+  const allGrsAssessment = pickRotating(
+    hooks.flatMap(({ hook }) => hook.grsHooks?.assessment || []),
+    4,
+    rotationSeed,
+    'grs-assessment'
+  );
+  const allGrsDecision = pickRotating(
+    hooks.flatMap(({ hook }) => hook.grsHooks?.decisionMaking || []),
+    4,
+    rotationSeed,
+    'grs-decision'
+  );
   if (allGrsAssessment.length || allGrsDecision.length) {
     lines.push('GRS patientAssessment anchors for this call family should reflect:');
     for (const item of allGrsAssessment) {
@@ -224,30 +429,70 @@ export function buildScenarioHookAddendum(callType) {
 
   // -- Clinical progression patterns (non-oxygen hooks only to avoid noise) --
   const clinicalHooks = hooks.filter(({ key }) => key !== 'oxygenTherapy');
-  for (const { hook } of clinicalHooks) {
-    const withTx = hook.progressionPatterns?.withProperTreatment || [];
-    const withoutTx = hook.progressionPatterns?.withoutProperTreatment || [];
+  const withTx = pickRotating(
+    clinicalHooks.flatMap(({ hook }) => hook.progressionPatterns?.withProperTreatment || []),
+    4,
+    rotationSeed,
+    'with-treatment'
+  );
+  const withoutTx = pickRotating(
+    clinicalHooks.flatMap(({ hook }) => hook.progressionPatterns?.withoutProperTreatment || []),
+    4,
+    rotationSeed,
+    'without-treatment'
+  );
 
-    if (withTx.length) {
-      lines.push('caseProgression.withProperTreatment should reflect:');
-      for (const item of withTx) lines.push(`- ${item}`);
-    }
-    if (withoutTx.length) {
-      lines.push('caseProgression.withoutProperTreatment should reflect:');
-      for (const item of withoutTx) lines.push(`- ${item}`);
-    }
+  if (withTx.length) {
+    lines.push('caseProgression.withProperTreatment should reflect:');
+    for (const item of withTx) lines.push(`- ${item}`);
+  }
+  if (withoutTx.length) {
+    lines.push('caseProgression.withoutProperTreatment should reflect:');
+    for (const item of withoutTx) lines.push(`- ${item}`);
+  }
 
-    // Patient / bystander language suggestions (advisory, not prescriptive)
-    const quotes = hook.patientQuotes || [];
-    const bystanderQuotes = hook.bystanderQuotes || [];
-    if (quotes.length) {
-      lines.push('Consider realistic patient language for this call type:');
-      for (const q of quotes) lines.push(`- "${q}"`);
-    }
-    if (bystanderQuotes.length) {
-      lines.push('Consider realistic bystander language:');
-      for (const q of bystanderQuotes) lines.push(`- "${q}"`);
-    }
+  const sceneContexts = pickRotating(
+    clinicalHooks.flatMap(({ hook }) => hook.sceneContexts || []),
+    4,
+    rotationSeed,
+    'scene-contexts'
+  );
+  if (sceneContexts.length) {
+    lines.push('Consider varied scene contexts for this call type:');
+    for (const scene of sceneContexts) lines.push(`- ${scene}`);
+  }
+
+  const physicalFindings = pickRotating(
+    clinicalHooks.flatMap(({ hook }) => hook.physicalFindings || []),
+    5,
+    rotationSeed,
+    'physical-findings'
+  );
+  if (physicalFindings.length) {
+    lines.push('Consider plausible physical exam and first-impression findings:');
+    for (const finding of physicalFindings) lines.push(`- ${finding}`);
+  }
+
+  // Patient / bystander language suggestions (advisory, not prescriptive)
+  const quotes = pickRotating(
+    clinicalHooks.flatMap(({ hook }) => hook.patientQuotes || []),
+    4,
+    rotationSeed,
+    'patient-quotes'
+  );
+  const bystanderQuotes = pickRotating(
+    clinicalHooks.flatMap(({ hook }) => hook.bystanderQuotes || []),
+    3,
+    rotationSeed,
+    'bystander-quotes'
+  );
+  if (quotes.length) {
+    lines.push('Consider realistic patient language for this call type:');
+    for (const q of quotes) lines.push(`- "${q}"`);
+  }
+  if (bystanderQuotes.length) {
+    lines.push('Consider realistic bystander language:');
+    for (const q of bystanderQuotes) lines.push(`- "${q}"`);
   }
 
   return lines;

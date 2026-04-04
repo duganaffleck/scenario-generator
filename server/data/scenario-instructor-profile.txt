@@ -282,8 +282,8 @@ Oxygen Administration:
 - Titrate oxygen appropriately rather than defaulting to blanket high-flow wording.
 
 Spinal Motion Restriction:
-- Apply SMR only when mechanism and findings support it.
-- Avoid automatic immobilization.
+- Apply SMR when Ontario criteria are met, not just when the mechanism looks dramatic.
+- Age over 65 with a history of a fall is an Ontario SMR trigger and should not be treated as a no-collar exception.
 - Teach the logic behind SMR decisions.
 
 Vital Signs:

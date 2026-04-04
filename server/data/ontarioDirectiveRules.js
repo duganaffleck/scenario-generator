@@ -121,6 +121,50 @@ export const ONTARIO_DIRECTIVE_RULES = {
     }
   },
 
+  spinalMotionRestriction: {
+    tags: ["trauma", "smr", "bls", "fall", "c-collar"],
+    appliesTo: {
+      scenarioTypes: ["Trauma"],
+      likelyChiefComplaints: [
+        "fall",
+        "head injury",
+        "neck pain",
+        "back pain",
+        "collision",
+        "mvc",
+        "blunt trauma"
+      ]
+    },
+    meta: {
+      source: ["bls"],
+      confidence: "high"
+    },
+    promptBlock: [
+      "Use Ontario BLS spinal motion restriction criteria accurately.",
+      "For trauma calls, selective SMR must follow Ontario criteria rather than generic low-risk trauma habits.",
+      "Age over 65 with a history of a fall is itself an Ontario SMR criterion and should not be dismissed because the mechanism seems minor.",
+      "If Ontario SMR criteria are met, apply cervical collar and SMR with stretcher-based transport rather than arguing SMR is unnecessary.",
+      "Do not use spinal boards for transport; use stretcher-based SMR and document the criteria met."
+    ],
+    treatmentRules: {
+      ageOver65WithFallRequiresSMR: true,
+      stretcherBasedTransport: true,
+      avoidSpinalBoardTransport: true
+    },
+    commonDriftErrors: [
+      "Treating geriatric falls as automatic no-SMR cases because the mechanism seems minor.",
+      "Using generic selective SMR wording without the Ontario age-over-65 fall criterion.",
+      "Implying a collar is unnecessary when Ontario SMR criteria are met."
+    ],
+    validationChecks: [
+      {
+        id: "smr-older-fall-criterion",
+        description: "Older-adult fall trauma scenarios should reflect that age over 65 with a fall is an Ontario SMR criterion.",
+        severity: "medium"
+      }
+    ]
+  },
+
   cardiacIschemia: {
     tags: ["cardiac", "ischemia", "ecg", "asa", "nitro"],
     appliesTo: {
@@ -537,6 +581,17 @@ export function selectDirectiveRuleSets({
     text.includes("bronchoconstriction"),
     text.includes("tight chest"),
     text.includes("tightness")
+  ]);
+
+  maybeAdd("spinalMotionRestriction", [
+    type === "Trauma",
+    text.includes("fall"),
+    text.includes("head injury"),
+    text.includes("neck pain"),
+    text.includes("back pain"),
+    text.includes("collision"),
+    text.includes("mvc"),
+    text.includes("blunt trauma")
   ]);
 
   maybeAdd("analgesia", [
