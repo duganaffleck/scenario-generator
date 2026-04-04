@@ -518,13 +518,17 @@ Writing rules:
 - Since backend domains are fixed, integrate resource use and technical execution where appropriate:
 - resource use should appear within situationalAwareness, decisionMaking, and communication anchors
 - procedural execution quality should appear within patientAssessment and decisionMaking anchors
-- Keep anchors sharp, practical, feedback-ready, and educational
-- Do not write narrative commentary instead of anchors
-- Do not explain the score label
-- Bullets only
-- Make anchors sound like comments an instructor could actually use during feedback
-- Avoid generic filler such as "good assessment" or "poor communication"
-- Tie errors and strengths to this specific call
+
+Psychological Safety and Education Standard (2026-04-04):
+All teaching points and feedback must avoid language implying punishment, blame, or negative judgment (e.g., "punish", "punishing", "punishment", "blame", "fault", "failure" as a personal flaw). Frame all feedback as learning, growth, or improvement opportunities, with education as the central focus, supporting a psychologically safe environment.
+
+Keep anchors sharp, practical, feedback-ready, and educational
+Do not write narrative commentary instead of anchors
+Do not explain the score label
+Bullets only
+Make anchors sound like comments an instructor could actually use during feedback
+Avoid generic filler such as "good assessment" or "poor communication"
+Tie errors and strengths to this specific call
 
 Example structure:
 "communication": {
