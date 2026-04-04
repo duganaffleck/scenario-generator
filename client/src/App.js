@@ -1,6 +1,6 @@
 import React from "react";
 import "./App.css";
-import ScenarioForm from "./components/ScenarioForm";
+import ScenarioForm from "./components/forms/ScenarioForm";
 
 function App() {
   return (

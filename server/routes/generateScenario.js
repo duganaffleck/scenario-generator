@@ -1,48 +1,10 @@
-import 'dotenv/config';
+
 import express from 'express';
-import OpenAI from 'openai';
-import fs from 'fs/promises';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import { jsonrepair } from 'jsonrepair';
-import { ONTARIO_DIRECTIVE_META } from '../data/ontarioDirectiveMeta';
-import { buildDirectivePromptAddendum } from '../data/ontarioDirectiveRules.js';
-import { buildScenarioHookAddendum, getScenarioHook } from '../data/ontarioScenarioHooks.js';
+import { generateScenario } from '../controllers/scenarioController.js';
 
 const router = express.Router();
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const OPENAI_MODEL = 'gpt-5.4';
-const DEFAULT_DIRECTIVE_SOURCES = [
-  'BLS PCS 3.4 (2023)',
-  'ALS PCS 5.4 (2025)',
-  'OBHG ALS PCS Companion v5.4 (2025)'
-];
-const OPENAI_TIMEOUT_MS = Number(process.env.OPENAI_TIMEOUT_MS || 180_000);
-const OPENAI_MAX_RETRIES = Number(process.env.OPENAI_MAX_RETRIES || 1);
-const CONTROL_REPAIR_MAX_ATTEMPTS = Math.max(1, Number(process.env.CONTROL_REPAIR_MAX_ATTEMPTS || 2));
-const FEW_SHOT_EXAMPLE_COUNT = Math.max(1, Number(process.env.FEW_SHOT_EXAMPLE_COUNT || 2));
-const IS_PRODUCTION = process.env.NODE_ENV === 'production';
-const ROUTE_BUILD_TAG = '2026-04-03-generation-quality-rubric-v1';
-const ALLOWED_SEMESTERS = ['2', '3', '4'];
-const ALLOWED_COMPLEXITIES = ['Simple', 'Moderate', 'Complex'];
-const ALLOWED_ENVIRONMENTS = ['Urban', 'Rural', 'Wilderness', 'Industrial', 'Home', 'Public Space'];
-const ALLOWED_SHIFT_MODES = ['Day Shift', 'Night Shift'];
-const RECENT_CUE_FINGERPRINT_WINDOW = 240;
-const RECENT_CUE_OPENING_WINDOW = 180;
-let recentCueFingerprints = [];
-let recentCueOpenings = [];
 
-const MEDIUM_REPAIR_TRIGGER_CODES = new Set([
-  'call-type-drift',
-  'complexity-drift',
-  'environment-drift',
-  'shift-drift',
-  'semester-2-medications',
-  'semester-2-too-complex',
-  'semester-4-not-layered-enough',
-  'custom-prompt-not-reflected'
-]);
+router.post('/', generateScenario);
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 

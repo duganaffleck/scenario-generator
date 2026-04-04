@@ -1,0 +1,18 @@
+// scenarioSchema.json
+// JSON Schema for validating scenario objects in few-shot-scenarios.json
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "id": { "type": "string" },
+    "title": { "type": "string" },
+    "semester": { "type": "string" },
+    "complexity": { "type": "string" },
+    "environment": { "type": "string" },
+    "shift": { "type": "string" },
+    "modifiers": { "type": "array", "items": { "type": "string" } },
+    "teachingCues": { "type": "array", "items": { "type": "string" } },
+    "vitals": { "type": "object" }
+  },
+  "required": ["id", "title", "semester", "complexity", "environment", "shift", "modifiers", "teachingCues", "vitals"]
+}

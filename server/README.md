@@ -2,6 +2,11 @@
 
 Build realistic, protocol-aligned simulation scenarios with instructor-grade teaching cues in minutes.
 
+## Documentation
+
+- See [API_DOCS.md](API_DOCS.md) for API and data schema documentation.
+- Scenario data schema: [data/scenarioSchema.json](data/scenarioSchema.json)
+
 ## Runtime Safety Note
 
 The few-shot audit tooling is optional and does not run during normal scenario generation.
