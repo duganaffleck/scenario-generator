@@ -114,7 +114,7 @@ const FIELD_TOOLTIPS = {
 const SECTION_GROUPS = {
   "Scene Info": ["scenarioIntro", "title", "callInformation", "incidentNarrative"],
   "Patient Info": ["patientDemographics", "patientPresentation", "opqrst", "sample"],
-  Assessment: ["physicalExam", "vitalSigns"],
+  Assessment: ["physicalExam", "vitalSigns", "secondaryAssessment"],
   "Clinical Reasoning": [
     "caseProgression",
     "differentialDiagnosis",
