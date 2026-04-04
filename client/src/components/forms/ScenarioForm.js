@@ -1544,7 +1544,7 @@ const ScenarioForm = () => {
                 <li>
                   <b>Set scenario parameters:</b>
                   <ul style={{marginTop: '0.5em', marginBottom: '0.5em'}}>
-                    <li><b>Semester:</b> Select the learner level. Lower semesters (2) generate foundational cases; higher semesters (4) create advanced, complex scenarios.</li>
+                    <li><b>Semester:</b> Select the learner level. Lower semesters (2) generate foundational cases <b>with no symptom relief</b>; higher semesters (3, 4) include symptom relief and create more advanced, complex scenarios.</li>
                     <li><b>Type:</b> Choose the main scenario category (Medical, Trauma, Cardiac, Respiratory, Environmental) to focus the case content.</li>
                     <li><b>Environment:</b> Pick the setting (Urban, Rural, Wilderness, Industrial, Home, Public Space) to shape the context and available resources.</li>
                     <li><b>Complexity:</b> Adjust the case difficulty. Simple = straightforward, Moderate = typical multi-system, Complex = rare or challenging presentations.</li>
