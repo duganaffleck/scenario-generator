@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import jsPDF from "jspdf";
-import { FaSpinner, FaFilePdf, FaLightbulb, FaMoon, FaSun } from "react-icons/fa";
+import { FaSpinner, FaFilePdf, FaLightbulb, FaMoon, FaSun, FaUndoAlt } from "react-icons/fa";
 
 const ecgImageMap = {
   "Normal Sinus Rhythm": "/ecg/NSR.jpg",
@@ -236,6 +236,14 @@ const ScenarioForm = () => {
   const shiftToggleTitle = isNightShift
     ? "Switch to Day Shift: brighter theme and daytime call flavor"
     : "Switch to Night Shift: dark theme and overnight call flavor";
+  const isFormModified = 
+    formData.semester !== "3" ||
+    formData.type !== "Medical" ||
+    formData.environment !== "Urban" ||
+    formData.complexity !== "Moderate" ||
+    formData.shiftMode !== "Day Shift" ||
+    formData.customPrompt !== "";
+  const canReset = scenario || isFormModified;
   const styles = buildStyles(isMobile);
 
   useEffect(() => {
@@ -491,6 +499,23 @@ const ScenarioForm = () => {
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
     }
+  };
+
+  const handleReset = () => {
+    setFormData({
+      semester: "3",
+      type: "Medical",
+      environment: "Urban",
+      complexity: "Moderate",
+      shiftMode: "Day Shift",
+      includeTeachingCues: UI_TEACHING_CUES_ENABLED,
+      customPrompt: "",
+    });
+    setScenario(null);
+    setSelectedECGImage(null);
+    setSelectedCue(null);
+    setCollapsedSections({});
+    setError("");
   };
 
   const handleSubmit = async () => {
@@ -1048,6 +1073,21 @@ const ScenarioForm = () => {
           >
             {isNightShift ? <FaSun aria-hidden="true" /> : <FaMoon aria-hidden="true" />}
             <span>{nextShiftModeLabel}</span>
+          </button>
+          <button
+            type="button"
+            onClick={handleReset}
+            style={{
+              ...styles.toggle,
+              opacity: canReset ? 1 : 0.6,
+              cursor: canReset ? "pointer" : "not-allowed"
+            }}
+            className="a11y-focus"
+            disabled={!canReset}
+            title="Reset all form fields and clear the current scenario"
+            aria-label="Reset all fields"
+          >
+            <FaUndoAlt /> Reset
           </button>
           <button
             onClick={exportToPDF}
