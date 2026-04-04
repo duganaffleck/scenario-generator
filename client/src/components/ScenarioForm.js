@@ -139,33 +139,69 @@ const ScenarioForm = () => {
   const [loading, setLoading] = useState(false);
   const abortControllerRef = useRef(null);
   const [jokeIndex, setJokeIndex] = useState(0);
+  const [dotCount, setDotCount] = useState(1);
 
   const loadingJokes = [
+    "Tip: Keep reassessment tight. Vitals can change faster than confidence.",
     "Consulting the medical textbook we definitely didn't just skim...",
     "Diagnosing the problem... it's probably not lupus.",
+    "Tip: If something feels off, trust your clinical gut and verify.",
     "Teaching the AI what a stethoscope is.",
     "Arguing with GPT about whether SpO2 of 94% counts as 'fine'.",
+    "Tip: Treat the patient, not just the monitor.",
     "Generating vitals. Patient is surprisingly stable for someone made of JSON.",
     "Checking if the patient remembered to take their meds. They didn't.",
+    "Tip: Scene management is patient care.",
     "Summoning a paramedic from the void...",
     "Running differential diagnoses. Top guess: anxiety. Second guess: more anxiety.",
     "The AI is currently on its coffee break. Please hold.",
+    "Tip: If your differential has one item, you probably need a wider net.",
     "Asking the patient if it hurts when they do that. They said 'only emotionally'.",
     "Calibrating vague abdominal pain to maximum ambiguity.",
+    "Tip: Repeat back critical findings to your partner before interventions.",
     "12-lead incoming. Please pretend you remember how to read it.",
     "Patient is alert and oriented x3, which is more than can be said for the dev.",
     "Inventing backstory. The patient definitely did not sign a waiver.",
+    "Tip: Good handoffs are concise, structured, and brutally clear.",
     "Consulting the on-call AI. It's also confused.",
     "Assigning teaching cues with unhelpful but confident energy.",
+    "Tip: Re-check ABCs after every major treatment step.",
     "Running vitals through the algorithm. It suggests more fluids.",
     "Asking the patient to rate their pain 1–10. They said 11. Classic.",
     "Checking SAMPLE history. The patient's allergies are listed as 'mornings'.",
+    "Tip: If the story and presentation do not match, dig deeper.",
     "Placing the patient in the position of comfort. They chose fetal.",
     "Administering oxygen because honestly, when in doubt.",
     "Trying to remember if 'GCS of 15' is good or bad. It's good. Probably.",
+    "Tip: Time of onset can be as diagnostic as any test.",
     "Scene safe? The AI said yes but it seemed nervous.",
     "Estimated time of arrival: soon-ish. Confidence interval: wide.",
     "Noting the patient has a pertinent negative attitude toward being assessed.",
+    "Tip: When in doubt, verbalize your plan out loud for your partner.",
+    "Consulting medical control. They put us on hold with jazz.",
+    "The stretcher is ready. The patient is emotionally not.",
+    "Tip: Confirm trends, not just single numbers.",
+    "Trying to get a blood pressure while the patient argues with the cuff.",
+    "Adding dramatic pause before revealing the next vital sign...",
+    "Tip: If treatment is not working, reassess before repeating it.",
+    "Requesting fire for lift assist. Again.",
+    "ECG printed. Interpreter confidence pending.",
+    "Tip: Closed-loop communication prevents open-loop chaos.",
+    "The AI would like to remind you to bring extra gloves.",
+    "Patient denies chest pain, then points directly at chest pain.",
+    "Tip: Prioritize threats first, perfection later.",
+    "Running scenario realism pass: adding one unhelpful bystander.",
+    "Dispatch says routine. The scene says absolutely not.",
+    "Tip: A calm tone can lower scene temperature fast.",
+    "Checking cap refill and our own life choices.",
+    "Transport decision matrix says: do not linger here.",
+    "Tip: If findings conflict, collect one more data point.",
+    "Reprinting paperwork because the printer sensed urgency.",
+    "Patient says they are fine. Family says otherwise.",
+    "Tip: Good documentation is patient care that lasts.",
+    "Setting up IV supplies. One item immediately vanishes.",
+    "Pulse is present, sarcasm stronger.",
+    "Tip: Reassess pain after intervention, not just before.",
   ];
 
   useEffect(() => {
@@ -176,6 +212,19 @@ const ScenarioForm = () => {
     }, 11000);
     return () => clearInterval(interval);
   // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading]);
+
+  useEffect(() => {
+    if (!loading) {
+      setDotCount(1);
+      return;
+    }
+
+    const dotsInterval = setInterval(() => {
+      setDotCount((prev) => (prev % 3) + 1);
+    }, 500);
+
+    return () => clearInterval(dotsInterval);
   }, [loading]);
   const [error, setError] = useState("");
   const [collapsedSections, setCollapsedSections] = useState({});
@@ -195,6 +244,25 @@ const ScenarioForm = () => {
       }
       .spin {
         animation: spin 1s linear infinite;
+      }
+
+      @keyframes loadingMessagePop {
+        0% {
+          opacity: 0;
+          transform: translateY(6px) scale(0.985);
+        }
+        65% {
+          opacity: 1;
+          transform: translateY(-1px) scale(1.006);
+        }
+        100% {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+
+      .loading-message-pop {
+        animation: loadingMessagePop 480ms ease;
       }
 
       .a11y-focus:focus-visible {
@@ -1080,7 +1148,9 @@ const ScenarioForm = () => {
         <div style={styles.loadingOverlay}>
           <div style={styles.loadingBox}>
             <FaSpinner className="spin" style={styles.loadingSpinner} />
-            <div style={styles.loadingTitle}>Generating Scenario...</div>
+            <div style={styles.loadingTitle}>
+              Generating Scenario<span style={{ display: "inline-block", minWidth: "1.7rem", textAlign: "left" }}>{".".repeat(dotCount)}</span>
+            </div>
             <div style={styles.loadingSubtext}>This will take a minute.</div>
             <div style={{ ...styles.loadingSubtext, marginTop: "0.4rem", fontSize: "0.8rem", color: "#94a3b8", textAlign: "center" }}>
               The AI is building your scenario, vitals, and teaching cues.<br />
@@ -1094,9 +1164,11 @@ const ScenarioForm = () => {
               fontStyle: "italic",
               textAlign: "center",
               maxWidth: "300px",
-              transition: "opacity 0.4s ease",
+              lineHeight: 1.35,
             }}>
-              {loadingJokes[jokeIndex]}
+              <div key={jokeIndex} className="loading-message-pop">
+                {loadingJokes[jokeIndex]}
+              </div>
             </div>
             <button
               onClick={handleCancel}
