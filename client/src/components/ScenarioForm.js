@@ -1415,7 +1415,8 @@ const buildStyles = (isMobile) => ({
     zIndex: 1000,
     border: "1px solid var(--vn-header-border)",
     borderLeft: "6px solid var(--vn-orange)",
-    overflow: "hidden",
+    overflowX: "auto",
+    overflowY: "hidden",
   },
 
   heading: {
@@ -1426,8 +1427,11 @@ const buildStyles = (isMobile) => ({
     letterSpacing: "0.01em",
     position: "relative",
     zIndex: 1,
-    flexShrink: 0,
+    flex: "1 1 auto",
+    minWidth: 0,
     whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
   },
 
   headerActionWrap: {
@@ -1437,8 +1441,10 @@ const buildStyles = (isMobile) => ({
     gap: "0.6rem",
     flexWrap: "nowrap",
     justifyContent: "flex-end",
+    flex: "0 0 auto",
     minWidth: 0,
-    overflow: "hidden",
+    overflowX: "auto",
+    overflowY: "hidden",
   },
 
   shiftToggle: {
