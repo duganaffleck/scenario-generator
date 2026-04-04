@@ -3,6 +3,78 @@ import axios from "axios";
 import jsPDF from "jspdf";
 import { FaSpinner, FaFilePdf, FaLightbulb, FaMoon, FaSun, FaUndoAlt } from "react-icons/fa";
 
+// Simple confetti effect (no external lib)
+function Confetti() {
+  const canvasRef = useRef(null);
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext("2d");
+    const W = window.innerWidth;
+    const H = window.innerHeight;
+    canvas.width = W;
+    canvas.height = H;
+    let confetti = Array.from({ length: 150 }, () => ({
+      x: Math.random() * W,
+      y: Math.random() * H - H,
+      r: Math.random() * 6 + 4,
+      d: Math.random() * 50 + 50,
+      color: `hsl(${Math.random() * 360}, 80%, 60%)`,
+      tilt: Math.random() * 10 - 10,
+      tiltAngle: 0,
+    }));
+    let angle = 0;
+    let animationFrame;
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      confetti.forEach(c => {
+        ctx.beginPath();
+        ctx.ellipse(c.x, c.y, c.r, c.r/2, c.tilt, 0, 2 * Math.PI);
+        ctx.fillStyle = c.color;
+        ctx.fill();
+      });
+      update();
+      animationFrame = requestAnimationFrame(draw);
+    }
+    function update() {
+      angle += 0.01;
+      confetti.forEach(c => {
+        c.y += (Math.cos(angle + c.d) + 1 + c.r / 2) * 1.2;
+        c.x += Math.sin(angle) * 2;
+        c.tiltAngle += 0.1;
+        c.tilt = Math.sin(c.tiltAngle) * 15;
+        if (c.y > H) {
+          c.x = Math.random() * W;
+          c.y = -10;
+        }
+      });
+    }
+    draw();
+    return () => cancelAnimationFrame(animationFrame);
+  }, []);
+  return (
+    <canvas ref={canvasRef} style={{position:'fixed',top:0,left:0,width:'100vw',height:'100vh',pointerEvents:'none',zIndex:30000}} />
+  );
+}
+
+function FlashOverlay({onEnd}) {
+  const [visible, setVisible] = useState(true);
+  useEffect(() => {
+    let flashes = 0;
+    const interval = setInterval(() => {
+      setVisible(v => !v);
+      flashes++;
+      if (flashes > 30) { // triple the flashes
+        clearInterval(interval);
+        onEnd && onEnd();
+      }
+    }, 150);
+    return () => clearInterval(interval);
+  }, [onEnd]);
+  return visible ? (
+    <div style={{position:'fixed',top:0,left:0,width:'100vw',height:'100vh',background:'rgba(255,255,0,0.4)',zIndex:29999,pointerEvents:'none'}} />
+  ) : null;
+}
+
 const ecgImageMap = {
   "Normal Sinus Rhythm": "/ecg/NSR.jpg",
   "Sinus Bradycardia": "/ecg/sinusbrad.jpeg",
@@ -143,6 +215,7 @@ const ScenarioForm = () => {
   });
 
   const [selectedECGImage, setSelectedECGImage] = useState(null);
+  const [birthdayMode, setBirthdayMode] = useState(false);
   const [scenario, setScenario] = useState(null);
   const [loading, setLoading] = useState(false);
   const abortControllerRef = useRef(null);
@@ -527,6 +600,11 @@ const ScenarioForm = () => {
   };
 
   const handleSubmit = async () => {
+    if (formData.customPrompt.trim() === "It's my birthday!") {
+      setBirthdayMode(true);
+      setTimeout(() => setBirthdayMode(false), 7500); // triple the time
+      return;
+    }
     setLoading(true);
     setError("");
     setScenario(null);
@@ -1063,6 +1141,15 @@ const ScenarioForm = () => {
 
   return (
     <div style={styles.container}>
+      {birthdayMode && (
+        <>
+          <Confetti />
+          <FlashOverlay onEnd={() => setBirthdayMode(false)} />
+          <div style={{position:'fixed',top:0,left:0,width:'100vw',height:'100vh',zIndex:30001,display:'flex',alignItems:'center',justifyContent:'center',pointerEvents:'none'}}>
+            <div style={{fontSize:'3rem',fontWeight:'bold',color:'#d72660',textShadow:'2px 2px 8px #fff, 0 0 20px #d72660',background:'rgba(255,255,255,0.85)',padding:'2rem 3rem',borderRadius:'2rem',boxShadow:'0 0 40px #d72660'}}>🎉 Happy Birthday! 🎉</div>
+          </div>
+        </>
+      )}
       <div style={styles.headerBar}>
         <h1 style={styles.heading}>Scenario Generator 1.0</h1>
         <div style={styles.headerActionWrap}>

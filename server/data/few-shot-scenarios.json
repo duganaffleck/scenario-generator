@@ -1,3 +1,1305 @@
+          ,
+          {
+            "title": "Night Shift: Acute Psychosis in Young Adult",
+            "generationMetadata": {"semester": "4", "complexity": "Complex", "callType": "Mental Health", "environment": "Home", "hasMeds": false, "vitalSetCount": 3, "cueDensity": 0},
+            "scenarioIntro": "A 22-year-old male is found by family acting paranoid, hallucinating, and refusing care at 02:00. Crew must manage safety, de-escalation, and transport, following Ontario mental health protocol.",
+            "callInformation": {"type": "Mental Health", "location": "Family home", "time": "02:00", "dispatchNotes": "Young male, hallucinating, refusing care", "hazardsOrFlags": "Paranoid, unpredictable, family present", "crewNotes": "Night shift psychosis. Prioritize safety, de-escalation, and mental health assessment.", "environment": "Home", "ecgInterpretation": "Sinus Tachycardia"},
+            "incidentNarrative": "Crew arrives to find a 22-year-old pacing, talking to unseen people, and refusing to let anyone approach. Family is anxious and frightened.",
+            "patientPresentation": "Standing, agitated, talking to self, suspicious, avoids eye contact.",
+            "patientDemographics": {"age": 22, "sex": "Male", "weight": "70 kg", "appearance": "Agitated, paranoid, disheveled", "chiefComplaint": "Hallucinations, paranoia"},
+            "sceneArrival": {"sceneEnergy": "Tense, unpredictable, family present"},
+            "firstImpression": {"initialRedFlags": ["Paranoia", "Hallucinations", "Refusal of care", "Nighttime presentation"]},
+            "initialAssessment": {"immediatePriorities": ["Scene safety", "De-escalation", "Mental health assessment", "Transport if possible"]},
+            "historyGathering": {"sceneContextClues": ["No known drug use", "Recent stressors", "No prior history"]},
+            "secondaryAssessment": {"evolvingFindings": ["Agitation worsens if confronted; risk of violence"]},
+            "additionalAssessments": ["Monitor for self-harm", "Assess for medical causes"],
+            "transportPhase": {"handoffConsiderations": "Communicate mental status, safety concerns, and family input."},
+            "opqrst": {"onset": "Gradual over 2 days", "provocation": "Unknown, possible stress", "quality": "Paranoia, hallucinations", "radiation": "N/A", "severity": "Severe", "time": "Acute nighttime event"},
+            "sample": {"signsAndSymptoms": "Paranoia, hallucinations, agitation", "allergies": "None known", "medications": "None", "pastMedicalHistory": "No prior mental health diagnosis", "lastOralIntake": "Dinner", "eventsLeadingUp": "Recent stress, then gradual change"},
+            "medications": [],
+            "allergies": [],
+            "pastMedicalHistory": [],
+            "physicalExam": {"airway": "Patent", "breathing": "Tachypneic", "circulation": "Tachycardic", "neuro": "Alert, agitated", "skin": "Warm, diaphoretic"},
+            "vitalSigns": {"HR": 110, "RR": 22, "BP": "128/78", "SpO2": 98, "Temp": 36.8, "GCS": 15, "Bgl": 5.2},
+            "caseProgression": {"withProperTreatment": "Patient de-escalated, agrees to transport, no violence.", "withoutProperTreatment": "Agitation escalates, risk of harm to self/others.", "withIncorrectTreatment": "If confronted or restrained, violence or elopement occurs."},
+            "expectedTreatment": ["Scene safety", "De-escalation", "Mental health assessment", "Transport to hospital"],
+            "protocolNotes": ["Ontario BLS/ALS PCS mental health protocol: Scene safety, de-escalation, transport if possible.", "Night shift calls may have increased agitation and unpredictability."],
+            "teachersPoints": "Acute psychosis requires calm de-escalation, scene safety, and mental health assessment.",
+            "clinicalReasoning": "This patient is experiencing acute psychosis. Early de-escalation and protocol-driven care are critical.",
+            "scenarioRationale": "Teaches psychosis management, de-escalation, and scene safety.",
+            "learningObjectives": ["Recognize acute psychosis", "Prioritize scene safety and de-escalation", "Communicate with anxious family", "Escalate care per protocol"],
+            "selfReflectionPrompts": ["How did you ensure scene safety?", "What clues pointed to psychosis?", "How did you de-escalate the situation?", "What would you do differently if agitation escalated?"],
+            "grsAnchors": {"situationalAwareness": {"3": ["Recognizes agitation but underestimates violence risk.", "Misses family anxiety as a factor.", "Delays de-escalation."], "5": ["Identifies psychosis and safety risk.", "Maintains calm, manages family, and plans for escalation.", "Balances scene control with clinical care."], "7": ["Anticipates rapid escalation and leads a coordinated de-escalation response.", "Integrates scene, physiologic, and social factors.", "Maintains high awareness of subtle changes and adjusts care dynamically."]}, "historyGathering": {"3": ["Obtains only a partial story from family.", "Misses timeline and prior stressors.", "Relies on patient for answers despite paranoia."], "5": ["Uses family to clarify timeline, symptoms, and prior health.", "Confirms no drug use and identifies gradual onset.", "Integrates collateral history into risk assessment."], "7": ["Extracts a concise, high-value timeline despite scene stress.", "Uses family support efficiently to clarify risk and guide care.", "Integrates history directly into mental health and transport decisions."]}, "patientAssessment": {"3": ["Performs a basic assessment but incompletely trends agitation and risk status.", "Misses the significance of hallucinations as a red flag.", "Reassessment is inconsistent."], "5": ["Performs structured mental health and risk assessment.", "Uses serial reassessment to track improvement or worsening.", "Recognizes hallucinations as a warning sign and escalates care."], "7": ["Builds a coherent assessment from mental health, risk, and scene context.", "Detects subtle changes early and adjusts plan proactively.", "Maintains high-quality reassessment cadence."]}, "decisionMaking": {"3": ["Removes family from room but delays de-escalation.", "Anchors on drug use as cause rather than psychosis.", "Transport decision is delayed or not adjusted after persistent agitation."], "5": ["Keeps scene safe, initiates de-escalation, and plans for escalation.", "Plans rapid transport and keeps family informed.", "Adjusts care plan based on reassessment."], "7": ["Executes a decisive, well-sequenced plan prioritizing de-escalation, safety, and transport.", "Anticipates escalation and prepares for escalation before instability occurs.", "Leads team and family in a coordinated, high-quality response."]}, "communication": {"3": ["Provides basic updates but does not clearly explain urgency to family.", "Role allocation during management is inconsistent.", "Handoff omits key mental health and trend details."], "5": ["Communicates clearly with family about mental health, de-escalation, and transport plan.", "Keeps family informed and calm.", "Delivers organized handoff with timeline, mental health, and response."], "7": ["Uses calm, directive communication to coordinate care in a stressful night setting.", "Maintains closed-loop communication across all phases.", "Provides a concise, high-value handoff for mental health management."]}},
+            "directiveSources": ["BLS PCS 3.4 (2023)", "ALS PCS 5.4 (2025)", "OBHG ALS PCS Companion v5.4 (2025)"]
+          },
+          {
+            "title": "Night Shift: Suicidal Ideation in Middle-Aged Female",
+            "generationMetadata": {"semester": "4", "complexity": "Complex", "callType": "Mental Health", "environment": "Home", "hasMeds": false, "vitalSetCount": 3, "cueDensity": 0},
+            "scenarioIntro": "A 45-year-old female is found by family expressing suicidal thoughts and holding pills at 03:00. Crew must manage safety, risk assessment, and compassionate communication, following Ontario mental health protocol.",
+            "callInformation": {"type": "Mental Health", "location": "Home bedroom", "time": "03:00", "dispatchNotes": "Female, suicidal, holding pills, family present", "hazardsOrFlags": "Potential overdose, emotional family", "crewNotes": "Night shift suicide risk. Prioritize safety, risk assessment, and mental health support.", "environment": "Home", "ecgInterpretation": "Sinus Tachycardia"},
+            "incidentNarrative": "Crew arrives to find a 45-year-old woman sitting on her bed, crying, holding a bottle of pills. Family is present and distressed.",
+            "patientPresentation": "Sitting, tearful, withdrawn, avoids eye contact, slow to respond.",
+            "patientDemographics": {"age": 45, "sex": "Female", "weight": "68 kg", "appearance": "Tearful, withdrawn, anxious", "chiefComplaint": "Suicidal thoughts, holding pills"},
+            "sceneArrival": {"sceneEnergy": "Emotional, tense, family present"},
+            "firstImpression": {"initialRedFlags": ["Suicidal ideation", "Potential overdose", "Emotional distress", "Nighttime presentation"]},
+            "initialAssessment": {"immediatePriorities": ["Scene safety", "Remove means of self-harm", "Risk assessment", "Compassionate communication"]},
+            "historyGathering": {"sceneContextClues": ["Recent loss", "No prior attempts", "No substance use"]},
+            "secondaryAssessment": {"evolvingFindings": ["Distress worsens if not supported; risk of overdose"]},
+            "additionalAssessments": ["Monitor for overdose", "Assess for medical causes"],
+            "transportPhase": {"handoffConsiderations": "Communicate risk, means removed, and family support."},
+            "opqrst": {"onset": "Gradual over 1 week", "provocation": "Recent loss", "quality": "Hopelessness, sadness", "radiation": "N/A", "severity": "Severe", "time": "Acute nighttime event"},
+            "sample": {"signsAndSymptoms": "Hopelessness, sadness, holding pills", "allergies": "None known", "medications": "Sertraline", "pastMedicalHistory": "Depression", "lastOralIntake": "Dinner", "eventsLeadingUp": "Recent loss, then increasing distress"},
+            "medications": ["Sertraline"],
+            "allergies": [],
+            "pastMedicalHistory": ["Depression"],
+            "physicalExam": {"airway": "Patent", "breathing": "Normal", "circulation": "Normal", "neuro": "Withdrawn, slow to respond", "skin": "Warm, dry"},
+            "vitalSigns": {"HR": 88, "RR": 16, "BP": "120/74", "SpO2": 99, "Temp": 36.6, "GCS": 15, "Bgl": 5.0},
+            "caseProgression": {"withProperTreatment": "Means removed, patient supported, agrees to transport, no overdose.", "withoutProperTreatment": "Distress escalates, risk of overdose or self-harm.", "withIncorrectTreatment": "If not supported or left alone, overdose may occur."},
+            "expectedTreatment": ["Scene safety", "Remove means of self-harm", "Risk assessment", "Transport to hospital"],
+            "protocolNotes": ["Ontario BLS/ALS PCS mental health protocol: Scene safety, risk assessment, compassionate support, transport if possible.", "Night shift calls may have increased emotional distress."],
+            "teachersPoints": "Suicidal ideation requires risk assessment, means removal, and compassionate support.",
+            "clinicalReasoning": "This patient is experiencing acute suicidal ideation. Early risk assessment and protocol-driven care are critical.",
+            "scenarioRationale": "Teaches suicide risk management, means removal, and family support.",
+            "learningObjectives": ["Recognize suicidal ideation", "Prioritize scene safety and means removal", "Communicate with distressed family", "Escalate care per protocol"],
+            "selfReflectionPrompts": ["How did you ensure safety and support?", "What clues pointed to suicide risk?", "How did you communicate with family?", "What would you do differently if risk escalated?"],
+            "grsAnchors": {"situationalAwareness": {"3": ["Recognizes distress but underestimates suicide risk.", "Misses family distress as a factor.", "Delays means removal."], "5": ["Identifies suicide risk and safety need.", "Maintains calm, manages family, and plans for escalation.", "Balances scene control with clinical care."], "7": ["Anticipates rapid escalation and leads a coordinated risk management response.", "Integrates scene, emotional, and social factors.", "Maintains high awareness of subtle changes and adjusts care dynamically."]}, "historyGathering": {"3": ["Obtains only a partial story from family.", "Misses timeline and prior mental health history.", "Relies on patient for answers despite distress."], "5": ["Uses family to clarify timeline, symptoms, and prior health.", "Confirms no substance use and identifies gradual onset.", "Integrates collateral history into risk assessment."], "7": ["Extracts a concise, high-value timeline despite scene stress.", "Uses family support efficiently to clarify risk and guide care.", "Integrates history directly into mental health and transport decisions."]}, "patientAssessment": {"3": ["Performs a basic assessment but incompletely trends distress and risk status.", "Misses the significance of means as a red flag.", "Reassessment is inconsistent."], "5": ["Performs structured mental health and risk assessment.", "Uses serial reassessment to track improvement or worsening.", "Recognizes means as a warning sign and escalates care."], "7": ["Builds a coherent assessment from mental health, risk, and scene context.", "Detects subtle changes early and adjusts plan proactively.", "Maintains high-quality reassessment cadence."]}, "decisionMaking": {"3": ["Removes family from room but delays means removal.", "Anchors on sadness as benign rather than suicide risk.", "Transport decision is delayed or not adjusted after persistent distress."], "5": ["Keeps scene safe, initiates means removal, and plans for escalation.", "Plans rapid transport and keeps family informed.", "Adjusts care plan based on reassessment."], "7": ["Executes a decisive, well-sequenced plan prioritizing means removal, safety, and transport.", "Anticipates escalation and prepares for escalation before instability occurs.", "Leads team and family in a coordinated, high-quality response."]}, "communication": {"3": ["Provides basic updates but does not clearly explain urgency to family.", "Role allocation during management is inconsistent.", "Handoff omits key risk and trend details."], "5": ["Communicates clearly with family about risk, means removal, and transport plan.", "Keeps family informed and calm.", "Delivers organized handoff with timeline, risk, and response."], "7": ["Uses calm, directive communication to coordinate care in a stressful night setting.", "Maintains closed-loop communication across all phases.", "Provides a concise, high-value handoff for suicide risk management."]}},
+            "directiveSources": ["BLS PCS 3.4 (2023)", "ALS PCS 5.4 (2025)", "OBHG ALS PCS Companion v5.4 (2025)"]
+          },
+          {
+            "title": "Night Shift: Violent/Agitated Patient in Police Custody",
+            "generationMetadata": {"semester": "4", "complexity": "Complex", "callType": "Mental Health", "environment": "Public Place", "hasMeds": false, "vitalSetCount": 3, "cueDensity": 0},
+            "scenarioIntro": "A 34-year-old male is restrained by police after violent behavior at a bar at 01:00. Crew must manage safety, agitation, and medical assessment, following Ontario mental health and excited delirium protocol.",
+            "callInformation": {"type": "Mental Health", "location": "Bar parking lot", "time": "01:00", "dispatchNotes": "Male, violent, restrained by police", "hazardsOrFlags": "Police, crowd, unpredictable behavior", "crewNotes": "Night shift agitation. Prioritize safety, excited delirium assessment, and medical clearance.", "environment": "Public Place", "ecgInterpretation": "Sinus Tachycardia"},
+            "incidentNarrative": "Crew arrives to a bar parking lot where police have restrained a 34-year-old male after a violent outburst. The patient is shouting, sweating, and struggling against restraints.",
+            "patientPresentation": "Supine, restrained, agitated, diaphoretic, tachypneic, shouting incoherently.",
+            "patientDemographics": {"age": 34, "sex": "Male", "weight": "92 kg", "appearance": "Agitated, diaphoretic, strong", "chiefComplaint": "Violent behavior, police restraint"},
+            "sceneArrival": {"sceneEnergy": "Chaotic, police and crowd present"},
+            "firstImpression": {"initialRedFlags": ["Violence", "Restraint", "Excited delirium", "Nighttime presentation"]},
+            "initialAssessment": {"immediatePriorities": ["Scene safety", "Excited delirium assessment", "Medical clearance", "Monitor for arrest"]},
+            "historyGathering": {"sceneContextClues": ["Alcohol use", "No known drug use", "No prior history"]},
+            "secondaryAssessment": {"evolvingFindings": ["Agitation worsens if not calmed; risk of sudden cardiac arrest"]},
+            "additionalAssessments": ["Monitor for hyperthermia", "Assess for trauma or drug use"],
+            "transportPhase": {"handoffConsiderations": "Communicate restraint, agitation, and police involvement."},
+            "opqrst": {"onset": "Sudden at bar", "provocation": "Alcohol, unknown", "quality": "Violence, agitation", "radiation": "N/A", "severity": "Severe", "time": "Acute nighttime event"},
+            "sample": {"signsAndSymptoms": "Violence, agitation, sweating", "allergies": "None known", "medications": "None", "pastMedicalHistory": "No prior mental health diagnosis", "lastOralIntake": "Alcohol", "eventsLeadingUp": "Bar fight, then restraint"},
+            "medications": [],
+            "allergies": [],
+            "pastMedicalHistory": [],
+            "physicalExam": {"airway": "Patent", "breathing": "Tachypneic", "circulation": "Tachycardic, strong pulse", "neuro": "Agitated, GCS 14", "skin": "Hot, diaphoretic"},
+            "vitalSigns": {"HR": 142, "RR": 28, "BP": "148/88", "SpO2": 97, "Temp": 38.9, "GCS": 14, "Bgl": 6.2},
+            "caseProgression": {"withProperTreatment": "Agitation calmed, medical clearance, safe transport.", "withoutProperTreatment": "Agitation escalates, risk of sudden cardiac arrest.", "withIncorrectTreatment": "If not monitored, hyperthermia or arrest occurs."},
+            "expectedTreatment": ["Scene safety", "Excited delirium assessment", "Medical clearance", "Transport to hospital"],
+            "protocolNotes": ["Ontario BLS/ALS PCS excited delirium protocol: Scene safety, medical clearance, monitor for arrest.", "Night shift calls may have increased agitation and crowd hazards."],
+            "teachersPoints": "Violent/agitated patients require safety, excited delirium assessment, and medical clearance.",
+            "clinicalReasoning": "This patient is experiencing excited delirium. Early assessment and protocol-driven care are critical.",
+            "scenarioRationale": "Teaches agitation management, excited delirium, and police coordination.",
+            "learningObjectives": ["Recognize excited delirium", "Prioritize scene safety and medical clearance", "Communicate with police and crowd", "Monitor for arrest"],
+            "selfReflectionPrompts": ["How did you ensure safety and medical clearance?", "What clues pointed to excited delirium?", "How did you communicate with police?", "What would you do differently if arrest occurred?"],
+            "grsAnchors": {"situationalAwareness": {"3": ["Recognizes agitation but underestimates arrest risk.", "Misses police/crowd as factors.", "Delays medical clearance."], "5": ["Identifies excited delirium and safety risk.", "Maintains calm, manages police/crowd, and plans for escalation.", "Balances scene control with clinical care."], "7": ["Anticipates rapid escalation and leads a coordinated delirium response.", "Integrates scene, physiologic, and social factors.", "Maintains high awareness of subtle changes and adjusts care dynamically."]}, "historyGathering": {"3": ["Obtains only a partial story from police.", "Misses timeline and prior substance use.", "Relies on patient for answers despite agitation."], "5": ["Uses police to clarify timeline, symptoms, and prior health.", "Confirms alcohol use and identifies sudden onset.", "Integrates collateral history into risk assessment."], "7": ["Extracts a concise, high-value timeline despite scene stress.", "Uses police support efficiently to clarify risk and guide care.", "Integrates history directly into delirium and transport decisions."]}, "patientAssessment": {"3": ["Performs a basic assessment but incompletely trends agitation and risk status.", "Misses the significance of hyperthermia as a red flag.", "Reassessment is inconsistent."], "5": ["Performs structured delirium and risk assessment.", "Uses serial reassessment to track improvement or worsening.", "Recognizes hyperthermia as a warning sign and escalates care."], "7": ["Builds a coherent assessment from delirium, risk, and scene context.", "Detects subtle changes early and adjusts plan proactively.", "Maintains high-quality reassessment cadence."]}, "decisionMaking": {"3": ["Removes patient from crowd but delays delirium assessment.", "Anchors on alcohol as sole cause rather than delirium.", "Transport decision is delayed or not adjusted after persistent agitation."], "5": ["Keeps scene safe, initiates delirium assessment, and plans for escalation.", "Plans rapid transport and keeps police informed.", "Adjusts care plan based on reassessment."], "7": ["Executes a decisive, well-sequenced plan prioritizing delirium, safety, and transport.", "Anticipates escalation and prepares for escalation before instability occurs.", "Leads team and police in a coordinated, high-quality response."]}, "communication": {"3": ["Provides basic updates but does not clearly explain urgency to police/crowd.", "Role allocation during management is inconsistent.", "Handoff omits key delirium and trend details."], "5": ["Communicates clearly with police/crowd about delirium, medical clearance, and transport plan.", "Keeps police/crowd informed and calm.", "Delivers organized handoff with timeline, delirium, and response."], "7": ["Uses calm, directive communication to coordinate care in a stressful night setting.", "Maintains closed-loop communication across all phases.", "Provides a concise, high-value handoff for delirium management."]}},
+            "directiveSources": ["BLS PCS 3.4 (2023)", "ALS PCS 5.4 (2025)", "OBHG ALS PCS Companion v5.4 (2025)"]
+          },
+          {
+            "title": "Night Shift: Patient with Language Barrier at Shelter",
+            "generationMetadata": {"semester": "4", "complexity": "Complex", "callType": "Special Population", "environment": "Shelter", "hasMeds": false, "vitalSetCount": 3, "cueDensity": 0},
+            "scenarioIntro": "A 38-year-old male at a shelter is found confused and unable to communicate in English at 23:30. Crew must manage assessment, communication, and cultural sensitivity, following Ontario protocol.",
+            "callInformation": {"type": "Special Population", "location": "Shelter", "time": "23:30", "dispatchNotes": "Male, confused, language barrier", "hazardsOrFlags": "Crowded, unfamiliar, anxious residents", "crewNotes": "Night shift language barrier. Prioritize assessment, communication aids, and cultural sensitivity.", "environment": "Shelter", "ecgInterpretation": "Sinus Tachycardia"},
+            "incidentNarrative": "Crew arrives to a crowded shelter where a 38-year-old man is confused and unable to answer questions in English. Other residents attempt to help translate.",
+            "patientPresentation": "Sitting, confused, gesturing, unable to speak English, anxious.",
+            "patientDemographics": {"age": 38, "sex": "Male", "weight": "74 kg", "appearance": "Confused, anxious, language barrier", "chiefComplaint": "Confusion, unable to communicate"},
+            "sceneArrival": {"sceneEnergy": "Chaotic, crowded, unfamiliar"},
+            "firstImpression": {"initialRedFlags": ["Confusion", "Language barrier", "Crowded environment", "Nighttime presentation"]},
+            "initialAssessment": {"immediatePriorities": ["Assessment", "Communication aids", "Cultural sensitivity", "Transport if needed"]},
+            "historyGathering": {"sceneContextClues": ["No ID", "No known medical history", "Other residents attempt to help"]},
+            "secondaryAssessment": {"evolvingFindings": ["Confusion worsens if not understood; risk of missed diagnosis"]},
+            "additionalAssessments": ["Monitor for medical causes", "Assess for trauma or intoxication"],
+            "transportPhase": {"handoffConsiderations": "Communicate language barrier, assessment findings, and translation attempts."},
+            "opqrst": {"onset": "Unknown, found confused", "provocation": "Unknown", "quality": "Confusion, language barrier", "radiation": "N/A", "severity": "Moderate", "time": "Acute nighttime event"},
+            "sample": {"signsAndSymptoms": "Confusion, unable to communicate", "allergies": "Unknown", "medications": "Unknown", "pastMedicalHistory": "Unknown", "lastOralIntake": "Unknown", "eventsLeadingUp": "Found confused at shelter"},
+            "medications": [],
+            "allergies": [],
+            "pastMedicalHistory": [],
+            "physicalExam": {"airway": "Patent", "breathing": "Normal", "circulation": "Normal", "neuro": "Confused, GCS 14", "skin": "Warm, dry"},
+            "vitalSigns": {"HR": 92, "RR": 18, "BP": "124/76", "SpO2": 98, "Temp": 36.7, "GCS": 14, "Bgl": 5.6},
+            "caseProgression": {"withProperTreatment": "Assessment completed, translation aids used, safe transport.", "withoutProperTreatment": "Confusion persists, risk of missed diagnosis or harm.", "withIncorrectTreatment": "If not understood, patient may elope or deteriorate."},
+            "expectedTreatment": ["Assessment", "Use of translation aids", "Cultural sensitivity", "Transport if needed"],
+            "protocolNotes": ["Ontario BLS/ALS PCS special population protocol: Assessment, communication aids, cultural sensitivity, transport if needed.", "Night shift calls may have increased communication barriers."],
+            "teachersPoints": "Language barriers require creative communication, cultural sensitivity, and thorough assessment.",
+            "clinicalReasoning": "This patient is experiencing confusion with a language barrier. Early assessment and communication are critical.",
+            "scenarioRationale": "Teaches assessment and communication with language barriers in special populations.",
+            "learningObjectives": ["Recognize language barrier and confusion", "Use translation aids and cultural sensitivity", "Communicate with unfamiliar populations", "Escalate care per protocol"],
+            "selfReflectionPrompts": ["How did you assess and communicate?", "What clues pointed to medical vs. social causes?", "How did you use translation aids?", "What would you do differently if confusion persisted?"],
+            "grsAnchors": {"situationalAwareness": {"3": ["Recognizes confusion but underestimates language barrier risk.", "Misses crowd as a factor.", "Delays use of translation aids."], "5": ["Identifies language barrier and assessment need.", "Maintains calm, manages crowd, and plans for escalation.", "Balances scene control with clinical care."], "7": ["Anticipates communication challenges and leads a coordinated assessment response.", "Integrates scene, social, and cultural factors.", "Maintains high awareness of subtle changes and adjusts care dynamically."]}, "historyGathering": {"3": ["Obtains only a partial story from residents.", "Misses timeline and prior health details.", "Relies on patient for answers despite barrier."], "5": ["Uses residents to clarify timeline, symptoms, and prior health.", "Confirms no ID and identifies confusion.", "Integrates collateral history into risk assessment."], "7": ["Extracts a concise, high-value timeline despite scene stress.", "Uses resident support efficiently to clarify risk and guide care.", "Integrates history directly into assessment and transport decisions."]}, "patientAssessment": {"3": ["Performs a basic assessment but incompletely trends confusion and risk status.", "Misses the significance of language barrier as a red flag.", "Reassessment is inconsistent."], "5": ["Performs structured assessment including communication aids.", "Uses serial reassessment to track improvement or worsening.", "Recognizes language barrier as a warning sign and escalates care."], "7": ["Builds a coherent assessment from confusion, communication, and scene context.", "Detects subtle changes early and adjusts plan proactively.", "Maintains high-quality reassessment cadence."]}, "decisionMaking": {"3": ["Removes patient from crowd but delays assessment.", "Anchors on confusion as benign rather than risk.", "Transport decision is delayed or not adjusted after persistent confusion."], "5": ["Keeps assessment ongoing, initiates translation aids, and plans for escalation.", "Plans rapid transport and keeps residents informed.", "Adjusts care plan based on reassessment."], "7": ["Executes a decisive, well-sequenced plan prioritizing assessment, communication, and transport.", "Anticipates escalation and prepares for escalation before instability occurs.", "Leads team and residents in a coordinated, high-quality response."]}, "communication": {"3": ["Provides basic updates but does not clearly explain urgency to residents.", "Role allocation during management is inconsistent.", "Handoff omits key assessment and trend details."], "5": ["Communicates clearly with residents about assessment, translation aids, and transport plan.", "Keeps residents informed and calm.", "Delivers organized handoff with timeline, assessment, and response."], "7": ["Uses calm, directive communication to coordinate care in a stressful night setting.", "Maintains closed-loop communication across all phases.", "Provides a concise, high-value handoff for special population management."]}},
+            "directiveSources": ["BLS PCS 3.4 (2023)", "ALS PCS 5.4 (2025)", "OBHG ALS PCS Companion v5.4 (2025)"]
+          },
+          {
+            "title": "Night Shift: Patient with Physical Disability in Apartment Fire Evacuation",
+            "generationMetadata": {"semester": "4", "complexity": "Complex", "callType": "Special Population", "environment": "Public Place", "hasMeds": false, "vitalSetCount": 3, "cueDensity": 0},
+            "scenarioIntro": "A 56-year-old female with paraplegia is trapped on the third floor during an apartment fire evacuation at 00:30. Crew must manage extrication, respiratory risk, and communication, following Ontario protocol.",
+            "callInformation": {"type": "Special Population", "location": "Apartment building", "time": "00:30", "dispatchNotes": "Female, paraplegic, trapped, fire evacuation", "hazardsOrFlags": "Smoke, stairs, crowd, limited mobility", "crewNotes": "Night shift disability. Prioritize extrication, respiratory assessment, and communication.", "environment": "Public Place", "ecgInterpretation": "Sinus Tachycardia"},
+            "incidentNarrative": "Crew arrives to a smoky apartment building where a 56-year-old woman with paraplegia is trapped on the third floor. Firefighters are evacuating other residents.",
+            "patientPresentation": "Sitting in wheelchair, anxious, coughing, unable to self-evacuate, mild wheezing.",
+            "patientDemographics": {"age": 56, "sex": "Female", "weight": "82 kg", "appearance": "Anxious, coughing, limited mobility", "chiefComplaint": "Trapped during fire evacuation"},
+            "sceneArrival": {"sceneEnergy": "Chaotic, smoky, crowded"},
+            "firstImpression": {"initialRedFlags": ["Limited mobility", "Smoke inhalation", "Trapped", "Nighttime presentation"]},
+            "initialAssessment": {"immediatePriorities": ["Extrication", "Respiratory assessment", "Communication", "Transport if needed"]},
+            "historyGathering": {"sceneContextClues": ["Paraplegia", "No prior respiratory issues", "No family present"]},
+            "secondaryAssessment": {"evolvingFindings": ["Cough worsens if not extricated; risk of smoke inhalation injury"]},
+            "additionalAssessments": ["Monitor for respiratory distress", "Assess for burns or trauma"],
+            "transportPhase": {"handoffConsiderations": "Communicate disability, extrication method, and respiratory findings."},
+            "opqrst": {"onset": "During fire evacuation", "provocation": "Smoke inhalation", "quality": "Cough, anxiety, limited mobility", "radiation": "N/A", "severity": "Moderate", "time": "Acute nighttime event"},
+            "sample": {"signsAndSymptoms": "Cough, anxiety, limited mobility", "allergies": "None known", "medications": "None", "pastMedicalHistory": "Paraplegia", "lastOralIntake": "Dinner", "eventsLeadingUp": "Fire alarm, unable to self-evacuate"},
+            "medications": [],
+            "allergies": [],
+            "pastMedicalHistory": ["Paraplegia"],
+            "physicalExam": {"airway": "Patent", "breathing": "Mild wheezing, coughing", "circulation": "Normal", "neuro": "Alert, anxious", "skin": "Warm, dry"},
+            "vitalSigns": {"HR": 98, "RR": 20, "BP": "126/80", "SpO2": 95, "Temp": 36.5, "GCS": 15, "Bgl": 5.4},
+            "caseProgression": {"withProperTreatment": "Extrication completed, respiratory status monitored, safe transport.", "withoutProperTreatment": "Cough worsens, risk of smoke inhalation injury.", "withIncorrectTreatment": "If not extricated, risk of injury or death."},
+            "expectedTreatment": ["Extrication", "Respiratory assessment", "Communication", "Transport if needed"],
+            "protocolNotes": ["Ontario BLS/ALS PCS special population protocol: Extrication, respiratory assessment, communication, transport if needed.", "Night shift calls may have increased mobility and environmental hazards."],
+            "teachersPoints": "Physical disabilities require adapted extrication, respiratory vigilance, and clear communication.",
+            "clinicalReasoning": "This patient is experiencing risk due to disability and fire evacuation. Early extrication and respiratory assessment are critical.",
+            "scenarioRationale": "Teaches extrication and respiratory management for special populations in emergencies.",
+            "learningObjectives": ["Recognize disability and extrication needs", "Manage respiratory risk and communication", "Navigate environmental hazards at night", "Escalate care per protocol"],
+            "selfReflectionPrompts": ["How did you manage extrication and respiratory risk?", "What clues pointed to increased vulnerability?", "How did you communicate with the patient?", "What would you do differently if distress worsened?"],
+            "grsAnchors": {"situationalAwareness": {"3": ["Recognizes disability but underestimates extrication risk.", "Misses smoke as a hazard.", "Delays respiratory assessment."], "5": ["Identifies disability and extrication need.", "Maintains calm, manages scene, and plans for escalation.", "Balances scene control with clinical care."], "7": ["Anticipates rapid deterioration and leads a coordinated extrication response.", "Integrates scene, physiologic, and social factors.", "Maintains high awareness of subtle changes and adjusts care dynamically."]}, "historyGathering": {"3": ["Obtains only a partial story from patient.", "Misses timeline and prior health details.", "Relies on patient for answers despite distress."], "5": ["Uses patient to clarify timeline, symptoms, and prior health.", "Confirms paraplegia and identifies extrication need.", "Integrates collateral history into risk assessment."], "7": ["Extracts a concise, high-value timeline despite scene stress.", "Uses patient support efficiently to clarify risk and guide care.", "Integrates history directly into extrication and transport decisions."]}, "patientAssessment": {"3": ["Performs a basic assessment but incompletely trends respiratory and risk status.", "Misses the significance of cough as a red flag.", "Reassessment is inconsistent."], "5": ["Performs structured respiratory and risk assessment.", "Uses serial reassessment to track improvement or worsening.", "Recognizes cough as a warning sign and escalates care."], "7": ["Builds a coherent assessment from respiratory, risk, and scene context.", "Detects subtle changes early and adjusts plan proactively.", "Maintains high-quality reassessment cadence."]}, "decisionMaking": {"3": ["Removes patient from room but delays extrication.", "Anchors on anxiety as benign rather than risk.", "Transport decision is delayed or not adjusted after persistent cough."], "5": ["Keeps extrication ongoing, initiates respiratory assessment, and plans for escalation.", "Plans rapid transport and keeps patient informed.", "Adjusts care plan based on reassessment."], "7": ["Executes a decisive, well-sequenced plan prioritizing extrication, respiratory, and transport.", "Anticipates escalation and prepares for escalation before instability occurs.", "Leads team and patient in a coordinated, high-quality response."]}, "communication": {"3": ["Provides basic updates but does not clearly explain urgency to patient.", "Role allocation during management is inconsistent.", "Handoff omits key extrication and trend details."], "5": ["Communicates clearly with patient about extrication, respiratory, and transport plan.", "Keeps patient informed and calm.", "Delivers organized handoff with timeline, extrication, and response."], "7": ["Uses calm, directive communication to coordinate care in a stressful night setting.", "Maintains closed-loop communication across all phases.", "Provides a concise, high-value handoff for special population management."]}},
+            "directiveSources": ["BLS PCS 3.4 (2023)", "ALS PCS 5.4 (2025)", "OBHG ALS PCS Companion v5.4 (2025)"]
+          }
+        ,
+        {
+          "title": "Night Shift: Gunshot Wound at Apartment Complex",
+          "generationMetadata": {"semester": "4", "complexity": "Complex", "callType": "Trauma", "environment": "Public Place", "hasMeds": false, "vitalSetCount": 4, "cueDensity": 0},
+          "scenarioIntro": "A 24-year-old male is found with a gunshot wound to the abdomen in an apartment parking lot at 01:30. Crew must manage hemorrhage, scene safety, and rapid transport, following Ontario trauma protocol.",
+          "callInformation": {"type": "Trauma", "location": "Apartment parking lot", "time": "01:30", "dispatchNotes": "Male, gunshot wound, heavy bleeding", "hazardsOrFlags": "Police on scene, bystanders, possible weapon present", "crewNotes": "Night shift GSW. Prioritize hemorrhage control, scene safety, and rapid transport.", "environment": "Public Place", "ecgInterpretation": "Sinus Tachycardia"},
+          "incidentNarrative": "Crew arrives to a chaotic scene with police present. A 24-year-old male is lying on the ground, bleeding from a gunshot wound to the lower abdomen. Bystanders are shouting, and the area is poorly lit.",
+          "patientPresentation": "Supine, pale, clutching abdomen, soaked in blood, anxious, tachypneic.",
+          "patientDemographics": {"age": 24, "sex": "Male", "weight": "78 kg", "appearance": "Pale, anxious, bleeding", "chiefComplaint": "Gunshot wound to abdomen"},
+          "sceneArrival": {"sceneEnergy": "Chaotic, police and bystanders present"},
+          "firstImpression": {"initialRedFlags": ["Gunshot wound", "Severe bleeding", "Nighttime presentation"]},
+          "initialAssessment": {"immediatePriorities": ["Hemorrhage control", "Shock management", "Scene safety", "Rapid transport"]},
+          "historyGathering": {"sceneContextClues": ["Police report single shot", "No prior health issues", "No known assailant"]},
+          "secondaryAssessment": {"evolvingFindings": ["Bleeding recurs if not controlled; risk of shock and peritonitis"]},
+          "additionalAssessments": ["Serial vital signs", "Monitor for shock progression"],
+          "transportPhase": {"handoffConsiderations": "Communicate mechanism, bleeding control, and police involvement."},
+          "opqrst": {"onset": "During altercation", "provocation": "Gunshot", "quality": "Severe pain, bleeding", "radiation": "N/A", "severity": "Severe", "time": "Acute nighttime event"},
+          "sample": {"signsAndSymptoms": "Bleeding, pain, anxiety", "allergies": "None known", "medications": "None", "pastMedicalHistory": "None", "lastOralIntake": "Snack at midnight", "eventsLeadingUp": "Argument, then shot fired"},
+          "medications": [],
+          "allergies": [],
+          "pastMedicalHistory": [],
+          "physicalExam": {"airway": "Patent", "breathing": "Tachypneic, clear", "circulation": "Severe bleeding, weak pulse", "neuro": "Alert, anxious", "skin": "Pale, cool"},
+          "vitalSigns": {"HR": 138, "RR": 30, "BP": "84/48", "SpO2": 96, "Temp": 36.0, "GCS": 15, "Bgl": 5.2},
+          "caseProgression": {"withProperTreatment": "Bleeding controlled, rapid transport, police escort.", "withoutProperTreatment": "Bleeding recurs, shock worsens, risk of death.", "withIncorrectTreatment": "If scene is not safe, crew at risk; if tourniquet is not used for extremity wounds, bleeding is fatal."},
+          "expectedTreatment": ["Hemorrhage control", "Shock management", "Scene safety", "Rapid transport to trauma center"],
+          "protocolNotes": ["Ontario BLS/ALS PCS trauma protocol: Hemorrhage control, rapid transport, scene safety.", "Night shift calls may have increased hazards and police involvement."],
+          "teachersPoints": "GSW trauma requires rapid hemorrhage control, scene safety, and police coordination.",
+          "clinicalReasoning": "This patient has a penetrating abdominal injury with severe bleeding. Early hemorrhage control and rapid transport are critical.",
+          "scenarioRationale": "Teaches GSW trauma management, hemorrhage control, and scene safety.",
+          "learningObjectives": ["Recognize GSW and shock", "Apply hemorrhage control", "Manage chaotic public scenes", "Escalate care per protocol"],
+          "selfReflectionPrompts": ["How did you control bleeding?", "What clues pointed to shock?", "How did you manage the scene?", "What would you do differently if bleeding recurred?"],
+          "grsAnchors": {"situationalAwareness": {"3": ["Recognizes GSW but underestimates bleeding risk.", "Misses police as a factor.", "Delays transport for unnecessary interventions."], "5": ["Identifies bleeding and shock risk.", "Maintains calm, manages police and bystanders, and plans for escalation.", "Balances scene control with clinical care."], "7": ["Anticipates rapid deterioration and leads a coordinated trauma response.", "Integrates scene, physiologic, and social factors.", "Maintains high awareness of subtle changes and adjusts care dynamically."]}, "historyGathering": {"3": ["Obtains only a partial story from police.", "Misses timeline and prior health details.", "Relies on patient for answers despite distress."], "5": ["Uses police and bystanders to clarify timeline, symptoms, and prior health.", "Confirms mechanism and identifies bleeding.", "Integrates collateral history into risk assessment."], "7": ["Extracts a concise, high-value timeline despite scene stress.", "Uses police support efficiently to clarify risk and guide care.", "Integrates history directly into trauma and transport decisions."]}, "patientAssessment": {"3": ["Performs a basic assessment but incompletely trends bleeding and shock status.", "Misses the significance of weak pulse as a red flag.", "Reassessment is inconsistent."], "5": ["Performs structured trauma and shock assessment.", "Uses serial reassessment to track improvement or worsening.", "Recognizes weak pulse as a warning sign and escalates care."], "7": ["Builds a coherent assessment from trauma, shock, perfusion, and scene context.", "Detects subtle changes early and adjusts plan proactively.", "Maintains high-quality reassessment cadence."]}, "decisionMaking": {"3": ["Removes patient from scene but delays hemorrhage control.", "Anchors on pain as main issue rather than bleeding.", "Transport decision is delayed or not adjusted after persistent bleeding."], "5": ["Keeps bleeding controlled, initiates rapid transport, and plans for escalation.", "Plans rapid transport and keeps police informed.", "Adjusts care plan based on reassessment."], "7": ["Executes a decisive, well-sequenced plan prioritizing hemorrhage, shock, and transport.", "Anticipates deterioration and prepares for escalation before instability occurs.", "Leads team and police in a coordinated, high-quality response."]}, "communication": {"3": ["Provides basic updates but does not clearly explain urgency to police or bystanders.", "Role allocation during management is inconsistent.", "Handoff omits key bleeding and trend details."], "5": ["Communicates clearly with police and bystanders about bleeding, transport plan.", "Keeps police and bystanders informed and calm.", "Delivers organized handoff with timeline, bleeding, and response."], "7": ["Uses calm, directive communication to coordinate care in a stressful night setting.", "Maintains closed-loop communication across all phases.", "Provides a concise, high-value handoff for GSW trauma management."]}},
+          "directiveSources": ["BLS PCS 3.4 (2023)", "ALS PCS 5.4 (2025)", "OBHG ALS PCS Companion v5.4 (2025)"]
+        },
+        {
+          "title": "Night Shift: Elderly Sepsis with Delirium at Home",
+          "generationMetadata": {"semester": "4", "complexity": "Complex", "callType": "Medical", "environment": "Home", "hasMeds": false, "vitalSetCount": 4, "cueDensity": 0},
+          "scenarioIntro": "An 81-year-old female is found confused and febrile at home by family at 04:00. Crew must recognize sepsis, manage airway risk, and address family anxiety, following Ontario protocol.",
+          "callInformation": {"type": "Medical", "location": "Home bedroom", "time": "04:00", "dispatchNotes": "Elderly female, confusion, fever, family present", "hazardsOrFlags": "Dim lighting, anxious family", "crewNotes": "Night shift sepsis. Prioritize airway, glucose, and rapid transport.", "environment": "Home", "ecgInterpretation": "Sinus Tachycardia"},
+          "incidentNarrative": "Crew arrives to find an 81-year-old woman confused, febrile, and breathing rapidly. Family reports she has been unwell for two days and is not responding normally.",
+          "patientPresentation": "Lying in bed, confused, rapid shallow breathing, warm skin, dry mucous membranes.",
+          "patientDemographics": {"age": 81, "sex": "Female", "weight": "60 kg", "appearance": "Confused, tachypneic, febrile", "chiefComplaint": "Confusion and fever"},
+          "sceneArrival": {"sceneEnergy": "Anxious, family present"},
+          "firstImpression": {"initialRedFlags": ["Confusion", "Fever", "Elderly", "Nighttime presentation"]},
+          "initialAssessment": {"immediatePriorities": ["Airway protection", "Blood glucose", "Oxygen if hypoxic", "Rapid transport"]},
+          "historyGathering": {"sceneContextClues": ["Recent UTI", "Missed medications", "No trauma"]},
+          "secondaryAssessment": {"evolvingFindings": ["Confusion worsens if not treated; risk of airway loss"]},
+          "additionalAssessments": ["Serial neuro checks", "Monitor for hypovolemic shock"],
+          "transportPhase": {"handoffConsiderations": "Communicate glucose, mental status, and family anxiety."},
+          "opqrst": {"onset": "Gradual over 2 days", "provocation": "Missed medications, infection", "quality": "Confusion, fever, shallow breathing", "radiation": "N/A", "severity": "Severe", "time": "Acute nighttime event"},
+          "sample": {"signsAndSymptoms": "Confusion, fever, shallow breathing", "allergies": "None known", "medications": "Metformin", "pastMedicalHistory": "Type 2 diabetes, hypertension", "lastOralIntake": "Dinner", "eventsLeadingUp": "Missed medications, recent UTI"},
+          "medications": ["Metformin"],
+          "allergies": [],
+          "pastMedicalHistory": ["Type 2 diabetes", "Hypertension"],
+          "physicalExam": {"airway": "Patent, risk of loss", "breathing": "Rapid, shallow", "circulation": "Tachycardic, dry mucous membranes", "neuro": "Confused, GCS 13", "skin": "Warm, flushed"},
+          "vitalSigns": {"HR": 122, "RR": 28, "BP": "92/54", "SpO2": 95, "Temp": 38.7, "GCS": 13, "Bgl": 8.4},
+          "caseProgression": {"withProperTreatment": "Airway protected, rapid transport, fluids started in hospital.", "withoutProperTreatment": "Confusion worsens, risk of airway loss and arrest.", "withIncorrectTreatment": "If glucose is given instead of transport, acidosis worsens."},
+          "expectedTreatment": ["Airway protection", "Monitor glucose", "Oxygen if hypoxic", "Rapid transport to hospital"],
+          "protocolNotes": ["Ontario BLS/ALS PCS sepsis protocol: Airway, rapid transport, do not give glucose unless hypoglycemic.", "Night shift calls may have increased family anxiety."],
+          "teachersPoints": "Sepsis can present with confusion and fever. Airway risk is high. Do not give glucose unless hypoglycemic.",
+          "clinicalReasoning": "This patient is in sepsis with altered mental status. Early airway management and rapid transport are critical.",
+          "scenarioRationale": "Teaches sepsis recognition, airway management, and family communication.",
+          "learningObjectives": ["Recognize sepsis in elderly", "Prioritize airway and rapid transport", "Manage family anxiety", "Escalate care per protocol"],
+          "selfReflectionPrompts": ["How did you recognize sepsis?", "What clues pointed to airway risk?", "How did you ensure rapid transport?", "What would you do differently if confusion worsened?"],
+          "grsAnchors": {"situationalAwareness": {"3": ["Recognizes confusion but underestimates sepsis risk.", "Misses airway risk.", "Delays transport for unnecessary interventions."], "5": ["Identifies sepsis and airway risk.", "Maintains calm, manages family, and plans for escalation.", "Balances scene control with clinical care."], "7": ["Anticipates rapid deterioration and leads a coordinated sepsis response.", "Integrates scene, physiologic, and social factors.", "Maintains high awareness of subtle changes and adjusts care dynamically."]}, "historyGathering": {"3": ["Obtains only a partial story from family.", "Misses timeline and prior health details.", "Relies on patient for answers despite confusion."], "5": ["Uses family to clarify timeline, symptoms, and prior health.", "Confirms missed medications and identifies gradual onset.", "Integrates collateral history into risk assessment."], "7": ["Extracts a concise, high-value timeline despite scene stress.", "Uses family support efficiently to clarify risk and guide care.", "Integrates history directly into airway and transport decisions."]}, "patientAssessment": {"3": ["Performs a basic assessment but incompletely trends neuro and airway status.", "Misses the significance of fever as a red flag.", "Reassessment is inconsistent."], "5": ["Performs structured neuro and airway assessment.", "Uses serial reassessment to track improvement or worsening.", "Recognizes fever as a warning sign and escalates care."], "7": ["Builds a coherent assessment from neuro, airway, perfusion, and scene context.", "Detects subtle changes early and adjusts plan proactively.", "Maintains high-quality reassessment cadence."]}, "decisionMaking": {"3": ["Removes patient from scene but delays transport.", "Anchors on confusion as behavioral rather than sepsis.", "Transport decision is delayed or not adjusted after persistent fever."], "5": ["Keeps airway protected, initiates rapid transport, and plans for escalation.", "Plans rapid transport and keeps family informed.", "Adjusts care plan based on reassessment."], "7": ["Executes a decisive, well-sequenced plan prioritizing airway, rapid transport, and monitoring.", "Anticipates deterioration and prepares for escalation before instability occurs.", "Leads team and family in a coordinated, high-quality response."]}, "communication": {"3": ["Provides basic updates but does not clearly explain urgency to family.", "Role allocation during management is inconsistent.", "Handoff omits key airway and trend details."], "5": ["Communicates clearly with family about airway, sepsis, and transport plan.", "Keeps family informed and calm.", "Delivers organized handoff with timeline, airway, and response."], "7": ["Uses calm, directive communication to coordinate care in a stressful night setting.", "Maintains closed-loop communication across all phases.", "Provides a concise, high-value handoff for sepsis management."]}},
+          "directiveSources": ["BLS PCS 3.4 (2023)", "ALS PCS 5.4 (2025)", "OBHG ALS PCS Companion v5.4 (2025)"]
+        },
+        {
+          "title": "Night Shift: Pediatric Drowning at Community Pool",
+          "generationMetadata": {"semester": "4", "complexity": "Complex", "callType": "Trauma", "environment": "Public Place", "hasMeds": false, "vitalSetCount": 4, "cueDensity": 0},
+          "scenarioIntro": "A 6-year-old is pulled from a community pool unresponsive at 20:45. Crew must manage airway, hypoxia, and family distress, following Ontario trauma protocol.",
+          "callInformation": {"type": "Trauma", "location": "Community pool", "time": "20:45", "dispatchNotes": "Child unresponsive, drowning, lifeguard present", "hazardsOrFlags": "Wet surfaces, crowd, anxious family", "crewNotes": "Night shift pediatric drowning. Prioritize airway, oxygen, and rapid transport.", "environment": "Public Place", "ecgInterpretation": "Sinus Tachycardia"},
+          "incidentNarrative": "Crew arrives to a crowded pool deck where a 6-year-old girl is unresponsive after being pulled from the water. Lifeguard is performing CPR, family is distraught.",
+          "patientPresentation": "Supine, unresponsive, cyanotic lips, shallow breathing, wet skin.",
+          "patientDemographics": {"age": 6, "sex": "Female", "weight": "20 kg", "appearance": "Unresponsive, cyanotic, wet", "chiefComplaint": "Drowning, unresponsive"},
+          "sceneArrival": {"sceneEnergy": "Chaotic, wet, anxious family and crowd"},
+          "firstImpression": {"initialRedFlags": ["Unresponsive", "Cyanosis", "Drowning", "Nighttime presentation"]},
+          "initialAssessment": {"immediatePriorities": ["Airway management", "Oxygenation", "CPR if needed", "Rapid transport"]},
+          "historyGathering": {"sceneContextClues": ["Lifeguard report", "No trauma", "Unknown submersion time"]},
+          "secondaryAssessment": {"evolvingFindings": ["Improvement with oxygen; risk of delayed neuro effects"]},
+          "additionalAssessments": ["Serial neuro checks", "Monitor for delayed symptoms"],
+          "transportPhase": {"handoffConsiderations": "Communicate submersion time, response to oxygen, and family distress."},
+          "opqrst": {"onset": "During swimming", "provocation": "Submersion", "quality": "Unresponsive, cyanotic", "radiation": "N/A", "severity": "Severe", "time": "Acute nighttime event"},
+          "sample": {"signsAndSymptoms": "Unresponsive, cyanosis, wet skin", "allergies": "None known", "medications": "None", "pastMedicalHistory": "No prior seizures", "lastOralIntake": "Dinner", "eventsLeadingUp": "Swimming, then found underwater"},
+          "medications": [],
+          "allergies": [],
+          "pastMedicalHistory": [],
+          "physicalExam": {"airway": "Threatened by water inhalation", "breathing": "Shallow, cyanotic", "circulation": "Tachycardic, weak pulse", "neuro": "Unresponsive, GCS 6", "skin": "Wet, cool"},
+          "vitalSigns": {"HR": 132, "RR": 10, "BP": "78/40", "SpO2": 82, "Temp": 34.2, "GCS": 6, "Bgl": 5.1},
+          "caseProgression": {"withProperTreatment": "Airway managed, oxygen given, patient regains consciousness, transported for monitoring.", "withoutProperTreatment": "Remains unresponsive, risk of respiratory arrest or brain injury.", "withIncorrectTreatment": "If not dried and warmed, hypothermia complicates recovery."},
+          "expectedTreatment": ["Airway management", "Oxygenation", "CPR if needed", "Rapid transport to hospital"],
+          "protocolNotes": ["Ontario BLS/ALS PCS drowning protocol: Airway, oxygen, rapid transport, monitor for hypothermia.", "Night shift calls may have increased crowd and environmental hazards."],
+          "teachersPoints": "Pediatric drowning requires rapid airway and oxygen management, and family support.",
+          "clinicalReasoning": "This child is experiencing hypoxia after submersion. Early airway and oxygen management are critical. Ontario BLS/ALS PCS compliance is required.",
+          "scenarioRationale": "Teaches drowning management, airway protection, and scene control at night.",
+          "learningObjectives": ["Recognize drowning and airway risk", "Manage airway and oxygenation", "Communicate with anxious family at night", "Monitor for delayed neuro effects"],
+          "selfReflectionPrompts": ["How did you manage the airway and scene?", "What clues pointed to hypoxia?", "How did you ensure rapid oxygenation?", "What would you do differently if patient did not respond?"],
+          "grsAnchors": {"situationalAwareness": {"3": ["Recognizes unresponsiveness but underestimates drowning and hypoxia risk.", "Misses scene chaos hazard.", "Delays airway or oxygenation."], "5": ["Identifies drowning and airway risk.", "Maintains calm, manages scene, and plans for escalation.", "Balances scene control with clinical care."], "7": ["Anticipates rapid deterioration and leads a coordinated response.", "Integrates environmental, physiologic, and social factors.", "Maintains high awareness of subtle changes and adjusts care dynamically."]}, "historyGathering": {"3": ["Obtains only a partial story from lifeguard.", "Misses timeline and prior health details.", "Relies on family for answers despite distress."], "5": ["Uses lifeguard and family to clarify timeline, symptoms, and prior health.", "Confirms submersion and identifies hypoxia.", "Integrates collateral history into risk assessment."], "7": ["Extracts a concise, high-value timeline despite scene stress.", "Uses lifeguard support efficiently to clarify risk and guide care.", "Integrates history directly into airway and transport decisions."]}, "patientAssessment": {"3": ["Performs a basic assessment but incompletely trends respiratory and neuro status.", "Misses the significance of cyanosis as a red flag.", "Reassessment is inconsistent."], "5": ["Performs structured respiratory and neuro assessment.", "Uses serial reassessment to track improvement or worsening.", "Recognizes cyanosis as a warning sign and escalates care."], "7": ["Builds a coherent assessment from respiratory, neuro, perfusion, and scene context.", "Detects subtle changes early and adjusts plan proactively.", "Maintains high-quality reassessment cadence."]}, "decisionMaking": {"3": ["Removes child from pool but delays airway management.", "Anchors on trauma as cause rather than hypoxia.", "Transport decision is delayed or not adjusted after persistent unresponsiveness."], "5": ["Keeps airway protected, initiates oxygen, and plans for escalation.", "Plans rapid transport and keeps family informed.", "Adjusts care plan based on reassessment."], "7": ["Executes a decisive, well-sequenced plan prioritizing airway, oxygen, and transport.", "Anticipates deterioration and prepares for escalation before instability occurs.", "Leads team and family in a coordinated, high-quality response."]}, "communication": {"3": ["Provides basic updates but does not clearly explain urgency to family or lifeguard.", "Role allocation during management is inconsistent.", "Handoff omits key airway and trend details."], "5": ["Communicates clearly with family and lifeguard about airway, oxygen, and transport plan.", "Keeps family and lifeguard informed and calm.", "Delivers organized handoff with timeline, airway, and response."], "7": ["Uses calm, directive communication to coordinate care in a stressful night setting.", "Maintains closed-loop communication across all phases.", "Provides a concise, high-value handoff for drowning management."]}},
+          "directiveSources": ["BLS PCS 3.4 (2023)", "ALS PCS 5.4 (2025)", "OBHG ALS PCS Companion v5.4 (2025)"]
+        },
+        {
+          "title": "Night Shift: Rural Hypothermia in Elderly Male",
+          "generationMetadata": {"semester": "4", "complexity": "Complex", "callType": "Environmental", "environment": "Rural", "hasMeds": false, "vitalSetCount": 4, "cueDensity": 0},
+          "scenarioIntro": "A 76-year-old male is found confused and shivering in a rural field at 05:30. Crew must recognize hypothermia, manage rewarming, and address isolation, following Ontario protocol.",
+          "callInformation": {"type": "Environmental", "location": "Rural field", "time": "05:30", "dispatchNotes": "Elderly male, confused, cold exposure", "hazardsOrFlags": "Dark, uneven ground, no cell service", "crewNotes": "Night shift rural hypothermia. Prioritize rewarming, glucose, and rapid transport.", "environment": "Rural", "ecgInterpretation": "Sinus Bradycardia"},
+          "incidentNarrative": "Crew arrives to a remote field where a 76-year-old man is found confused, shivering, and poorly dressed for the weather. No bystanders are present.",
+          "patientPresentation": "Sitting on ground, shivering, confused, slurred speech, cold skin.",
+          "patientDemographics": {"age": 76, "sex": "Male", "weight": "68 kg", "appearance": "Confused, shivering, cold", "chiefComplaint": "Cold exposure, confusion"},
+          "sceneArrival": {"sceneEnergy": "Quiet, isolated, dark"},
+          "firstImpression": {"initialRedFlags": ["Confusion", "Shivering", "Cold exposure", "Nighttime presentation"]},
+          "initialAssessment": {"immediatePriorities": ["Rewarming", "Blood glucose", "Oxygen if hypoxic", "Rapid transport"]},
+          "historyGathering": {"sceneContextClues": ["No shelter", "No cell service", "No prior health issues"]},
+          "secondaryAssessment": {"evolvingFindings": ["Confusion worsens if not rewarmed; risk of arrest"]},
+          "additionalAssessments": ["Serial neuro checks", "Monitor for hypoglycemic shock"],
+          "transportPhase": {"handoffConsiderations": "Communicate glucose, mental status, and isolation."},
+          "opqrst": {"onset": "Unknown, found at dawn", "provocation": "Cold exposure", "quality": "Confusion, shivering, cold skin", "radiation": "N/A", "severity": "Severe", "time": "Acute nighttime event"},
+          "sample": {"signsAndSymptoms": "Confusion, shivering, cold skin", "allergies": "None known", "medications": "None", "pastMedicalHistory": "None", "lastOralIntake": "Unknown", "eventsLeadingUp": "Found in field, no shelter"},
+          "medications": [],
+          "allergies": [],
+          "pastMedicalHistory": [],
+          "physicalExam": {"airway": "Patent", "breathing": "Shallow, slow", "circulation": "Bradycardic, weak pulse", "neuro": "Confused, GCS 12", "skin": "Cold, pale"},
+          "vitalSigns": {"HR": 42, "RR": 10, "BP": "88/50", "SpO2": 94, "Temp": 32.1, "GCS": 12, "Bgl": 3.8},
+          "caseProgression": {"withProperTreatment": "Rewarming started, glucose monitored, patient regains alertness, transported for monitoring.", "withoutProperTreatment": "Confusion worsens, risk of arrest.", "withIncorrectTreatment": "If not rewarmed, hypothermia worsens and outcome is poor."},
+          "expectedTreatment": ["Rewarming", "Monitor glucose", "Oxygen if hypoxic", "Rapid transport to hospital"],
+          "protocolNotes": ["Ontario BLS/ALS PCS hypothermia protocol: Rewarming, glucose, rapid transport, monitor for arrest.", "Night shift calls may have increased isolation and environmental hazards."],
+          "teachersPoints": "Rural hypothermia requires rapid rewarming, glucose monitoring, and scene awareness.",
+          "clinicalReasoning": "This patient is experiencing hypothermia with altered mental status. Early rewarming and glucose monitoring are critical. Ontario BLS/ALS PCS compliance is required.",
+          "scenarioRationale": "Teaches hypothermia management, rewarming, and scene navigation at night.",
+          "learningObjectives": ["Recognize hypothermia and altered mental status", "Manage rewarming and glucose", "Navigate rural scene hazards at night", "Monitor for arrest"],
+          "selfReflectionPrompts": ["How did you manage rewarming and glucose?", "What clues pointed to hypothermia?", "How did you ensure rapid transport?", "What would you do differently if patient deteriorated?"],
+          "grsAnchors": {"situationalAwareness": {"3": ["Recognizes confusion but underestimates hypothermia risk.", "Misses isolation hazard.", "Delays rewarming or glucose check."], "5": ["Identifies hypothermia and glucose risk.", "Maintains calm, manages scene, and plans for escalation.", "Balances scene control with clinical care."], "7": ["Anticipates rapid deterioration and leads a coordinated response.", "Integrates environmental, physiologic, and social factors.", "Maintains high awareness of subtle changes and adjusts care dynamically."]}, "historyGathering": {"3": ["Obtains only a partial story from patient.", "Misses timeline and prior health details.", "Relies on patient for answers despite confusion."], "5": ["Uses patient to clarify timeline, symptoms, and prior health.", "Confirms no shelter and identifies cold exposure.", "Integrates collateral history into risk assessment."], "7": ["Extracts a concise, high-value timeline despite scene stress.", "Uses patient support efficiently to clarify risk and guide care.", "Integrates history directly into rewarming and transport decisions."]}, "patientAssessment": {"3": ["Performs a basic assessment but incompletely trends neuro and temperature status.", "Misses the significance of shivering as a red flag.", "Reassessment is inconsistent."], "5": ["Performs structured neuro and temperature assessment.", "Uses serial reassessment to track improvement or worsening.", "Recognizes shivering as a warning sign and escalates care."], "7": ["Builds a coherent assessment from neuro, temperature, perfusion, and scene context.", "Detects subtle changes early and adjusts plan proactively.", "Maintains high-quality reassessment cadence."]}, "decisionMaking": {"3": ["Removes patient from field but delays rewarming.", "Anchors on confusion as behavioral rather than hypothermia.", "Transport decision is delayed or not adjusted after persistent shivering."], "5": ["Keeps patient warm, initiates glucose monitoring, and plans for escalation.", "Plans rapid transport and keeps patient informed.", "Adjusts care plan based on reassessment."], "7": ["Executes a decisive, well-sequenced plan prioritizing rewarming, glucose, and transport.", "Anticipates deterioration and prepares for escalation before instability occurs.", "Leads team and patient in a coordinated, high-quality response."]}, "communication": {"3": ["Provides basic updates but does not clearly explain urgency to patient.", "Role allocation during management is inconsistent.", "Handoff omits key rewarming and trend details."], "5": ["Communicates clearly with patient about rewarming, glucose, and transport plan.", "Keeps patient informed and calm.", "Delivers organized handoff with timeline, rewarming, and response."], "7": ["Uses calm, directive communication to coordinate care in a stressful night setting.", "Maintains closed-loop communication across all phases.", "Provides a concise, high-value handoff for hypothermia management."]}},
+          "directiveSources": ["BLS PCS 3.4 (2023)", "ALS PCS 5.4 (2025)", "OBHG ALS PCS Companion v5.4 (2025)"]
+        },
+        {
+          "title": "Night Shift: Labor in Transit on Rural Highway",
+          "generationMetadata": {"semester": "4", "complexity": "Complex", "callType": "Obstetric", "environment": "Rural", "hasMeds": false, "vitalSetCount": 4, "cueDensity": 0},
+          "scenarioIntro": "A 32-year-old female in active labor delivers unexpectedly in the ambulance on a rural highway at 03:15. Crew must manage delivery, newborn care, and maternal complications, following Ontario protocol.",
+          "callInformation": {"type": "Obstetric", "location": "Ambulance on highway", "time": "03:15", "dispatchNotes": "Female in labor, contractions 2 min apart, en route to hospital", "hazardsOrFlags": "Dark, rural, limited resources", "crewNotes": "Night shift labor. Prioritize delivery, newborn care, and maternal monitoring.", "environment": "Rural", "ecgInterpretation": "Sinus Tachycardia"},
+          "incidentNarrative": "Crew is transporting a 32-year-old woman in active labor when she suddenly delivers in the ambulance. The highway is dark and isolated, and resources are limited.",
+          "patientPresentation": "Supine, contractions, crowning, anxious, moderate bleeding post-delivery.",
+          "patientDemographics": {"age": 32, "sex": "Female", "weight": "74 kg", "appearance": "Anxious, in labor, moderate bleeding", "chiefComplaint": "Active labor, delivery in ambulance"},
+          "sceneArrival": {"sceneEnergy": "Isolated, dark, high stress"},
+          "firstImpression": {"initialRedFlags": ["Active labor", "Impending delivery", "Nighttime presentation"]},
+          "initialAssessment": {"immediatePriorities": ["Prepare for delivery", "Newborn care", "Maternal monitoring", "Rapid transport"]},
+          "historyGathering": {"sceneContextClues": ["No prenatal care", "No prior deliveries", "No complications reported"]},
+          "secondaryAssessment": {"evolvingFindings": ["Bleeding increases if not managed; newborn may require resuscitation"]},
+          "additionalAssessments": ["Serial maternal and newborn vitals", "Monitor for postpartum hemorrhage"],
+          "transportPhase": {"handoffConsiderations": "Communicate delivery time, newborn status, and maternal bleeding."},
+          "opqrst": {"onset": "During transport", "provocation": "Active labor", "quality": "Contractions, crowning, bleeding", "radiation": "N/A", "severity": "Severe", "time": "Acute nighttime event"},
+          "sample": {"signsAndSymptoms": "Contractions, crowning, bleeding", "allergies": "None known", "medications": "None", "pastMedicalHistory": "No prior deliveries", "lastOralIntake": "Snack at midnight", "eventsLeadingUp": "Labor started at home, then rapid progression"},
+          "medications": [],
+          "allergies": [],
+          "pastMedicalHistory": [],
+          "physicalExam": {"airway": "Patent", "breathing": "Normal", "circulation": "Moderate bleeding, strong pulse", "neuro": "Alert, anxious", "skin": "Warm, flushed"},
+          "vitalSigns": {"HR": 102, "RR": 20, "BP": "118/72", "SpO2": 98, "Temp": 36.8, "GCS": 15, "Bgl": 4.9},
+          "caseProgression": {"withProperTreatment": "Delivery managed, newborn cared for, maternal bleeding controlled, both transported safely.", "withoutProperTreatment": "Bleeding worsens, newborn at risk, outcome poor.", "withIncorrectTreatment": "If newborn not warmed or airway not cleared, risk of hypothermia or respiratory distress."},
+          "expectedTreatment": ["Prepare for delivery", "Newborn care (warmth, airway, APGAR)", "Maternal monitoring (bleeding, vitals)", "Rapid transport to hospital"],
+          "protocolNotes": ["Ontario BLS/ALS PCS obstetric protocol: Prepare for delivery, newborn care, maternal monitoring, rapid transport.", "Night shift calls may have increased isolation and resource limitations."],
+          "teachersPoints": "Labor in transit requires rapid delivery preparation, newborn care, and maternal monitoring.",
+          "clinicalReasoning": "This patient is delivering in the ambulance with limited resources. Early preparation and protocol-driven care are critical. Ontario BLS/ALS PCS compliance is required.",
+          "scenarioRationale": "Teaches delivery management, newborn care, and maternal monitoring in rural settings.",
+          "learningObjectives": ["Recognize imminent delivery and newborn risk", "Manage delivery and newborn care", "Monitor for maternal complications", "Escalate care per protocol"],
+          "selfReflectionPrompts": ["How did you prepare for delivery?", "What clues pointed to newborn risk?", "How did you ensure maternal safety?", "What would you do differently if complications arose?"],
+          "grsAnchors": {"situationalAwareness": {"3": ["Recognizes labor but underestimates delivery risk.", "Misses isolation hazard.", "Delays preparation or newborn care."], "5": ["Identifies delivery and newborn risk.", "Maintains calm, manages scene, and plans for escalation.", "Balances scene control with clinical care."], "7": ["Anticipates rapid delivery and leads a coordinated response.", "Integrates environmental, physiologic, and social factors.", "Maintains high awareness of subtle changes and adjusts care dynamically."]}, "historyGathering": {"3": ["Obtains only a partial story from patient.", "Misses timeline and prior health details.", "Relies on patient for answers despite distress."], "5": ["Uses patient to clarify timeline, symptoms, and prior health.", "Confirms no prior deliveries and identifies rapid progression.", "Integrates collateral history into risk assessment."], "7": ["Extracts a concise, high-value timeline despite scene stress.", "Uses patient support efficiently to clarify risk and guide care.", "Integrates history directly into delivery and transport decisions."]}, "patientAssessment": {"3": ["Performs a basic assessment but incompletely trends maternal and newborn status.", "Misses the significance of bleeding as a red flag.", "Reassessment is inconsistent."], "5": ["Performs structured maternal and newborn assessment.", "Uses serial reassessment to track improvement or worsening.", "Recognizes bleeding as a warning sign and escalates care."], "7": ["Builds a coherent assessment from maternal, newborn, perfusion, and scene context.", "Detects subtle changes early and adjusts plan proactively.", "Maintains high-quality reassessment cadence."]}, "decisionMaking": {"3": ["Removes patient from ambulance but delays delivery preparation.", "Anchors on contractions as benign rather than delivery risk.", "Transport decision is delayed or not adjusted after persistent bleeding."], "5": ["Keeps delivery area prepared, initiates newborn care, and plans for escalation.", "Plans rapid transport and keeps patient informed.", "Adjusts care plan based on reassessment."], "7": ["Executes a decisive, well-sequenced plan prioritizing delivery, newborn, and transport.", "Anticipates complications and prepares for escalation before instability occurs.", "Leads team and patient in a coordinated, high-quality response."]}, "communication": {"3": ["Provides basic updates but does not clearly explain urgency to patient.", "Role allocation during management is inconsistent.", "Handoff omits key delivery and trend details."], "5": ["Communicates clearly with patient about delivery, newborn, and transport plan.", "Keeps patient informed and calm.", "Delivers organized handoff with timeline, delivery, and response."], "7": ["Uses calm, directive communication to coordinate care in a stressful night setting.", "Maintains closed-loop communication across all phases.", "Provides a concise, high-value handoff for delivery management."]}},
+          "directiveSources": ["BLS PCS 3.4 (2023)", "ALS PCS 5.4 (2025)", "OBHG ALS PCS Companion v5.4 (2025)"]
+        }
+      ,
+      {
+        "title": "Night Shift: STEMI in a Young Adult",
+        "generationMetadata": {"semester": "3", "complexity": "Complex", "callType": "Cardiac", "environment": "Home", "hasMeds": false, "vitalSetCount": 4, "cueDensity": 0},
+        "scenarioIntro": "A 29-year-old male with no cardiac history develops crushing chest pain at home after midnight. Crew must recognize STEMI in a low-risk patient, manage scene disbelief, and follow Ontario cardiac protocol.",
+        "callInformation": {"type": "Cardiac", "location": "Apartment bedroom", "time": "00:45", "dispatchNotes": "Young male, severe chest pain, pale, diaphoretic", "hazardsOrFlags": "Small space, partner in disbelief", "crewNotes": "Night shift STEMI. Prioritize ECG, pain management, and rapid transport.", "environment": "Home", "ecgInterpretation": "Anterior STEMI"},
+        "incidentNarrative": "Crew arrives to find a 29-year-old clutching his chest, pale, and sweating. His partner insists 'he's too young for a heart attack.' Patient reports sudden, severe chest pain radiating to his left arm, with nausea and shortness of breath.",
+        "patientPresentation": "Sitting upright, clutching chest, pale, diaphoretic, anxious, speaking in short phrases.",
+        "patientDemographics": {"age": 29, "sex": "Male", "weight": "82 kg", "appearance": "Pale, diaphoretic, anxious", "chiefComplaint": "Severe chest pain"},
+        "sceneArrival": {"sceneEnergy": "Tense, partner in disbelief"},
+        "firstImpression": {"initialRedFlags": ["Severe chest pain", "Diaphoresis", "Young age", "Nighttime presentation"]},
+        "initialAssessment": {"immediatePriorities": ["12-lead ECG", "Aspirin", "Oxygen if hypoxic", "Pain management", "Rapid transport"]},
+        "historyGathering": {"sceneContextClues": ["No cardiac history", "No risk factors", "Sudden onset"]},
+        "secondaryAssessment": {"evolvingFindings": ["ECG shows anterior STEMI; pain persists without treatment"]},
+        "additionalAssessments": ["Serial ECGs", "Monitor for arrhythmia"],
+        "transportPhase": {"handoffConsiderations": "Communicate ECG findings, pain trend, and scene disbelief."},
+        "opqrst": {"onset": "Sudden at rest", "provocation": "Not relieved by rest", "quality": "Crushing chest pain", "radiation": "Left arm, jaw", "severity": "10/10", "time": "Acute nighttime event"},
+        "sample": {"signsAndSymptoms": "Chest pain, diaphoresis, nausea", "allergies": "None known", "medications": "None", "pastMedicalHistory": "None", "lastOralIntake": "Dinner", "eventsLeadingUp": "Watching TV, then sudden pain"},
+        "medications": [],
+        "allergies": [],
+        "pastMedicalHistory": [],
+        "physicalExam": {"airway": "Patent", "breathing": "Tachypneic, clear", "circulation": "Tachycardic, cool extremities", "neuro": "Alert, anxious", "skin": "Pale, diaphoretic"},
+        "vitalSigns": {"HR": 112, "RR": 22, "BP": "104/68", "SpO2": 97, "Temp": 36.7, "GCS": 15, "Bgl": 5.1},
+        "caseProgression": {"withProperTreatment": "Aspirin given, pain managed, rapid transport, STEMI team activated.", "withoutProperTreatment": "Pain persists, risk of arrhythmia or arrest.", "withIncorrectTreatment": "If not believed, care is delayed and outcome worsens."},
+        "expectedTreatment": ["12-lead ECG", "Aspirin", "Oxygen if hypoxic", "Pain management", "Rapid transport to PCI center"],
+        "protocolNotes": ["Ontario BLS/ALS PCS STEMI protocol: Early ECG, aspirin, rapid transport.", "Young patients can have STEMI; do not dismiss based on age."],
+        "teachersPoints": "STEMI can occur in young adults. Scene disbelief can delay care. Early ECG and protocol adherence are critical.",
+        "clinicalReasoning": "This patient has classic STEMI symptoms and ECG findings despite young age. Early recognition and protocol-driven care are essential.",
+        "scenarioRationale": "Teaches STEMI recognition in low-risk patients and managing scene disbelief.",
+        "learningObjectives": ["Recognize STEMI in young adults", "Prioritize ECG and aspirin", "Manage scene disbelief", "Escalate care per protocol"],
+        "selfReflectionPrompts": ["How did you overcome scene disbelief?", "What clues pointed to STEMI?", "How did you ensure rapid transport?", "What would you do differently if pain persisted?"],
+        "grsAnchors": {"situationalAwareness": {"3": ["Recognizes chest pain but underestimates STEMI risk due to age.", "Misses scene disbelief as a barrier.", "Delays ECG or aspirin."], "5": ["Identifies STEMI despite young age.", "Maintains calm, manages disbelief, and plans for escalation.", "Balances scene control with clinical care."], "7": ["Anticipates rapid deterioration and leads a coordinated STEMI response.", "Integrates scene, physiologic, and social factors.", "Maintains high awareness of subtle changes and adjusts care dynamically."]}, "historyGathering": {"3": ["Obtains only a partial story from partner.", "Misses timeline and prior health details.", "Relies on patient for answers despite distress."], "5": ["Uses partner to clarify timeline, symptoms, and prior health.", "Confirms no risk factors and identifies sudden onset.", "Integrates collateral history into risk assessment."], "7": ["Extracts a concise, high-value timeline despite scene stress.", "Uses partner support efficiently to clarify risk and guide care.", "Integrates history directly into cardiac and transport decisions."]}, "patientAssessment": {"3": ["Performs a basic assessment but incompletely trends cardiac and pain status.", "Misses the significance of diaphoresis as a red flag.", "Reassessment is inconsistent."], "5": ["Performs structured cardiac and pain assessment.", "Uses serial reassessment to track improvement or worsening.", "Recognizes diaphoresis as a warning sign and escalates care."], "7": ["Builds a coherent assessment from cardiac, pain, perfusion, and scene context.", "Detects subtle changes early and adjusts plan proactively.", "Maintains high-quality reassessment cadence."]}, "decisionMaking": {"3": ["Removes patient from scene but delays ECG or aspirin.", "Anchors on anxiety as cause rather than STEMI.", "Transport decision is delayed or not adjusted after persistent pain."], "5": ["Keeps patient calm, initiates ECG and aspirin, and plans for escalation.", "Plans rapid transport and keeps partner informed.", "Adjusts care plan based on reassessment."], "7": ["Executes a decisive, well-sequenced plan prioritizing ECG, aspirin, and transport.", "Anticipates deterioration and prepares for escalation before instability occurs.", "Leads team and partner in a coordinated, high-quality response."]}, "communication": {"3": ["Provides basic updates but does not clearly explain urgency to partner.", "Role allocation during management is inconsistent.", "Handoff omits key ECG and trend details."], "5": ["Communicates clearly with partner about cardiac, ECG, and transport plan.", "Keeps partner informed and calm.", "Delivers organized handoff with timeline, ECG, and response."], "7": ["Uses calm, directive communication to coordinate care in a stressful night setting.", "Maintains closed-loop communication across all phases.", "Provides a concise, high-value handoff for STEMI management."]}},
+        "directiveSources": ["BLS PCS 3.4 (2023)", "ALS PCS 5.4 (2025)", "OBHG ALS PCS Companion v5.4 (2025)"]
+      },
+      {
+        "title": "Night Shift: Ischemic Stroke with Aphasia",
+        "generationMetadata": {"semester": "3", "complexity": "Complex", "callType": "Neurological", "environment": "Home", "hasMeds": false, "vitalSetCount": 4, "cueDensity": 0},
+        "scenarioIntro": "A 67-year-old female suddenly develops right-sided weakness and expressive aphasia at home. Crew must recognize stroke, manage time-sensitive care, and address family anxiety, following Ontario stroke protocol.",
+        "callInformation": {"type": "Neurological", "location": "Home living room", "time": "05:10", "dispatchNotes": "Elderly female, sudden weakness, speech difficulty", "hazardsOrFlags": "Dim lighting, anxious spouse", "crewNotes": "Night shift stroke. Prioritize FAST assessment, time last seen well, and rapid transport.", "environment": "Home", "ecgInterpretation": "Sinus Rhythm"},
+        "incidentNarrative": "Crew arrives to find a 67-year-old woman slumped on the couch, unable to move her right arm and struggling to speak. Her husband reports she was normal at 04:45, then suddenly developed symptoms at 05:05.",
+        "patientPresentation": "Sitting, right-sided facial droop, right arm and leg weakness, expressive aphasia, anxious, unable to follow complex commands.",
+        "patientDemographics": {"age": 67, "sex": "Female", "weight": "70 kg", "appearance": "Right-sided weakness, aphasia, anxious", "chiefComplaint": "Sudden weakness and speech difficulty"},
+        "sceneArrival": {"sceneEnergy": "Anxious, spouse present"},
+        "firstImpression": {"initialRedFlags": ["Sudden weakness", "Aphasia", "Facial droop", "Nighttime presentation"]},
+        "initialAssessment": {"immediatePriorities": ["FAST assessment", "Time last seen well", "Blood glucose", "Oxygen if hypoxic", "Rapid transport"]},
+        "historyGathering": {"sceneContextClues": ["Normal at 04:45", "Sudden onset at 05:05", "No trauma"]},
+        "secondaryAssessment": {"evolvingFindings": ["Symptoms persist; risk of progression if delayed"]},
+        "additionalAssessments": ["Serial neuro checks", "Monitor for airway compromise"],
+        "transportPhase": {"handoffConsiderations": "Communicate time last seen well, neuro findings, and family anxiety."},
+        "opqrst": {"onset": "Sudden at 05:05", "provocation": "Not relieved by rest", "quality": "Right-sided weakness, aphasia", "radiation": "N/A", "severity": "Severe", "time": "Acute nighttime event"},
+        "sample": {"signsAndSymptoms": "Right-sided weakness, aphasia", "allergies": "None known", "medications": "Amlodipine", "pastMedicalHistory": "Hypertension", "lastOralIntake": "Tea at 04:30", "eventsLeadingUp": "Normal, then sudden symptoms"},
+        "medications": ["Amlodipine"],
+        "allergies": [],
+        "pastMedicalHistory": ["Hypertension"],
+        "physicalExam": {"airway": "Patent", "breathing": "Normal", "circulation": "Regular, strong pulse", "neuro": "Right-sided weakness, aphasia, GCS 13", "skin": "Warm, dry"},
+        "vitalSigns": {"HR": 84, "RR": 18, "BP": "148/86", "SpO2": 98, "Temp": 36.5, "GCS": 13, "Bgl": 5.7},
+        "caseProgression": {"withProperTreatment": "Rapid transport, stroke team activated, symptoms monitored.", "withoutProperTreatment": "Symptoms worsen, risk of airway compromise or permanent deficit.", "withIncorrectTreatment": "If time last seen well is not established, patient may miss thrombolysis window."},
+        "expectedTreatment": ["FAST assessment", "Time last seen well", "Blood glucose", "Oxygen if hypoxic", "Rapid transport to stroke center"],
+        "protocolNotes": ["Ontario BLS/ALS PCS stroke protocol: FAST, time last seen well, rapid transport.", "Do not delay for IV or ECG if not indicated."],
+        "teachersPoints": "Stroke care is time-sensitive. Early recognition and rapid transport are critical. Family anxiety can distract from priorities.",
+        "clinicalReasoning": "This patient has classic ischemic stroke symptoms. Early recognition, time last seen well, and protocol-driven care are essential.",
+        "scenarioRationale": "Teaches stroke recognition, time management, and family communication.",
+        "learningObjectives": ["Recognize ischemic stroke symptoms", "Prioritize time last seen well", "Manage family anxiety", "Escalate care per protocol"],
+        "selfReflectionPrompts": ["How did you establish time last seen well?", "What clues pointed to stroke?", "How did you ensure rapid transport?", "What would you do differently if symptoms progressed?"],
+        "grsAnchors": {"situationalAwareness": {"3": ["Recognizes weakness but underestimates stroke risk.", "Misses time last seen well.", "Delays transport for unnecessary interventions."], "5": ["Identifies stroke and time sensitivity.", "Maintains calm, manages family, and plans for escalation.", "Balances scene control with clinical care."], "7": ["Anticipates rapid deterioration and leads a coordinated stroke response.", "Integrates scene, physiologic, and social factors.", "Maintains high awareness of subtle changes and adjusts care dynamically."]}, "historyGathering": {"3": ["Obtains only a partial story from spouse.", "Misses timeline and prior health details.", "Relies on patient for answers despite aphasia."], "5": ["Uses spouse to clarify timeline, symptoms, and prior health.", "Confirms sudden onset and identifies time last seen well.", "Integrates collateral history into risk assessment."], "7": ["Extracts a concise, high-value timeline despite scene stress.", "Uses spouse support efficiently to clarify risk and guide care.", "Integrates history directly into neuro and transport decisions."]}, "patientAssessment": {"3": ["Performs a basic assessment but incompletely trends neuro status.", "Misses the significance of aphasia as a red flag.", "Reassessment is inconsistent."], "5": ["Performs structured neuro assessment including FAST.", "Uses serial reassessment to track improvement or worsening.", "Recognizes aphasia as a warning sign and escalates care."], "7": ["Builds a coherent assessment from neuro, perfusion, and scene context.", "Detects subtle changes early and adjusts plan proactively.", "Maintains high-quality reassessment cadence."]}, "decisionMaking": {"3": ["Removes patient from scene but delays transport.", "Anchors on anxiety as cause rather than stroke.", "Transport decision is delayed or not adjusted after persistent symptoms."], "5": ["Keeps patient calm, initiates rapid transport, and plans for escalation.", "Plans rapid transport and keeps spouse informed.", "Adjusts care plan based on reassessment."], "7": ["Executes a decisive, well-sequenced plan prioritizing time, neuro, and transport.", "Anticipates deterioration and prepares for escalation before instability occurs.", "Leads team and spouse in a coordinated, high-quality response."]}, "communication": {"3": ["Provides basic updates but does not clearly explain urgency to spouse.", "Role allocation during management is inconsistent.", "Handoff omits key neuro and trend details."], "5": ["Communicates clearly with spouse about neuro, time, and transport plan.", "Keeps spouse informed and calm.", "Delivers organized handoff with timeline, neuro, and response."], "7": ["Uses calm, directive communication to coordinate care in a stressful night setting.", "Maintains closed-loop communication across all phases.", "Provides a concise, high-value handoff for stroke management."]}},
+        "directiveSources": ["BLS PCS 3.4 (2023)", "ALS PCS 5.4 (2025)", "OBHG ALS PCS Companion v5.4 (2025)"]
+      },
+      {
+        "title": "Night Shift: Pediatric DKA with Altered Mental Status",
+        "generationMetadata": {"semester": "3", "complexity": "Complex", "callType": "Medical", "environment": "Home", "hasMeds": false, "vitalSetCount": 4, "cueDensity": 0},
+        "scenarioIntro": "A 12-year-old girl with type 1 diabetes is found confused and vomiting at home after missing insulin doses. Crew must recognize DKA, manage airway risk, and address family anxiety, following Ontario protocol.",
+        "callInformation": {"type": "Medical", "location": "Home bedroom", "time": "03:30", "dispatchNotes": "Child confused, vomiting, diabetic", "hazardsOrFlags": "Dim lighting, anxious parents", "crewNotes": "Night shift pediatric DKA. Prioritize airway, glucose, and rapid transport.", "environment": "Home", "ecgInterpretation": "Sinus Tachycardia"},
+        "incidentNarrative": "Crew arrives to find a 12-year-old girl confused, vomiting, and breathing rapidly. Parents report she missed her evening insulin and has been unwell for two days.",
+        "patientPresentation": "Lying in bed, confused, rapid deep breathing, fruity breath, dry mucous membranes.",
+        "patientDemographics": {"age": 12, "sex": "Female", "weight": "38 kg", "appearance": "Confused, tachypneic, dehydrated", "chiefComplaint": "Confusion and vomiting"},
+        "sceneArrival": {"sceneEnergy": "Anxious, parents present"},
+        "firstImpression": {"initialRedFlags": ["Confusion", "Vomiting", "Known diabetes", "Nighttime presentation"]},
+        "initialAssessment": {"immediatePriorities": ["Airway protection", "Blood glucose", "Oxygen if hypoxic", "Rapid transport"]},
+        "historyGathering": {"sceneContextClues": ["Missed insulin", "Recent illness", "Polyuria, polydipsia"]},
+        "secondaryAssessment": {"evolvingFindings": ["Confusion worsens if not treated; risk of airway loss"]},
+        "additionalAssessments": ["Serial neuro checks", "Monitor for hypovolemic shock"],
+        "transportPhase": {"handoffConsiderations": "Communicate glucose, mental status, and family anxiety."},
+        "opqrst": {"onset": "Gradual over 2 days", "provocation": "Missed insulin", "quality": "Confusion, vomiting, deep breathing", "radiation": "N/A", "severity": "Severe", "time": "Acute nighttime event"},
+        "sample": {"signsAndSymptoms": "Confusion, vomiting, deep breathing", "allergies": "None known", "medications": "Insulin", "pastMedicalHistory": "Type 1 diabetes", "lastOralIntake": "Lunch", "eventsLeadingUp": "Missed insulin, recent illness"},
+        "medications": ["Insulin"],
+        "allergies": [],
+        "pastMedicalHistory": ["Type 1 diabetes"],
+        "physicalExam": {"airway": "Patent, risk of loss", "breathing": "Rapid, deep (Kussmaul)", "circulation": "Tachycardic, dry mucous membranes", "neuro": "Confused, GCS 12", "skin": "Dry, warm"},
+        "vitalSigns": {"HR": 128, "RR": 32, "BP": "98/60", "SpO2": 97, "Temp": 37.3, "GCS": 12, "Bgl": 22.4},
+        "caseProgression": {"withProperTreatment": "Airway protected, rapid transport, fluids started in hospital.", "withoutProperTreatment": "Confusion worsens, risk of airway loss and arrest.", "withIncorrectTreatment": "If glucose is given instead of transport, acidosis worsens."},
+        "expectedTreatment": ["Airway protection", "Monitor glucose", "Oxygen if hypoxic", "Rapid transport to hospital"],
+        "protocolNotes": ["Ontario BLS/ALS PCS DKA protocol: Airway, rapid transport, do not give glucose unless hypoglycemic.", "Night shift calls may have increased family anxiety."],
+        "teachersPoints": "DKA can present with confusion and vomiting. Airway risk is high. Do not give glucose unless hypoglycemic.",
+        "clinicalReasoning": "This patient is in DKA with altered mental status. Early airway management and rapid transport are critical.",
+        "scenarioRationale": "Teaches DKA recognition, airway management, and family communication.",
+        "learningObjectives": ["Recognize DKA in children", "Prioritize airway and rapid transport", "Manage family anxiety", "Escalate care per protocol"],
+        "selfReflectionPrompts": ["How did you recognize DKA?", "What clues pointed to airway risk?", "How did you ensure rapid transport?", "What would you do differently if confusion worsened?"],
+        "grsAnchors": {"situationalAwareness": {"3": ["Recognizes confusion but underestimates DKA risk.", "Misses airway risk.", "Delays transport for unnecessary interventions."], "5": ["Identifies DKA and airway risk.", "Maintains calm, manages family, and plans for escalation.", "Balances scene control with clinical care."], "7": ["Anticipates rapid deterioration and leads a coordinated DKA response.", "Integrates scene, physiologic, and social factors.", "Maintains high awareness of subtle changes and adjusts care dynamically."]}, "historyGathering": {"3": ["Obtains only a partial story from parents.", "Misses timeline and prior health details.", "Relies on patient for answers despite confusion."], "5": ["Uses parents to clarify timeline, symptoms, and prior health.", "Confirms missed insulin and identifies gradual onset.", "Integrates collateral history into risk assessment."], "7": ["Extracts a concise, high-value timeline despite scene stress.", "Uses parent support efficiently to clarify risk and guide care.", "Integrates history directly into airway and transport decisions."]}, "patientAssessment": {"3": ["Performs a basic assessment but incompletely trends neuro and airway status.", "Misses the significance of vomiting as a red flag.", "Reassessment is inconsistent."], "5": ["Performs structured neuro and airway assessment.", "Uses serial reassessment to track improvement or worsening.", "Recognizes vomiting as a warning sign and escalates care."], "7": ["Builds a coherent assessment from neuro, airway, perfusion, and scene context.", "Detects subtle changes early and adjusts plan proactively.", "Maintains high-quality reassessment cadence."]}, "decisionMaking": {"3": ["Removes patient from scene but delays transport.", "Anchors on confusion as behavioral rather than DKA.", "Transport decision is delayed or not adjusted after persistent vomiting."], "5": ["Keeps airway protected, initiates rapid transport, and plans for escalation.", "Plans rapid transport and keeps parents informed.", "Adjusts care plan based on reassessment."], "7": ["Executes a decisive, well-sequenced plan prioritizing airway, rapid transport, and monitoring.", "Anticipates deterioration and prepares for escalation before instability occurs.", "Leads team and parents in a coordinated, high-quality response."]}, "communication": {"3": ["Provides basic updates but does not clearly explain urgency to parents.", "Role allocation during management is inconsistent.", "Handoff omits key airway and trend details."], "5": ["Communicates clearly with parents about airway, DKA, and transport plan.", "Keeps parents informed and calm.", "Delivers organized handoff with timeline, airway, and response."], "7": ["Uses calm, directive communication to coordinate care in a stressful night setting.", "Maintains closed-loop communication across all phases.", "Provides a concise, high-value handoff for DKA management."]}},
+        "directiveSources": ["BLS PCS 3.4 (2023)", "ALS PCS 5.4 (2025)", "OBHG ALS PCS Companion v5.4 (2025)"]
+      },
+      {
+        "title": "Night Shift: Industrial Arm Amputation",
+        "generationMetadata": {"semester": "4", "complexity": "Complex", "callType": "Trauma", "environment": "Industrial", "hasMeds": false, "vitalSetCount": 4, "cueDensity": 0},
+        "scenarioIntro": "A 41-year-old male suffers a traumatic arm amputation at a factory overnight. Crew must manage hemorrhage, scene safety, and rapid transport, following Ontario trauma protocol.",
+        "callInformation": {"type": "Trauma", "location": "Factory floor", "time": "02:20", "dispatchNotes": "Male, arm amputation, heavy bleeding", "hazardsOrFlags": "Machinery, blood on floor, coworkers present", "crewNotes": "Night shift industrial trauma. Prioritize hemorrhage control, scene safety, and rapid transport.", "environment": "Industrial", "ecgInterpretation": "Sinus Tachycardia"},
+        "incidentNarrative": "Crew arrives to a factory floor where a 41-year-old male has suffered a complete left arm amputation at the mid-humerus by a machine. Coworkers have applied a makeshift tourniquet. Blood is pooling on the floor.",
+        "patientPresentation": "Sitting, pale, holding left arm stump, soaked in blood, anxious, tachypneic.",
+        "patientDemographics": {"age": 41, "sex": "Male", "weight": "90 kg", "appearance": "Pale, anxious, bleeding", "chiefComplaint": "Traumatic arm amputation"},
+        "sceneArrival": {"sceneEnergy": "Chaotic, coworkers present"},
+        "firstImpression": {"initialRedFlags": ["Amputation", "Severe bleeding", "Nighttime presentation"]},
+        "initialAssessment": {"immediatePriorities": ["Hemorrhage control", "Tourniquet application", "Shock management", "Rapid transport"]},
+        "historyGathering": {"sceneContextClues": ["Machinery accident", "Coworker tourniquet", "No prior health issues"]},
+        "secondaryAssessment": {"evolvingFindings": ["Bleeding recurs if tourniquet fails; risk of shock"]},
+        "additionalAssessments": ["Serial vital signs", "Monitor for shock progression"],
+        "transportPhase": {"handoffConsiderations": "Communicate mechanism, bleeding control, and coworker actions."},
+        "opqrst": {"onset": "During machine operation", "provocation": "Machinery accident", "quality": "Severe pain, bleeding", "radiation": "N/A", "severity": "Severe", "time": "Acute nighttime event"},
+        "sample": {"signsAndSymptoms": "Bleeding, pain, anxiety", "allergies": "None known", "medications": "None", "pastMedicalHistory": "None", "lastOralIntake": "Snack at midnight", "eventsLeadingUp": "Operating machine, then accident"},
+        "medications": [],
+        "allergies": [],
+        "pastMedicalHistory": [],
+        "physicalExam": {"airway": "Patent", "breathing": "Tachypneic", "circulation": "Severe bleeding, weak pulse", "neuro": "Alert, anxious", "skin": "Pale, cool"},
+        "vitalSigns": {"HR": 132, "RR": 28, "BP": "88/54", "SpO2": 97, "Temp": 36.1, "GCS": 15, "Bgl": 5.5},
+        "caseProgression": {"withProperTreatment": "Bleeding controlled, rapid transport, limb preserved for reattachment.", "withoutProperTreatment": "Bleeding recurs, shock worsens, risk of death.", "withIncorrectTreatment": "If tourniquet is not maintained, bleeding is fatal."},
+        "expectedTreatment": ["Hemorrhage control", "Tourniquet application", "Shock management", "Rapid transport to trauma center"],
+        "protocolNotes": ["Ontario BLS/ALS PCS trauma protocol: Hemorrhage control, tourniquet, rapid transport.", "Night shift calls may have increased scene hazards."],
+        "teachersPoints": "Industrial trauma requires rapid hemorrhage control and scene safety. Coworker actions can help or hinder care.",
+        "clinicalReasoning": "This patient has a traumatic amputation with severe bleeding. Early tourniquet and rapid transport are critical.",
+        "scenarioRationale": "Teaches industrial trauma management, hemorrhage control, and scene safety.",
+        "learningObjectives": ["Recognize traumatic amputation and shock", "Apply tourniquet and control bleeding", "Manage chaotic industrial scenes", "Escalate care per protocol"],
+        "selfReflectionPrompts": ["How did you control bleeding?", "What clues pointed to shock?", "How did you manage the scene?", "What would you do differently if bleeding recurred?"],
+        "grsAnchors": {"situationalAwareness": {"3": ["Recognizes amputation but underestimates bleeding risk.", "Misses coworker actions as a factor.", "Delays tourniquet or transport."], "5": ["Identifies bleeding and shock risk.", "Maintains calm, manages coworkers, and plans for escalation.", "Balances scene control with clinical care."], "7": ["Anticipates rapid deterioration and leads a coordinated trauma response.", "Integrates scene, physiologic, and social factors.", "Maintains high awareness of subtle changes and adjusts care dynamically."]}, "historyGathering": {"3": ["Obtains only a partial story from coworkers.", "Misses timeline and prior health details.", "Relies on patient for answers despite distress."], "5": ["Uses coworkers to clarify timeline, symptoms, and prior health.", "Confirms mechanism and identifies tourniquet use.", "Integrates collateral history into risk assessment."], "7": ["Extracts a concise, high-value timeline despite scene stress.", "Uses coworker support efficiently to clarify risk and guide care.", "Integrates history directly into trauma and transport decisions."]}, "patientAssessment": {"3": ["Performs a basic assessment but incompletely trends bleeding and shock status.", "Misses the significance of weak pulse as a red flag.", "Reassessment is inconsistent."], "5": ["Performs structured trauma and shock assessment.", "Uses serial reassessment to track improvement or worsening.", "Recognizes weak pulse as a warning sign and escalates care."], "7": ["Builds a coherent assessment from trauma, shock, perfusion, and scene context.", "Detects subtle changes early and adjusts plan proactively.", "Maintains high-quality reassessment cadence."]}, "decisionMaking": {"3": ["Removes patient from scene but delays tourniquet or transport.", "Anchors on pain as main issue rather than bleeding.", "Transport decision is delayed or not adjusted after persistent bleeding."], "5": ["Keeps tourniquet in place, initiates rapid transport, and plans for escalation.", "Plans rapid transport and keeps coworkers informed.", "Adjusts care plan based on reassessment."], "7": ["Executes a decisive, well-sequenced plan prioritizing tourniquet, shock, and transport.", "Anticipates deterioration and prepares for escalation before instability occurs.", "Leads team and coworkers in a coordinated, high-quality response."]}, "communication": {"3": ["Provides basic updates but does not clearly explain urgency to coworkers.", "Role allocation during management is inconsistent.", "Handoff omits key bleeding and trend details."], "5": ["Communicates clearly with coworkers about bleeding, tourniquet, and transport plan.", "Keeps coworkers informed and calm.", "Delivers organized handoff with timeline, bleeding, and response."], "7": ["Uses calm, directive communication to coordinate care in a stressful night setting.", "Maintains closed-loop communication across all phases.", "Provides a concise, high-value handoff for trauma management."]}},
+        "directiveSources": ["BLS PCS 3.4 (2023)", "ALS PCS 5.4 (2025)", "OBHG ALS PCS Companion v5.4 (2025)"]
+      },
+      {
+        "title": "Night Shift: Mass Carbon Monoxide Poisoning at Apartment",
+        "generationMetadata": {"semester": "4", "complexity": "Complex", "callType": "Toxicology", "environment": "Home", "hasMeds": false, "vitalSetCount": 4, "cueDensity": 0},
+        "scenarioIntro": "Multiple family members are found unconscious in an apartment at 06:00. Crew must recognize CO poisoning, manage multiple patients, and coordinate with fire and police, following Ontario protocol.",
+        "callInformation": {"type": "Toxicology", "location": "Apartment", "time": "06:00", "dispatchNotes": "Multiple unresponsive, possible gas leak", "hazardsOrFlags": "CO risk, fire, multiple patients", "crewNotes": "Night shift mass CO poisoning. Prioritize scene safety, oxygen, and multi-patient management.", "environment": "Home", "ecgInterpretation": "Sinus Tachycardia"},
+        "incidentNarrative": "Crew arrives to an apartment where three family members are unresponsive, and two are confused. Firefighters are ventilating the scene. CO detector is alarming.",
+        "patientPresentation": "Unresponsive adults and children, cherry red lips, tachypnea, confusion in survivors.",
+        "patientDemographics": {"age": "Various", "sex": "Mixed", "weight": "Various", "appearance": "Unresponsive or confused, cherry red lips", "chiefComplaint": "Unconsciousness, confusion"},
+        "sceneArrival": {"sceneEnergy": "Chaotic, fire and police present"},
+        "firstImpression": {"initialRedFlags": ["Multiple unresponsive", "CO risk", "Nighttime presentation"]},
+        "initialAssessment": {"immediatePriorities": ["Scene safety", "High-flow oxygen", "Triage", "Rapid transport"]},
+        "historyGathering": {"sceneContextClues": ["CO detector alarm", "No trauma", "All found in same room"]},
+        "secondaryAssessment": {"evolvingFindings": ["Improvement with oxygen; risk of delayed neuro effects"]},
+        "additionalAssessments": ["Serial neuro checks", "Monitor for delayed symptoms"],
+        "transportPhase": {"handoffConsiderations": "Communicate number of patients, CO exposure, and response to oxygen."},
+        "opqrst": {"onset": "Unknown, found unresponsive", "provocation": "CO exposure", "quality": "Unconsciousness, confusion", "radiation": "N/A", "severity": "Severe", "time": "Acute nighttime event"},
+        "sample": {"signsAndSymptoms": "Unconsciousness, confusion, cherry red lips", "allergies": "Unknown", "medications": "Unknown", "pastMedicalHistory": "Unknown", "lastOralIntake": "Unknown", "eventsLeadingUp": "All found in same room, CO alarm sounding"},
+        "medications": [],
+        "allergies": [],
+        "pastMedicalHistory": [],
+        "physicalExam": {"airway": "Patent in most, risk in unresponsive", "breathing": "Tachypneic, shallow in some", "circulation": "Tachycardic, cherry red lips", "neuro": "Unresponsive or confused", "skin": "Cherry red, warm"},
+        "vitalSigns": {"HR": 124, "RR": 28, "BP": "102/60", "SpO2": 98, "Temp": 36.6, "GCS": 6, "Bgl": 5.0},
+        "caseProgression": {"withProperTreatment": "Oxygen given, most regain consciousness, all transported for monitoring.", "withoutProperTreatment": "Remain unresponsive, risk of death or permanent deficit.", "withIncorrectTreatment": "If scene is not ventilated, rescuers also exposed."},
+        "expectedTreatment": ["Scene safety", "High-flow oxygen", "Triage and manage multiple patients", "Rapid transport to hospital"],
+        "protocolNotes": ["Ontario BLS/ALS PCS CO poisoning protocol: Scene safety, high-flow oxygen, multi-patient management.", "Night shift calls may have increased scene hazards and delayed discovery."],
+        "teachersPoints": "CO poisoning can present with multiple unresponsive patients. Scene safety and oxygen are priorities.",
+        "clinicalReasoning": "This is a classic CO poisoning with multiple victims. Early oxygen and scene safety are critical.",
+        "scenarioRationale": "Teaches CO poisoning recognition, scene safety, and multi-patient management.",
+        "learningObjectives": ["Recognize CO poisoning and scene risk", "Prioritize oxygen and safety", "Manage multiple patients", "Escalate care per protocol"],
+        "selfReflectionPrompts": ["How did you ensure scene safety?", "What clues pointed to CO poisoning?", "How did you manage multiple patients?", "What would you do differently if more patients were found?"],
+        "grsAnchors": {"situationalAwareness": {"3": ["Recognizes unresponsiveness but underestimates CO risk.", "Misses scene safety hazard.", "Delays oxygen or triage."], "5": ["Identifies CO poisoning and scene risk.", "Maintains calm, manages scene, and plans for escalation.", "Balances scene control with clinical care."], "7": ["Anticipates rapid deterioration and leads a coordinated multi-patient response.", "Integrates scene, physiologic, and social factors.", "Maintains high awareness of subtle changes and adjusts care dynamically."]}, "historyGathering": {"3": ["Obtains only a partial story from bystanders.", "Misses timeline and prior health details.", "Relies on fire/police for answers despite confusion."], "5": ["Uses fire/police to clarify timeline, symptoms, and prior health.", "Confirms CO alarm and identifies number of patients.", "Integrates collateral history into risk assessment."], "7": ["Extracts a concise, high-value timeline despite scene stress.", "Uses fire/police support efficiently to clarify risk and guide care.", "Integrates history directly into triage and transport decisions."]}, "patientAssessment": {"3": ["Performs a basic assessment but incompletely trends neuro and respiratory status.", "Misses the significance of cherry red lips as a red flag.", "Reassessment is inconsistent."], "5": ["Performs structured neuro and respiratory assessment.", "Uses serial reassessment to track improvement or worsening.", "Recognizes cherry red lips as a warning sign and escalates care."], "7": ["Builds a coherent assessment from neuro, respiratory, perfusion, and scene context.", "Detects subtle changes early and adjusts plan proactively.", "Maintains high-quality reassessment cadence."]}, "decisionMaking": {"3": ["Removes patients from scene but delays oxygen or triage.", "Anchors on trauma as cause rather than CO poisoning.", "Transport decision is delayed or not adjusted after persistent unresponsiveness."], "5": ["Keeps scene safe, initiates oxygen, and plans for escalation.", "Plans rapid transport and keeps fire/police informed.", "Adjusts care plan based on reassessment."], "7": ["Executes a decisive, well-sequenced plan prioritizing oxygen, triage, and transport.", "Anticipates deterioration and prepares for escalation before instability occurs.", "Leads team and fire/police in a coordinated, high-quality response."]}, "communication": {"3": ["Provides basic updates but does not clearly explain urgency to fire/police.", "Role allocation during management is inconsistent.", "Handoff omits key oxygen and trend details."], "5": ["Communicates clearly with fire/police about oxygen, triage, and transport plan.", "Keeps fire/police informed and calm.", "Delivers organized handoff with timeline, oxygen, and response."], "7": ["Uses calm, directive communication to coordinate care in a stressful night setting.", "Maintains closed-loop communication across all phases.", "Provides a concise, high-value handoff for CO poisoning management."]}},
+        "directiveSources": ["BLS PCS 3.4 (2023)", "ALS PCS 5.4 (2025)", "OBHG ALS PCS Companion v5.4 (2025)"]
+      }
+    ,
+    {
+      "title": "Night Shift: Teen Diabetic Emergency at the Rink",
+      "generationMetadata": {
+        "semester": "2",
+        "complexity": "Moderate",
+        "callType": "Medical",
+        "environment": "Public Place",
+        "hasMeds": true,
+        "vitalSetCount": 3,
+        "cueDensity": 0
+      },
+      "scenarioIntro": "A 15-year-old collapses at a community ice rink during a late-night hockey practice. Crew must manage hypoglycemia, scene crowd control, and anxious teammates, following Ontario BLS/ALS PCS protocols.",
+      "callInformation": {
+        "type": "Medical",
+        "location": "Community ice rink",
+        "time": "22:15",
+        "dispatchNotes": "Teen collapsed, unresponsive, teammates present, coach on scene",
+        "hazardsOrFlags": "Cold environment, slippery floor, crowd of teens",
+        "crewNotes": "Night shift pediatric diabetic emergency. Prioritize glucose check, airway, and crowd management.",
+        "environment": "Public Place",
+        "ecgInterpretation": "Sinus Tachycardia"
+      },
+      "incidentNarrative": "Crew arrives to find a 15-year-old male, unresponsive on the ice, surrounded by teammates and a panicked coach. The teen has a history of type 1 diabetes and missed dinner before practice.",
+      "patientPresentation": "Unresponsive, pale, diaphoretic, shallow breathing. Teammates report confusion and slurred speech before collapse.",
+      "patientDemographics": {
+        "age": 15,
+        "sex": "Male",
+        "weight": "60 kg",
+        "appearance": "Unresponsive, diaphoretic, pale",
+        "chiefComplaint": "Collapse at hockey practice"
+      },
+      "sceneArrival": {"sceneEnergy": "Chaotic, cold, crowded"},
+      "firstImpression": {"initialRedFlags": ["Unresponsive", "Diaphoretic", "Known diabetes", "Nighttime event"]},
+      "initialAssessment": {"immediatePriorities": ["Airway protection", "Check blood glucose", "Remove from ice", "Crowd control"]},
+      "historyGathering": {"sceneContextClues": ["Missed meal", "History of diabetes", "Recent exertion"]},
+      "secondaryAssessment": {"evolvingFindings": ["Improves rapidly with glucose; risk of airway compromise if untreated"]},
+      "additionalAssessments": ["Serial neuro checks", "Monitor for recurrent hypoglycemia"],
+      "transportPhase": {"handoffConsiderations": "Communicate glucose trend, response to treatment, and scene hazards."},
+      "opqrst": {"onset": "During hockey practice", "provocation": "Missed meal, exertion", "quality": "Unresponsive, diaphoretic", "radiation": "N/A", "severity": "Severe", "time": "Acute nighttime event"},
+      "sample": {"signsAndSymptoms": "Unresponsive, pale, diaphoretic", "allergies": "None known", "medications": "Insulin", "pastMedicalHistory": "Type 1 diabetes", "lastOralIntake": "Lunch", "eventsLeadingUp": "Missed dinner, hockey practice"},
+      "medications": ["Insulin"],
+      "allergies": [],
+      "pastMedicalHistory": ["Type 1 diabetes"],
+      "physicalExam": {"airway": "Patent, risk of compromise", "breathing": "Shallow, regular", "circulation": "Tachycardic, cap refill 2s", "neuro": "Unresponsive, GCS 8", "skin": "Pale, diaphoretic"},
+      "vitalSigns": {"HR": 110, "RR": 16, "BP": "104/62", "SpO2": 97, "Temp": 36.2, "GCS": 8, "Bgl": 2.1},
+      "caseProgression": {"withProperTreatment": "Glucose administered, patient regains consciousness, transported for monitoring.", "withoutProperTreatment": "Remains unresponsive, risk of seizure or airway loss.", "withIncorrectTreatment": "If not removed from ice, hypothermia complicates recovery."},
+      "expectedTreatment": ["Airway protection", "Administer oral/IV glucose", "Remove from cold environment", "Monitor for recurrence", "Transport with ongoing neuro checks"],
+      "protocolNotes": ["Ontario BLS PCS diabetic emergency protocol: Glucose as soon as possible, airway protection, monitor for recurrence.", "Night shift calls may have increased crowd and environmental hazards."],
+      "teachersPoints": "Nighttime diabetic emergencies require rapid glucose administration, airway vigilance, and scene control.",
+      "clinicalReasoning": "This teen is hypoglycemic after missed meal and exertion. Early glucose and airway management are critical. Ontario BLS PCS compliance is required.",
+      "scenarioRationale": "Teaches diabetic emergency management, crowd control, and environmental hazard mitigation at night.",
+      "learningObjectives": ["Recognize hypoglycemia and airway risk", "Manage scene hazards and crowd", "Communicate with anxious bystanders at night", "Escalate care per protocol"],
+      "selfReflectionPrompts": ["How did you manage the crowd and environment?", "What clues pointed to hypoglycemia?", "How did you ensure airway safety?", "What would you do differently if glucose was not available?"],
+      "grsAnchors": {"situationalAwareness": {"3": ["Recognizes collapse but underestimates hypoglycemia and cold risk.", "Misses crowd hazards.", "Allows bystander panic to distract from priorities."], "5": ["Identifies hypoglycemia and airway risk.", "Maintains calm, manages crowd, and plans for escalation.", "Balances scene control with clinical care."], "7": ["Anticipates rapid deterioration and leads a coordinated response.", "Integrates environmental, physiologic, and social factors.", "Maintains high awareness of subtle changes and adjusts care dynamically."]}, "historyGathering": {"3": ["Obtains only a partial story from coach.", "Misses timeline and prior health details.", "Relies on teammates for answers despite confusion."], "5": ["Uses coach to clarify timeline, symptoms, and prior health.", "Confirms missed meal and identifies sudden collapse.", "Integrates collateral history into risk assessment."], "7": ["Extracts a concise, high-value timeline despite scene stress.", "Uses bystander support efficiently to clarify risk and guide care.", "Integrates history directly into airway and transport decisions."]}, "patientAssessment": {"3": ["Performs a basic assessment but incompletely trends neuro and airway status.", "Misses the significance of unresponsiveness as a red flag.", "Reassessment is inconsistent."], "5": ["Performs structured neuro and airway assessment.", "Uses serial reassessment to track improvement or worsening.", "Recognizes unresponsiveness as a warning sign and escalates care."], "7": ["Builds a coherent assessment from neuro, airway, perfusion, and scene context.", "Detects subtle changes early and adjusts plan proactively.", "Maintains high-quality reassessment cadence."]}, "decisionMaking": {"3": ["Removes patient from ice but delays glucose administration.", "Anchors on trauma as cause rather than hypoglycemia.", "Transport decision is delayed or not adjusted after persistent unresponsiveness."], "5": ["Keeps airway protected, initiates glucose, and plans for escalation.", "Plans rapid transport and keeps coach informed.", "Adjusts care plan based on reassessment."], "7": ["Executes a decisive, well-sequenced plan prioritizing glucose, airway, and transport.", "Anticipates deterioration and prepares for escalation before instability occurs.", "Leads team and bystanders in a coordinated, high-quality response."]}, "communication": {"3": ["Provides basic updates but does not clearly explain urgency to coach or team.", "Role allocation during management is inconsistent.", "Handoff omits key glucose and trend details."], "5": ["Communicates clearly with coach and team about airway, glucose, and transport plan.", "Keeps bystanders informed and calm.", "Delivers organized handoff with timeline, glucose, and response."], "7": ["Uses calm, directive communication to coordinate care in a stressful night setting.", "Maintains closed-loop communication across all phases.", "Provides a concise, high-value handoff for diabetic emergency management."]}},
+      "directiveSources": ["BLS PCS 3.4 (2023)", "ALS PCS 5.4 (2025)", "OBHG ALS PCS Companion v5.4 (2025)"]
+    },
+    {
+      "title": "Night Shift: Elderly Fall with Anticoagulant Bleed",
+      "generationMetadata": {"semester": "3", "complexity": "Complex", "callType": "Trauma", "environment": "Home", "hasMeds": true, "vitalSetCount": 4, "cueDensity": 0},
+      "scenarioIntro": "An 82-year-old on warfarin falls in the bathroom at 03:00. Crew must manage head injury, anticoagulant risk, and family anxiety, following Ontario trauma protocols.",
+      "callInformation": {"type": "Trauma", "location": "Bathroom", "time": "03:00", "dispatchNotes": "Elderly female, fall, head injury, on blood thinners", "hazardsOrFlags": "Wet floor, small space, anxious family", "crewNotes": "Night shift geriatric trauma. Prioritize bleeding risk, neuro checks, and safe extrication.", "environment": "Home", "ecgInterpretation": "Sinus Rhythm"},
+      "incidentNarrative": "Crew arrives to find an elderly woman on the bathroom floor, bleeding from a scalp wound, confused, and with a large bruise on her arm. Family is present and anxious.",
+      "patientPresentation": "Confused, pale, bleeding from scalp, large arm hematoma, slow to respond.",
+      "patientDemographics": {"age": 82, "sex": "Female", "weight": "54 kg", "appearance": "Confused, bleeding, bruised", "chiefComplaint": "Fall with head injury"},
+      "sceneArrival": {"sceneEnergy": "Tense, cramped, anxious family"},
+      "firstImpression": {"initialRedFlags": ["Head injury", "Anticoagulant use", "Confusion", "Nighttime presentation"]},
+      "initialAssessment": {"immediatePriorities": ["Control bleeding", "Neuro checks", "Safe extrication", "Monitor for shock"]},
+      "historyGathering": {"sceneContextClues": ["Warfarin use", "History of falls", "No witnessed seizure"]},
+      "secondaryAssessment": {"evolvingFindings": ["Confusion worsens if not treated; bleeding persists if not controlled"]},
+      "additionalAssessments": ["Serial neuro checks", "Monitor for expanding hematoma"],
+      "transportPhase": {"handoffConsiderations": "Communicate anticoagulant use, neuro trend, and bleeding control."},
+      "opqrst": {"onset": "During bathroom trip at night", "provocation": "Slipped on wet floor", "quality": "Confused, bleeding", "radiation": "N/A", "severity": "Moderate", "time": "Acute nighttime event"},
+      "sample": {"signsAndSymptoms": "Confusion, bleeding, bruising", "allergies": "None known", "medications": "Warfarin", "pastMedicalHistory": "Atrial fibrillation, hypertension", "lastOralIntake": "Evening snack", "eventsLeadingUp": "Got up to use bathroom, slipped"},
+      "medications": ["Warfarin"],
+      "allergies": [],
+      "pastMedicalHistory": ["Atrial fibrillation", "Hypertension"],
+      "physicalExam": {"airway": "Patent", "breathing": "Normal", "circulation": "Slow cap refill, bleeding scalp wound", "neuro": "Confused, GCS 13", "skin": "Pale, cool"},
+      "vitalSigns": {"HR": 88, "RR": 18, "BP": "112/64", "SpO2": 96, "Temp": 36.0, "GCS": 13, "Bgl": 5.4},
+      "caseProgression": {"withProperTreatment": "Bleeding controlled, neuro status monitored, safe extrication, transported for CT.", "withoutProperTreatment": "Bleeding worsens, confusion increases, risk of shock.", "withIncorrectTreatment": "If not monitored, expanding hematoma and shock develop."},
+      "expectedTreatment": ["Control bleeding", "Serial neuro checks", "Safe extrication", "Monitor for shock", "Transport with ongoing monitoring"],
+      "protocolNotes": ["Ontario trauma protocol: Bleeding control, neuro checks, safe extrication, monitor for shock.", "Night shift calls may have increased family anxiety and environmental hazards."],
+      "teachersPoints": "Nighttime geriatric trauma requires bleeding control, neuro vigilance, and safe movement.",
+      "clinicalReasoning": "This patient is at high risk for intracranial bleed due to anticoagulant use. Early bleeding control and neuro monitoring are critical. Ontario trauma protocol compliance is required.",
+      "scenarioRationale": "Teaches trauma management, anticoagulant risk, and family communication at night.",
+      "learningObjectives": ["Recognize bleeding risk in anticoagulated patients", "Control bleeding and monitor neuro status", "Communicate with anxious family at night", "Escalate care per protocol"],
+      "selfReflectionPrompts": ["How did you control bleeding and monitor neuro status?", "What clues pointed to anticoagulant risk?", "How did you ensure safe extrication?", "What would you do differently if confusion worsened?"],
+      "grsAnchors": {"situationalAwareness": {"3": ["Recognizes fall but underestimates bleeding and neuro risk.", "Misses anticoagulant hazard.", "Allows family panic to distract from priorities."], "5": ["Identifies bleeding and neuro risk.", "Maintains calm, manages family, and plans for escalation.", "Balances scene control with clinical care."], "7": ["Anticipates rapid deterioration and leads a coordinated response.", "Integrates environmental, physiologic, and social factors.", "Maintains high awareness of subtle changes and adjusts care dynamically."]}, "historyGathering": {"3": ["Obtains only a partial story from family.", "Misses timeline and prior health details.", "Relies on patient for answers despite confusion."], "5": ["Uses family to clarify timeline, symptoms, and prior health.", "Confirms anticoagulant use and identifies sudden fall.", "Integrates collateral history into risk assessment."], "7": ["Extracts a concise, high-value timeline despite scene stress.", "Uses family support efficiently to clarify risk and guide care.", "Integrates history directly into bleeding and transport decisions."]}, "patientAssessment": {"3": ["Performs a basic assessment but incompletely trends neuro and bleeding status.", "Misses the significance of confusion as a red flag.", "Reassessment is inconsistent."], "5": ["Performs structured neuro and bleeding assessment.", "Uses serial reassessment to track improvement or worsening.", "Recognizes confusion as a warning sign and escalates care."], "7": ["Builds a coherent assessment from neuro, bleeding, perfusion, and scene context.", "Detects subtle changes early and adjusts plan proactively.", "Maintains high-quality reassessment cadence."]}, "decisionMaking": {"3": ["Removes patient from bathroom but delays bleeding control.", "Anchors on trauma as benign rather than anticoagulant risk.", "Transport decision is delayed or not adjusted after persistent confusion."], "5": ["Keeps bleeding controlled, initiates neuro checks, and plans for escalation.", "Plans rapid transport and keeps family informed.", "Adjusts care plan based on reassessment."], "7": ["Executes a decisive, well-sequenced plan prioritizing bleeding, neuro, and transport.", "Anticipates deterioration and prepares for escalation before instability occurs.", "Leads team and family in a coordinated, high-quality response."]}, "communication": {"3": ["Provides basic updates but does not clearly explain urgency to family.", "Role allocation during management is inconsistent.", "Handoff omits key bleeding and trend details."], "5": ["Communicates clearly with family about bleeding, neuro, and transport plan.", "Keeps family informed and calm.", "Delivers organized handoff with timeline, bleeding, and response."], "7": ["Uses calm, directive communication to coordinate care in a stressful night setting.", "Maintains closed-loop communication across all phases.", "Provides a concise, high-value handoff for trauma management."]}},
+      "directiveSources": ["BLS PCS 3.4 (2023)", "ALS PCS 5.4 (2025)", "OBHG ALS PCS Companion v5.4 (2025)"]
+    },
+    {
+      "title": "Night Shift: Pediatric Anaphylaxis at the Campground",
+      "generationMetadata": {"semester": "2", "complexity": "Moderate", "callType": "Allergic Reaction", "environment": "Outdoor", "hasMeds": true, "vitalSetCount": 3, "cueDensity": 0},
+      "scenarioIntro": "A 7-year-old develops rapid-onset anaphylaxis after eating s'mores at a night campfire. Crew must manage airway, medication administration, and scene chaos, following Ontario BLS/ALS PCS protocols.",
+      "callInformation": {"type": "Allergic Reaction", "location": "Campground", "time": "21:30", "dispatchNotes": "Child with swelling, hives, difficulty breathing, at campfire", "hazardsOrFlags": "Dark, uneven ground, multiple children", "crewNotes": "Night shift pediatric anaphylaxis. Prioritize airway, epinephrine, and scene control.", "environment": "Outdoor", "ecgInterpretation": "Sinus Tachycardia"},
+      "incidentNarrative": "Crew arrives to a dark campground where a 7-year-old girl is struggling to breathe, with facial swelling and hives. Multiple children and adults are present, some panicked.",
+      "patientPresentation": "Sitting upright, stridor, facial swelling, hives, anxious, speaking in one-word sentences.",
+      "patientDemographics": {"age": 7, "sex": "Female", "weight": "24 kg", "appearance": "Swollen face, hives, anxious", "chiefComplaint": "Difficulty breathing after eating"},
+      "sceneArrival": {"sceneEnergy": "Chaotic, dark, crowded"},
+      "firstImpression": {"initialRedFlags": ["Stridor", "Facial swelling", "Hives", "Nighttime presentation"]},
+      "initialAssessment": {"immediatePriorities": ["Airway protection", "Administer epinephrine", "Oxygen as tolerated", "Scene control"]},
+      "historyGathering": {"sceneContextClues": ["Ate s'mores", "No known allergies", "Rapid onset"]},
+      "secondaryAssessment": {"evolvingFindings": ["Improves with epinephrine; risk of airway closure if delayed"]},
+      "additionalAssessments": ["Serial airway checks", "Monitor for biphasic reaction"],
+      "transportPhase": {"handoffConsiderations": "Communicate timeline, medication given, and airway trend."},
+      "opqrst": {"onset": "After eating s'mores", "provocation": "Eating, exposure to allergen", "quality": "Swelling, stridor, hives", "radiation": "N/A", "severity": "Severe", "time": "Acute nighttime event"},
+      "sample": {"signsAndSymptoms": "Swelling, hives, stridor", "allergies": "None known", "medications": "None", "pastMedicalHistory": "No prior reactions", "lastOralIntake": "S'mores", "eventsLeadingUp": "Ate dessert, then rapid swelling"},
+      "medications": [],
+      "allergies": [],
+      "pastMedicalHistory": [],
+      "physicalExam": {"airway": "Threatened by swelling", "breathing": "Stridor, tachypneic", "circulation": "Tachycardic, cap refill 2s", "neuro": "Anxious, alert", "skin": "Hives, pale"},
+      "vitalSigns": {"HR": 128, "RR": 28, "BP": "98/60", "SpO2": 92, "Temp": 36.8, "GCS": 15, "Bgl": 5.0},
+      "caseProgression": {"withProperTreatment": "Epinephrine administered, airway improves, transported for monitoring.", "withoutProperTreatment": "Airway closes, risk of arrest.", "withIncorrectTreatment": "If not positioned upright or delayed epi, deterioration is rapid."},
+      "expectedTreatment": ["Airway protection", "Administer epinephrine IM", "Oxygen as tolerated", "Monitor for biphasic reaction", "Transport with ongoing airway checks"],
+      "protocolNotes": ["Ontario BLS PCS anaphylaxis protocol: Epinephrine as soon as possible, airway protection, monitor for biphasic reaction.", "Night shift calls may have increased scene chaos and environmental hazards."],
+      "teachersPoints": "Nighttime pediatric anaphylaxis requires rapid epinephrine, airway vigilance, and scene control.",
+      "clinicalReasoning": "This child is experiencing anaphylaxis after allergen exposure. Early epinephrine and airway management are critical. Ontario BLS PCS compliance is required.",
+      "scenarioRationale": "Teaches anaphylaxis management, airway protection, and scene control at night.",
+      "learningObjectives": ["Recognize anaphylaxis and airway risk", "Administer epinephrine promptly", "Communicate with panicked bystanders at night", "Monitor for biphasic reaction"],
+      "selfReflectionPrompts": ["How did you manage the airway and scene?", "What clues pointed to anaphylaxis?", "How did you ensure rapid epinephrine?", "What would you do differently if airway closed?"],
+      "grsAnchors": {"situationalAwareness": {"3": ["Recognizes swelling but underestimates airway risk.", "Misses scene chaos hazard.", "Allows bystander panic to distract from priorities."], "5": ["Identifies airway risk and need for epinephrine.", "Maintains calm, manages scene, and plans for escalation.", "Balances scene control with clinical care."], "7": ["Anticipates rapid deterioration and leads a coordinated response.", "Integrates environmental, physiologic, and social factors.", "Maintains high awareness of subtle changes and adjusts care dynamically."]}, "historyGathering": {"3": ["Obtains only a partial story from caregivers.", "Misses timeline and prior health details.", "Relies on child for answers despite distress."], "5": ["Uses caregivers to clarify timeline, symptoms, and prior health.", "Confirms no prior reactions and identifies sudden onset.", "Integrates collateral history into risk assessment."], "7": ["Extracts a concise, high-value timeline despite scene stress.", "Uses caregiver support efficiently to clarify risk and guide care.", "Integrates history directly into airway and transport decisions."]}, "patientAssessment": {"3": ["Performs a basic assessment but incompletely trends airway and skin status.", "Misses the significance of stridor as a red flag.", "Reassessment is inconsistent."], "5": ["Performs structured airway and skin assessment.", "Uses serial reassessment to track improvement or worsening.", "Recognizes stridor as a warning sign and escalates care."], "7": ["Builds a coherent assessment from airway, skin, perfusion, and scene context.", "Detects subtle changes early and adjusts plan proactively.", "Maintains high-quality reassessment cadence."]}, "decisionMaking": {"3": ["Removes child from scene but delays epinephrine.", "Anchors on anxiety as behavioral rather than airway risk.", "Transport decision is delayed or not adjusted after persistent stridor."], "5": ["Keeps airway protected, initiates epinephrine, and plans for escalation.", "Plans rapid transport and keeps caregivers informed.", "Adjusts care plan based on reassessment."], "7": ["Executes a decisive, well-sequenced plan prioritizing epinephrine, airway, and transport.", "Anticipates deterioration and prepares for escalation before instability occurs.", "Leads team and bystanders in a coordinated, high-quality response."]}, "communication": {"3": ["Provides basic updates but does not clearly explain urgency to caregivers.", "Role allocation during management is inconsistent.", "Handoff omits key airway and trend details."], "5": ["Communicates clearly with caregivers about airway, epinephrine, and transport plan.", "Keeps bystanders informed and calm.", "Delivers organized handoff with timeline, airway, and response."], "7": ["Uses calm, directive communication to coordinate care in a stressful night setting.", "Maintains closed-loop communication across all phases.", "Provides a concise, high-value handoff for anaphylaxis management."]}},
+      "directiveSources": ["BLS PCS 3.4 (2023)", "ALS PCS 5.4 (2025)", "OBHG ALS PCS Companion v5.4 (2025)"]
+    },
+    {
+      "title": "Night Shift: Adult Overdose in the Park",
+      "generationMetadata": {"semester": "3", "complexity": "Complex", "callType": "Toxicology", "environment": "Outdoor", "hasMeds": true, "vitalSetCount": 4, "cueDensity": 0},
+      "scenarioIntro": "A 28-year-old is found unresponsive in a city park at 02:00. Crew must manage opioid overdose, environmental exposure, and bystander safety, following Ontario BLS/ALS PCS protocols.",
+      "callInformation": {"type": "Toxicology", "location": "City park", "time": "02:00", "dispatchNotes": "Unresponsive adult, possible overdose, bystanders present", "hazardsOrFlags": "Dark, cold, unknown substances, bystanders", "crewNotes": "Night shift adult overdose. Prioritize airway, naloxone, and scene safety.", "environment": "Outdoor", "ecgInterpretation": "Sinus Bradycardia"},
+      "incidentNarrative": "Crew arrives to a dark park where a 28-year-old male is unresponsive on a bench, slow breathing, pinpoint pupils. Bystanders report he was using drugs before collapsing.",
+      "patientPresentation": "Unresponsive, slow shallow breathing, pinpoint pupils, cyanotic lips, cold skin.",
+      "patientDemographics": {"age": 28, "sex": "Male", "weight": "74 kg", "appearance": "Unresponsive, cyanotic, cold", "chiefComplaint": "Unresponsive in park"},
+      "sceneArrival": {"sceneEnergy": "Tense, dark, bystanders present"},
+      "firstImpression": {"initialRedFlags": ["Unresponsive", "Slow breathing", "Pinpoint pupils", "Nighttime presentation"]},
+      "initialAssessment": {"immediatePriorities": ["Airway protection", "Administer naloxone", "Remove from cold", "Scene safety"]},
+      "historyGathering": {"sceneContextClues": ["Drug use", "Bystander report", "No ID found"]},
+      "secondaryAssessment": {"evolvingFindings": ["Improves with naloxone; risk of recurrence if not monitored"]},
+      "additionalAssessments": ["Serial respiratory checks", "Monitor for recurrent overdose"],
+      "transportPhase": {"handoffConsiderations": "Communicate naloxone given, response, and environmental hazards."},
+      "opqrst": {"onset": "Unknown, found unresponsive", "provocation": "Drug use", "quality": "Unresponsive, cyanotic", "radiation": "N/A", "severity": "Severe", "time": "Acute nighttime event"},
+      "sample": {"signsAndSymptoms": "Unresponsive, slow breathing, cyanosis", "allergies": "Unknown", "medications": "Unknown", "pastMedicalHistory": "Unknown", "lastOralIntake": "Unknown", "eventsLeadingUp": "Bystanders report drug use"},
+      "medications": [],
+      "allergies": [],
+      "pastMedicalHistory": [],
+      "physicalExam": {"airway": "Threatened by decreased LOC", "breathing": "Slow, shallow, cyanotic", "circulation": "Bradycardic, weak pulse", "neuro": "Unresponsive, GCS 6", "skin": "Cold, cyanotic"},
+      "vitalSigns": {"HR": 48, "RR": 6, "BP": "90/54", "SpO2": 82, "Temp": 34.1, "GCS": 6, "Bgl": 4.2},
+      "caseProgression": {"withProperTreatment": "Naloxone administered, breathing improves, patient regains consciousness, transported for monitoring.", "withoutProperTreatment": "Remains unresponsive, risk of respiratory arrest.", "withIncorrectTreatment": "If not removed from cold, hypothermia complicates recovery."},
+      "expectedTreatment": ["Airway protection", "Administer naloxone IM/IN", "Remove from cold environment", "Monitor for recurrence", "Transport with ongoing respiratory checks"],
+      "protocolNotes": ["Ontario BLS PCS opioid overdose protocol: Naloxone as soon as possible, airway protection, monitor for recurrence.", "Night shift calls may have increased environmental and bystander hazards."],
+      "teachersPoints": "Nighttime overdose emergencies require rapid naloxone, airway vigilance, and scene safety.",
+      "clinicalReasoning": "This adult is experiencing opioid overdose with environmental exposure. Early naloxone and airway management are critical. Ontario BLS PCS compliance is required.",
+      "scenarioRationale": "Teaches overdose management, airway protection, and scene safety at night.",
+      "learningObjectives": ["Recognize opioid overdose and airway risk", "Administer naloxone promptly", "Communicate with bystanders at night", "Monitor for recurrence and hypothermia"],
+      "selfReflectionPrompts": ["How did you manage the airway and scene?", "What clues pointed to opioid overdose?", "How did you ensure rapid naloxone?", "What would you do differently if patient did not respond?"],
+      "grsAnchors": {"situationalAwareness": {"3": ["Recognizes unresponsiveness but underestimates overdose and cold risk.", "Misses scene safety hazard.", "Allows bystander panic to distract from priorities."], "5": ["Identifies overdose and airway risk.", "Maintains calm, manages scene, and plans for escalation.", "Balances scene control with clinical care."], "7": ["Anticipates rapid deterioration and leads a coordinated response.", "Integrates environmental, physiologic, and social factors.", "Maintains high awareness of subtle changes and adjusts care dynamically."]}, "historyGathering": {"3": ["Obtains only a partial story from bystanders.", "Misses timeline and prior health details.", "Relies on bystanders for answers despite confusion."], "5": ["Uses bystanders to clarify timeline, symptoms, and prior health.", "Confirms drug use and identifies sudden collapse.", "Integrates collateral history into risk assessment."], "7": ["Extracts a concise, high-value timeline despite scene stress.", "Uses bystander support efficiently to clarify risk and guide care.", "Integrates history directly into airway and transport decisions."]}, "patientAssessment": {"3": ["Performs a basic assessment but incompletely trends respiratory and neuro status.", "Misses the significance of slow breathing as a red flag.", "Reassessment is inconsistent."], "5": ["Performs structured respiratory and neuro assessment.", "Uses serial reassessment to track improvement or worsening.", "Recognizes slow breathing as a warning sign and escalates care."], "7": ["Builds a coherent assessment from respiratory, neuro, perfusion, and scene context.", "Detects subtle changes early and adjusts plan proactively.", "Maintains high-quality reassessment cadence."]}, "decisionMaking": {"3": ["Removes patient from park but delays naloxone.", "Anchors on trauma as cause rather than overdose.", "Transport decision is delayed or not adjusted after persistent unresponsiveness."], "5": ["Keeps airway protected, initiates naloxone, and plans for escalation.", "Plans rapid transport and keeps bystanders informed.", "Adjusts care plan based on reassessment."], "7": ["Executes a decisive, well-sequenced plan prioritizing naloxone, airway, and transport.", "Anticipates deterioration and prepares for escalation before instability occurs.", "Leads team and bystanders in a coordinated, high-quality response."]}, "communication": {"3": ["Provides basic updates but does not clearly explain urgency to bystanders.", "Role allocation during management is inconsistent.", "Handoff omits key naloxone and trend details."], "5": ["Communicates clearly with bystanders about airway, naloxone, and transport plan.", "Keeps bystanders informed and calm.", "Delivers organized handoff with timeline, naloxone, and response."], "7": ["Uses calm, directive communication to coordinate care in a stressful night setting.", "Maintains closed-loop communication across all phases.", "Provides a concise, high-value handoff for overdose management."]}},
+      "directiveSources": ["BLS PCS 3.4 (2023)", "ALS PCS 5.4 (2025)", "OBHG ALS PCS Companion v5.4 (2025)"]
+    },
+    {
+      "title": "Night Shift: Pediatric Febrile Seizure at the Shelter",
+      "generationMetadata": {"semester": "2", "complexity": "Moderate", "callType": "Medical", "environment": "Shelter", "hasMeds": false, "vitalSetCount": 3, "cueDensity": 0},
+      "scenarioIntro": "A 4-year-old has a seizure at a family shelter at 01:00. Crew must manage post-ictal care, fever, and a crowded, unfamiliar environment, following Ontario BLS/ALS PCS protocols.",
+      "callInformation": {"type": "Medical", "location": "Family shelter", "time": "01:00", "dispatchNotes": "Child with seizure, fever, crowded shelter", "hazardsOrFlags": "Crowded, unfamiliar, anxious families", "crewNotes": "Night shift pediatric febrile seizure. Prioritize airway, fever management, and scene control.", "environment": "Shelter", "ecgInterpretation": "Sinus Tachycardia"},
+      "incidentNarrative": "Crew arrives to a crowded family shelter where a 4-year-old boy is post-ictal, febrile, and drowsy. Multiple families are present, some panicked.",
+      "patientPresentation": "Lying on cot, drowsy, warm to touch, slow to respond, no active convulsions.",
+      "patientDemographics": {"age": 4, "sex": "Male", "weight": "18 kg", "appearance": "Drowsy, febrile, post-ictal", "chiefComplaint": "Seizure and fever at night"},
+      "sceneArrival": {"sceneEnergy": "Chaotic, crowded, anxious families"},
+      "firstImpression": {"initialRedFlags": ["Recent seizure", "Fever", "Crowded environment", "Nighttime presentation"]},
+      "initialAssessment": {"immediatePriorities": ["Airway protection", "Lateral positioning", "Fever management", "Scene control"]},
+      "historyGathering": {"sceneContextClues": ["Fever for 2 days", "No prior seizures", "Recent viral illness"]},
+      "secondaryAssessment": {"evolvingFindings": ["Drowsiness improves with time; risk of recurrent seizure if not monitored"]},
+      "additionalAssessments": ["Serial neuro checks", "Monitor for recurrent seizure"],
+      "transportPhase": {"handoffConsiderations": "Communicate seizure timeline, fever management, and scene challenges."},
+      "opqrst": {"onset": "During sleep at shelter", "provocation": "Fever, viral illness", "quality": "Drowsy, warm, post-ictal", "radiation": "N/A", "severity": "Moderate", "time": "Acute nighttime event"},
+      "sample": {"signsAndSymptoms": "Drowsy, febrile, post-ictal", "allergies": "None known", "medications": "None", "pastMedicalHistory": "No prior seizures", "lastOralIntake": "Dinner", "eventsLeadingUp": "Fever, then seizure during sleep"},
+      "medications": [],
+      "allergies": [],
+      "pastMedicalHistory": [],
+      "physicalExam": {"airway": "Patent, lateral position maintained", "breathing": "Normal, slightly tachypneic", "circulation": "Tachycardic, cap refill 2s", "neuro": "Drowsy, GCS 12", "skin": "Warm, flushed"},
+      "vitalSigns": {"HR": 124, "RR": 22, "BP": "96/58", "SpO2": 97, "Temp": 38.9, "GCS": 12, "Bgl": 5.3},
+      "caseProgression": {"withProperTreatment": "Child is positioned laterally, fever managed, monitored, and transported. Drowsiness improves.", "withoutProperTreatment": "If left supine or fever not managed, airway risk increases and confusion persists. Recurrent seizure risk rises if not monitored.", "withIncorrectTreatment": "If moved unsafely or airway not protected, risk of injury or aspiration increases."},
+      "expectedTreatment": ["Lateral positioning and airway protection", "Fever management (cooling, antipyretics if available)", "Monitor for recurrent seizure", "Scene control and reassurance", "Transport with ongoing neuro checks"],
+      "protocolNotes": ["Ontario BLS PCS pediatric seizure protocol: Lateral position, airway protection, fever management, monitor for recurrence.", "Night shift calls may have increased scene hazards and anxiety."],
+      "teachersPoints": "Nighttime febrile seizure calls require airway vigilance, fever management, and clear communication. Scene hazards and anxiety can distract from priorities.",
+      "clinicalReasoning": "This child is post-ictal after a febrile seizure at night. Airway protection, fever management, and monitoring are critical. Ontario BLS PCS compliance is required.",
+      "scenarioRationale": "Teaches febrile seizure management, fever control, and scene navigation during night shift calls.",
+      "learningObjectives": ["Recognize post-ictal state and airway risk", "Manage fever and monitor for recurrence", "Navigate scene hazards during night shift", "Communicate effectively with anxious families"],
+      "selfReflectionPrompts": ["How did you protect the airway and manage fever?", "What clues told you this was a febrile seizure?", "How did you manage scene hazards and movement?", "What would you do differently if a second seizure occurred?"],
+      "grsAnchors": {"situationalAwareness": {"3": ["Recognizes seizure but underestimates fever and airway risk at night.", "Misses the significance of drowsiness and scene hazards.", "Allows family panic to distract from airway and movement priorities."], "5": ["Identifies post-ictal state, fever, and airway risk.", "Maintains calm, minimizes stimulation, and plans for safe movement.", "Balances scene control with clinical care."], "7": ["Anticipates airway and movement risks, leads a calm, coordinated plan.", "Integrates environmental, physiologic, and social factors into care.", "Maintains high awareness of subtle changes and adjusts care dynamically."]}, "historyGathering": {"3": ["Obtains only a partial story from caregivers.", "Misses timeline and prior health details.", "Relies on child for answers despite confusion."], "5": ["Uses caregivers to clarify timeline, symptoms, and prior health.", "Confirms no trauma and identifies sudden onset.", "Integrates collateral history into risk assessment."], "7": ["Extracts a concise, high-value timeline despite scene stress.", "Uses caregiver support efficiently to clarify risk and guide care.", "Integrates history directly into airway and transport decisions."]}, "patientAssessment": {"3": ["Performs a basic assessment but incompletely trends neuro and airway status.", "Misses the significance of drowsiness as a red flag.", "Reassessment is inconsistent."], "5": ["Performs structured pediatric neuro and airway assessment.", "Uses serial reassessment to track improvement or worsening.", "Recognizes drowsiness as a warning sign and escalates care."], "7": ["Builds a coherent assessment from neuro, airway, perfusion, and scene context.", "Detects subtle changes early and adjusts plan proactively.", "Maintains high-quality reassessment cadence."]}, "decisionMaking": {"3": ["Removes child from cot but delays fever management.", "Anchors on confusion as benign rather than post-ictal risk.", "Transport decision is delayed or not adjusted after drowsiness."], "5": ["Keeps child lateral, initiates fever management, and plans for safe movement.", "Plans rapid transport and keeps caregivers informed.", "Adjusts care plan based on reassessment."], "7": ["Executes a decisive, well-sequenced plan prioritizing airway, fever, and transport.", "Anticipates deterioration and prepares for escalation before instability occurs.", "Leads team and caregivers in a coordinated, high-quality response."]}, "communication": {"3": ["Provides basic updates but does not clearly explain urgency to caregivers.", "Role allocation during movement is inconsistent.", "Handoff omits key neuro, fever, and trend details."], "5": ["Communicates clearly with caregivers about airway, fever, and transport plan.", "Keeps families informed and calm.", "Delivers organized handoff with timeline, neuro, fever, and response."], "7": ["Uses calm, directive communication to coordinate care in a stressful night setting.", "Maintains closed-loop communication across all phases.", "Provides a concise, high-value handoff for febrile seizure management."]}},
+      "directiveSources": ["BLS PCS 3.4 (2023)", "ALS PCS 5.4 (2025)", "OBHG ALS PCS Companion v5.4 (2025)"]
+    }
+  ,
+  {
+    "title": "Nighttime Cough and Collapse",
+    "generationMetadata": {
+      "semester": "2",
+      "complexity": "Moderate",
+      "callType": "Respiratory",
+      "environment": "Home",
+      "hasMeds": false,
+      "vitalSetCount": 3,
+      "cueDensity": 0
+    },
+    "scenarioIntro": "This scenario focuses on pediatric respiratory distress with sudden deterioration at night, emphasizing croup/upper airway management, scene control with anxious caregivers, and Ontario BLS/ALS PCS-compliant escalation and transport decisions.",
+    "callInformation": {
+      "type": "Respiratory Distress",
+      "location": "Child's bedroom in family home",
+      "time": "02:40",
+      "dispatchNotes": "3-year-old with barking cough, stridor, sudden collapse, parents panicked",
+      "hazardsOrFlags": "Dim lighting, anxious parents, tight bedroom space",
+      "crewNotes": "Night shift pediatric airway call. Prioritize airway assessment, minimize agitation, and escalate per protocol.",
+      "environment": "Home",
+      "ecgInterpretation": "Sinus Tachycardia"
+    },
+    "incidentNarrative": "Crew is dispatched overnight for a 3-year-old who developed a barking cough and noisy breathing, then suddenly became limp and less responsive. Parents report the child had a mild cold for two days but worsened suddenly after midnight. The home is dimly lit and the family is highly anxious.",
+    "patientPresentation": "Child is lying on the bed, pale, with inspiratory stridor and intermittent barking cough. He is drowsy, minimally responsive, and retracting with each breath. Parents are panicked and repeatedly attempt to rouse him.",
+    "patientDemographics": {
+      "age": 3,
+      "sex": "Male",
+      "weight": "15 kg",
+      "appearance": "Pale, stridor, drowsy, retractions",
+      "chiefComplaint": "Sudden collapse after cough and noisy breathing"
+    },
+    "sceneArrival": {
+      "sceneEnergy": "High stress, low light, anxious caregivers"
+    },
+    "firstImpression": {
+      "initialRedFlags": ["Stridor", "Sudden collapse", "Drowsiness", "Nighttime presentation"]
+    },
+    "initialAssessment": {
+      "immediatePriorities": ["Minimize stimulation", "Position of comfort", "Oxygen as tolerated", "Prepare for airway escalation"]
+    },
+    "historyGathering": {
+      "sceneContextClues": ["Recent cold symptoms", "Sudden worsening after midnight", "No trauma"]
+    },
+    "secondaryAssessment": {
+      "evolvingFindings": ["Stridor worsens with agitation; drowsiness increases if not managed promptly"]
+    },
+    "additionalAssessments": ["Serial airway checks", "Pulse oximetry", "Blood glucose if altered"],
+    "transportPhase": {
+      "handoffConsiderations": "Communicate timeline, airway interventions, response to oxygen, and trend in mental status."
+    },
+    "opqrst": {
+      "onset": "Sudden after barking cough at night",
+      "provocation": "Worse with agitation, improves with calm and cool air",
+      "quality": "Noisy breathing, stridor, drowsiness",
+      "radiation": "Not applicable",
+      "severity": "Severe by parent report",
+      "time": "Acute overnight event"
+    },
+    "sample": {
+      "signsAndSymptoms": "Stridor, barking cough, drowsiness, retractions",
+      "allergies": "None known",
+      "medications": "None",
+      "pastMedicalHistory": "No prior airway issues",
+      "lastOralIntake": "Milk before bed",
+      "eventsLeadingUp": "Mild cold, then sudden barking cough and collapse"
+    },
+    "medications": [],
+    "allergies": [],
+    "pastMedicalHistory": [],
+    "physicalExam": {
+      "airway": "Patent but threatened by swelling",
+      "breathing": "Stridor, retractions, shallow",
+      "circulation": "Tachycardic, cap refill 2.5s",
+      "neuro": "Drowsy, responds to pain",
+      "skin": "Pale, cool"
+    },
+    "vitalSigns": {
+      "HR": 148,
+      "RR": 32,
+      "BP": "92/54",
+      "SpO2": 91,
+      "Temp": 37.8,
+      "GCS": 10,
+      "Bgl": 4.8
+    },
+    "caseProgression": {
+      "withProperTreatment": "Child is kept calm, receives oxygen, and is transported promptly. Stridor improves with cool air and minimal stimulation. Mental status stabilizes.",
+      "withoutProperTreatment": "If agitated or left untreated, airway swelling worsens, stridor increases, and child may become unresponsive.",
+      "withIncorrectTreatment": "If forced to lie flat or agitated, airway obstruction worsens rapidly."
+    },
+    "expectedTreatment": [
+      "Minimize stimulation and keep child upright",
+      "Administer oxygen as tolerated",
+      "Prepare for airway escalation if deterioration occurs",
+      "Transport promptly with ongoing airway monitoring"
+    ],
+    "protocolNotes": [
+      "Ontario BLS PCS pediatric airway protocol: Minimize agitation, oxygen as tolerated, escalate if airway compromise worsens",
+      "Night shift calls may have delayed presentation and higher caregiver anxiety"
+    ],
+    "teachersPoints": "Nighttime pediatric airway calls require calm, minimal-stimulation care. Stridor and drowsiness are red flags for rapid deterioration. Parental anxiety can worsen the scene; clear communication and role assignment are essential.",
+    "clinicalReasoning": "This child is experiencing upper airway obstruction, likely croup, with sudden deterioration at night. Early calm, oxygen, and escalation planning are critical. Ontario BLS PCS compliance is required.",
+    "scenarioRationale": "This scenario teaches pediatric airway management, scene control, and escalation planning during night shift calls.",
+    "learningObjectives": [
+      "Recognize pediatric stridor and airway compromise",
+      "Minimize stimulation and agitation in airway calls",
+      "Communicate effectively with anxious caregivers at night",
+      "Escalate airway management per protocol"
+    ],
+    "selfReflectionPrompts": [
+      "How did you keep the child calm and airway open?",
+      "What clues told you this was more than a simple cold?",
+      "How did you manage parental anxiety at night?",
+      "What would you do differently if the child became unresponsive?"
+    ],
+    "grsAnchors": {
+      "situationalAwareness": {
+        "3": [
+          "Recognizes noisy breathing but underestimates airway risk at night.",
+          "Misses the significance of drowsiness and stridor as red flags.",
+          "Allows caregiver panic to distract from airway priorities."
+        ],
+        "5": [
+          "Identifies stridor and drowsiness as high-risk airway findings.",
+          "Maintains calm, minimizes stimulation, and plans for escalation.",
+          "Balances scene control with clinical care."
+        ],
+        "7": [
+          "Anticipates rapid deterioration and leads a calm, coordinated airway plan.",
+          "Integrates environmental, physiologic, and social factors into care.",
+          "Maintains high awareness of subtle changes and adjusts care dynamically."
+        ]
+      },
+      "historyGathering": {
+        "3": [
+          "Obtains only a partial story from panicked parents.",
+          "Misses timeline and prior health details.",
+          "Relies on child for answers despite drowsiness."
+        ],
+        "5": [
+          "Uses parents to clarify timeline, symptoms, and prior health.",
+          "Confirms no trauma and identifies sudden worsening.",
+          "Integrates collateral history into risk assessment."
+        ],
+        "7": [
+          "Extracts a concise, high-value timeline despite scene stress.",
+          "Uses parent support efficiently to clarify risk and guide care.",
+          "Integrates history directly into airway and transport decisions."
+        ]
+      },
+      "patientAssessment": {
+        "3": [
+          "Performs a basic assessment but incompletely trends airway and mental status.",
+          "Misses the significance of stridor and drowsiness as red flags.",
+          "Reassessment is inconsistent."
+        ],
+        "5": [
+          "Performs structured pediatric airway assessment including stridor and AVPU.",
+          "Uses serial reassessment to track improvement or worsening.",
+          "Recognizes drowsiness as a warning sign and escalates care."
+        ],
+        "7": [
+          "Builds a coherent assessment from airway, mental status, perfusion, and scene context.",
+          "Detects subtle changes early and adjusts plan proactively.",
+          "Maintains high-quality reassessment cadence."
+        ]
+      },
+      "decisionMaking": {
+        "3": [
+          "Removes child from scene but delays airway escalation.",
+          "Anchors on cough as benign rather than airway risk.",
+          "Transport decision is delayed or not adjusted after drowsiness."
+        ],
+        "5": [
+          "Keeps child calm, initiates oxygen, and plans for escalation.",
+          "Plans rapid transport and keeps parents informed.",
+          "Adjusts care plan based on reassessment."
+        ],
+        "7": [
+          "Executes a decisive, well-sequenced plan prioritizing airway, oxygen, and transport.",
+          "Anticipates deterioration and prepares for escalation before instability occurs.",
+          "Leads team and parents in a coordinated, high-quality airway response."
+        ]
+      },
+      "communication": {
+        "3": [
+          "Provides basic updates but does not clearly explain urgency to family or team.",
+          "Role allocation during airway management is inconsistent.",
+          "Handoff omits key airway and trend details."
+        ],
+        "5": [
+          "Communicates clearly with family and team about airway and transport plan.",
+          "Keeps parents informed and calm.",
+          "Delivers organized handoff with timeline, airway, and response."
+        ],
+        "7": [
+          "Uses calm, directive communication to coordinate care in a stressful night setting.",
+          "Maintains closed-loop communication across all phases.",
+          "Provides a concise, high-value handoff for pediatric airway management."
+        ]
+      }
+    },
+    "directiveSources": ["BLS PCS 3.4 (2023)", "ALS PCS 5.4 (2025)", "OBHG ALS PCS Companion v5.4 (2025)"]
+  },
+  {
+    "title": "Seizure in the Basement",
+    "generationMetadata": {
+      "semester": "3",
+      "complexity": "Moderate",
+      "callType": "Medical",
+      "environment": "Home",
+      "hasMeds": false,
+      "vitalSetCount": 3,
+      "cueDensity": 0
+    },
+    "scenarioIntro": "This scenario focuses on pediatric seizure management at night, emphasizing post-ictal reassessment, scene navigation in a cluttered basement, and Ontario BLS/ALS PCS-compliant escalation and transport decisions.",
+    "callInformation": {
+      "type": "Medical",
+      "location": "Basement bedroom",
+      "time": "01:20",
+      "dispatchNotes": "6-year-old with seizure, post-ictal, parents present, cluttered basement",
+      "hazardsOrFlags": "Dim lighting, clutter, stairs, anxious parents",
+      "crewNotes": "Night shift pediatric seizure call. Prioritize airway, post-ictal trend, and safe movement.",
+      "environment": "Home",
+      "ecgInterpretation": "Sinus Tachycardia"
+    },
+    "incidentNarrative": "Crew is dispatched overnight for a 6-year-old who had a witnessed seizure in a cluttered basement bedroom. The child is now post-ictal, drowsy, and confused. Parents are present and anxious. The basement is dimly lit and cluttered, complicating movement.",
+    "patientPresentation": "Child is lying on a mattress, drowsy, confused, and slow to respond. No active convulsions. Parents are anxious and repeatedly ask if the child will have another seizure.",
+    "patientDemographics": {
+      "age": 6,
+      "sex": "Female",
+      "weight": "22 kg",
+      "appearance": "Drowsy, post-ictal, confused",
+      "chiefComplaint": "Seizure, now drowsy and confused"
+    },
+    "sceneArrival": {
+      "sceneEnergy": "Dim, cluttered, anxious caregivers"
+    },
+    "firstImpression": {
+      "initialRedFlags": ["Recent seizure", "Post-ictal confusion", "Cluttered environment", "Nighttime presentation"]
+    },
+    "initialAssessment": {
+      "immediatePriorities": ["Airway protection", "Lateral positioning", "Minimize stimulation", "Prepare for safe movement upstairs"]
+    },
+    "historyGathering": {
+      "sceneContextClues": ["Witnessed seizure", "No trauma", "No prior history"]
+    },
+    "secondaryAssessment": {
+      "evolvingFindings": ["Drowsiness improves with time; risk of recurrent seizure if not monitored"]
+    },
+    "additionalAssessments": ["Serial neuro checks", "Blood glucose", "Temperature"],
+    "transportPhase": {
+      "handoffConsiderations": "Communicate seizure timeline, post-ictal trend, interventions, and scene challenges."
+    },
+    "opqrst": {
+      "onset": "Sudden seizure during sleep",
+      "provocation": "No clear trigger",
+      "quality": "Generalized shaking, now drowsy",
+      "radiation": "Not applicable",
+      "severity": "Severe by parent report",
+      "time": "Acute overnight event"
+    },
+    "sample": {
+      "signsAndSymptoms": "Seizure, drowsiness, confusion",
+      "allergies": "None known",
+      "medications": "None",
+      "pastMedicalHistory": "No prior seizures",
+      "lastOralIntake": "Dinner before bed",
+      "eventsLeadingUp": "Asleep, then sudden seizure"
+    },
+    "medications": [],
+    "allergies": [],
+    "pastMedicalHistory": [],
+    "physicalExam": {
+      "airway": "Patent, lateral position maintained",
+      "breathing": "Normal, slightly tachypneic",
+      "circulation": "Tachycardic, cap refill 2s",
+      "neuro": "Drowsy, confused, GCS 12",
+      "skin": "Warm, dry"
+    },
+    "vitalSigns": {
+      "HR": 122,
+      "RR": 22,
+      "BP": "98/60",
+      "SpO2": 98,
+      "Temp": 37.2,
+      "GCS": 12,
+      "Bgl": 5.1
+    },
+    "caseProgression": {
+      "withProperTreatment": "Child is positioned laterally, monitored, and moved safely upstairs. Drowsiness improves and no recurrent seizure occurs.",
+      "withoutProperTreatment": "If left supine or overstimulated, airway risk increases and confusion persists. Recurrent seizure risk rises if not monitored.",
+      "withIncorrectTreatment": "If moved unsafely or airway not protected, risk of injury or aspiration increases."
+    },
+    "expectedTreatment": [
+      "Lateral positioning and airway protection",
+      "Minimize stimulation",
+      "Monitor for recurrent seizure",
+      "Safe movement from basement to ambulance",
+      "Transport with ongoing neuro checks"
+    ],
+    "protocolNotes": [
+      "Ontario BLS PCS pediatric seizure protocol: Lateral position, airway protection, minimize stimulation, monitor for recurrence",
+      "Night shift calls may have increased scene hazards and caregiver anxiety"
+    ],
+    "teachersPoints": "Nighttime pediatric seizure calls require airway vigilance, safe movement, and clear communication. Post-ictal trend is the core teaching point. Scene hazards and anxiety can distract from priorities.",
+    "clinicalReasoning": "This child is post-ictal after a seizure at night. Airway protection, monitoring, and safe movement are critical. Ontario BLS PCS compliance is required.",
+    "scenarioRationale": "This scenario teaches pediatric seizure management, post-ictal trend, and scene navigation during night shift calls.",
+    "learningObjectives": [
+      "Recognize post-ictal state and airway risk",
+      "Minimize stimulation and monitor for recurrence",
+      "Navigate scene hazards during night shift",
+      "Communicate effectively with anxious caregivers"
+    ],
+    "selfReflectionPrompts": [
+      "How did you protect the airway and minimize stimulation?",
+      "What clues told you this was a seizure, not another cause?",
+      "How did you manage scene hazards and movement?",
+      "What would you do differently if a second seizure occurred?"
+    ],
+    "grsAnchors": {
+      "situationalAwareness": {
+        "3": [
+          "Recognizes seizure but underestimates post-ictal airway risk at night.",
+          "Misses the significance of drowsiness and scene hazards.",
+          "Allows caregiver panic to distract from airway and movement priorities."
+        ],
+        "5": [
+          "Identifies post-ictal state and airway risk.",
+          "Maintains calm, minimizes stimulation, and plans for safe movement.",
+          "Balances scene control with clinical care."
+        ],
+        "7": [
+          "Anticipates airway and movement risks, leads a calm, coordinated plan.",
+          "Integrates environmental, physiologic, and social factors into care.",
+          "Maintains high awareness of subtle changes and adjusts care dynamically."
+        ]
+      },
+      "historyGathering": {
+        "3": [
+          "Obtains only a partial story from panicked parents.",
+          "Misses timeline and prior health details.",
+          "Relies on child for answers despite confusion."
+        ],
+        "5": [
+          "Uses parents to clarify timeline, symptoms, and prior health.",
+          "Confirms no trauma and identifies sudden onset.",
+          "Integrates collateral history into risk assessment."
+        ],
+        "7": [
+          "Extracts a concise, high-value timeline despite scene stress.",
+          "Uses parent support efficiently to clarify risk and guide care.",
+          "Integrates history directly into airway and transport decisions."
+        ]
+      },
+      "patientAssessment": {
+        "3": [
+          "Performs a basic assessment but incompletely trends neuro and airway status.",
+          "Misses the significance of drowsiness as a red flag.",
+          "Reassessment is inconsistent."
+        ],
+        "5": [
+          "Performs structured pediatric neuro assessment including AVPU and airway.",
+          "Uses serial reassessment to track improvement or worsening.",
+          "Recognizes drowsiness as a warning sign and escalates care."
+        ],
+        "7": [
+          "Builds a coherent assessment from neuro, airway, perfusion, and scene context.",
+          "Detects subtle changes early and adjusts plan proactively.",
+          "Maintains high-quality reassessment cadence."
+        ]
+      },
+      "decisionMaking": {
+        "3": [
+          "Removes child from scene but delays airway protection.",
+          "Anchors on confusion as benign rather than post-ictal risk.",
+          "Transport decision is delayed or not adjusted after drowsiness."
+        ],
+        "5": [
+          "Keeps child lateral, initiates monitoring, and plans for safe movement.",
+          "Plans rapid transport and keeps parents informed.",
+          "Adjusts care plan based on reassessment."
+        ],
+        "7": [
+          "Executes a decisive, well-sequenced plan prioritizing airway, monitoring, and transport.",
+          "Anticipates deterioration and prepares for escalation before instability occurs.",
+          "Leads team and parents in a coordinated, high-quality response."
+        ]
+      },
+      "communication": {
+        "3": [
+          "Provides basic updates but does not clearly explain urgency to family or team.",
+          "Role allocation during movement is inconsistent.",
+          "Handoff omits key neuro and trend details."
+        ],
+        "5": [
+          "Communicates clearly with family and team about airway, neuro, and transport plan.",
+          "Keeps parents informed and calm.",
+          "Delivers organized handoff with timeline, neuro, and response."
+        ],
+        "7": [
+          "Uses calm, directive communication to coordinate care in a stressful night setting.",
+          "Maintains closed-loop communication across all phases.",
+          "Provides a concise, high-value handoff for pediatric seizure management."
+        ]
+      }
+    },
+    "directiveSources": ["BLS PCS 3.4 (2023)", "ALS PCS 5.4 (2025)", "OBHG ALS PCS Companion v5.4 (2025)"]
+  },
+  {
+    "title": "Asthma Attack at the Sleepover",
+    "generationMetadata": {
+      "semester": "2",
+      "complexity": "Moderate",
+      "callType": "Respiratory",
+      "environment": "Home",
+      "hasMeds": true,
+      "vitalSetCount": 3,
+      "cueDensity": 0
+    },
+    "scenarioIntro": "This scenario focuses on pediatric asthma exacerbation at night during a sleepover, emphasizing medication access, scene navigation with multiple children, and Ontario BLS/ALS PCS-compliant escalation and transport decisions.",
+    "callInformation": {
+      "type": "Respiratory Distress",
+      "location": "Friend's house living room",
+      "time": "23:50",
+      "dispatchNotes": "8-year-old with asthma, severe wheeze, multiple children present, inhaler missing",
+      "hazardsOrFlags": "Crowded living room, multiple children, missing medication",
+      "crewNotes": "Night shift pediatric asthma call. Prioritize medication access, scene control, and escalation per protocol.",
+      "environment": "Home",
+      "ecgInterpretation": "Sinus Tachycardia"
+    },
+    "incidentNarrative": "Crew is dispatched late evening for an 8-year-old at a sleepover who developed severe wheezing and shortness of breath. The inhaler cannot be found. Multiple children and caregivers are present, creating a chaotic scene.",
+    "patientPresentation": "Child is sitting upright, using accessory muscles, and speaking in short phrases. He is anxious, diaphoretic, and wheezing audibly. Other children are watching and caregivers are searching for the inhaler.",
+    "patientDemographics": {
+      "age": 8,
+      "sex": "Male",
+      "weight": "28 kg",
+      "appearance": "Anxious, wheezing, using accessory muscles",
+      "chiefComplaint": "Severe shortness of breath at night"
+    },
+    "sceneArrival": {
+      "sceneEnergy": "Chaotic, crowded, anxious caregivers and children"
+    },
+    "firstImpression": {
+      "initialRedFlags": ["Severe wheeze", "Accessory muscle use", "Missing medication", "Nighttime presentation"]
+    },
+    "initialAssessment": {
+      "immediatePriorities": ["Position of comfort", "Oxygen as tolerated", "Locate or provide bronchodilator", "Scene control"]
+    },
+    "historyGathering": {
+      "sceneContextClues": ["Known asthma", "No inhaler found", "Recent cold symptoms"]
+    },
+    "secondaryAssessment": {
+      "evolvingFindings": ["Wheezing persists until medication given; risk of fatigue if delayed"]
+    },
+    "additionalAssessments": ["Serial respiratory checks", "Pulse oximetry", "Blood glucose if altered"],
+    "transportPhase": {
+      "handoffConsiderations": "Communicate timeline, medication access, interventions, and response."
+    },
+    "opqrst": {
+      "onset": "Sudden during sleepover at night",
+      "provocation": "Worse with exertion, improves with medication",
+      "quality": "Shortness of breath, wheeze, anxiety",
+      "radiation": "Not applicable",
+      "severity": "Severe by caregiver report",
+      "time": "Acute nighttime event"
+    },
+    "sample": {
+      "signsAndSymptoms": "Wheezing, shortness of breath, anxiety",
+      "allergies": "None known",
+      "medications": "Asthma inhaler (missing)",
+      "pastMedicalHistory": "Asthma",
+      "lastOralIntake": "Pizza at sleepover",
+      "eventsLeadingUp": "Playing, then sudden shortness of breath"
+    },
+    "medications": ["Asthma inhaler (missing)"],
+    "allergies": [],
+    "pastMedicalHistory": ["Asthma"],
+    "physicalExam": {
+      "airway": "Patent",
+      "breathing": "Wheezing, tachypneic, accessory muscle use",
+      "circulation": "Tachycardic, cap refill 2s",
+      "neuro": "Alert, anxious",
+      "skin": "Diaphoretic, pale"
+    },
+    "vitalSigns": {
+      "HR": 132,
+      "RR": 30,
+      "BP": "104/68",
+      "SpO2": 93,
+      "Temp": 37.1,
+      "GCS": 15,
+      "Bgl": 5.2
+    },
+    "caseProgression": {
+      "withProperTreatment": "Bronchodilator is provided, wheeze improves, and anxiety decreases. Child is transported for further care.",
+      "withoutProperTreatment": "If medication is not found or provided, fatigue and hypoxia worsen. Child may become less responsive.",
+      "withIncorrectTreatment": "If child is forced to lie flat or not reassured, distress and hypoxia worsen."
+    },
+    "expectedTreatment": [
+      "Position of comfort",
+      "Oxygen as tolerated",
+      "Provide or locate bronchodilator",
+      "Scene control and reassurance",
+      "Transport with ongoing monitoring"
+    ],
+    "protocolNotes": [
+      "Ontario BLS PCS pediatric asthma protocol: Bronchodilator as soon as possible, oxygen as tolerated, monitor for fatigue",
+      "Night shift calls may have increased scene chaos and medication access issues"
+    ],
+    "teachersPoints": "Nighttime pediatric asthma calls require rapid medication access, scene control, and escalation planning. Fatigue and hypoxia are red flags. Ontario BLS PCS compliance is essential.",
+    "clinicalReasoning": "This child is experiencing an asthma exacerbation at night with missing medication. Early bronchodilator, oxygen, and scene control are critical. Ontario BLS PCS compliance is required.",
+    "scenarioRationale": "This scenario teaches pediatric asthma management, medication access, and scene control during night shift calls.",
+    "learningObjectives": [
+      "Recognize pediatric asthma exacerbation and fatigue risk",
+      "Prioritize medication access and scene control",
+      "Communicate effectively with multiple caregivers and children at night",
+      "Escalate care per protocol if medication is delayed"
+    ],
+    "selfReflectionPrompts": [
+      "How did you manage scene chaos and medication access?",
+      "What clues told you this was a high-risk asthma call?",
+      "How did you reassure the child and caregivers?",
+      "What would you do differently if medication was not found?"
+    ],
+    "grsAnchors": {
+      "situationalAwareness": {
+        "3": [
+          "Recognizes wheeze but underestimates fatigue and medication access risk at night.",
+          "Misses the significance of scene chaos and missing inhaler.",
+          "Allows caregiver panic to distract from medication and airway priorities."
+        ],
+        "5": [
+          "Identifies severe wheeze and missing medication as high-risk findings.",
+          "Maintains calm, prioritizes medication, and plans for escalation.",
+          "Balances scene control with clinical care."
+        ],
+        "7": [
+          "Anticipates rapid deterioration and leads a calm, coordinated medication and airway plan.",
+          "Integrates environmental, physiologic, and social factors into care.",
+          "Maintains high awareness of subtle changes and adjusts care dynamically."
+        ]
+      },
+      "historyGathering": {
+        "3": [
+          "Obtains only a partial story from panicked caregivers.",
+          "Misses timeline and prior health details.",
+          "Relies on child for answers despite distress."
+        ],
+        "5": [
+          "Uses caregivers to clarify timeline, symptoms, and prior health.",
+          "Confirms no trauma and identifies sudden worsening.",
+          "Integrates collateral history into risk assessment."
+        ],
+        "7": [
+          "Extracts a concise, high-value timeline despite scene stress.",
+          "Uses caregiver support efficiently to clarify risk and guide care.",
+          "Integrates history directly into medication and transport decisions."
+        ]
+      },
+      "patientAssessment": {
+        "3": [
+          "Performs a basic assessment but incompletely trends respiratory and mental status.",
+          "Misses the significance of fatigue and hypoxia as red flags.",
+          "Reassessment is inconsistent."
+        ],
+        "5": [
+          "Performs structured pediatric respiratory assessment including wheeze and fatigue.",
+          "Uses serial reassessment to track improvement or worsening.",
+          "Recognizes fatigue as a warning sign and escalates care."
+        ],
+        "7": [
+          "Builds a coherent assessment from respiratory, mental status, perfusion, and scene context.",
+          "Detects subtle changes early and adjusts plan proactively.",
+          "Maintains high-quality reassessment cadence."
+        ]
+      },
+      "decisionMaking": {
+        "3": [
+          "Removes child from scene but delays medication and escalation.",
+          "Anchors on anxiety as behavioral rather than hypoxia risk.",
+          "Transport decision is delayed or not adjusted after fatigue."
+        ],
+        "5": [
+          "Keeps child upright, initiates oxygen, and provides medication as soon as possible.",
+          "Plans rapid transport and keeps caregivers informed.",
+          "Adjusts care plan based on reassessment."
+        ],
+        "7": [
+          "Executes a decisive, well-sequenced plan prioritizing medication, oxygen, and transport.",
+          "Anticipates deterioration and prepares for escalation before instability occurs.",
+          "Leads team and caregivers in a coordinated, high-quality response."
+        ]
+      },
+      "communication": {
+        "3": [
+          "Provides basic updates but does not clearly explain urgency to family or team.",
+          "Role allocation during medication and airway management is inconsistent.",
+          "Handoff omits key medication and trend details."
+        ],
+        "5": [
+          "Communicates clearly with family, children, and team about medication and transport plan.",
+          "Keeps caregivers informed and calm.",
+          "Delivers organized handoff with timeline, medication, and response."
+        ],
+        "7": [
+          "Uses calm, directive communication to coordinate care in a chaotic night setting.",
+          "Maintains closed-loop communication across all phases.",
+          "Provides a concise, high-value handoff for pediatric asthma management."
+        ]
+      }
+    },
+    "directiveSources": ["BLS PCS 3.4 (2023)", "ALS PCS 5.4 (2025)", "OBHG ALS PCS Companion v5.4 (2025)"]
+  }
 [
   {
     "title": "The Tight Stairwell Wheeze",
@@ -9276,6 +10578,213 @@
           "Proactively engages occupational safety by working with supervisor and coordinating machinery control professionally.",
           "Demonstrates mastery of complexity through clear decision rationale and calm execution.",
           "Documentation and handoff are exemplary, precise, and anticipatory of downstream surgical planning needs."
+        ]
+      }
+    },
+    "directiveSources": ["BLS PCS 3.4 (2023)", "ALS PCS 5.4 (2025)", "OBHG ALS PCS Companion v5.4 (2025)"]
+  },
+  {
+    "title": "Lost in the Splash Pad",
+    "generationMetadata": {
+      "semester": "2",
+      "complexity": "Moderate",
+      "callType": "Environmental",
+      "environment": "Public Space",
+      "hasMeds": false,
+      "vitalSetCount": 3,
+      "cueDensity": 0
+    },
+    "scenarioIntro": "This scenario focuses on pediatric environmental exposure, rapid hypothermia recognition, scene control in a crowded public space, and Ontario BLS/ALS PCS-compliant rewarming and transport decisions. The patient’s improvement is possible with proper intervention, but scene chaos and bystander pressure can easily distract from core priorities.",
+    "callInformation": {
+      "type": "Environmental",
+      "location": "Outdoor splash pad in a city park",
+      "time": "15:10",
+      "dispatchNotes": "4-year-old found shivering and confused after being missing for 30 minutes; last seen playing in water",
+      "hazardsOrFlags": "Crowded park, multiple caregivers, wet slippery surfaces, language barrier with family",
+      "crewNotes": "Pediatric environmental call. Prioritize rapid assessment, hypothermia management, and scene control. Ontario BLS PCS pediatric hypothermia protocol applies.",
+      "environment": "Public Space",
+      "ecgInterpretation": "Sinus Tachycardia"
+    },
+    "incidentNarrative": "Crew is dispatched to a busy city park for a missing child found shivering and confused at the edge of a splash pad. The child was last seen playing in the water about 30 minutes ago and was found by a bystander behind a storage shed, wet and without shoes. The family is distressed and speaks limited English. The scene is crowded, with multiple children and caregivers nearby, and the ground is wet and slippery.",
+    "patientPresentation": "Child is sitting on the ground, wet, shivering, and wrapped in a towel by a bystander. He is pale, lips are blue, and he answers questions slowly. He appears confused and is reluctant to stand. Parents are anxious and trying to communicate through a friend.",
+    "patientDemographics": {
+      "age": 4,
+      "sex": "Male",
+      "weight": "18 kg",
+      "appearance": "Pale, shivering, wet, blue lips",
+      "chiefComplaint": "Shivering and confusion after water exposure"
+    },
+    "sceneArrival": {
+      "sceneEnergy": "Chaotic and emotionally charged"
+    },
+    "firstImpression": {
+      "initialRedFlags": ["Pediatric hypothermia", "Altered mental status", "Wet clothing", "Language barrier"]
+    },
+    "initialAssessment": {
+      "immediatePriorities": ["Remove wet clothing", "Initiate active rewarming", "Monitor airway and breathing", "Scene control to reduce crowding"]
+    },
+    "historyGathering": {
+      "sceneContextClues": ["Child missing for 30 minutes", "Found wet and cold", "No trauma reported", "Family speaks limited English"]
+    },
+    "secondaryAssessment": {
+      "evolvingFindings": ["Shivering decreases, but confusion persists; risk of further cooling if not managed promptly"]
+    },
+    "additionalAssessments": ["Serial temperature checks", "Pediatric AVPU trend", "Blood glucose"],
+    "transportPhase": {
+      "handoffConsiderations": "Communicate duration of exposure, initial temperature, rewarming measures, mental status trend, and scene challenges."
+    },
+    "opqrst": {
+      "onset": "Unknown, likely gradual during missing period",
+      "provocation": "Worse with wind and wet clothing",
+      "quality": "Cold, shivering, confused",
+      "radiation": "Not applicable",
+      "severity": "Moderate to severe by parent report",
+      "time": "At least 30 minutes since last seen well"
+    },
+    "sample": {
+      "signsAndSymptoms": "Shivering, confusion, blue lips, slow speech",
+      "allergies": "None known",
+      "medications": "None",
+      "pastMedicalHistory": "No significant history",
+      "lastOralIntake": "Juice and crackers at lunch",
+      "eventsLeadingUp": "Playing in water, went missing, found wet and cold"
+    },
+    "medications": [],
+    "allergies": [],
+    "pastMedicalHistory": [],
+    "physicalExam": {
+      "airway": "Patent",
+      "breathing": "Shallow, tachypneic",
+      "circulation": "Peripheral pulses present, cap refill 3 seconds",
+      "neuro": "Confused, slow to answer, AVPU: V",
+      "skin": "Pale, cool, wet, blue lips"
+    },
+    "vitalSigns": {
+      "HR": 132,
+      "RR": 28,
+      "BP": "90/60",
+      "SpO2": 97,
+      "Temp": 34.1,
+      "GCS": 13,
+      "Bgl": 4.2
+    },
+    "caseProgression": {
+      "withProperTreatment": "Child is dried, wrapped in warm blankets, and moved to a heated ambulance. Shivering decreases, mental status improves, and temperature rises slightly. Parents are reassured and communication is improved with interpreter support.",
+      "withoutProperTreatment": "If wet clothing is not removed and rewarming is delayed, shivering stops but confusion worsens, and the child becomes more lethargic. Risk of airway compromise and cardiac instability increases.",
+      "withIncorrectTreatment": "If the child is moved into a cold ambulance or left exposed to wind, hypothermia worsens. If crowding is not controlled, scene chaos delays care and increases risk of further cooling."
+    },
+    "expectedTreatment": [
+      "Remove wet clothing and dry the child",
+      "Initiate active rewarming (blankets, warm environment)",
+      "Monitor airway, breathing, and mental status",
+      "Check blood glucose",
+      "Transport promptly to hospital with ongoing rewarming",
+      "Communicate with family using interpreter if possible"
+    ],
+    "protocolNotes": [
+      "Ontario BLS PCS pediatric hypothermia protocol: Remove wet clothing, active rewarming, avoid rapid movement, monitor for deterioration",
+      "Monitor for hypoglycemia and altered mental status",
+      "Scene control is critical in public pediatric calls"
+    ],
+    "teachersPoints": "Pediatric hypothermia can develop quickly with water exposure, even in summer. Shivering is an early sign, but its absence in a cold child is a red flag. Removing wet clothing and starting rewarming are higher priorities than transport alone. Scene chaos and language barriers can delay care—assign roles and use interpreter support early. Ontario BLS PCS compliance is essential.",
+    "clinicalReasoning": "This child is experiencing moderate hypothermia after prolonged water exposure and being lost in a public park. The combination of shivering, confusion, blue lips, and low temperature supports this diagnosis. Early intervention with rewarming and glucose monitoring is critical. Scene management and communication are as important as clinical care.",
+    "scenarioRationale": "This scenario teaches pediatric environmental assessment, scene control, and Ontario protocol-driven hypothermia management. It highlights the importance of early rewarming, communication, and trend-based reassessment.",
+    "learningObjectives": [
+      "Recognize pediatric hypothermia in a public setting",
+      "Prioritize rewarming and glucose monitoring",
+      "Manage scene chaos and language barriers",
+      "Communicate effectively with caregivers and bystanders"
+    ],
+    "selfReflectionPrompts": [
+      "How did you balance scene control with clinical care?",
+      "What clues told you this was more than a simple lost child?",
+      "How did you use interpreter or bystander support to improve care?",
+      "What would you do differently if the child stopped shivering?"
+    ],
+    "grsAnchors": {
+      "situationalAwareness": {
+        "3": [
+          "Recognizes a cold, shivering child but underestimates the risk of rapid deterioration in a public setting.",
+          "Misses the significance of wet clothing and wind exposure as ongoing threats.",
+          "Allows scene chaos and language barriers to distract from core assessment and rewarming priorities."
+        ],
+        "5": [
+          "Identifies pediatric hypothermia risk from water exposure and scene context.",
+          "Maintains awareness of ongoing cooling threats and prioritizes rewarming and glucose monitoring.",
+          "Balances scene control with clinical care, using interpreter or bystander support as needed."
+        ],
+        "7": [
+          "Anticipates rapid deterioration in pediatric hypothermia and leads a coordinated rewarming and scene management plan.",
+          "Integrates environmental, physiologic, and social factors into a proactive care strategy.",
+          "Maintains high awareness of subtle changes in mental status and perfusion, adjusting care and communication dynamically."
+        ]
+      },
+      "historyGathering": {
+        "3": [
+          "Obtains only a partial story from anxious parents, missing key timeline and exposure details.",
+          "Relies on the child for answers despite confusion and language barrier.",
+          "Misses the opportunity to use bystanders or interpreter for collateral history."
+        ],
+        "5": [
+          "Uses parents and bystanders to clarify timeline, exposure, and prior health.",
+          "Confirms no trauma and identifies the duration of missing period and water exposure.",
+          "Integrates collateral history into risk assessment and care plan."
+        ],
+        "7": [
+          "Extracts a concise, high-value timeline and exposure history despite language and scene barriers.",
+          "Uses interpreter or bystander support efficiently to clarify risk and guide care.",
+          "Integrates history directly into rewarming, glucose monitoring, and transport urgency decisions."
+        ]
+      },
+      "patientAssessment": {
+        "3": [
+          "Performs a basic pediatric assessment but incompletely trends temperature and mental status.",
+          "Misses the significance of shivering cessation as a red flag.",
+          "Reassessment is inconsistent, risking missed deterioration."
+        ],
+        "5": [
+          "Performs structured pediatric assessment including temperature, AVPU, and glucose.",
+          "Uses serial reassessment to track improvement or worsening.",
+          "Recognizes shivering cessation as a warning sign and escalates care accordingly."
+        ],
+        "7": [
+          "Builds a coherent assessment from temperature, mental status, perfusion, and scene context.",
+          "Detects subtle changes early and adjusts rewarming and transport plan proactively.",
+          "Maintains high-quality reassessment cadence and integrates findings into dynamic care."
+        ]
+      },
+      "decisionMaking": {
+        "3": [
+          "Removes child from scene but delays rewarming and glucose check.",
+          "Anchors on confusion as a behavioral issue rather than hypothermia risk.",
+          "Transport decision is delayed or not adjusted after shivering stops."
+        ],
+        "5": [
+          "Removes wet clothing, initiates rewarming, and checks glucose promptly.",
+          "Plans rapid transport and uses interpreter support to keep family informed.",
+          "Adjusts care plan based on reassessment and scene evolution."
+        ],
+        "7": [
+          "Executes a decisive, well-sequenced plan prioritizing rewarming, glucose monitoring, and scene control.",
+          "Anticipates deterioration and prepares for escalation before instability occurs.",
+          "Leads team and bystanders in a coordinated, high-quality pediatric hypothermia response."
+        ]
+      },
+      "communication": {
+        "3": [
+          "Provides basic updates but does not clearly explain urgency to family or team.",
+          "Role allocation during rewarming and movement is inconsistent.",
+          "Handoff omits key exposure and trend details."
+        ],
+        "5": [
+          "Communicates clearly with family, bystanders, and team about rewarming and transport plan.",
+          "Uses interpreter or bystander support to keep parents informed and calm.",
+          "Delivers organized handoff with exposure timeline, serial vitals, and treatment response."
+        ],
+        "7": [
+          "Uses calm, directive communication to coordinate high-tempo care in a noisy public setting.",
+          "Maintains closed-loop communication across all reassessment and transport phases.",
+          "Provides a concise, high-value handoff that enables immediate continuation of pediatric hypothermia management."
         ]
       }
     },
