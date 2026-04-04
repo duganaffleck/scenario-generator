@@ -602,6 +602,32 @@ const ScenarioForm = () => {
   };
 
   const handleSubmit = async () => {
+
+    // Psychological safety: block forbidden terms in any input
+    const forbiddenTerms = [
+      /punish(ment|ing)?/i,
+      /blame/i,
+      /fault/i,
+      /failure(?! to| of| risk| pattern| points?)/i // allow clinical use, block as personal flaw
+    ];
+    const checkForbidden = (val) => {
+      if (!val || typeof val !== 'string') return false;
+      return forbiddenTerms.some((re) => re.test(val));
+    };
+    // Check customPrompt
+    if (checkForbidden(formData.customPrompt)) {
+      setError("Psychological safety rule: No 'punishment', 'blame', 'fault', or 'failure' (as a personal flaw) allowed in any section. Please revise your input.");
+      return;
+    }
+
+    // Check all form fields (in case of future expansion)
+    for (const val of Object.values(formData)) {
+      if (checkForbidden(val)) {
+        setError("Psychological safety rule: No 'punishment', 'blame', 'fault', or 'failure' (as a personal flaw) allowed in any section. Please revise your input.");
+        return;
+      }
+    }
+
     if (formData.customPrompt.trim() === "It's my birthday!") {
       setBirthdayMode(true);
       setTimeout(() => setBirthdayMode(false), 7500); // triple the time
