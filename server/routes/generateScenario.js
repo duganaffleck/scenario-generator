@@ -27,6 +27,7 @@ const ROUTE_BUILD_TAG = '2026-04-03-generation-quality-rubric-v1';
 const ALLOWED_SEMESTERS = ['2', '3', '4'];
 const ALLOWED_COMPLEXITIES = ['Simple', 'Moderate', 'Complex'];
 const ALLOWED_ENVIRONMENTS = ['Urban', 'Rural', 'Wilderness', 'Industrial', 'Home', 'Public Space'];
+const ALLOWED_SHIFT_MODES = ['Day Shift', 'Night Shift'];
 const RECENT_CUE_FINGERPRINT_WINDOW = 240;
 const RECENT_CUE_OPENING_WINDOW = 180;
 let recentCueFingerprints = [];
@@ -36,6 +37,7 @@ const MEDIUM_REPAIR_TRIGGER_CODES = new Set([
   'call-type-drift',
   'complexity-drift',
   'environment-drift',
+  'shift-drift',
   'semester-2-medications',
   'semester-2-too-complex',
   'semester-4-not-layered-enough',
@@ -351,6 +353,8 @@ function buildScenarioModifierAddendum(modifiers, {
 const CALL_TYPE_FAMILIES = ['Medical', 'Trauma', 'Cardiac', 'Respiratory', 'Environmental'];
 const ENVIRONMENT_CHOICES = ['Urban', 'Rural', 'Wilderness', 'Industrial', 'Home', 'Public Space'];
 const COMPLEXITY_ORDER = { Simple: 0, Moderate: 1, Complex: 2 };
+const DAY_SHIFT_TIMES = ['07:18', '09:42', '11:26', '13:14', '15:08', '16:37'];
+const NIGHT_SHIFT_TIMES = ['22:18', '23:46', '00:34', '01:57', '03:12', '04:41'];
 const MEDICATION_KEYWORDS = [
   'asa',
   'nitro',
@@ -460,12 +464,20 @@ function normalizeComplexity(value) {
   return exact || null;
 }
 
+function normalizeShiftMode(value) {
+  const shiftMode = String(value || '').trim();
+  if (!shiftMode) return null;
+  const exact = ALLOWED_SHIFT_MODES.find((item) => item.toLowerCase() === shiftMode.toLowerCase());
+  return exact || null;
+}
+
 function validateGenerationRequest(rawBody = {}) {
   const errors = [];
   const semester = String(rawBody.semester || '3').trim();
   const normalizedCallType = normalizeCallFamily(rawBody.callType || rawBody.type || 'Medical');
   const environment = normalizeEnvironment(rawBody.environment);
   const complexity = normalizeComplexity(rawBody.complexity);
+  const shiftMode = normalizeShiftMode(rawBody.shiftMode) || 'Day Shift';
   const normalizedComplexity = semester === '2' ? 'Simple' : (complexity || 'Moderate');
 
   if (!ALLOWED_SEMESTERS.includes(semester)) {
@@ -480,6 +492,10 @@ function validateGenerationRequest(rawBody = {}) {
     errors.push(`Invalid complexity "${rawBody.complexity}".`);
   }
 
+  if (rawBody.shiftMode && !normalizeShiftMode(rawBody.shiftMode)) {
+    errors.push(`Invalid shift mode "${rawBody.shiftMode}". Allowed values: ${ALLOWED_SHIFT_MODES.join(', ')}.`);
+  }
+
   return {
     isValid: errors.length === 0,
     errors,
@@ -488,6 +504,7 @@ function validateGenerationRequest(rawBody = {}) {
       callType: normalizedCallType,
       environment: environment || 'Urban',
       complexity: normalizedComplexity,
+      shiftMode,
       includeTeachingCues: coerceBoolean(rawBody.includeTeachingCues, true),
       customPrompt: sanitizeCustomPrompt(rawBody.customPrompt || '')
     }
@@ -519,6 +536,79 @@ function normalizeEnvironmentTag(value = '') {
   if (/mall|food court|arena|school|public|parking lot|lobby|community centre/.test(raw)) return 'Public Space';
   if (/urban|downtown|intersection|transit|condo/.test(raw)) return 'Urban';
   return '';
+}
+
+function extractHourFromTimeText(value = '') {
+  const text = String(value || '').trim().toLowerCase();
+  if (!text) return null;
+
+  const twentyFourHourMatch = text.match(/\b([01]?\d|2[0-3]):([0-5]\d)\b/);
+  if (twentyFourHourMatch) return Number(twentyFourHourMatch[1]);
+
+  const meridiemMatch = text.match(/\b(1[0-2]|0?\d)(?::([0-5]\d))?\s*(am|pm)\b/);
+  if (meridiemMatch) {
+    let hour = Number(meridiemMatch[1]) % 12;
+    if (meridiemMatch[3] === 'pm') hour += 12;
+    return hour;
+  }
+
+  if (/\bmidnight\b/.test(text)) return 0;
+  if (/\bnoon\b/.test(text)) return 12;
+  if (/\bovernight\b|\bafter midnight\b|\bpre-?dawn\b|\blate night\b/.test(text)) return 2;
+  if (/\bmid-?morning\b|\bafternoon\b|\bdaylight\b/.test(text)) return 13;
+  return null;
+}
+
+function inferShiftModeFromText(value = '') {
+  const text = String(value || '').toLowerCase();
+  if (!text) return '';
+  if (/\bnight shift\b|\bovernight\b|\bafter midnight\b|\bpre-?dawn\b|\blate night\b/.test(text)) return 'Night Shift';
+  if (/\bday shift\b|\bmid-?morning\b|\bafternoon\b|\bdaylight\b|\bbusiness hours\b/.test(text)) return 'Day Shift';
+  return '';
+}
+
+function timeMatchesShiftMode(timeText, shiftMode) {
+  const hour = extractHourFromTimeText(timeText);
+  if (hour === null) {
+    const inferred = inferShiftModeFromText(timeText);
+    return inferred ? inferred === shiftMode : false;
+  }
+
+  return shiftMode === 'Night Shift'
+    ? hour >= 22 || hour < 6
+    : hour >= 6 && hour < 22;
+}
+
+function pickShiftTime(shiftMode, seedHint = '') {
+  const times = shiftMode === 'Night Shift' ? NIGHT_SHIFT_TIMES : DAY_SHIFT_TIMES;
+  return times[stableHash(`${shiftMode}|${seedHint}`) % times.length];
+}
+
+function alignTimeToShiftMode(timeText, shiftMode, seedHint = '') {
+  const trimmed = String(timeText || '').trim();
+  if (trimmed && timeMatchesShiftMode(trimmed, shiftMode)) return trimmed;
+  return pickShiftTime(shiftMode, seedHint);
+}
+
+function inferScenarioShiftMode(scenario) {
+  const explicit = normalizeShiftMode(scenario?.callInformation?.shift || scenario?.callInformation?.shiftMode || '');
+  if (explicit) return explicit;
+
+  const hour = extractHourFromTimeText(scenario?.callInformation?.time || '');
+  if (hour !== null) {
+    return hour >= 22 || hour < 6 ? 'Night Shift' : 'Day Shift';
+  }
+
+  const text = [
+    scenario?.callInformation?.time,
+    scenario?.scenarioIntro,
+    scenario?.incidentNarrative,
+    scenario?.sceneArrival?.sceneDescription,
+    ...(scenario?.sceneArrival?.environmentDetails || []),
+    ...(scenario?.callInformation?.dispatchNotes || [])
+  ].filter(Boolean).join(' ');
+
+  return inferShiftModeFromText(text);
 }
 
 function collectFewShotText(item) {
@@ -2744,6 +2834,7 @@ const REQUIRED_FIELDS = {
     type: '',
     location: '',
     time: '',
+    shift: '',
     dispatchCode: '',
     dispatchNotes: [],
     hazardsOrFlags: [],
@@ -4311,6 +4402,52 @@ function buildEnvironmentProfile(environment) {
       `Access challenges: ${(env.accessChallenges || []).join(', ')}.`,
       `Collateral sources may include: ${(env.collateralSources || []).join(', ')}.`
     ].join(' ')
+  };
+}
+
+function buildShiftProfile(shiftMode, environment) {
+  const normalizedShiftMode = normalizeShiftMode(shiftMode) || 'Day Shift';
+  const nightEnvironmentNotes = {
+    Urban: 'Use overnight building access, quieter roads, security staff, or sparse foot traffic when relevant.',
+    Rural: 'Use dark driveways, limited exterior lighting, slower backup, or long approaches when relevant.',
+    Wilderness: 'Use headlamps, poor natural light, colder pre-dawn conditions, or limited visual cues when relevant.',
+    Industrial: 'Use reduced overnight staffing, lockouts, supervisors called in from elsewhere, or machine noise in low light.',
+    Home: 'Use sleeping households, bedside lamps, dark hallways, or family members woken from sleep when relevant.',
+    'Public Space': 'Use skeleton staffing, security, reduced public traffic, or partially closed facilities when relevant.'
+  };
+  const dayEnvironmentNotes = {
+    Urban: 'Use daytime traffic, active buildings, and busier public flow when relevant.',
+    Rural: 'Use daylight visibility, active property work, and easier scene orientation when relevant.',
+    Wilderness: 'Use visible terrain and weather exposure without forcing darkness as the main barrier.',
+    Industrial: 'Use active crews, louder workflows, and day operations when relevant.',
+    Home: 'Use normal household activity, caregivers, or family routines when relevant.',
+    'Public Space': 'Use normal staff presence, crowds, and public visibility when relevant.'
+  };
+
+  const environmentNote = normalizedShiftMode === 'Night Shift'
+    ? nightEnvironmentNotes[environment]
+    : dayEnvironmentNotes[environment];
+
+  return {
+    shiftMode: normalizedShiftMode,
+    instructionText: [
+      `Shift mode: ${normalizedShiftMode}`,
+      `callInformation.shift must be exactly "${normalizedShiftMode}".`,
+      normalizedShiftMode === 'Night Shift'
+        ? '- callInformation.time must clearly read as an overnight time between about 2200 and 0600.'
+        : '- callInformation.time should read as a daytime or early evening time between about 0600 and 2200.',
+      normalizedShiftMode === 'Night Shift'
+        ? '- The call should feel operationally overnight, not like a daytime call with the lights turned off.'
+        : '- The call should feel like a daytime operational context, not like a generic time-neutral call.',
+      normalizedShiftMode === 'Night Shift'
+        ? '- Dispatch notes, scene arrival, access details, bystander behavior, and transport setup should reflect overnight rhythms when relevant.'
+        : '- Dispatch notes, scene arrival, access details, and bystander behavior should reflect active daytime rhythms when relevant.',
+      normalizedShiftMode === 'Night Shift'
+        ? '- Night shift realism may include tired patients or collateral sources, locked access points, dim lighting, reduced staffing, quieter streets, or delayed on-site support.'
+        : '- Day shift realism may include heavier traffic, more bystanders, more open facilities, busier worksites, or easier collateral access.',
+      environmentNote ? `- ${environmentNote}` : '',
+      '- Keep the complaint clinically grounded; shift mode should shape context, not replace physiology.'
+    ].filter(Boolean).join('\n')
   };
 }
 
@@ -6558,11 +6695,18 @@ function enforceScenarioControls(scenario, controls) {
   const requestedComplexity = String(controls?.complexity || 'Moderate');
   const requestedCallType = normalizeCallFamily(controls?.callType || 'Medical');
   const requestedEnvironment = normalizeEnvironmentTag(controls?.environment || '');
+  const requestedShiftMode = normalizeShiftMode(controls?.shiftMode) || 'Day Shift';
 
   if (!scenario.callInformation || typeof scenario.callInformation !== 'object') {
     scenario.callInformation = {};
   }
   scenario.callInformation.type = requestedCallType;
+  scenario.callInformation.shift = requestedShiftMode;
+  scenario.callInformation.time = alignTimeToShiftMode(
+    scenario?.callInformation?.time,
+    requestedShiftMode,
+    `${scenario?.title || ''}|${scenario?.callInformation?.location || ''}`
+  );
   if (requestedEnvironment) {
     scenario.callInformation.environment = requestedEnvironment;
   }
@@ -6673,6 +6817,7 @@ function detectControlDrift(scenario, controls) {
   const requestedCallType = normalizeCallFamily(controls?.callType || 'Medical');
   const includeTeachingCues = Boolean(controls?.includeTeachingCues);
   const requestedEnvironment = normalizeEnvironmentTag(controls?.environment || '');
+  const requestedShiftMode = normalizeShiftMode(controls?.shiftMode) || 'Day Shift';
   const customPrompt = sanitizeCustomPrompt(controls?.customPrompt || '');
   const complexityAssessment = estimateScenarioComplexity(scenario);
   const medicationMentions = countMedicationMentionsInScenario(scenario);
@@ -6687,6 +6832,7 @@ function detectControlDrift(scenario, controls) {
     scenario?.callInformation?.type || `${scenario?.title || ''} ${scenario?.clinicalReasoning || ''}`
   );
   const explicitEnvironment = normalizeEnvironmentTag(scenario?.callInformation?.environment || '');
+  const inferredShiftMode = inferScenarioShiftMode(scenario);
   const inferredEnvironment = explicitEnvironment || normalizeEnvironmentTag(
     [
       scenario?.callInformation?.location || '',
@@ -6708,6 +6854,14 @@ function detectControlDrift(scenario, controls) {
       severity: 'medium',
       code: 'environment-drift',
       message: `Scenario reads as ${inferredEnvironment} instead of requested ${requestedEnvironment}.`
+    });
+  }
+
+  if (requestedShiftMode && inferredShiftMode && requestedShiftMode !== inferredShiftMode) {
+    issues.push({
+      severity: 'medium',
+      code: 'shift-drift',
+      message: `Scenario reads as ${inferredShiftMode} instead of requested ${requestedShiftMode}.`
     });
   }
 
@@ -7121,7 +7275,9 @@ Do not add commentary.
 Requested controls:
 - Semester: ${controls.semester}
 - Call Type: ${controls.callType}
+- Environment: ${controls.environment}
 - Complexity: ${controls.complexity}
+- Shift Mode: ${controls.shiftMode}
 - Include teaching cues: ${controls.includeTeachingCues}
 - Instructor prompt: ${sanitizeCustomPrompt(controls.customPrompt || '') || 'None provided'}
 
@@ -7141,6 +7297,7 @@ Repair priorities:
 - Keep the strongest existing content and structure where possible.
 - Revise the scenario so semester expectations are concrete, not implied.
 - Revise scene burden, ambiguity, reassessment burden, and treatment expectations so complexity clearly matches the request.
+- Make time-of-day context obvious when shift mode matters: dispatch timing, scene lighting, access, bystander state, and operational tempo should match the requested shift.
 - Keep teachersPoints as one instructor-style paragraph with a few distinct teaching beats, direct coaching voice, concrete case anchors, clinical rationale, and clear next-call improvement advice. Let it read naturally instead of like a fixed template.
 - Preserve Ontario directive references and keep directiveSources populated.
 - If teaching cues are enabled, increase cue density and section coverage while keeping cues clinically useful.
@@ -7179,6 +7336,7 @@ router.post('/', async (req, res) => {
       callType: finalCallType,
       environment,
       complexity,
+      shiftMode,
       includeTeachingCues,
       customPrompt: normalizedCustomPrompt
     } = requestValidation.value;
@@ -7193,6 +7351,7 @@ router.post('/', async (req, res) => {
       finalCallType,
       environment,
       complexity,
+      shiftMode,
       includeTeachingCues,
       hasCustomPrompt: Boolean(normalizedCustomPrompt),
       generationVariationSeed
@@ -7203,6 +7362,7 @@ router.post('/', async (req, res) => {
     devLog('SUBTYPE DEBUG:', subtypeData);
 
     const environmentProfile = buildEnvironmentProfile(environment);
+  const shiftProfile = buildShiftProfile(shiftMode, environment);
     const complicationData = buildComplications(subtypeData.subtype);
     const medicationPlan = buildMedicationPlan(subtypeData.subtype, semester);
     const scenarioCore = buildScenarioCore({
@@ -7277,6 +7437,9 @@ ${fewShotSelection.summary.join('\n')}
 
 ${fewShotSelection.block}
 
+SHIFT CONTEXT
+${shiftProfile.instructionText}
+
 ONTARIO DIRECTIVE ADDENDUM
 ${Array.isArray(directiveAddendum) ? directiveAddendum.join('\n') : String(directiveAddendum || '')}
 ${directiveMetaAddendum.length ? `\nONTARIO DIRECTIVE GOVERNANCE\n${directiveMetaAddendum.join('\n')}` : ''}
@@ -7333,6 +7496,7 @@ Required object structure:
   "type": "",
   "location": "",
   "time": "",
+  "shift": "",
   "dispatchCode": "",
   "dispatchNotes": [],
   "hazardsOrFlags": [],
@@ -7550,6 +7714,7 @@ Scenario parameters:
 - Call Type: ${finalCallType}
 - Environment: ${environment}
 - Complexity: ${complexity}
+- Shift Mode: ${shiftMode}
 - Include teaching cues: ${includeTeachingCues}
 - Instructor Prompt (optional): ${normalizedCustomPrompt || 'None provided'}
 
@@ -7585,6 +7750,7 @@ Teaching cue behavior:
 Control summary:
 - Semester ${semester} should visibly change treatment expectations, ambiguity, and learner burden.
 - Complexity ${complexity} should visibly change scene burden, number of meaningful reassessment points, and operational strain.
+- Shift mode ${shiftMode} should visibly change time-of-day feel, dispatch texture, access details, and scene lighting or staffing context when relevant.
 - The final scenario must be obviously different if either semester or complexity changes.
 
 Hard type enforcement:
@@ -7614,6 +7780,9 @@ Selected subtype:
 
 Environment:
 ${environmentProfile.environmentInstruction}
+
+Shift context:
+${shiftProfile.instructionText}
 
 Medication plan:
 - Style: ${medicationPlan.style || 'supportive-care dominant'}
@@ -7715,7 +7884,8 @@ Critical output rules:
       semester,
       complexity,
       callType: finalCallType,
-      environment
+      environment,
+      shiftMode
     });
     normalized = enforceTeachingCueSpecificity(normalized, Boolean(includeTeachingCues));
     normalized = enforceTeachingCueSectionDiscipline(normalized, Boolean(includeTeachingCues));
@@ -7759,6 +7929,7 @@ Critical output rules:
       complexity,
       callType: finalCallType,
       environment,
+      shiftMode,
       includeTeachingCues,
       customPrompt: normalizedCustomPrompt
     });
@@ -7783,6 +7954,7 @@ Critical output rules:
             complexity,
             callType: finalCallType,
             environment,
+            shiftMode,
             includeTeachingCues,
             customPrompt: normalizedCustomPrompt
           },
@@ -7797,7 +7969,8 @@ Critical output rules:
           semester,
           complexity,
           callType: finalCallType,
-          environment
+          environment,
+          shiftMode
         });
         const specificitySafeRepaired = enforceTeachingCueSpecificity(repairedNormalized, Boolean(includeTeachingCues));
         const sectionDisciplinedRepaired = enforceTeachingCueSectionDiscipline(
@@ -7833,6 +8006,7 @@ Critical output rules:
           complexity,
           callType: finalCallType,
           environment,
+          shiftMode,
           includeTeachingCues,
           customPrompt: normalizedCustomPrompt
         });
@@ -7874,7 +8048,8 @@ Critical output rules:
           semester,
           complexity,
           callType: finalCallType,
-          environment
+          environment,
+          shiftMode
         });
 
         validation = detectControlDrift(normalized, {
@@ -7882,6 +8057,7 @@ Critical output rules:
           complexity,
           callType: finalCallType,
           environment,
+          shiftMode,
           includeTeachingCues,
           customPrompt: normalizedCustomPrompt
         });

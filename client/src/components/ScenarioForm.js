@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import jsPDF from "jspdf";
-import { FaSpinner, FaFilePdf, FaLightbulb } from "react-icons/fa";
+import { FaSpinner, FaFilePdf, FaLightbulb, FaMoon, FaSun } from "react-icons/fa";
 
 const ecgImageMap = {
   "Normal Sinus Rhythm": "/ecg/NSR.jpg",
@@ -31,7 +31,6 @@ const SCENARIO_TYPES = [
 const SEMESTERS = ["2", "3", "4"];
 const ENVIRONMENTS = ["Urban", "Rural", "Wilderness", "Industrial", "Home", "Public Space"];
 const COMPLEXITIES = ["Simple", "Moderate", "Complex"];
-
 const SECTION_GROUPS = {
   "Scene Info": ["scenarioIntro", "title", "callInformation", "incidentNarrative"],
   "Patient Info": ["patientDemographics", "patientPresentation", "opqrst", "sample"],
@@ -130,6 +129,7 @@ const ScenarioForm = () => {
     type: "Medical",
     environment: "Urban",
     complexity: "Moderate",
+    shiftMode: "Day Shift",
     includeTeachingCues: UI_TEACHING_CUES_ENABLED,
     customPrompt: "",
   });
@@ -141,7 +141,7 @@ const ScenarioForm = () => {
   const [jokeIndex, setJokeIndex] = useState(0);
   const [dotCount, setDotCount] = useState(1);
 
-  const loadingJokes = [
+  const dayLoadingJokes = [
     "Tip: Keep reassessment tight. Vitals can change faster than confidence.",
     "Consulting the medical textbook we definitely didn't just skim...",
     "Diagnosing the problem... it's probably not lupus.",
@@ -204,15 +204,46 @@ const ScenarioForm = () => {
     "Tip: Reassess pain after intervention, not just before.",
   ];
 
+  const nightShiftJokes = [
+    "Night shift tip: If the story sounds thin at 02:00, ask one more question before you believe it.",
+    "Dispatch says routine. The porch light and the silence disagree.",
+    "Waking the AI for the 03:00 call. It also wants coffee.",
+    "Night shift tip: Locked doors, dark hallways, and sleepy witnesses all slow assessment. Name that early.",
+    "Street is empty. The call somehow is not.",
+    "Trying to find the unit number in lighting designed by our enemies.",
+    "Night shift tip: Reassess after movement. Patients look different once you get them into real light.",
+    "Security is on the way, the elevator is not, and the patient is on the top floor.",
+    "Checking if this is fatigue, illness, or both. Night calls like to blur the edges.",
+    "Night shift tip: Quiet scenes can still be high-acuity scenes. Do not let the calm fool you.",
+    "The patient is half awake, the family is fully stressed, and the dog has opinions.",
+    "Looking for house numbers like it is a scavenger hunt with liability.",
+    "Night shift tip: If the witness says 'they were fine before bed,' pin down an actual timeline.",
+    "Building the call while the moon supervises.",
+    "The crew is caffeinated enough to chart, not enough to trust vibes alone.",
+    "Night shift tip: Reduced staffing changes scene flow. Say out loud what help you will need early.",
+  ];
+
+  const [error, setError] = useState("");
+  const [collapsedSections, setCollapsedSections] = useState({});
+  const [selectedCue, setSelectedCue] = useState(null);
+  const [isMobile, setIsMobile] = useState(() =>
+    typeof window !== "undefined" ? window.matchMedia("(max-width: 900px)").matches : false
+  );
+
+  const isNightShift = formData.shiftMode === "Night Shift";
+  const nextShiftModeLabel = isNightShift ? "Day Mode" : "Night Mode";
+  const styles = buildStyles(isMobile);
+
   useEffect(() => {
     if (!loading) return;
-    setJokeIndex(Math.floor(Math.random() * loadingJokes.length));
+    const activeJokes = isNightShift ? nightShiftJokes : dayLoadingJokes;
+    setJokeIndex(Math.floor(Math.random() * activeJokes.length));
     const interval = setInterval(() => {
-      setJokeIndex((prev) => (prev + 1) % loadingJokes.length);
+      setJokeIndex((prev) => (prev + 1) % activeJokes.length);
     }, 11000);
     return () => clearInterval(interval);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loading]);
+  }, [loading, isNightShift]);
 
   useEffect(() => {
     if (!loading) {
@@ -226,14 +257,14 @@ const ScenarioForm = () => {
 
     return () => clearInterval(dotsInterval);
   }, [loading]);
-  const [error, setError] = useState("");
-  const [collapsedSections, setCollapsedSections] = useState({});
-  const [selectedCue, setSelectedCue] = useState(null);
-  const [isMobile, setIsMobile] = useState(() =>
-    typeof window !== "undefined" ? window.matchMedia("(max-width: 900px)").matches : false
-  );
 
-  const styles = buildStyles(isMobile);
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", isNightShift ? "night" : "day");
+
+    return () => {
+      document.documentElement.setAttribute("data-theme", "day");
+    };
+  }, [isNightShift]);
 
   useEffect(() => {
     const spinnerStyle = document.createElement("style");
@@ -337,6 +368,13 @@ const ScenarioForm = () => {
     setFormData((prev) => ({
       ...prev,
       [name]: type === "checkbox" ? checked : value,
+    }));
+  };
+
+  const toggleShiftMode = () => {
+    setFormData((prev) => ({
+      ...prev,
+      shiftMode: prev.shiftMode === "Night Shift" ? "Day Shift" : "Night Shift",
     }));
   };
 
@@ -636,6 +674,7 @@ const ScenarioForm = () => {
     y += 7;
 
     const metaFields = [
+      ["Shift", sanitizePdfText(formData.shiftMode)],
       ["Semester", sanitizePdfText(formData.semester)],
       ["Call Type", sanitizePdfText(scenario?.callInformation?.type || formData.type)],
       ["Environment", sanitizePdfText(formData.environment)],
@@ -815,9 +854,9 @@ const ScenarioForm = () => {
                 data-cue-popover="true"
                 style={{
                   position: "absolute",
-                  background: "#fef9c3",
-                  color: "#1f2937",
-                  border: "1px solid #fcd34d",
+                  background: "var(--vn-cue-popover-bg)",
+                  color: "var(--vn-cue-popover-text)",
+                  border: "1px solid var(--vn-cue-popover-border)",
                   padding: "0.5rem 0.75rem",
                   borderRadius: "8px",
                   zIndex: 10000,
@@ -828,7 +867,7 @@ const ScenarioForm = () => {
                   minWidth: isMobile ? "180px" : "240px",
                   maxWidth: isMobile ? "90vw" : "420px",
                   whiteSpace: "normal",
-                  boxShadow: "0 6px 12px rgba(0,0,0,0.25)",
+                  boxShadow: "0 10px 22px rgba(0,0,0,0.28)",
                 }}
                 onClick={(e) => e.stopPropagation()}
               >
@@ -837,7 +876,7 @@ const ScenarioForm = () => {
                     fontSize: "0.72rem",
                     textTransform: "uppercase",
                     letterSpacing: "0.04em",
-                    color: "#92400e",
+                    color: "var(--vn-cue-popover-label)",
                     marginBottom: "0.35rem",
                     fontWeight: 700,
                   }}
@@ -956,16 +995,16 @@ const ScenarioForm = () => {
 
     const highlightStyle = isTeachingCue
       ? {
-          backgroundColor: "#e0f2fe",
-          borderLeft: "5px solid #0284c7",
+          backgroundColor: "var(--vn-info-card-bg)",
+          borderLeft: "5px solid var(--vn-info-card-border)",
           padding: "1rem",
           borderRadius: "8px",
           marginBottom: "1rem",
         }
       : isProtocolNote
         ? {
-            backgroundColor: "#dcfce7",
-            borderLeft: "5px solid #16a34a",
+            backgroundColor: "var(--vn-protocol-card-bg)",
+            borderLeft: "5px solid var(--vn-protocol-card-border)",
             padding: "1rem",
             borderRadius: "8px",
             marginBottom: "1rem",
@@ -985,6 +1024,16 @@ const ScenarioForm = () => {
       <div style={styles.headerBar}>
         <h1 style={styles.heading}>Scenario Generator 1.0</h1>
         <div style={styles.headerActionWrap}>
+          <button
+            type="button"
+            onClick={toggleShiftMode}
+            style={styles.shiftToggle}
+            className="a11y-focus"
+            title={isNightShift ? "Switch to day mode" : "Switch to night mode"}
+          >
+            {isNightShift ? <FaSun aria-hidden="true" /> : <FaMoon aria-hidden="true" />}
+            <span>{nextShiftModeLabel}</span>
+          </button>
           <button
             onClick={exportToPDF}
             style={{
@@ -1078,8 +1127,8 @@ const ScenarioForm = () => {
               {scenario.customPrompt && (
                 <div
                   style={{
-                    backgroundColor: "#fef9c3",
-                    borderLeft: "6px solid #facc15",
+                    backgroundColor: "var(--vn-accent-card-bg)",
+                    borderLeft: "6px solid var(--vn-accent-card-border)",
                     padding: "1rem",
                     borderRadius: "10px",
                     marginBottom: "1rem",
@@ -1111,11 +1160,11 @@ const ScenarioForm = () => {
                   {groupName === "Education" && scenario.teachersPoints && (
                     <div
                       style={{
-                        backgroundColor: "#fef9c3",
-                        color: "#1e293b",
+                        backgroundColor: "var(--vn-accent-card-bg)",
+                        color: "var(--vn-ink)",
                         padding: "1rem",
                         borderRadius: "12px",
-                        border: "1px solid #eab308",
+                        border: "1px solid var(--vn-accent-card-border)",
                         marginBottom: "1rem",
                       }}
                     >
@@ -1152,7 +1201,7 @@ const ScenarioForm = () => {
               Generating Scenario<span style={{ display: "inline-block", minWidth: "1.7rem", textAlign: "left" }}>{".".repeat(dotCount)}</span>
             </div>
             <div style={styles.loadingSubtext}>This will take a minute.</div>
-            <div style={{ ...styles.loadingSubtext, marginTop: "0.4rem", fontSize: "0.8rem", color: "#94a3b8", textAlign: "center" }}>
+            <div style={{ ...styles.loadingSubtext, marginTop: "0.4rem", fontSize: "0.8rem", color: "var(--vn-loading-muted)", textAlign: "center" }}>
               The AI is building your scenario, vitals, and teaching cues.<br />
               Complex cases may take a little longer.
             </div>
@@ -1160,28 +1209,19 @@ const ScenarioForm = () => {
               marginTop: "1.2rem",
               minHeight: "2.5rem",
               fontSize: "0.78rem",
-              color: "#a0aec0",
+              color: "var(--vn-loading-muted)",
               fontStyle: "italic",
               textAlign: "center",
               maxWidth: "300px",
               lineHeight: 1.35,
             }}>
               <div key={jokeIndex} className="loading-message-pop">
-                {loadingJokes[jokeIndex]}
+                {(isNightShift ? nightShiftJokes : dayLoadingJokes)[jokeIndex]}
               </div>
             </div>
             <button
               onClick={handleCancel}
-              style={{
-                marginTop: "0.8rem",
-                padding: "0.4rem 1.2rem",
-                background: "transparent",
-                border: "1px solid #ccc",
-                borderRadius: "4px",
-                color: "#555",
-                cursor: "pointer",
-                fontSize: "0.85rem",
-              }}
+              style={styles.cancelButton}
             >
               Cancel
             </button>
@@ -1208,7 +1248,7 @@ const ScenarioForm = () => {
           <div
             style={{
               position: "relative",
-              background: "#fff",
+              background: "var(--vn-modal-bg)",
               padding: "1rem",
               borderRadius: "8px",
               maxWidth: "90vw",
@@ -1226,15 +1266,7 @@ const ScenarioForm = () => {
             <button
               onClick={() => setSelectedECGImage(null)}
               className="a11y-focus"
-              style={{
-                marginTop: "0.75rem",
-                padding: "0.5rem 1rem",
-                backgroundColor: "#0ea5e9",
-                color: "#fff",
-                border: "none",
-                borderRadius: "4px",
-                cursor: "pointer",
-              }}
+              style={styles.modalCloseButton}
             >
               Close
             </button>
@@ -1249,7 +1281,7 @@ const buildStyles = (isMobile) => ({
   container: {
     padding: isMobile ? "0.62rem 0" : "0.28rem 0 1rem",
     backgroundColor: "transparent",
-    color: "#1e293b",
+    color: "var(--vn-ink)",
     fontFamily: '"Manrope", "Segoe UI", sans-serif',
     fontSize: "14px",
     minHeight: "100vh",
@@ -1266,7 +1298,7 @@ const buildStyles = (isMobile) => ({
     left: 0,
     width: "100vw",
     height: "100vh",
-    backgroundColor: "rgba(15, 23, 42, 0.45)",
+    backgroundColor: "var(--vn-loading-overlay)",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -1275,7 +1307,7 @@ const buildStyles = (isMobile) => ({
   },
 
   loadingBox: {
-    backgroundColor: "#ffffff",
+    backgroundColor: "var(--vn-loading-box-bg)",
     padding: "1.5rem 2rem",
     borderRadius: "14px",
     boxShadow: "0 10px 30px rgba(0,0,0,0.25)",
@@ -1288,18 +1320,18 @@ const buildStyles = (isMobile) => ({
 
   loadingSpinner: {
     fontSize: "1.75rem",
-    color: "#0d9488",
+    color: "var(--vn-teal)",
   },
 
   loadingTitle: {
     fontSize: "1.05rem",
     fontWeight: "bold",
-    color: "#1e293b",
+    color: "var(--vn-ink)",
   },
 
   loadingSubtext: {
     fontSize: "0.9rem",
-    color: "#475569",
+    color: "var(--vn-muted-text)",
   },
   headerBar: {
     position: isMobile ? "static" : "sticky",
@@ -1310,13 +1342,13 @@ const buildStyles = (isMobile) => ({
     gap: "0.7rem",
     flexWrap: isMobile ? "wrap" : "nowrap",
     marginBottom: isMobile ? "0.85rem" : "0.75rem",
-    background: "linear-gradient(122deg, #123047 0%, #2a7ba2 52%, #9fd3e6 100%)",
+    background: "linear-gradient(122deg, var(--vn-header-start) 0%, var(--vn-header-mid) 52%, var(--vn-header-end) 100%)",
     padding: isMobile ? "0.7rem 0.85rem" : "0.78rem 1rem",
     borderRadius: "14px",
-    boxShadow: "0 10px 24px rgba(18,48,71,0.22)",
+    boxShadow: "var(--vn-panel-shadow)",
     zIndex: 1000,
-    border: "1px solid rgba(183, 219, 233, 0.95)",
-    borderLeft: "6px solid #f28c28",
+    border: "1px solid var(--vn-header-border)",
+    borderLeft: "6px solid var(--vn-orange)",
     overflow: "hidden",
   },
 
@@ -1324,7 +1356,7 @@ const buildStyles = (isMobile) => ({
     fontSize: isMobile ? "1.1rem" : "1.4rem",
     fontWeight: 800,
     margin: 0,
-    color: "#f6fbfc",
+    color: "var(--vn-header-text)",
     letterSpacing: "0.01em",
     position: "relative",
     zIndex: 1,
@@ -1333,19 +1365,37 @@ const buildStyles = (isMobile) => ({
   headerActionWrap: {
     position: "relative",
     zIndex: 1,
+    display: "flex",
+    gap: "0.6rem",
+    flexWrap: "wrap",
+    justifyContent: "flex-end",
+  },
+
+  shiftToggle: {
+    display: "inline-flex",
+    alignItems: "center",
+    gap: "0.45rem",
+    padding: "0.5rem 0.78rem",
+    borderRadius: "999px",
+    border: "1px solid var(--vn-header-pill-border)",
+    cursor: "pointer",
+    background: "var(--vn-header-pill-bg)",
+    color: "var(--vn-header-pill-text)",
+    fontSize: "0.9rem",
+    fontWeight: 700,
+    boxShadow: "var(--vn-header-pill-shadow)",
   },
 
   toggle: {
     padding: "0.5rem 0.78rem",
-    marginLeft: "0.5rem",
     borderRadius: "999px",
-    border: "1px solid rgba(255,255,255,0.28)",
+    border: "1px solid var(--vn-export-border)",
     cursor: "pointer",
-    background: "linear-gradient(135deg, #f28c28, #d97706)",
-    color: "#fffaf0",
+    background: "linear-gradient(135deg, var(--vn-orange), var(--vn-export-end))",
+    color: "var(--vn-export-text)",
     fontSize: "0.9rem",
     fontWeight: 700,
-    boxShadow: "0 6px 14px rgba(217,119,6,0.34)",
+    boxShadow: "var(--vn-export-shadow)",
   },
 
   mainLayout: {
@@ -1371,12 +1421,12 @@ const buildStyles = (isMobile) => ({
     display: "grid",
     gridTemplateColumns: "1fr",
     gap: "0.85rem",
-    background: "linear-gradient(180deg, #eaf5fb 0%, #f8fcff 100%)",
+    background: "linear-gradient(180deg, var(--vn-form-top) 0%, var(--vn-form-bottom) 100%)",
     padding: "1.25rem",
     borderRadius: "14px",
     marginBottom: isMobile ? "0.5rem" : "1rem",
-    boxShadow: "0 8px 22px rgba(18,48,71,0.1)",
-    border: "1px solid #bdd7e2",
+    boxShadow: "var(--vn-panel-shadow)",
+    border: "1px solid var(--vn-panel-border)",
     backdropFilter: "blur(2px)",
   },
 
@@ -1389,22 +1439,22 @@ const buildStyles = (isMobile) => ({
   select: {
     padding: "0.45rem",
     borderRadius: "8px",
-    border: "1px solid #94a3b8",
-    backgroundColor: "#ffffff",
-    color: "#1e293b",
+    border: "1px solid var(--vn-input-border)",
+    backgroundColor: "var(--vn-input-bg)",
+    color: "var(--vn-ink)",
   },
 
   textarea: {
     padding: "0.5rem",
     borderRadius: "8px",
-    border: "1px solid #94a3b8",
-    backgroundColor: "#ffffff",
-    color: "#1e293b",
+    border: "1px solid var(--vn-input-border)",
+    backgroundColor: "var(--vn-input-bg)",
+    color: "var(--vn-ink)",
     resize: "vertical",
   },
 
   helperText: {
-    color: "#475569",
+    color: "var(--vn-muted-text)",
     fontSize: "0.8rem",
     marginTop: "0.2rem",
   },
@@ -1415,45 +1465,45 @@ const buildStyles = (isMobile) => ({
     fontWeight: "bold",
     borderRadius: "10px",
     border: "none",
-    background: "linear-gradient(135deg, #0d8b8b, #0a6e72)",
-    color: "#ffffff",
+    background: "linear-gradient(135deg, var(--vn-button-start), var(--vn-button-end))",
+    color: "var(--vn-button-text)",
     cursor: "pointer",
-    boxShadow: "0 8px 16px rgba(10,110,114,0.25)",
+    boxShadow: "var(--vn-button-shadow)",
   },
 
   outputBox: {
     maxHeight: "none",
     overflowY: "visible",
-    background: "linear-gradient(180deg, #ffffff 0%, #f1f8fc 100%)",
+    background: "linear-gradient(180deg, var(--vn-output-top) 0%, var(--vn-output-bottom) 100%)",
     padding: isMobile ? "1rem" : "1.5rem",
     borderRadius: "14px",
-    boxShadow: "0 10px 24px rgba(18,48,71,0.12)",
-    border: "1px solid #b8d2de",
+    boxShadow: "var(--vn-panel-shadow)",
+    border: "1px solid var(--vn-panel-border)",
   },
 
   card: {
-    backgroundColor: "#ffffff",
+    backgroundColor: "var(--vn-card-bg)",
     padding: "1rem",
     borderRadius: "10px",
     marginBottom: "1rem",
-    border: "1px solid #d8e7ef",
+    border: "1px solid var(--vn-card-border)",
   },
 
   cardTitle: {
     marginBottom: "0.5rem",
     fontWeight: "bold",
     fontSize: "1.05rem",
-    color: "#0d9488",
+    color: "var(--vn-accent-text)",
   },
 
   error: {
-    color: "#dc2626",
+    color: "var(--vn-error-text)",
     fontWeight: "bold",
     marginTop: "0.5rem",
   },
 
   loading: {
-    color: "#1e293b",
+    color: "var(--vn-ink)",
     fontWeight: "bold",
     marginTop: "0.5rem",
   },
@@ -1477,19 +1527,40 @@ const buildStyles = (isMobile) => ({
     background: "transparent",
     border: "none",
     textAlign: "left",
-    color: "#1e293b",
+    color: "var(--vn-ink)",
     fontSize: isMobile ? "1rem" : "1.15rem",
     fontWeight: 700,
     cursor: "pointer",
     padding: isMobile ? "0.55rem 0.2rem" : "0.35rem 0.1rem",
     borderRadius: "8px",
-    borderBottom: "2px solid #0d9488",
+    borderBottom: "2px solid var(--vn-accent-text)",
   },
 
   sectionHeadingIcon: {
     display: "inline-flex",
     minWidth: "1.1rem",
     justifyContent: "center",
+  },
+
+  cancelButton: {
+    marginTop: "0.8rem",
+    padding: "0.4rem 1.2rem",
+    background: "transparent",
+    border: "1px solid var(--vn-input-border)",
+    borderRadius: "6px",
+    color: "var(--vn-muted-text)",
+    cursor: "pointer",
+    fontSize: "0.85rem",
+  },
+
+  modalCloseButton: {
+    marginTop: "0.75rem",
+    padding: "0.5rem 1rem",
+    backgroundColor: "var(--vn-button-start)",
+    color: "var(--vn-button-text)",
+    border: "none",
+    borderRadius: "4px",
+    cursor: "pointer",
   },
 });
 

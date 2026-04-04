@@ -9,18 +9,150 @@
   --vn-sky: #dff0f5;
   --vn-shell: #f1f6f8;
   --vn-border: #c7d9df;
+  --vn-page-bg:
+    radial-gradient(circle at 12% 15%, rgba(13, 139, 139, 0.16), transparent 38%),
+    radial-gradient(circle at 88% 10%, rgba(242, 140, 40, 0.14), transparent 32%),
+    linear-gradient(180deg, #edf4f6 0%, #f8f5ef 65%, #eef5f7 100%);
+  --vn-orb-left-bg: radial-gradient(circle, rgba(13, 139, 139, 0.24) 0%, rgba(13, 139, 139, 0) 70%);
+  --vn-orb-right-bg: radial-gradient(circle, rgba(242, 140, 40, 0.22) 0%, rgba(242, 140, 40, 0) 72%);
+  --vn-hero-bg: linear-gradient(138deg, rgba(18, 48, 71, 0.95), rgba(10, 110, 114, 0.92));
+  --vn-hero-border: rgba(211, 234, 238, 0.45);
+  --vn-hero-shadow: 0 14px 38px rgba(18, 48, 71, 0.25);
+  --vn-hero-after: radial-gradient(circle, rgba(242, 140, 40, 0.36) 0%, rgba(242, 140, 40, 0) 72%);
+  --vn-badge-text: #dbeff2;
+  --vn-badge-bg: rgba(255, 255, 255, 0.11);
+  --vn-badge-border: rgba(235, 248, 250, 0.32);
+  --vn-hero-heading: #f6fbfc;
+  --vn-hero-copy: #d5e9ee;
+  --vn-logo-bg: #ffffff;
+  --vn-header-start: #123047;
+  --vn-header-mid: #2a7ba2;
+  --vn-header-end: #9fd3e6;
+  --vn-header-border: rgba(183, 219, 233, 0.95);
+  --vn-header-text: #f6fbfc;
+  --vn-header-pill-bg: rgba(244, 251, 252, 0.14);
+  --vn-header-pill-border: rgba(226, 240, 244, 0.34);
+  --vn-header-pill-text: #eef8fb;
+  --vn-header-pill-shadow: 0 6px 14px rgba(18, 48, 71, 0.24);
+  --vn-export-border: rgba(255, 247, 237, 0.28);
+  --vn-export-end: #d97706;
+  --vn-export-text: #fffaf0;
+  --vn-export-shadow: 0 6px 14px rgba(217, 119, 6, 0.34);
+  --vn-panel-shadow: 0 10px 24px rgba(18, 48, 71, 0.14);
+  --vn-panel-border: #bdd7e2;
+  --vn-form-top: #eaf5fb;
+  --vn-form-bottom: #f8fcff;
+  --vn-shift-card-bg: rgba(255, 255, 255, 0.65);
+  --vn-shift-card-border: rgba(155, 193, 208, 0.72);
+  --vn-input-bg: #ffffff;
+  --vn-input-border: #94a3b8;
+  --vn-muted-text: #475569;
+  --vn-button-start: #0d8b8b;
+  --vn-button-end: #0a6e72;
+  --vn-button-text: #ffffff;
+  --vn-button-shadow: 0 8px 16px rgba(10, 110, 114, 0.25);
+  --vn-output-top: #ffffff;
+  --vn-output-bottom: #f1f8fc;
+  --vn-card-bg: #ffffff;
+  --vn-card-border: #d8e7ef;
+  --vn-accent-text: #0d9488;
+  --vn-error-text: #dc2626;
+  --vn-loading-overlay: rgba(15, 23, 42, 0.45);
+  --vn-loading-box-bg: #ffffff;
+  --vn-loading-muted: #94a3b8;
+  --vn-accent-card-bg: #fef9c3;
+  --vn-accent-card-border: #eab308;
+  --vn-info-card-bg: #e0f2fe;
+  --vn-info-card-border: #0284c7;
+  --vn-protocol-card-bg: #dcfce7;
+  --vn-protocol-card-border: #16a34a;
+  --vn-cue-popover-bg: #fef9c3;
+  --vn-cue-popover-border: #fcd34d;
+  --vn-cue-popover-text: #1f2937;
+  --vn-cue-popover-label: #92400e;
+  --vn-modal-bg: #ffffff;
   --vn-font-heading: "Spectral", Georgia, serif;
   --vn-font-body: "Manrope", "Segoe UI", sans-serif;
+}
+
+html[data-theme="night"] {
+  --vn-ink: #e6eef7;
+  --vn-teal: #57c2c4;
+  --vn-teal-deep: #8be2dd;
+  --vn-orange: #ffb45c;
+  --vn-paper: #0f1724;
+  --vn-sky: #13263b;
+  --vn-shell: #09111d;
+  --vn-border: #29415b;
+  --vn-page-bg:
+    radial-gradient(circle at 16% 18%, rgba(87, 194, 196, 0.16), transparent 34%),
+    radial-gradient(circle at 82% 12%, rgba(255, 180, 92, 0.14), transparent 28%),
+    linear-gradient(180deg, #050b14 0%, #091523 46%, #0d1b2d 100%);
+  --vn-orb-left-bg: radial-gradient(circle, rgba(87, 194, 196, 0.22) 0%, rgba(87, 194, 196, 0) 72%);
+  --vn-orb-right-bg: radial-gradient(circle, rgba(255, 180, 92, 0.16) 0%, rgba(255, 180, 92, 0) 72%);
+  --vn-hero-bg: linear-gradient(135deg, rgba(7, 16, 29, 0.96), rgba(18, 39, 62, 0.95));
+  --vn-hero-border: rgba(115, 154, 186, 0.34);
+  --vn-hero-shadow: 0 18px 44px rgba(0, 0, 0, 0.42);
+  --vn-hero-after: radial-gradient(circle, rgba(255, 180, 92, 0.24) 0%, rgba(255, 180, 92, 0) 72%);
+  --vn-badge-text: #dce7f4;
+  --vn-badge-bg: rgba(122, 162, 202, 0.14);
+  --vn-badge-border: rgba(143, 183, 219, 0.24);
+  --vn-hero-heading: #f5f8fd;
+  --vn-hero-copy: #b8cbe0;
+  --vn-logo-bg: #ecf4fb;
+  --vn-header-start: #09111c;
+  --vn-header-mid: #14304d;
+  --vn-header-end: #1f496f;
+  --vn-header-border: rgba(94, 130, 163, 0.56);
+  --vn-header-text: #f4f7fb;
+  --vn-header-pill-bg: rgba(112, 161, 207, 0.12);
+  --vn-header-pill-border: rgba(138, 188, 232, 0.26);
+  --vn-header-pill-text: #e7f2fc;
+  --vn-header-pill-shadow: 0 8px 18px rgba(0, 0, 0, 0.28);
+  --vn-export-border: rgba(255, 212, 160, 0.2);
+  --vn-export-end: #c97a1a;
+  --vn-export-text: #fff6ea;
+  --vn-export-shadow: 0 8px 18px rgba(128, 74, 12, 0.36);
+  --vn-panel-shadow: 0 12px 28px rgba(0, 0, 0, 0.28);
+  --vn-panel-border: #28435d;
+  --vn-form-top: #0e1a29;
+  --vn-form-bottom: #132235;
+  --vn-shift-card-bg: rgba(22, 40, 60, 0.88);
+  --vn-shift-card-border: rgba(83, 119, 154, 0.72);
+  --vn-input-bg: #0c1827;
+  --vn-input-border: #39536d;
+  --vn-muted-text: #9fb3c8;
+  --vn-button-start: #1b8f95;
+  --vn-button-end: #126f75;
+  --vn-button-text: #f5fbfb;
+  --vn-button-shadow: 0 10px 20px rgba(5, 36, 38, 0.38);
+  --vn-output-top: #0d1826;
+  --vn-output-bottom: #102033;
+  --vn-card-bg: #122133;
+  --vn-card-border: #29415b;
+  --vn-accent-text: #5fd6d2;
+  --vn-error-text: #fca5a5;
+  --vn-loading-overlay: rgba(2, 8, 18, 0.66);
+  --vn-loading-box-bg: #122031;
+  --vn-loading-muted: #7f96ad;
+  --vn-accent-card-bg: #2d2610;
+  --vn-accent-card-border: #c6921d;
+  --vn-info-card-bg: #0d2840;
+  --vn-info-card-border: #38bdf8;
+  --vn-protocol-card-bg: #102c20;
+  --vn-protocol-card-border: #34d399;
+  --vn-cue-popover-bg: #2d2610;
+  --vn-cue-popover-border: #c6921d;
+  --vn-cue-popover-text: #f5ecd5;
+  --vn-cue-popover-label: #ffd487;
+  --vn-modal-bg: #101d2d;
 }
 
 body {
   margin: 0;
   color: var(--vn-ink);
   font-family: var(--vn-font-body);
-  background:
-    radial-gradient(circle at 12% 15%, rgba(13, 139, 139, 0.16), transparent 38%),
-    radial-gradient(circle at 88% 10%, rgba(242, 140, 40, 0.14), transparent 32%),
-    linear-gradient(180deg, #edf4f6 0%, #f8f5ef 65%, #eef5f7 100%);
+  background: var(--vn-page-bg);
   min-height: 100vh;
 }
 
@@ -41,7 +173,7 @@ body {
 .brand-orb-left {
   width: 240px;
   height: 240px;
-  background: radial-gradient(circle, rgba(13, 139, 139, 0.24) 0%, rgba(13, 139, 139, 0) 70%);
+  background: var(--vn-orb-left-bg);
   top: 78px;
   left: 22px;
 }
@@ -49,7 +181,7 @@ body {
 .brand-orb-right {
   width: 180px;
   height: 180px;
-  background: radial-gradient(circle, rgba(242, 140, 40, 0.22) 0%, rgba(242, 140, 40, 0) 72%);
+  background: var(--vn-orb-right-bg);
   top: 64px;
   right: 24px;
 }
@@ -61,9 +193,9 @@ body {
   margin: 0 auto 0.22rem;
   padding: 0.82rem 1rem;
   border-radius: 18px;
-  background: linear-gradient(138deg, rgba(18, 48, 71, 0.95), rgba(10, 110, 114, 0.92));
-  border: 1px solid rgba(211, 234, 238, 0.45);
-  box-shadow: 0 14px 38px rgba(18, 48, 71, 0.25);
+  background: var(--vn-hero-bg);
+  border: 1px solid var(--vn-hero-border);
+  box-shadow: var(--vn-hero-shadow);
   overflow: hidden;
 }
 
@@ -73,7 +205,7 @@ body {
   inset: auto -28% -58% auto;
   width: 420px;
   height: 220px;
-  background: radial-gradient(circle, rgba(242, 140, 40, 0.36) 0%, rgba(242, 140, 40, 0) 72%);
+  background: var(--vn-hero-after);
 }
 
 .brand-badge {
@@ -81,9 +213,9 @@ body {
   align-items: center;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #dbeff2;
-  background: rgba(255, 255, 255, 0.11);
-  border: 1px solid rgba(235, 248, 250, 0.32);
+  color: var(--vn-badge-text);
+  background: var(--vn-badge-bg);
+  border: 1px solid var(--vn-badge-border);
   border-radius: 999px;
   padding: 0.2rem 0.62rem;
   font-size: 0.72rem;
@@ -103,12 +235,12 @@ body {
   height: 52px;
   border-radius: 12px;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.24);
-  background: #fff;
+  background: var(--vn-logo-bg);
 }
 
 .brand-hero h1 {
   margin: 0;
-  color: #f6fbfc;
+  color: var(--vn-hero-heading);
   font-family: var(--vn-font-heading);
   font-size: clamp(1.36rem, 2vw, 2rem);
   line-height: 1.15;
@@ -116,7 +248,7 @@ body {
 
 .brand-hero p {
   margin: 0.26rem 0 0;
-  color: #d5e9ee;
+  color: var(--vn-hero-copy);
   max-width: 900px;
   font-size: 0.97rem;
 }

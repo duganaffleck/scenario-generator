@@ -20,7 +20,7 @@ function App() {
             <h1>VitalNotes Scenario Generator</h1>
             <p>
               Build realistic, protocol-aligned simulation scenarios with
-              instructor-grade teaching cues in minutes.
+              instructor-grade teaching cues and shift-aware call texture.
             </p>
           </div>
         </div>
