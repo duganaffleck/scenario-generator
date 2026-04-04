@@ -605,6 +605,60 @@ const ScenarioForm = () => {
       setTimeout(() => setBirthdayMode(false), 7500); // triple the time
       return;
     }
+
+    // Werewolf Easter egg
+    if (
+      formData.semester === "4" &&
+      formData.type === "Environmental" &&
+      formData.environment === "Wilderness" &&
+      formData.complexity === "Complex" &&
+      formData.shiftMode === "Night Shift" &&
+      formData.customPrompt.trim().toLowerCase() === "howl"
+    ) {
+      setScenario({
+        title: "Full Moon Fiasco: The Werewolf in the Woods",
+        scenarioIntro: "It's a dark, foggy night in the deep wilderness. The full moon is high, and your radio crackles with a call for help. Locals whisper of strange howls echoing through the trees...",
+        callInformation: "Dispatched to remote forest campsite. Multiple reports of 'unusual animal activity.'",
+        patientDemographics: "Age: ??? (appears 30s, but suspiciously hairy), Gender: 'Lycanthropic', Weight: fluctuates with lunar cycle.",
+        patientPresentation: "Patient is found howling at the moon, covered in fur, with torn clothing and a mischievous grin. Complains of 'sudden urge to chase squirrels and an insatiable hunger for rare steak.'",
+        incidentNarrative: "Patient was camping with friends when the full moon rose. Friends report he became 'extra hairy' and started reciting Shakespeare in a deep, growly voice.",
+        physicalExam: "Vitals: HR 120 (excited), RR 24 (panting), BP 140/90, Temp: 38.5°C, SpO2: 99%. Notable: Elongated canines, excessive body hair, glowing yellow eyes, tail wagging. No obvious injuries except pride.",
+        vitalSigns: {
+          hr: 120,
+          rr: 24,
+          bp: "140/90",
+          temp: "38.5°C",
+          spo2: "99%",
+          ecgInterpretation: "Sinus tachycardia with occasional howls."
+        },
+        caseProgression: "Patient attempts to flee when offered a silver medical bracelet. Responds well to gentle petting and moon-shaped cookies.",
+        differentialDiagnosis: [
+          "Acute lycanthropy (werewolf transformation)",
+          "Rabies (unlikely, patient prefers jazz to biting)",
+          "Extreme hair growth disorder",
+          "Full-moon-induced party syndrome"
+        ],
+        expectedTreatment: "Avoid silver instruments. Offer calming words, beef jerky, and a safe space to howl. Monitor until sunrise. If patient requests, play 'Werewolves of London' on your phone.",
+        protocolNotes: "No protocol for supernatural transformations. Consult folklore as needed.",
+        learningObjectives: [
+          "Recognize and manage rare supernatural presentations",
+          "Maintain sense of humor under pressure",
+          "Avoid full moon shifts if possible"
+        ],
+        teachersPoints: [
+          "Sometimes, the best medicine is a good laugh.",
+          "Always check the lunar calendar before your shift."
+        ],
+        customPrompt: "Howl",
+        scenarioRationale: "This scenario is designed to test your ability to adapt, improvise, and have fun—even when your patient is a werewolf."
+      });
+      setError("");
+      setSelectedCue(null);
+      setSelectedECGImage(null);
+      setLoading(false);
+      return;
+    }
+
     setLoading(true);
     setError("");
     setScenario(null);
