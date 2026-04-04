@@ -31,6 +31,14 @@ const SCENARIO_TYPES = [
 const SEMESTERS = ["2", "3", "4"];
 const ENVIRONMENTS = ["Urban", "Rural", "Wilderness", "Industrial", "Home", "Public Space"];
 const COMPLEXITIES = ["Simple", "Moderate", "Complex"];
+
+const FIELD_TOOLTIPS = {
+  semester: "Training level: 2 = foundational skills, 3 = intermediate assessment/treatment, 4 = advanced decision-making with rare/complex presentations",
+  type: "Scenario category: Medical (illness), Trauma (injury), Cardiac (heart/rhythm), Respiratory (breathing), Environmental (exposure/environmental illness)",
+  environment: "Call location: Urban (city), Rural (countryside), Wilderness (remote outdoor), Industrial (worksite), Home (residence), Public Space (crowd areas, venues)",
+  complexity: "Case difficulty: Simple (straightforward presentation), Moderate (typical multi-system or subtle findings), Complex (rare presentations or multiple competing diagnoses)",
+};
+
 const SECTION_GROUPS = {
   "Scene Info": ["scenarioIntro", "title", "callInformation", "incidentNarrative"],
   "Patient Info": ["patientDemographics", "patientPresentation", "opqrst", "sample"],
@@ -1114,13 +1122,16 @@ const ScenarioForm = () => {
 
             {["semester", "type", "environment", "complexity"].map((field) => (
               <div key={field} style={styles.fieldRow}>
-                <label>{capitalizeFirstLetter(field)}:</label>
+                <label title={FIELD_TOOLTIPS[field]} style={{ cursor: "help" }}>
+                  {capitalizeFirstLetter(field)}:
+                </label>
                 <select
                   name={field}
                   value={formData[field]}
                   onChange={handleChange}
                   style={styles.select}
                   className="a11y-focus"
+                  title={FIELD_TOOLTIPS[field]}
                 >
                   {(field === "semester"
                     ? SEMESTERS
@@ -1395,7 +1406,7 @@ const buildStyles = (isMobile) => ({
     justifyContent: "space-between",
     alignItems: "center",
     gap: "0.7rem",
-    flexWrap: isMobile ? "wrap" : "nowrap",
+    flexWrap: "nowrap",
     marginBottom: isMobile ? "0.85rem" : "0.75rem",
     background: "linear-gradient(122deg, var(--vn-header-start) 0%, var(--vn-header-mid) 52%, var(--vn-header-end) 100%)",
     padding: isMobile ? "0.7rem 0.85rem" : "0.78rem 1rem",
@@ -1415,6 +1426,8 @@ const buildStyles = (isMobile) => ({
     letterSpacing: "0.01em",
     position: "relative",
     zIndex: 1,
+    flexShrink: 0,
+    whiteSpace: "nowrap",
   },
 
   headerActionWrap: {
@@ -1422,8 +1435,10 @@ const buildStyles = (isMobile) => ({
     zIndex: 1,
     display: "flex",
     gap: "0.6rem",
-    flexWrap: "wrap",
+    flexWrap: "nowrap",
     justifyContent: "flex-end",
+    minWidth: 0,
+    overflow: "hidden",
   },
 
   shiftToggle: {
@@ -1439,6 +1454,8 @@ const buildStyles = (isMobile) => ({
     fontSize: "0.9rem",
     fontWeight: 700,
     boxShadow: "var(--vn-header-pill-shadow)",
+    flexShrink: 0,
+    whiteSpace: "nowrap",
   },
 
   toggle: {
@@ -1451,6 +1468,8 @@ const buildStyles = (isMobile) => ({
     fontSize: "0.9rem",
     fontWeight: 700,
     boxShadow: "var(--vn-export-shadow)",
+    flexShrink: 0,
+    whiteSpace: "nowrap",
   },
 
   mainLayout: {

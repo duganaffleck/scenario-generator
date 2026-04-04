@@ -504,14 +504,20 @@ Hard format rules:
 - Do not change the domain names
 
 Scoring intent:
-- 3 = partly correct but hesitant, delayed, shallow, inconsistent, or incomplete performance
-- 5 = competent semester-appropriate performance; this is the expected standard
-- 7 = exceptional, anticipatory, calm, integrated, efficient, and clearly above expected level
+- Use ONLY 3, 5, and 7 in output, but preserve the intent of a full 7-point GRS progression.
+- 3 = unsafe-to-borderline performance pattern: important omissions, weak prioritization, inconsistent reassessment, or poor adaptation.
+- 5 = competent and safe semester-appropriate performance: organized, consistent, and effective with expected supervision level.
+- 7 = clearly exceptional performance: anticipatory, highly integrated, efficient, and consistently safety-protective under pressure.
+- Treat these anchors as performance bands representing lower, middle, and upper portions of the full 7-point continuum.
+- Do not flatten anchors into "bad/okay/good"; preserve gradient in safety, consistency, and adaptability.
 
 Writing rules:
 - Use short, concrete, behavioural bullet examples
 - Show what the learner did, missed, delayed, misunderstood, or anticipated
 - Include scene leadership, reassessment, communication, transport planning, and PCS-aligned reasoning where helpful
+- Since backend domains are fixed, integrate resource use and technical execution where appropriate:
+- resource use should appear within situationalAwareness, decisionMaking, and communication anchors
+- procedural execution quality should appear within patientAssessment and decisionMaking anchors
 - Keep anchors sharp, practical, feedback-ready, and educational
 - Do not write narrative commentary instead of anchors
 - Do not explain the score label
