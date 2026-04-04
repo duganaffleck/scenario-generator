@@ -1,3 +1,32 @@
+// Suppress redundant assessment fields if content is duplicated or highly similar
+function suppressRedundantAssessments(merged) {
+  // Helper to flatten and stringify assessment content
+  function flattenAssessment(obj) {
+    if (!obj) return '';
+    if (Array.isArray(obj)) return obj.join(' ').toLowerCase().trim();
+    if (typeof obj === 'object') return Object.values(obj).map(flattenAssessment).join(' ').toLowerCase().trim();
+    return String(obj).toLowerCase().trim();
+  }
+
+  const initial = flattenAssessment(merged.initialAssessment);
+  const secondary = flattenAssessment(merged.secondaryAssessment);
+  const additional = flattenAssessment(merged.additionalAssessments);
+
+  // If secondary is a subset of initial, suppress secondary
+  if (secondary && initial && (initial.includes(secondary) || secondary === initial)) {
+    merged.secondaryAssessment = {};
+  }
+  // If initial is a subset of secondary, suppress initial
+  else if (secondary && initial && (secondary.includes(initial))) {
+    merged.initialAssessment = {};
+  }
+  // If additional is a subset of either, suppress additional
+  if (additional) {
+    if ((initial && initial.includes(additional)) || (secondary && secondary.includes(additional))) {
+      merged.additionalAssessments = [];
+    }
+  }
+}
 
 import express from 'express';
 import { generateScenario } from '../controllers/scenarioController.js';
@@ -3970,6 +3999,9 @@ function normalizeScenarioData(rawData) {
   merged.secondaryAssessment.evolvingFindings = coerceArray(merged.secondaryAssessment.evolvingFindings);
 
   merged.additionalAssessments = coerceArray(merged.additionalAssessments);
+
+  // Suppress redundant assessment fields
+  suppressRedundantAssessments(merged);
 
   merged.transportPhase.transportConsiderations = coerceArray([
     ...coerceArray(merged.transportPhase.transportConsiderations),
