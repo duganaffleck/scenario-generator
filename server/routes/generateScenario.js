@@ -3929,6 +3929,52 @@ function normalizeGrsAnchors(value) {
     }
   }
 
+  // Fallback anchors for resourceUtilization and proceduralSkills
+  const fallback = {
+    resourceUtilization: {
+      3: [
+        'Misses available resources or delays calling for help.',
+        'Inefficient use of team or equipment.',
+        'Fails to anticipate resource needs.'
+      ],
+      5: [
+        'Uses available resources appropriately and in a timely manner.',
+        'Coordinates team and equipment for effective care.',
+        'Requests additional help when needed.'
+      ],
+      7: [
+        'Anticipates and mobilizes resources proactively.',
+        'Optimizes team roles and equipment for seamless care.',
+        'Demonstrates exceptional efficiency and foresight.'
+      ]
+    },
+    proceduralSkills: {
+      3: [
+        'Performs procedures hesitantly or with frequent errors.',
+        'Requires repeated prompting or correction.',
+        'Inconsistent technique or safety awareness.'
+      ],
+      5: [
+        'Performs procedures competently and safely.',
+        'Follows correct technique with minimal prompting.',
+        'Demonstrates appropriate procedural preparation.'
+      ],
+      7: [
+        'Executes procedures with confidence and precision.',
+        'Anticipates procedural needs and prepares flawlessly.',
+        'Models best practices and teaches others.'
+      ]
+    }
+  };
+
+  for (const domain of ['resourceUtilization', 'proceduralSkills']) {
+    for (const score of [3, 5, 7]) {
+      if (!Array.isArray(base[domain][score]) || base[domain][score].length < 3) {
+        base[domain][score] = fallback[domain][score];
+      }
+    }
+  }
+
   return base;
 }
 
