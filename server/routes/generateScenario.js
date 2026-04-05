@@ -2813,7 +2813,9 @@ function defaultGrsAnchors() {
     patientAssessment: { 3: [], 5: [], 7: [] },
     historyGathering: { 3: [], 5: [], 7: [] },
     decisionMaking: { 3: [], 5: [], 7: [] },
-    communication: { 3: [], 5: [], 7: [] }
+    communication: { 3: [], 5: [], 7: [] },
+    resourceUtilization: { 3: [], 5: [], 7: [] },
+    proceduralSkills: { 3: [], 5: [], 7: [] }
   };
 }
 
@@ -7679,13 +7681,16 @@ Quality rubric (target before returning JSON):
 - learningObjectives and selfReflectionPrompts should each have at least 4 substantive entries.
 - clinicalReasoning should be concise but complete enough to explain pathophysiology and deterioration logic.
 
+
 GRS rules:
-- grsAnchors must contain these EXACT 5 domains:
+- grsAnchors must contain these EXACT 7 domains:
   - situationalAwareness
   - patientAssessment
   - historyGathering
   - decisionMaking
   - communication
+  - resourceUtilization
+  - proceduralSkills
 - Each domain must contain exactly these score keys: "3", "5", "7"
 - Each score key must contain an array
 - Each score array must contain at least 3 short, scenario-specific behavioural bullet examples

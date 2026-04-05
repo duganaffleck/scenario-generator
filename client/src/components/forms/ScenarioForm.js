@@ -759,91 +759,13 @@ const ScenarioForm = () => {
           "What would you do differently if the patient transformed again?"
         ],
         grsAnchors: {
-          situationalAwareness: {
-            3: [
-              "Recognizes howling but underestimates lunar risk.",
-              "Misses silver jewelry as a hazard.",
-              "Delays beef jerky administration."
-            ],
-            5: [
-              "Identifies lycanthropy and scene risk.",
-              "Maintains calm, manages friends, and plans for sunrise.",
-              "Balances scene control with clinical care and humor."
-            ],
-            7: [
-              "Anticipates rapid transformation and leads a coordinated snack-based response.",
-              "Integrates lunar, physiologic, and social factors.",
-              "Maintains high awareness of subtle changes and adjusts care dynamically."
-            ]
-          },
-          historyGathering: {
-            3: [
-              "Obtains only a partial story from friends (too busy hiding).",
-              "Misses timeline and prior full moons.",
-              "Relies on patient for answers despite howling."
-            ],
-            5: [
-              "Uses friends to clarify timeline, symptoms, and prior transformations.",
-              "Confirms no prior history and identifies sudden onset.",
-              "Integrates collateral history into risk assessment."
-            ],
-            7: [
-              "Extracts a concise, high-value timeline despite scene stress.",
-              "Uses friend support efficiently to clarify risk and guide care.",
-              "Integrates history directly into lycanthropy and transport decisions."
-            ]
-          },
-          patientAssessment: {
-            3: [
-              "Performs a basic assessment but incompletely trends fur density and risk status.",
-              "Misses the significance of tail as a red flag.",
-              "Reassessment is inconsistent."
-            ],
-            5: [
-              "Performs structured lycanthropy and risk assessment.",
-              "Uses serial reassessment to track improvement or worsening.",
-              "Recognizes tail as a warning sign and escalates care."
-            ],
-            7: [
-              "Builds a coherent assessment from lycanthropy, risk, and scene context.",
-              "Detects subtle changes early and adjusts plan proactively.",
-              "Maintains high-quality reassessment cadence."
-            ]
-          },
-          decisionMaking: {
-            3: [
-              "Removes friends from scene but delays beef jerky.",
-              "Anchors on rabies as cause rather than lycanthropy.",
-              "Transport decision is delayed or not adjusted after persistent howling."
-            ],
-            5: [
-              "Keeps scene safe, initiates beef jerky, and plans for sunrise.",
-              "Plans rapid transport and keeps friends informed.",
-              "Adjusts care plan based on reassessment."
-            ],
-            7: [
-              "Executes a decisive, well-sequenced plan prioritizing snacks, safety, and transport.",
-              "Anticipates escalation and prepares for escalation before instability occurs.",
-              "Leads team and friends in a coordinated, high-quality response."
-            ]
-          },
-          communication: {
-            3: [
-              "Provides basic updates but does not clearly explain urgency to friends.",
-              "Role allocation during management is inconsistent.",
-              "Handoff omits key lunar and trend details."
-            ],
-            5: [
-              "Communicates clearly with friends about lycanthropy, beef jerky, and transport plan.",
-              "Keeps friends informed and calm.",
-              "Delivers organized handoff with timeline, lycanthropy, and response."
-            ],
-            7: [
-              "Uses calm, directive communication to coordinate care in a stressful night setting.",
-              "Maintains closed-loop communication across all phases.",
-              "Provides a concise, high-value handoff for lycanthropy management."
-            ]
-          }
+          situationalAwareness: { 3: [], 5: [], 7: [] },
+          historyGathering: { 3: [], 5: [], 7: [] },
+          patientAssessment: { 3: [], 5: [], 7: [] },
+          decisionMaking: { 3: [], 5: [], 7: [] },
+          communication: { 3: [], 5: [], 7: [] },
+          resourceUtilization: { 3: [], 5: [], 7: [] },
+          proceduralSkills: { 3: [], 5: [], 7: [] }
         },
         customPrompt: "Howl"
       });
