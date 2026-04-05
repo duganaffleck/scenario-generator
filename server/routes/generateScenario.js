@@ -3917,21 +3917,29 @@ function normalizeVitalSigns(value, ecgInterpretation) {
 
 function normalizeGrsAnchors(value) {
   const base = defaultGrsAnchors();
-  // Always ensure all 7 domains are present
   const domains = Object.keys(base);
   const input = value && typeof value === 'object' ? value : {};
+  // Copy over any provided anchors, but always ensure all 7 domains exist
   for (const domain of domains) {
-    if (!input[domain]) {
-      // Leave as default (empty or fallback will fill)
-      continue;
-    }
-    for (const score of [3, 5, 7]) {
-      if (Array.isArray(input[domain][score])) {
-        base[domain][score] = input[domain][score].map((item) => String(item).trim()).filter(Boolean);
+    if (input[domain]) {
+      for (const score of [3, 5, 7]) {
+        if (Array.isArray(input[domain][score])) {
+          base[domain][score] = input[domain][score].map((item) => String(item).trim()).filter(Boolean);
+        }
       }
     }
   }
-
+  // If any domain is missing, ensure it is present as an empty object with 3,5,7 keys
+  for (const domain of domains) {
+    if (!base[domain]) {
+      base[domain] = { 3: [], 5: [], 7: [] };
+    }
+    for (const score of [3, 5, 7]) {
+      if (!Array.isArray(base[domain][score])) {
+        base[domain][score] = [];
+      }
+    }
+  }
   // Fallback anchors for resourceUtilization and proceduralSkills
   const fallback = {
     resourceUtilization: {
@@ -3969,7 +3977,6 @@ function normalizeGrsAnchors(value) {
       ]
     }
   };
-
   for (const domain of ['resourceUtilization', 'proceduralSkills']) {
     for (const score of [3, 5, 7]) {
       if (!Array.isArray(base[domain][score]) || base[domain][score].length < 3) {
@@ -3977,14 +3984,24 @@ function normalizeGrsAnchors(value) {
       }
     }
   }
-
   return base;
 }
 
 // Remove or reword 'punish/punishing' from all scenario output fields
 function removePunishLanguage(obj) {
   if (typeof obj === 'string') {
-    return obj.replace(/\bpunish(ing|ment)?\b/gi, 'correct').replace(/\bpunishing\b/gi, 'challenging');
+    // Replace punitive language with supportive alternatives
+    let out = obj
+      .replace(/\bpunish(ing|ment)?\b/gi, 'support')
+      .replace(/\bpunitive\b/gi, 'supportive')
+      .replace(/\bblame\b/gi, 'learn')
+      .replace(/\bfault\b/gi, 'growth')
+      .replace(/\bfailure\b/gi, 'learning opportunity')
+      .replace(/\bdiscipline\b/gi, 'coaching')
+      .replace(/\bconsequence\b/gi, 'next step')
+      .replace(/\bwrong\b/gi, 'alternative')
+      .replace(/\bmistake\b/gi, 'improvement area');
+    return out;
   }
   if (Array.isArray(obj)) {
     return obj.map(removePunishLanguage);
