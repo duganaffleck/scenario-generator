@@ -3917,14 +3917,17 @@ function normalizeVitalSigns(value, ecgInterpretation) {
 
 function normalizeGrsAnchors(value) {
   const base = defaultGrsAnchors();
-  if (!value || typeof value !== 'object') return base;
-
-  for (const domain of Object.keys(base)) {
-    if (!value[domain]) continue;
-
+  // Always ensure all 7 domains are present
+  const domains = Object.keys(base);
+  const input = value && typeof value === 'object' ? value : {};
+  for (const domain of domains) {
+    if (!input[domain]) {
+      // Leave as default (empty or fallback will fill)
+      continue;
+    }
     for (const score of [3, 5, 7]) {
-      if (Array.isArray(value[domain][score])) {
-        base[domain][score] = value[domain][score].map((item) => String(item).trim()).filter(Boolean);
+      if (Array.isArray(input[domain][score])) {
+        base[domain][score] = input[domain][score].map((item) => String(item).trim()).filter(Boolean);
       }
     }
   }
@@ -3976,6 +3979,24 @@ function normalizeGrsAnchors(value) {
   }
 
   return base;
+}
+
+// Remove or reword 'punish/punishing' from all scenario output fields
+function removePunishLanguage(obj) {
+  if (typeof obj === 'string') {
+    return obj.replace(/\bpunish(ing|ment)?\b/gi, 'correct').replace(/\bpunishing\b/gi, 'challenging');
+  }
+  if (Array.isArray(obj)) {
+    return obj.map(removePunishLanguage);
+  }
+  if (obj && typeof obj === 'object') {
+    const out = {};
+    for (const [k, v] of Object.entries(obj)) {
+      out[k] = removePunishLanguage(v);
+    }
+    return out;
+  }
+  return obj;
 }
 
 function normalizeCaseProgression(value) {
@@ -4092,7 +4113,8 @@ function normalizeScenarioData(rawData) {
     merged.transportPhase.handoffConsiderations || ''
   );
 
-  return merged;
+  // Remove or reword 'punish/punishing' from all output fields
+  return removePunishLanguage(merged);
 }
 
 function buildSemesterDifficultyProfile(semester) {
