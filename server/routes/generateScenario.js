@@ -1,3 +1,37 @@
+﻿// Set of codes that should trigger model repair for medium severity issues
+const MEDIUM_REPAIR_TRIGGER_CODES = new Set([
+  'output_too_short',
+  'missing_required_section',
+  'formatting_error',
+  'incomplete_json',
+  'ambiguous_instruction',
+  // Add more codes as needed based on your validation logic
+]);
+import dotenv from 'dotenv';
+dotenv.config();
+const OPENAI_TIMEOUT_MS = process.env.OPENAI_TIMEOUT_MS ? parseInt(process.env.OPENAI_TIMEOUT_MS, 10) : 60000;
+const OPENAI_MODEL = process.env.OPENAI_MODEL || 'gpt-5.4';
+const OPENAI_MAX_RETRIES = 3;
+// Import buildScenarioHookAddendum for scenario hooks
+import { buildScenarioHookAddendum } from '../data/ontarioScenarioHooks.js';
+// Import ONTARIO_DIRECTIVE_META for directive governance
+import { ONTARIO_DIRECTIVE_META } from '../data/ontarioDirectiveMeta';
+const FEW_SHOT_EXAMPLE_COUNT = 3;
+const IS_PRODUCTION = process.env.NODE_ENV === 'production';
+const ROUTE_BUILD_TAG = 'v1.0.0'; // or any string/version you want for debugging
+const ALLOWED_SEMESTERS = ['1', '2', '3', '4'];
+const ALLOWED_SHIFT_MODES = ['Day', 'Night'];
+import express from 'express';
+import fs from 'fs/promises';
+import path from 'path';
+import OpenAI from 'openai';
+import { generateScenario } from '../controllers/scenarioController.js';
+
+// Polyfill __dirname for ES module scope
+import { fileURLToPath } from 'url';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 // Suppress redundant assessment fields if content is duplicated or highly similar
 function suppressRedundantAssessments(merged) {
   // Helper to flatten and stringify assessment content
@@ -28,12 +62,9 @@ function suppressRedundantAssessments(merged) {
   }
 }
 
-import express from 'express';
-import { generateScenario } from '../controllers/scenarioController.js';
-
 const router = express.Router();
 
-router.post('/', generateScenario);
+
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
@@ -343,6 +374,8 @@ function buildScenarioModifierAddendum(modifiers, {
 
 const CALL_TYPE_FAMILIES = ['Medical', 'Trauma', 'Cardiac', 'Respiratory', 'Environmental'];
 const ENVIRONMENT_CHOICES = ['Urban', 'Rural', 'Wilderness', 'Industrial', 'Home', 'Public Space'];
+const ALLOWED_ENVIRONMENTS = ENVIRONMENT_CHOICES;
+const ALLOWED_COMPLEXITIES = ['Simple', 'Moderate', 'Complex'];
 const COMPLEXITY_ORDER = { Simple: 0, Moderate: 1, Complex: 2 };
 const DAY_SHIFT_TIMES = ['07:18', '09:42', '11:26', '13:14', '15:08', '16:37'];
 const NIGHT_SHIFT_TIMES = ['22:18', '23:46', '00:34', '01:57', '03:12', '04:41'];
@@ -458,6 +491,9 @@ function normalizeComplexity(value) {
 function normalizeShiftMode(value) {
   const shiftMode = String(value || '').trim();
   if (!shiftMode) return null;
+  // Accept both 'Day', 'Night', 'Day Shift', 'Night Shift'
+  if (/^day( shift)?$/i.test(shiftMode)) return 'Day';
+  if (/^night( shift)?$/i.test(shiftMode)) return 'Night';
   const exact = ALLOWED_SHIFT_MODES.find((item) => item.toLowerCase() === shiftMode.toLowerCase());
   return exact || null;
 }
@@ -3607,7 +3643,7 @@ function coerceArray(value) {
   if (Array.isArray(value)) {
     return value
       .filter(Boolean)
-      .map((item) => normalizeSentenceSpacing(String(item).trim()))
+      .map((item) => { if (item && typeof item === 'object') return JSON.stringify(item); return normalizeSentenceSpacing(String(item).trim()); })
       .filter(Boolean);
   }
 
@@ -3996,7 +4032,7 @@ function removePunishLanguage(obj) {
       .replace(/\bpunitive\b/gi, 'supportive')
       .replace(/\bblame\b/gi, 'learn')
       .replace(/\bfault\b/gi, 'growth')
-      .replace(/\bfailure\b/gi, 'learning opportunity')
+     
       .replace(/\bdiscipline\b/gi, 'coaching')
       .replace(/\bconsequence\b/gi, 'next step')
       .replace(/\bwrong\b/gi, 'alternative')
@@ -7316,7 +7352,7 @@ async function requestScenarioJson(messages) {
         openai.chat.completions.create({
           model: OPENAI_MODEL,
           messages,
-          temperature: 0.35
+         
         }),
         new Promise((_, reject) => {
           setTimeout(() => reject(new Error(`OpenAI request timed out after ${OPENAI_TIMEOUT_MS}ms`)), OPENAI_TIMEOUT_MS);
@@ -7474,7 +7510,7 @@ router.post('/', async (req, res) => {
       environment,
       subtype: subtypeData.subtype
     });
-    const directiveAddendum = buildDirectivePromptAddendum({
+    const directiveAddendum = buildStandardsPromptAddendum({
       type: finalCallType,
       semester,
       customPrompt: normalizedCustomPrompt,

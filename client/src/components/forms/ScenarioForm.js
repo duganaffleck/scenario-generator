@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+﻿import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import jsPDF from "jspdf";
 import { FaSpinner, FaFilePdf, FaLightbulb, FaMoon, FaSun, FaUndoAlt } from "react-icons/fa";
@@ -114,7 +114,7 @@ const FIELD_TOOLTIPS = {
 const SECTION_GROUPS = {
   "Scene Info": ["scenarioIntro", "title", "callInformation", "incidentNarrative"],
   "Patient Info": ["patientDemographics", "patientPresentation", "opqrst", "sample"],
-  Assessment: ["physicalExam", "vitalSigns", "secondaryAssessment"],
+  Assessment: ["physicalExam", "vitalSigns"],
   "Clinical Reasoning": [
     "caseProgression",
     "differentialDiagnosis",
@@ -250,7 +250,7 @@ const ScenarioForm = () => {
     "Assigning teaching cues with unhelpful but confident energy.",
     "Tip: Re-check ABCs after every major treatment step.",
     "Running vitals through the algorithm. It suggests more fluids.",
-    "Asking the patient to rate their pain 1–10. They said 11. Classic.",
+    "Asking the patient to rate their pain 1ΓÇô10. They said 11. Classic.",
     "Checking SAMPLE history. The patient's allergies are listed as 'mornings'.",
     "Tip: If the story and presentation do not match, dig deeper.",
     "Placing the patient in the position of comfort. They chose fetal.",
@@ -482,7 +482,7 @@ const ScenarioForm = () => {
       .replace(/^./, (ch) => ch.toUpperCase());
 
   const sanitizePdfText = (value) => {
-    const cueRegex = /\*\(💡(?:[a-z]+\|)?\s*(.+?)\s*\)\*/gi;
+    const cueRegex = /\*\(≡ƒÆí(?:[a-z]+\|)?\s*(.+?)\s*\)\*/gi;
     const stripNonPrintableAscii = (input) =>
       Array.from(input)
         .filter((char) => {
@@ -602,32 +602,6 @@ const ScenarioForm = () => {
   };
 
   const handleSubmit = async () => {
-
-    // Psychological safety: block forbidden terms in any input
-    const forbiddenTerms = [
-      /punish(ment|ing)?/i,
-      /blame/i,
-      /fault/i,
-      /failure(?! to| of| risk| pattern| points?)/i // allow clinical use, block as personal flaw
-    ];
-    const checkForbidden = (val) => {
-      if (!val || typeof val !== 'string') return false;
-      return forbiddenTerms.some((re) => re.test(val));
-    };
-    // Check customPrompt
-    if (checkForbidden(formData.customPrompt)) {
-      setError("Psychological safety rule: No 'punishment', 'blame', 'fault', or 'failure' (as a personal flaw) allowed in any section. Please revise your input.");
-      return;
-    }
-
-    // Check all form fields (in case of future expansion)
-    for (const val of Object.values(formData)) {
-      if (checkForbidden(val)) {
-        setError("Psychological safety rule: No 'punishment', 'blame', 'fault', or 'failure' (as a personal flaw) allowed in any section. Please revise your input.");
-        return;
-      }
-    }
-
     if (formData.customPrompt.trim() === "It's my birthday!") {
       setBirthdayMode(true);
       setTimeout(() => setBirthdayMode(false), 7500); // triple the time
@@ -759,13 +733,91 @@ const ScenarioForm = () => {
           "What would you do differently if the patient transformed again?"
         ],
         grsAnchors: {
-          situationalAwareness: { 3: [], 5: [], 7: [] },
-          historyGathering: { 3: [], 5: [], 7: [] },
-          patientAssessment: { 3: [], 5: [], 7: [] },
-          decisionMaking: { 3: [], 5: [], 7: [] },
-          communication: { 3: [], 5: [], 7: [] },
-          resourceUtilization: { 3: [], 5: [], 7: [] },
-          proceduralSkills: { 3: [], 5: [], 7: [] }
+          situationalAwareness: {
+            3: [
+              "Recognizes howling but underestimates lunar risk.",
+              "Misses silver jewelry as a hazard.",
+              "Delays beef jerky administration."
+            ],
+            5: [
+              "Identifies lycanthropy and scene risk.",
+              "Maintains calm, manages friends, and plans for sunrise.",
+              "Balances scene control with clinical care and humor."
+            ],
+            7: [
+              "Anticipates rapid transformation and leads a coordinated snack-based response.",
+              "Integrates lunar, physiologic, and social factors.",
+              "Maintains high awareness of subtle changes and adjusts care dynamically."
+            ]
+          },
+          historyGathering: {
+            3: [
+              "Obtains only a partial story from friends (too busy hiding).",
+              "Misses timeline and prior full moons.",
+              "Relies on patient for answers despite howling."
+            ],
+            5: [
+              "Uses friends to clarify timeline, symptoms, and prior transformations.",
+              "Confirms no prior history and identifies sudden onset.",
+              "Integrates collateral history into risk assessment."
+            ],
+            7: [
+              "Extracts a concise, high-value timeline despite scene stress.",
+              "Uses friend support efficiently to clarify risk and guide care.",
+              "Integrates history directly into lycanthropy and transport decisions."
+            ]
+          },
+          patientAssessment: {
+            3: [
+              "Performs a basic assessment but incompletely trends fur density and risk status.",
+              "Misses the significance of tail as a red flag.",
+              "Reassessment is inconsistent."
+            ],
+            5: [
+              "Performs structured lycanthropy and risk assessment.",
+              "Uses serial reassessment to track improvement or worsening.",
+              "Recognizes tail as a warning sign and escalates care."
+            ],
+            7: [
+              "Builds a coherent assessment from lycanthropy, risk, and scene context.",
+              "Detects subtle changes early and adjusts plan proactively.",
+              "Maintains high-quality reassessment cadence."
+            ]
+          },
+          decisionMaking: {
+            3: [
+              "Removes friends from scene but delays beef jerky.",
+              "Anchors on rabies as cause rather than lycanthropy.",
+              "Transport decision is delayed or not adjusted after persistent howling."
+            ],
+            5: [
+              "Keeps scene safe, initiates beef jerky, and plans for sunrise.",
+              "Plans rapid transport and keeps friends informed.",
+              "Adjusts care plan based on reassessment."
+            ],
+            7: [
+              "Executes a decisive, well-sequenced plan prioritizing snacks, safety, and transport.",
+              "Anticipates escalation and prepares for escalation before instability occurs.",
+              "Leads team and friends in a coordinated, high-quality response."
+            ]
+          },
+          communication: {
+            3: [
+              "Provides basic updates but does not clearly explain urgency to friends.",
+              "Role allocation during management is inconsistent.",
+              "Handoff omits key lunar and trend details."
+            ],
+            5: [
+              "Communicates clearly with friends about lycanthropy, beef jerky, and transport plan.",
+              "Keeps friends informed and calm.",
+              "Delivers organized handoff with timeline, lycanthropy, and response."
+            ],
+            7: [
+              "Uses calm, directive communication to coordinate care in a stressful night setting.",
+              "Maintains closed-loop communication across all phases.",
+              "Provides a concise, high-value handoff for lycanthropy management."
+            ]
+          }
         },
         customPrompt: "Howl"
       });
@@ -802,7 +854,7 @@ const ScenarioForm = () => {
       setScenario(generated);
     } catch (err) {
       if (axios.isCancel(err) || err?.name === "CanceledError" || err?.code === "ERR_CANCELED") {
-        // User cancelled — silently dismiss
+        // User cancelled ΓÇö silently dismiss
       } else {
         const message =
           err?.response?.data?.details ||
@@ -942,7 +994,7 @@ const ScenarioForm = () => {
       doc.text(`Page ${pageNum} of ${total}`, pageWidth - marginX, footerY + 4.5, { align: "right" });
     };
 
-    // ── Cover page ──────────────────────────────────────────────────────────
+    // ΓöÇΓöÇ Cover page ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
     drawCoverBackground();
     drawContentHeader();
 
@@ -1011,7 +1063,7 @@ const ScenarioForm = () => {
     doc.text(`Generated: ${exportedAt}`, textColumnX, y);
     y += 10;
 
-    // ── Sections ─────────────────────────────────────────────────────────────
+    // ΓöÇΓöÇ Sections ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
     sectionEntries.forEach((entry) => {
       const sectionBarWidth = 2.2;
       const sectionTextX = textColumnX;
@@ -1068,7 +1120,7 @@ const ScenarioForm = () => {
       });
     });
 
-    // ── Footer on every page ─────────────────────────────────────────────────
+    // ΓöÇΓöÇ Footer on every page ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
     const totalPages = doc.getNumberOfPages();
     for (let p = 1; p <= totalPages; p += 1) {
       doc.setPage(p);
@@ -1082,7 +1134,7 @@ const ScenarioForm = () => {
     if (typeof data === "string") {
       if (!UI_TEACHING_CUES_ENABLED) {
         const textWithoutCues = data
-          .replace(/\*\(💡(?:[a-z]+\|)?\s*.+?\s*\)\*/gi, "")
+          .replace(/\*\(≡ƒÆí(?:[a-z]+\|)?\s*.+?\s*\)\*/gi, "")
           .replace(/\s{2,}/g, " ")
           .trim();
 
@@ -1090,7 +1142,7 @@ const ScenarioForm = () => {
       }
 
       const parts = [];
-      const cueRegex = /\*\(💡(?:([a-z]+)\|)?\s*(.+?)\s*\)\*/gi;
+      const cueRegex = /\*\(≡ƒÆí(?:([a-z]+)\|)?\s*(.+?)\s*\)\*/gi;
       let lastIndex = 0;
       let match;
       let localCueIndex = 0;
@@ -1209,7 +1261,7 @@ const ScenarioForm = () => {
 
             if (key === "ecgInterpretation") {
               const interpretation = typeof value === "string" ? value : "";
-              const rawECG = interpretation.trim();
+              const rawECG = interpretation.replace(/[^\x00-\x7F]/g, '').trim();
               const ecgImageUrl = ecgImageMap[rawECG] || null;
 
               const labelPrefix = parentKey?.toLowerCase().includes("second")
@@ -1245,12 +1297,13 @@ const ScenarioForm = () => {
                         setSelectedECGImage(ecgImageUrl);
                       }}
                     >
+                     
                       📈
                     </button>
                   ) : (
-                    "📈"
+                    rawECG
                   )}
-                  {interpretation}
+                  {rawECG}
                 </li>
               );
             }
@@ -1258,7 +1311,7 @@ const ScenarioForm = () => {
             if (key === "additionalSets" && Array.isArray(value)) {
               return value.map((setItem, setIndex) => (
                 <li key={`additionalSet-${setIndex}`}>
-                  <strong>Additional Set {setIndex + 1}{setItem?.context ? ` — ${setItem.context}` : ""}:</strong>
+                  <strong>Additional Set {setIndex + 1}{setItem?.context ? ` ΓÇö ${setItem.context}` : ""}:</strong>
                   {renderSafeContent(
                     Object.fromEntries(Object.entries(setItem).filter(([k]) => k !== "context")),
                     `${contextKey}-${setIndex}`
@@ -1281,7 +1334,7 @@ const ScenarioForm = () => {
   };
 
   const renderSection = (title, content) => {
-    const isTeachingCue = typeof content === "string" && content.includes("💡");
+    const isTeachingCue = typeof content === "string" && content.includes("≡ƒÆí");
     const isProtocolNote = title === "protocolNotes";
 
     const highlightStyle = isTeachingCue
@@ -1317,12 +1370,12 @@ const ScenarioForm = () => {
           <Confetti />
           <FlashOverlay onEnd={() => setBirthdayMode(false)} />
           <div style={{position:'fixed',top:0,left:0,width:'100vw',height:'100vh',zIndex:30001,display:'flex',alignItems:'center',justifyContent:'center',pointerEvents:'none'}}>
-            <div style={{fontSize:'3rem',fontWeight:'bold',color:'#d72660',textShadow:'2px 2px 8px #fff, 0 0 20px #d72660',background:'rgba(255,255,255,0.85)',padding:'2rem 3rem',borderRadius:'2rem',boxShadow:'0 0 40px #d72660'}}>🎉 Happy Birthday! 🎉</div>
+            <div style={{fontSize:'3rem',fontWeight:'bold',color:'#d72660',textShadow:'2px 2px 8px #fff, 0 0 20px #d72660',background:'rgba(255,255,255,0.85)',padding:'2rem 3rem',borderRadius:'2rem',boxShadow:'0 0 40px #d72660'}}>≡ƒÄë Happy Birthday! ≡ƒÄë</div>
           </div>
         </>
       )}
       <div style={styles.headerBar}>
-        <h1 style={styles.heading}>Scenario Generator 1.5.0</h1>
+        <h1 style={styles.heading}>Scenario Generator 1.0</h1>
         <div style={styles.headerActionWrap}>
           <button
             type="button"
@@ -1418,7 +1471,7 @@ const ScenarioForm = () => {
                     style={{ marginRight: "0.5rem" }}
                     className="a11y-focus"
                   />
-                  Include 💡 Teaching Cues
+                  Include ≡ƒÆí Teaching Cues
                 </label>
               </div>
             )}
@@ -1466,7 +1519,7 @@ const ScenarioForm = () => {
                 <li>
                   <b>Set scenario parameters:</b>
                   <ul style={{marginTop: '0.5em', marginBottom: '0.5em'}}>
-                    <li><b>Semester:</b> Select the learner level. Lower semesters (2) generate foundational cases <b>with no symptom relief</b>; higher semesters (3, 4) include symptom relief and create more advanced, complex scenarios.</li>
+                    <li><b>Semester:</b> Select the learner level. Lower semesters (2) generate foundational cases; higher semesters (4) create advanced, complex scenarios.</li>
                     <li><b>Type:</b> Choose the main scenario category (Medical, Trauma, Cardiac, Respiratory, Environmental) to focus the case content.</li>
                     <li><b>Environment:</b> Pick the setting (Urban, Rural, Wilderness, Industrial, Home, Public Space) to shape the context and available resources.</li>
                     <li><b>Complexity:</b> Adjust the case difficulty. Simple = straightforward, Moderate = typical multi-system, Complex = rare or challenging presentations.</li>
@@ -1499,7 +1552,7 @@ const ScenarioForm = () => {
                     marginBottom: "1rem",
                   }}
                 >
-                  <strong>📌 Instructor Prompt:</strong>
+                  <strong>≡ƒôî Instructor Prompt:</strong>
                   <p style={{ marginTop: "0.5rem" }}>{scenario.customPrompt}</p>
                 </div>
               )}
@@ -1516,7 +1569,7 @@ const ScenarioForm = () => {
                       aria-label={`${collapsedSections[groupName] ? "Expand" : "Collapse"} ${groupName}`}
                     >
                       <span aria-hidden="true" style={styles.sectionHeadingIcon}>
-                        {collapsedSections[groupName] ? "▶️" : "🔽"}
+                        {collapsedSections[groupName] ? "▶" : "▼"}
                       </span>
                       {groupName}
                     </button>
@@ -1565,7 +1618,7 @@ const ScenarioForm = () => {
             <div style={styles.loadingTitle}>
               Generating Scenario<span style={{ display: "inline-block", minWidth: "1.7rem", textAlign: "left" }}>{".".repeat(dotCount)}</span>
             </div>
-            <div style={styles.loadingSubtext}>This will take a minute... or three.</div>
+            <div style={styles.loadingSubtext}>This will take a minute.</div>
             <div style={{ ...styles.loadingSubtext, marginTop: "0.4rem", fontSize: "0.8rem", color: "var(--vn-loading-muted)", textAlign: "center" }}>
               The AI is building your scenario, vitals, and teaching cues.<br />
               Complex cases may take a little longer.

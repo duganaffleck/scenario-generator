@@ -5,10 +5,19 @@ import * as scenarioService from '../services/scenarioService.js';
 export async function generateScenario(req, res) {
   // Psychological safety: block forbidden terms in any input
   const forbiddenTerms = [
-    /punish(ment|ing)?/i,
+    /punish(ment|ing|es|ed)?/i,
     /blame/i,
     /fault/i,
-    /failure(?! to| of| risk| pattern| points?)/i // allow clinical use, block as personal flaw
+    /failure(?! to| of| risk| pattern| points?)/i, // allow clinical use, block as personal flaw
+    /trick(ing)?/i,
+    /trap(ped|ping)?/i,
+    /gotcha/i,
+    /shame(ful|d|ing)?/i,
+    /embarrass(ment|ed|ing)?/i,
+    /mistake(?! to| of| risk| pattern| points?)/i, // allow clinical use, block as personal flaw
+    /error(?! to| of| risk| pattern| points?)/i, // allow clinical use, block as process, not personal flaw
+    /stupid|dumb|incompetent|hopeless|useless/i,
+    /judg(e|ment|ing|mental)/i
   ];
   const checkForbidden = (val) => {
     if (!val) return false;

@@ -5,9 +5,16 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
+
+
 import generateScenarioRouter from './routes/generateScenario.js';
 
 const app = express();
+// Log all incoming requests
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.url}`);
+  next();
+});
 const PORT = process.env.PORT || 10000;
 
 const allowedOrigins = String(process.env.CORS_ORIGIN || '')
@@ -41,6 +48,13 @@ app.use('/api/generate-scenario', generateScenarioRouter);
 
 app.get('/', (req, res) => {
   res.send('Scenario Generator Backend Running');
+});
+
+
+// Global error handler for unhandled errors
+app.use((err, req, res, next) => {
+  console.error('UNHANDLED ERROR:', err);
+  res.status(500).json({ error: 'Internal server error.' });
 });
 
 app.listen(PORT, () => {
