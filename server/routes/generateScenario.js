@@ -25,7 +25,7 @@ import express from 'express';
 import fs from 'fs/promises';
 import path from 'path';
 import OpenAI from 'openai';
-import { generateScenario } from '../controllers/scenarioController.js';
+
 
 // Polyfill __dirname for ES module scope
 import { fileURLToPath } from 'url';

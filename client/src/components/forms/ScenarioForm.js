@@ -1265,7 +1265,7 @@ const ScenarioForm = () => {
 
             if (key === "ecgInterpretation") {
               const interpretation = typeof value === "string" ? value : "";
-              const rawECG = interpretation.replace(/[^\x00-\x7F]/g, '').trim();
+              const rawECG = interpretation.replace(/[\u0080-\uFFFF]/g, '').trim();
               const ecgImageUrl = ecgImageMap[rawECG] || null;
 
               const labelPrefix = parentKey?.toLowerCase().includes("second")
