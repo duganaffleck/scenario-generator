@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import jsPDF from "jspdf";
 import { FaSpinner, FaFilePdf, FaLightbulb, FaMoon, FaSun, FaUndoAlt } from "react-icons/fa";
