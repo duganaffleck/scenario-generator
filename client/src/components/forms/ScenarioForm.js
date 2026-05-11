@@ -1304,9 +1304,7 @@ const ScenarioForm = () => {
                      
                       📈
                     </button>
-                  ) : (
-                    rawECG
-                  )}
+     ) : null}
                   {rawECG}
                 </li>
               );
