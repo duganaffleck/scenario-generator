@@ -1243,15 +1243,19 @@ const ScenarioForm = () => {
       return <span>{parts}</span>;
     }
 
-    if (Array.isArray(data)) {
-      return (
-        <ul style={{ paddingLeft: "1rem", marginTop: "0.5rem" }}>
-          {data.map((item, index) => (
-            <li key={index}>{renderSafeContent(item, `${parentKey}-${index}`)}</li>
-          ))}
-        </ul>
-      );
-    }
+   if (Array.isArray(data)) {
+  return (
+    <ul style={{ paddingLeft: "1rem", marginTop: "0.5rem" }}>
+      {data.map((item, index) => {
+        let parsed = item;
+        if (typeof item === "string" && item.trimStart().startsWith("{")) {
+          try { parsed = JSON.parse(item); } catch (_) {}
+        }
+        return <li key={index}>{renderSafeContent(parsed, `${parentKey}-${index}`)}</li>;
+      })}
+    </ul>
+  );
+}
 
     if (typeof data === "object" && data !== null) {
       return (
