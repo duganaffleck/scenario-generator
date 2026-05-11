@@ -10,6 +10,7 @@ import rateLimit from 'express-rate-limit';
 import generateScenarioRouter from './routes/generateScenario.js';
 
 const app = express();
+app.set('trust proxy', 1);
 // Log all incoming requests
 app.use((req, res, next) => {
   console.log(`${req.method} ${req.url}`);

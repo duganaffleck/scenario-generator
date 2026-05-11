@@ -9,7 +9,7 @@ const MEDIUM_REPAIR_TRIGGER_CODES = new Set([
 ]);
 import dotenv from 'dotenv';
 dotenv.config();
-const OPENAI_TIMEOUT_MS = process.env.OPENAI_TIMEOUT_MS ? parseInt(process.env.OPENAI_TIMEOUT_MS, 10) : 60000;
+const OPENAI_TIMEOUT_MS = process.env.OPENAI_TIMEOUT_MS ? parseInt(process.env.OPENAI_TIMEOUT_MS, 10) : 120000;
 const OPENAI_MODEL = process.env.OPENAI_MODEL || 'gpt-5.4';
 const OPENAI_MAX_RETRIES = 3;
 // Import buildScenarioHookAddendum for scenario hooks
@@ -66,7 +66,7 @@ const router = express.Router();
 
 
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY, timeout: OPENAI_TIMEOUT_MS });
 
 const INSTRUCTOR_PROFILE_PATH = path.resolve(
   __dirname,
@@ -3562,9 +3562,7 @@ function pickFirstDefined(...values) {
   return values.find((value) => value != null && value !== '');
 }
 
-function pickFirstObject(...values) {
-  return values.find((value) => value && typeof value === 'object' && !Array.isArray(value));
-}
+
 
 function coerceArray(value) {
   if (Array.isArray(value)) {
@@ -3728,18 +3726,6 @@ function normalizeEcgInterpretation(value) {
   return '';
 }
 
-function clampListItemText(value, { maxWords = 24, maxChars = 170 } = {}) {
-  const normalized = normalizeSentenceSpacing(String(value || '').trim());
-  if (!normalized) return '';
-
-  const words = normalized.split(/\s+/).filter(Boolean);
-  if (words.length <= maxWords && normalized.length <= maxChars) {
-    return ensureCueSentenceEnding(normalized);
-  }
-
-  // Do not hard-truncate list items mid-thought; let caller limit item count instead.
-  return ensureCueSentenceEnding(normalized);
-}
 
 function selectSentencesWithinLimits(sentences, { maxSentences = 4, maxWords = 120, maxChars = 760 } = {}) {
   const cleaned = (Array.isArray(sentences) ? sentences : [])
@@ -7179,33 +7165,6 @@ function trimDanglingTeachingWords(value) {
   return trimmed;
 }
 
-function clampTeachingPointSentence(sentence, { maxWords = 22, maxChars = 150 } = {}) {
-  const normalized = normalizeSentenceSpacing(String(sentence || ''))
-    .replace(/[,:;]\s*$/, '')
-    .trim();
-
-  if (!normalized) return '';
-
-  const words = normalized.split(/\s+/).filter(Boolean);
-  if (words.length <= maxWords && normalized.length <= maxChars) {
-    return ensureCueSentenceEnding(normalized);
-  }
-
-  const lower = normalized.toLowerCase();
-  const clauseBreakers = [', so ', ', but ', ', and ', ' because ', ' which ', ' while ', '; ', ': '];
-  let bestSegment = '';
-
-  clauseBreakers.forEach((breaker) => {
-    const index = lower.indexOf(breaker.trim().toLowerCase());
-    if (index > 0 && index <= maxChars && index > bestSegment.length) {
-      bestSegment = normalized.slice(0, index);
-    }
-  });
-
-  const candidate = bestSegment || words.slice(0, maxWords).join(' ');
-  const cleanedCandidate = trimDanglingTeachingWords(trimToWordBoundary(candidate, maxChars));
-  return ensureCueSentenceEnding(cleanedCandidate || normalized);
-}
 
 function analyzeTeachingPointQuality(scenario) {
   const points = teachingPointBeats(scenario?.teachersPoints)
