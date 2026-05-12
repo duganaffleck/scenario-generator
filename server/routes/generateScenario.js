@@ -7706,14 +7706,17 @@ GRS rules:
 - Score 7 = exceptional, anticipatory, organized, calm, and highly effective
 
 ECG rules:
-Use ONLY these exact ECG values when appropriate:
+Use ONLY these exact ECG values:
 ${ECG_WHITELIST.map((item) => `- ${item}`).join('\n')}
 - Do NOT add rate, qualifiers, extra descriptors, emojis, or any custom text.
-- If ECG is relevant, place it in vitalSigns.firstSet.ecgInterpretation
-- Update vitalSigns.secondSet.ecgInterpretation only if the rhythm changes
-- If additionalSets are used, only include ECG changes when clinically justified
-- If the case is isolated trauma (no cardiac component), leave ecgInterpretation blank or use "Not applicable"
-- For non-cardiac calls, ecgInterpretation should be blank, "Normal Sinus Rhythm", or "Not applicable"; never emoji or placeholder text.
+- Every vital signs set must include an ecgInterpretation value. No exceptions.
+- For all calls, populate ecgInterpretation with the most clinically appropriate rhythm from the whitelist above.
+- Most non-cardiac calls should use "Normal Sinus Rhythm" unless the patient's condition suggests otherwise.
+- Trauma calls without cardiac involvement should use "Normal Sinus Rhythm" unless tachycardia or another rhythm is clinically justified.
+- Place the primary rhythm in vitalSigns.firstSet.ecgInterpretation.
+- Update vitalSigns.secondSet.ecgInterpretation only if the rhythm changes; otherwise repeat the same value.
+- If additionalSets are used, only change ecgInterpretation when the rhythm clinically changes.
+- Never leave ecgInterpretation blank, null, or "Not applicable".
 
 Scenario parameters:
 - Semester: ${semester}
