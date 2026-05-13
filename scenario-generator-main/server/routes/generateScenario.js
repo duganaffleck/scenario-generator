@@ -10,10 +10,10 @@ const MEDIUM_REPAIR_TRIGGER_CODES = new Set([
 import dotenv from 'dotenv';
 dotenv.config();
 const OPENAI_TIMEOUT_MS = process.env.OPENAI_TIMEOUT_MS ? parseInt(process.env.OPENAI_TIMEOUT_MS, 10) : 240000;
-const OPENAI_MODEL = process.env.OPENAI_MODEL || 'gpt-4o';
 if (!process.env.OPENAI_MODEL) {
   console.warn('WARNING: OPENAI_MODEL env variable is not set. Falling back to default. Verify this is correct.');
 }
+const OPENAI_MODEL = process.env.OPENAI_MODEL || 'gpt-4o';
 const OPENAI_MAX_RETRIES = 3;
 const CONTROL_REPAIR_MAX_ATTEMPTS = 2;
 // Import buildScenarioHookAddendum for scenario hooks

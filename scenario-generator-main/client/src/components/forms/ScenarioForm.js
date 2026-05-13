@@ -250,7 +250,7 @@ const ScenarioForm = () => {
     "Assigning teaching cues with unhelpful but confident energy.",
     "Tip: Re-check ABCs after every major treatment step.",
     "Running vitals through the algorithm. It suggests more fluids.",
-    "Asking the patient to rate their pain 1-10. They said 11. Classic.",
+    "Asking the patient to rate their pain 1–10. They said 11. Classic.",
     "Checking SAMPLE history. The patient's allergies are listed as 'mornings'.",
     "Tip: If the story and presentation do not match, dig deeper.",
     "Placing the patient in the position of comfort. They chose fetal.",
@@ -482,7 +482,7 @@ const ScenarioForm = () => {
       .replace(/^./, (ch) => ch.toUpperCase());
 
   const sanitizePdfText = (value) => {
-    const cueRegex = /\*\(💡(?:[a-z]+\|)?\s*(.+?)\s*\)\*/gi;
+    const cueRegex = /\*\((?:💡|≡ƒÆí)(?:[a-z]+\|)?\s*(.+?)\s*\)\*/giu;
     const stripNonPrintableAscii = (input) =>
       Array.from(input)
         .filter((char) => {
@@ -854,7 +854,7 @@ const ScenarioForm = () => {
       setScenario(generated);
     } catch (err) {
       if (axios.isCancel(err) || err?.name === "CanceledError" || err?.code === "ERR_CANCELED") {
-        // User cancelled - silently dismiss
+        // User cancelled — silently dismiss
       } else {
         const message =
           err?.response?.data?.details ||
@@ -994,7 +994,7 @@ const ScenarioForm = () => {
       doc.text(`Page ${pageNum} of ${total}`, pageWidth - marginX, footerY + 4.5, { align: "right" });
     };
 
-    // -- Cover page ----------------------------------------------------------
+    // Cover page
     drawCoverBackground();
     drawContentHeader();
 
@@ -1063,7 +1063,7 @@ const ScenarioForm = () => {
     doc.text(`Generated: ${exportedAt}`, textColumnX, y);
     y += 10;
 
-    // -- Sections -------------------------------------------------------------
+    // Sections
     sectionEntries.forEach((entry) => {
       const sectionBarWidth = 2.2;
       const sectionTextX = textColumnX;
@@ -1120,7 +1120,7 @@ const ScenarioForm = () => {
       });
     });
 
-    // -- Footer on every page -------------------------------------------------
+    // Footer on every page
     const totalPages = doc.getNumberOfPages();
     for (let p = 1; p <= totalPages; p += 1) {
       doc.setPage(p);
@@ -1134,7 +1134,7 @@ const ScenarioForm = () => {
     if (typeof data === "string") {
       if (!UI_TEACHING_CUES_ENABLED) {
         const textWithoutCues = data
-          .replace(/\*\(💡(?:[a-z]+\|)?\s*.+?\s*\)\*/gi, "")
+          .replace(/\*\((?:💡|≡ƒÆí)(?:[a-z]+\|)?\s*.+?\s*\)\*/giu, "")
           .replace(/\s{2,}/g, " ")
           .trim();
 
@@ -1142,7 +1142,7 @@ const ScenarioForm = () => {
       }
 
       const parts = [];
-      const cueRegex = /\*\(💡(?:([a-z]+)\|)?\s*(.+?)\s*\)\*/gi;
+      const cueRegex = /\*\((?:💡|≡ƒÆí)(?:([a-z]+)\|)?\s*(.+?)\s*\)\*/giu;
       let lastIndex = 0;
       let match;
       let localCueIndex = 0;
@@ -1313,7 +1313,7 @@ const ScenarioForm = () => {
             if (key === "additionalSets" && Array.isArray(value)) {
               return value.map((setItem, setIndex) => (
                 <li key={`additionalSet-${setIndex}`}>
-                  <strong>Additional Set {setIndex + 1}{setItem?.context ? ` - ${setItem.context}` : ""}:</strong>
+                  <strong>Additional Set {setIndex + 1}{setItem?.context ? ` — ${setItem.context}` : ""}:</strong>
                   {renderSafeContent(
                     Object.fromEntries(Object.entries(setItem).filter(([k]) => k !== "context")),
                     `${contextKey}-${setIndex}`
@@ -1336,7 +1336,7 @@ const ScenarioForm = () => {
   };
 
   const renderSection = (title, content) => {
-    const isTeachingCue = typeof content === "string" && content.includes("💡");
+    const isTeachingCue = typeof content === "string" && (content.includes("💡") || content.includes("≡ƒÆí"));
     const isProtocolNote = title === "protocolNotes";
 
     const highlightStyle = isTeachingCue
@@ -1543,31 +1543,35 @@ const ScenarioForm = () => {
             </section>
           )}
           {scenario && (
-            <>
-
+            <div style={styles.outputBox}>
               <div
                 style={{
-                  backgroundColor: "var(--vn-card-bg)",
-                  border: "1px solid var(--vn-border)",
-                  borderLeft: "6px solid var(--vn-teal)",
-                  borderRadius: "14px",
-                  padding: "1rem 1.15rem",
+                  backgroundColor: "var(--vn-accent-card-bg)",
+                  border: "1px solid var(--vn-accent-card-border)",
+                  borderLeft: "6px solid var(--vn-orange)",
+                  padding: "1rem",
+                  borderRadius: "12px",
                   marginBottom: "1rem",
-                  boxShadow: "0 2px 10px rgba(18,48,71,0.06)",
+                  color: "var(--vn-ink)",
                 }}
               >
-                <h2 style={{ marginTop: 0, marginBottom: "0.6rem", fontSize: "1.05rem", color: "var(--vn-teal-deep)" }}>
+                <h2 style={{ marginTop: 0, marginBottom: "0.75rem", fontSize: "1.1rem" }}>
                   How to use this scenario
                 </h2>
-                <p style={{ marginTop: 0, marginBottom: "0.6rem" }}>Work through this in two steps.</p>
-                <p style={{ marginTop: 0, marginBottom: "0.5rem" }}>
-                  <strong>Step 1 - Practice first:</strong> Read the Scene Info, Patient Info, and Assessment sections. Work through the call in your head or with a partner. Decide what you would do and why before reading further.
+                <p style={{ marginTop: 0 }}>Work through this in two steps.</p>
+                <p>
+                  <strong>Step 1 — Practice first:</strong> Read the Scene Info, Patient Info,
+                  and Assessment sections. Work through the call in your head or with a
+                  partner. Decide what you would do and why before reading further.
                 </p>
-                <p style={{ marginTop: 0, marginBottom: 0 }}>
-                  <strong>Step 2 - Compare after:</strong> Read Expected Treatment, Case Progression, GRS Anchors, and Clinical Reasoning after you have worked through the case. Use the Self-Reflection Prompts to check your thinking, not to preview it.
+                <p style={{ marginBottom: 0 }}>
+                  <strong>Step 2 — Compare after:</strong> Read Expected Treatment, Case
+                  Progression, GRS Anchors, and Clinical Reasoning after you have worked
+                  through the case. Use the Self-Reflection Prompts to check your thinking,
+                  not to preview it.
                 </p>
               </div>
-            <div style={styles.outputBox}>
+
               {scenario.customPrompt && (
                 <div
                   style={{
@@ -1578,7 +1582,7 @@ const ScenarioForm = () => {
                     marginBottom: "1rem",
                   }}
                 >
-                  <strong>📌 Instructor Prompt:</strong>
+                  <strong>📝 Instructor Prompt:</strong>
                   <p style={{ marginTop: "0.5rem" }}>{scenario.customPrompt}</p>
                 </div>
               )}
@@ -1633,7 +1637,6 @@ const ScenarioForm = () => {
                 </div>
               ))}
             </div>
-            </>
           )}
         </div>
       </div>
