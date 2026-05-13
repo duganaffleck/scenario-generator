@@ -9,7 +9,7 @@ const MEDIUM_REPAIR_TRIGGER_CODES = new Set([
 ]);
 import dotenv from 'dotenv';
 dotenv.config();
-const OPENAI_TIMEOUT_MS = process.env.OPENAI_TIMEOUT_MS ? parseInt(process.env.OPENAI_TIMEOUT_MS, 10) : 120000;
+const OPENAI_TIMEOUT_MS = process.env.OPENAI_TIMEOUT_MS ? parseInt(process.env.OPENAI_TIMEOUT_MS, 10) : 240000;
 const OPENAI_MODEL = process.env.OPENAI_MODEL || 'gpt-5.4';
 const OPENAI_MAX_RETRIES = 3;
 // Import buildScenarioHookAddendum for scenario hooks
@@ -5373,6 +5373,11 @@ function buildVitalTrendAnchor(firstSet, secondSet) {
 }
 
 function buildCueContext(scenario) {
+  // Return cached context if available to avoid expensive re-computation
+  if (scenario?.__cueContext) {
+    return scenario.__cueContext;
+  }
+
   const chiefComplaint =
     scenario?.patientDemographics?.chiefComplaint ||
     scenario?.patientPresentation ||
@@ -5463,7 +5468,7 @@ function buildCueContext(scenario) {
     .replace(/\s{2,}/g, ' ')
     .trim() || 'your working diagnosis';
 
-  return {
+  const cueContext = {
     chiefComplaint: normalizeSentenceSpacing(chiefComplaint),
     chiefComplaintHint: cueHintSnippet(chiefComplaint, 'this presentation', 8, 70),
     likelyDiagnosis: normalizeSentenceSpacing(likelyDiagnosis),
@@ -5496,6 +5501,13 @@ function buildCueContext(scenario) {
     directiveAnchor: normalizeSentenceSpacing(directiveAnchor),
     directiveHint: cueHintSnippet(directiveAnchor, 'the governing PCS rule', 8, 70)
   };
+
+  // Cache the context to avoid re-computation on subsequent calls
+  if (scenario && typeof scenario === 'object') {
+    scenario.__cueContext = cueContext;
+  }
+
+  return cueContext;
 }
 
 function buildContextualCueBank(scenario, variationSeed = 0) {
@@ -6139,10 +6151,11 @@ function ensureTeachingCueCoverage(scenario, includeTeachingCues, variationSeed 
 
   let placementsApplied = 0;
   let triadPlacements = 0;
+  let currentMetrics = collectTeachingCueMetrics(scenario);
+  
   for (const placement of selectionOrder) {
     if (placementsApplied >= maxPlacements) break;
 
-    const currentMetrics = collectTeachingCueMetrics(scenario);
     if (
       repetitiveTriadKeys.has(placement.key) &&
       triadPlacements >= 1 &&
@@ -6160,6 +6173,7 @@ function ensureTeachingCueCoverage(scenario, includeTeachingCues, variationSeed 
     }
 
     placement.apply();
+    currentMetrics = collectTeachingCueMetrics(scenario);
     placementsApplied += 1;
     if (repetitiveTriadKeys.has(placement.key)) {
       triadPlacements += 1;
