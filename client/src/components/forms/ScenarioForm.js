@@ -1544,6 +1544,17 @@ const ScenarioForm = () => {
           )}
           {scenario && (
             <div style={styles.outputBox}>
+              <div style={styles.scenarioUseCallout}>
+                <h2 style={styles.scenarioUseTitle}>How to use this scenario</h2>
+                <p style={styles.scenarioUseText}>Work through this in two steps.</p>
+                <p style={styles.scenarioUseText}>
+                  <strong>Step 1 — Practice first:</strong> Read the Scene Info, Patient Info, and Assessment sections. Work through the call in your head or with a partner. Decide what you would do and why before reading further.
+                </p>
+                <p style={styles.scenarioUseText}>
+                  <strong>Step 2 — Compare after:</strong> Read Expected Treatment, Case Progression, GRS Anchors, and Clinical Reasoning after you have worked through the case. Use the Self-Reflection Prompts to check your thinking, not to preview it.
+                </p>
+              </div>
+
               {scenario.customPrompt && (
                 <div
                   style={{
@@ -1914,6 +1925,28 @@ const buildStyles = (isMobile) => ({
     borderRadius: "14px",
     boxShadow: "var(--vn-panel-shadow)",
     border: "1px solid var(--vn-panel-border)",
+  },
+
+  scenarioUseCallout: {
+    backgroundColor: "var(--vn-accent-card-bg)",
+    color: "var(--vn-ink)",
+    border: "1px solid var(--vn-accent-card-border)",
+    borderLeft: "6px solid var(--vn-orange)",
+    borderRadius: "12px",
+    padding: "1rem",
+    marginBottom: "1rem",
+  },
+
+  scenarioUseTitle: {
+    margin: "0 0 0.65rem",
+    fontSize: "1.05rem",
+    color: "var(--vn-ink)",
+  },
+
+  scenarioUseText: {
+    margin: "0 0 0.65rem",
+    color: "var(--vn-ink)",
+    lineHeight: 1.5,
   },
 
   card: {
