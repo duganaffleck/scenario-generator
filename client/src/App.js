@@ -9,7 +9,17 @@ function App() {
       <div className="brand-orb brand-orb-right" aria-hidden="true" />
 
       <header className="brand-hero" role="banner">
-        <div className="brand-badge">VitalNotes</div>
+        <div className="brand-hero-topline">
+          <div className="brand-badge">VitalNotes</div>
+          <a
+            className="brand-vitalnotes-link"
+            href="https://vitalnotes-app.vercel.app"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Open VitalNotes
+          </a>
+        </div>
         <div className="brand-heading-row">
           <img
             src="/vitalnotes-mark.svg"

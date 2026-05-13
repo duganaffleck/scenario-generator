@@ -208,6 +208,42 @@ body {
   background: var(--vn-hero-after);
 }
 
+
+.brand-hero-topline {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  position: relative;
+  z-index: 1;
+}
+
+.brand-vitalnotes-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 32px;
+  padding: 0.28rem 0.72rem;
+  border-radius: 999px;
+  color: var(--vn-badge-text);
+  background: rgba(255, 255, 255, 0.13);
+  border: 1px solid var(--vn-badge-border);
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  box-shadow: 0 6px 14px rgba(18, 48, 71, 0.2);
+  transition: transform 0.16s ease, background 0.16s ease, border-color 0.16s ease;
+}
+
+.brand-vitalnotes-link:hover,
+.brand-vitalnotes-link:focus-visible {
+  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.52);
+  outline: none;
+}
+
 .brand-badge {
   display: inline-flex;
   align-items: center;
@@ -269,6 +305,18 @@ body {
     border-radius: 14px;
     padding: 0.72rem;
     margin: 0 auto 0.22rem;
+  }
+
+
+  .brand-hero-topline {
+    align-items: flex-start;
+  }
+
+  .brand-vitalnotes-link {
+    min-height: 30px;
+    padding: 0.24rem 0.58rem;
+    font-size: 0.72rem;
+    white-space: nowrap;
   }
 
   .brand-heading-row {

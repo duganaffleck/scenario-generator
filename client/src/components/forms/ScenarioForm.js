@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import jsPDF from "jspdf";
-import { FaSpinner, FaFilePdf, FaLightbulb, FaMoon, FaSun, FaUndoAlt } from "react-icons/fa";
+import { FaSpinner, FaFilePdf, FaMoon, FaSun, FaUndoAlt } from "react-icons/fa";
 
 // Simple confetti effect (no external lib)
 function Confetti() {
@@ -166,43 +166,6 @@ const TITLE_MAP = {
   scenarioRationale: "Scenario Rationale & Teaching Tips",
 };
 
-const cuePhaseLabelMap = {
-  arrival: "Arrival",
-  history: "History",
-  assessment: "Assessment",
-  treatment: "Treatment",
-  protocol: "Protocol",
-  progression: "Progression",
-  transport: "Transport",
-  reasoning: "Reasoning",
-};
-
-const UI_TEACHING_CUES_ENABLED = false;
-
-function getCuePopoverPlacement(cueTag, cueIndex, isMobile) {
-  if (isMobile) {
-    return {
-      top: "1.8rem",
-      bottom: "auto",
-      left: 0,
-      right: "auto",
-    };
-  }
-
-  const opening = {
-    transport: { top: "auto", bottom: "1.9rem", left: 0, right: "auto" },
-    progression: { top: "auto", bottom: "1.9rem", left: 0, right: "auto" },
-    protocol: { top: "auto", bottom: "1.9rem", left: 0, right: "auto" },
-    reasoning: { top: "1.9rem", bottom: "auto", left: "auto", right: 0 },
-  };
-
-  if (opening[cueTag]) return opening[cueTag];
-
-  return cueIndex % 2 === 0
-    ? { top: "1.8rem", bottom: "auto", left: 0, right: "auto" }
-    : { top: "auto", bottom: "1.9rem", left: 0, right: "auto" };
-}
-
 const ScenarioForm = () => {
   const [scenario, setScenario] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -214,7 +177,6 @@ const ScenarioForm = () => {
     environment: "Urban",
     complexity: "Moderate",
     shiftMode: "Day Shift",
-    includeTeachingCues: UI_TEACHING_CUES_ENABLED,
     customPrompt: "",
   });
 
@@ -308,7 +270,6 @@ const ScenarioForm = () => {
 
   const [error, setError] = useState("");
   const [collapsedSections, setCollapsedSections] = useState({});
-  const [selectedCue, setSelectedCue] = useState(null);
   const [isMobile, setIsMobile] = useState(() =>
     typeof window !== "undefined" ? window.matchMedia("(max-width: 900px)").matches : false
   );
@@ -440,8 +401,7 @@ const ScenarioForm = () => {
       if (target instanceof Element && target.closest("[data-cue-toggle='true'], [data-cue-popover='true']")) {
         return;
       }
-      setSelectedCue(null);
-    };
+      };
 
     document.addEventListener("pointerdown", closeCueOnOutsideClick);
     return () => document.removeEventListener("pointerdown", closeCueOnOutsideClick);
@@ -450,8 +410,7 @@ const ScenarioForm = () => {
   useEffect(() => {
     const onKeyDown = (event) => {
       if (event.key !== "Escape") return;
-      setSelectedCue(null);
-      setSelectedECGImage(null);
+        setSelectedECGImage(null);
     };
 
     document.addEventListener("keydown", onKeyDown);
@@ -482,7 +441,6 @@ const ScenarioForm = () => {
       .replace(/^./, (ch) => ch.toUpperCase());
 
   const sanitizePdfText = (value) => {
-    const cueRegex = /\*\(💡(?:[a-z]+\|)?\s*(.+?)\s*\)\*/gi;
     const stripNonPrintableAscii = (input) =>
       Array.from(input)
         .filter((char) => {
@@ -492,7 +450,7 @@ const ScenarioForm = () => {
         .join("");
 
     return String(value ?? "")
-      .replace(cueRegex, UI_TEACHING_CUES_ENABLED ? "Teaching cue: $1" : "")
+      .replace(/\*\(💡(?:[a-z]+\|)?\s*.+?\s*\)\*/gi, "")
       .replace(/\r\n/g, "\n")
       .replace(/\r/g, "\n")
       .split("\n")
@@ -591,12 +549,10 @@ const ScenarioForm = () => {
       environment: "Urban",
       complexity: "Moderate",
       shiftMode: "Day Shift",
-      includeTeachingCues: UI_TEACHING_CUES_ENABLED,
-      customPrompt: "",
+        customPrompt: "",
     });
     setScenario(null);
     setSelectedECGImage(null);
-    setSelectedCue(null);
     setCollapsedSections({});
     setError("");
   };
@@ -822,8 +778,7 @@ const ScenarioForm = () => {
         customPrompt: "Howl"
       });
       setError("");
-      setSelectedCue(null);
-      setSelectedECGImage(null);
+        setSelectedECGImage(null);
       setLoading(false);
       return;
     }
@@ -831,7 +786,6 @@ const ScenarioForm = () => {
     setLoading(true);
     setError("");
     setScenario(null);
-    setSelectedCue(null);
     setSelectedECGImage(null);
 
     const controller = new AbortController();
@@ -840,7 +794,7 @@ const ScenarioForm = () => {
     const baseURL = process.env.REACT_APP_API_BASE_URL || "http://localhost:10000";
     const payload = {
       ...formData,
-      includeTeachingCues: UI_TEACHING_CUES_ENABLED ? formData.includeTeachingCues : false,
+      includeTeachingCues: false,
     };
 
     try {
@@ -1132,118 +1086,15 @@ const ScenarioForm = () => {
 
   const renderSafeContent = (data, parentKey = "root") => {
     if (typeof data === "string") {
-      if (!UI_TEACHING_CUES_ENABLED) {
-        const textWithoutCues = data
-          .replace(/\*\(💡(?:[a-z]+\|)?\s*.+?\s*\)\*/gi, "")
-          .replace(/\s{2,}/g, " ")
-          .trim();
+      const textWithoutCues = data
+        .replace(/\*\(💡(?:[a-z]+\|)?\s*.+?\s*\)\*/gi, "")
+        .replace(/\s{2,}/g, " ")
+        .trim();
 
-        return <span>{textWithoutCues}</span>;
-      }
-
-      const parts = [];
-      const cueRegex = /\*\(💡(?:([a-z]+)\|)?\s*(.+?)\s*\)\*/gi;
-      let lastIndex = 0;
-      let match;
-      let localCueIndex = 0;
-
-      while ((match = cueRegex.exec(data)) !== null) {
-        const matchStart = match.index;
-        const matchEnd = cueRegex.lastIndex;
-        const cueTag = String(match[1] || "").toLowerCase();
-        const cueText = match[2];
-        const cueIndex = localCueIndex++;
-        const id = `cue-${parentKey}-${cueTag || "general"}-${matchStart}-${cueIndex}`;
-        const placement = getCuePopoverPlacement(cueTag, cueIndex, isMobile);
-        const phaseLabel = cuePhaseLabelMap[cueTag] || "Teaching Cue";
-
-        if (matchStart > lastIndex) {
-          parts.push(<span key={`text-${id}`}>{data.slice(lastIndex, matchStart)}</span>);
-        }
-
-        parts.push(
-          <span key={`cue-${id}`} style={{ position: "relative", display: "inline-block" }}>
-            <button
-              type="button"
-              className="a11y-focus"
-              aria-label={selectedCue === id ? "Hide teaching cue" : "Show teaching cue"}
-              aria-pressed={selectedCue === id}
-              title={selectedCue === id ? "Hide teaching cue" : "Show teaching cue"}
-              data-cue-toggle="true"
-              style={{
-                cursor: "pointer",
-                marginLeft: "4px",
-                color: selectedCue === id ? "#facc15" : "#eab308",
-                verticalAlign: "middle",
-                background: "transparent",
-                border: "none",
-                padding: isMobile ? "0.35rem" : "0.2rem",
-                minWidth: isMobile ? "36px" : "28px",
-                minHeight: isMobile ? "36px" : "28px",
-                borderRadius: "6px",
-                display: "inline-flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-              onClick={(e) => {
-                e.stopPropagation();
-                setSelectedCue((prev) => (prev === id ? null : id));
-              }}
-            >
-              <FaLightbulb aria-hidden="true" />
-            </button>
-            {selectedCue === id && (
-              <div
-                data-cue-popover="true"
-                style={{
-                  position: "absolute",
-                  background: "var(--vn-cue-popover-bg)",
-                  color: "var(--vn-cue-popover-text)",
-                  border: "1px solid var(--vn-cue-popover-border)",
-                  padding: "0.5rem 0.75rem",
-                  borderRadius: "8px",
-                  zIndex: 10000,
-                  top: placement.top,
-                  bottom: placement.bottom,
-                  left: placement.left,
-                  right: placement.right,
-                  minWidth: isMobile ? "180px" : "240px",
-                  maxWidth: isMobile ? "90vw" : "420px",
-                  whiteSpace: "normal",
-                  boxShadow: "0 10px 22px rgba(0,0,0,0.28)",
-                }}
-                onClick={(e) => e.stopPropagation()}
-              >
-                <div
-                  style={{
-                    fontSize: "0.72rem",
-                    textTransform: "uppercase",
-                    letterSpacing: "0.04em",
-                    color: "var(--vn-cue-popover-label)",
-                    marginBottom: "0.35rem",
-                    fontWeight: 700,
-                  }}
-                >
-                  {phaseLabel}
-                </div>
-                {cueText}
-              </div>
-            )}
-          </span>
-        );
-
-        parts.push(<span key={`cue-spacer-${id}`}> </span>);
-        lastIndex = matchEnd;
-      }
-
-      if (lastIndex < data.length) {
-        parts.push(<span key={`text-end-${parentKey}`}>{data.slice(lastIndex)}</span>);
-      }
-
-      return <span>{parts}</span>;
+      return <span>{textWithoutCues}</span>;
     }
 
-   if (Array.isArray(data)) {
+    if (Array.isArray(data)) {
   return (
     <ul style={{ paddingLeft: "1rem", marginTop: "0.5rem" }}>
       {data.map((item, index) => {
@@ -1336,26 +1187,17 @@ const ScenarioForm = () => {
   };
 
   const renderSection = (title, content) => {
-    const isTeachingCue = typeof content === "string" && content.includes("💡");
     const isProtocolNote = title === "protocolNotes";
 
-    const highlightStyle = isTeachingCue
+    const highlightStyle = isProtocolNote
       ? {
-          backgroundColor: "var(--vn-info-card-bg)",
-          borderLeft: "5px solid var(--vn-info-card-border)",
+          backgroundColor: "var(--vn-protocol-card-bg)",
+          borderLeft: "5px solid var(--vn-protocol-card-border)",
           padding: "1rem",
           borderRadius: "8px",
           marginBottom: "1rem",
         }
-      : isProtocolNote
-        ? {
-            backgroundColor: "var(--vn-protocol-card-bg)",
-            borderLeft: "5px solid var(--vn-protocol-card-border)",
-            padding: "1rem",
-            borderRadius: "8px",
-            marginBottom: "1rem",
-          }
-        : {};
+      : {};
 
     return (
       <div style={{ ...styles.card, ...highlightStyle }} key={title}>
@@ -1462,21 +1304,6 @@ const ScenarioForm = () => {
               </div>
             ))}
 
-            {UI_TEACHING_CUES_ENABLED && (
-              <div style={styles.fieldRow}>
-                <label>
-                  <input
-                    type="checkbox"
-                    name="includeTeachingCues"
-                    checked={formData.includeTeachingCues}
-                    onChange={handleChange}
-                    style={{ marginRight: "0.5rem" }}
-                    className="a11y-focus"
-                  />
-                  Include 💡 Teaching Cues
-                </label>
-              </div>
-            )}
 
             <div style={styles.fieldRow}>
               <label htmlFor="customPrompt">Instructor Prompt (Optional)</label>
