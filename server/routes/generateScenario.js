@@ -600,18 +600,21 @@ function inferShiftModeFromText(value = '') {
 
 function timeMatchesShiftMode(timeText, shiftMode) {
   const hour = extractHourFromTimeText(timeText);
+  const isNight = shiftMode === 'Night Shift' || shiftMode === 'Night';
+
   if (hour === null) {
     const inferred = inferShiftModeFromText(timeText);
     return inferred ? inferred === shiftMode : false;
   }
 
-  return shiftMode === 'Night Shift'
+  return isNight
     ? hour >= 22 || hour < 6
     : hour >= 6 && hour < 22;
 }
 
 function pickShiftTime(shiftMode, seedHint = '') {
-  const times = shiftMode === 'Night Shift' ? NIGHT_SHIFT_TIMES : DAY_SHIFT_TIMES;
+  const isNight = shiftMode === 'Night Shift' || shiftMode === 'Night';
+  const times = isNight ? NIGHT_SHIFT_TIMES : DAY_SHIFT_TIMES;
   return times[stableHash(`${shiftMode}|${seedHint}`) % times.length];
 }
 
@@ -2890,6 +2893,8 @@ const REQUIRED_FIELDS = {
     withIncorrectTreatment: []
   },
 
+  progressionStages: [],
+
   transportPhase: {
     transportConsiderations: [],
     ongoingCare: [],
@@ -3858,11 +3863,26 @@ function normalizeVitalSigns(value, ecgInterpretation) {
   const additionalSets = additionalRaw.map((set) => normalizeVitalSet(set));
   const normalizedRootEcg = normalizeEcgInterpretation(ecgInterpretation);
 
-  if (
-    normalizedRootEcg &&
-    !firstSet.ecgInterpretation
-  ) {
+  // Apply root-level ECG to firstSet if firstSet has none
+  if (normalizedRootEcg && !firstSet.ecgInterpretation) {
     firstSet.ecgInterpretation = normalizedRootEcg;
+  }
+
+  // Fallback: if firstSet still has no ECG interpretation, default to Normal Sinus Rhythm
+  if (!firstSet.ecgInterpretation) {
+    firstSet.ecgInterpretation = 'Normal Sinus Rhythm';
+  }
+
+  // Propagate firstSet ECG to secondSet if secondSet has none
+  if (!secondSet.ecgInterpretation && firstSet.ecgInterpretation) {
+    secondSet.ecgInterpretation = firstSet.ecgInterpretation;
+  }
+
+  // Propagate to additional sets if missing
+  for (const additionalSet of additionalSets) {
+    if (!additionalSet.ecgInterpretation && firstSet.ecgInterpretation) {
+      additionalSet.ecgInterpretation = firstSet.ecgInterpretation;
+    }
   }
 
   return { firstSet, secondSet, additionalSets };
@@ -7090,6 +7110,20 @@ function detectControlDrift(scenario, controls) {
     });
   }
 
+  // GCS consistency check between first vital set and later vital trend
+  const firstSetGcs = parseInt(String(scenario?.vitalSigns?.firstSet?.gcs || ''), 10);
+  const secondSetGcs = parseInt(String(scenario?.vitalSigns?.secondSet?.gcs || ''), 10);
+
+  if (Number.isFinite(firstSetGcs) && Number.isFinite(secondSetGcs)) {
+    if (Math.abs(firstSetGcs - secondSetGcs) > 3) {
+      issues.push({
+        severity: 'medium',
+        code: 'gcs-jump-between-sets',
+        message: `GCS jumps more than 3 points between first set (${firstSetGcs}) and second set (${secondSetGcs}) without a documented clinical event. Verify that progression, treatment response, or a mid-call event explains this change.`
+      });
+    }
+  }
+
   if (includeTeachingCues) {
     if (cueMetrics.cueCount < 6) {
       issues.push({
@@ -7933,6 +7967,7 @@ Critical output rules:
 - caseProgression must clearly describe proper treatment, lack of proper treatment, and incorrect treatment.
 - initialAssessment and secondaryAssessment must not simply duplicate each other.
 - If the patient's condition changes, reassessment findings must visibly change.
+- GCS in vitalSigns.firstSet.gcs must match the GCS described in initialAssessment. Do not write GCS 14 in the assessment narrative and GCS 15 in the vital set or vice versa without a documented clinical reason.
 - additionalSets should be populated whenever treatment, movement, deterioration, or a mid-call event meaningfully changes the call.
 - scenarioIntro should be 1-2 short sentences and should not pre-solve the whole case.
 - scenarioRationale should be 2-3 short sentences, not a second full debrief.

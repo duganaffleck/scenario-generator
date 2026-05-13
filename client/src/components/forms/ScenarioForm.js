@@ -117,6 +117,7 @@ const SECTION_GROUPS = {
   Assessment: ["physicalExam", "vitalSigns"],
   "Clinical Reasoning": [
     "caseProgression",
+    "progressionStages",
     "differentialDiagnosis",
     "expectedTreatment",
     "protocolNotes",
@@ -156,6 +157,7 @@ const TITLE_MAP = {
   physicalExam: "Physical Assessment",
   vitalSigns: "Vital Signs",
   caseProgression: "Case Progression",
+  progressionStages: "Progression Stages",
   transportPhase: "Transport Phase",
   expectedTreatment: "Expected Treatment",
   protocolNotes: "Protocol Notes",
