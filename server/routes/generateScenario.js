@@ -7234,11 +7234,19 @@ async function requestScenarioJson(messages) {
 
   for (let attempt = 0; attempt <= retries; attempt += 1) {
     try {
+      // Log prompt size and content for debugging
+      const promptString = JSON.stringify(messages);
+      console.log('OpenAI prompt length (chars):', promptString.length);
+      if (promptString.length < 5000) {
+        console.log('OpenAI prompt content:', promptString);
+      } else {
+        console.log('OpenAI prompt content (truncated):', promptString.slice(0, 5000) + '...');
+      }
+
       const completion = await Promise.race([
         openai.chat.completions.create({
           model: OPENAI_MODEL,
           messages,
-         
         }),
         new Promise((_, reject) => {
           setTimeout(() => reject(new Error(`OpenAI request timed out after ${OPENAI_TIMEOUT_MS}ms`)), OPENAI_TIMEOUT_MS);
@@ -7482,6 +7490,7 @@ Return these top-level fields:
 - additionalAssessments
 - vitalSigns
 - caseProgression
+- progressionStages
 - transportPhase
 - expectedTreatment
 - protocolNotes
@@ -7614,21 +7623,20 @@ Secondary assessment rules:
 
 - vitalSigns must contain:
 {
-  "firstSet": { "hr": "", "rr": "", "bp": "", "spo2": "", "etco2": "", "temp": "", "gcs": "", "bgl": "", "ecgInterpretation": "" },
-  "secondSet": { "hr": "", "rr": "", "bp": "", "spo2": "", "etco2": "", "temp": "", "gcs": "", "bgl": "", "ecgInterpretation": "" },
+  "firstSet": { "context": "", "hr": "", "rr": "", "bp": "", "spo2": "", "etco2": "", "temp": "", "gcs": "", "bgl": "", "ecgInterpretation": "" },
+  "secondSet": { "context": "", "hr": "", "rr": "", "bp": "", "spo2": "", "etco2": "", "temp": "", "gcs": "", "bgl": "", "ecgInterpretation": "" },
   "additionalSets": []
 }
 
 Vital signs rules:
-- Every scenario must contain at least firstSet and secondSet.
+- Every scenario must contain at least firstSet and secondSet, each with a "context" field.
+- Context MUST use plain ASCII text ONLY. No Unicode characters, em-dashes, en-dashes, curved quotes, fancy apostrophes, or special symbols. Use plain hyphens (-) not dashes. Example: "After treatment" not "After—treatment". Bad characters corrupt JSON encoding and create garbled output like "ΓÇö".
+- Context should briefly explain when/why these vitals were obtained (e.g., "Initial seated assessment", "After rest and reassessment", "During near-syncope episode").
 - hr must be one string that combines rate, rhythm, and volume in that order, for example "118, regular, strong".
 - rr must be one string that combines rate, rhythm, and volume in that order, for example "28, regular, full".
-- Some scenarios should contain one or more additionalSets when clinically appropriate.
-- Two vital sets are acceptable when the scenario clearly documents trend-based reassessment elsewhere (caseProgression, expectedTreatment, and transport reassessment focus).
-- Use additionalSets for evolving calls, treatment response, deterioration, movement-related change, longer transport, or meaningful reassessment changes.
-- Do not force additionalSets into every case.
 - Vitals must trend realistically according to the scenario and the care provided or missed.
-- Complex scenarios should usually contain 3 or more total vital sets unless the case truly does not require them.
+- Two vital sets are acceptable when the scenario clearly documents trend-based reassessment elsewhere (caseProgression, expectedTreatment, and transport reassessment focus).
+- Complex scenarios with multiple treatment phases, deterioration, or extended transport may warrant 3+ sets when clinically justified.
 
 - caseProgression must contain:
 {
@@ -7641,8 +7649,38 @@ Case progression rules:
 - withProperTreatment must be an array of 2-3 behavioral steps describing how the patient changes with appropriate care.
 - withoutProperTreatment must be an array of 2-3 behavioral steps describing how the patient changes if care is delayed, incomplete, or absent.
 - withIncorrectTreatment must be an array of 2-3 behavioral steps describing how the patient changes if clinically important mistakes are made.
+- Each step in the case progression should be grounded in specific, concrete clinical changes: vital sign trends, assessment findings, symptom evolution, or observable deterioration/improvement.
+- Reference progression stage triggers and outcomes (e.g., "HR rises to X when Y is missed" or "BP stabilizes to X after treatment is given").
+- Do not write generic behavioral descriptions; include measurable changes (vitals, GCS, breath sounds, perfusion, responsiveness) that align with the progression stages.
 - Case progression must feel dynamic and physiologic, not scripted like a simple OSCE answer key.
 - The patient should evolve like a real call.
+
+- progressionStages must contain an array of 3-4 scenario milestones with updated vitals and assessment findings:
+{
+  "progressionStages": [
+    {
+      "stageName": "string (e.g., 'After Movement to Stretcher', 'After Appropriate Treatment', 'If No Treatment Given', 'If Incorrect Treatment Given')",
+      "context": "string explaining what has happened to trigger this stage",
+      "vitalSigns": { "hr": "", "rr": "", "bp": "", "spo2": "", "etco2": "", "temp": "", "gcs": "", "bgl": "", "ecgInterpretation": "" },
+      "assessment": {
+        "airway": "",
+        "breathing": "",
+        "circulation": "",
+        "neuro": "",
+        "other": ""
+      }
+    }
+  ]
+}
+
+Progression stages rules:
+- Include 3-4 distinct stages showing the call at different decision points.
+- Common stages: "After Movement to Stretcher", "After Appropriate Treatment", "If No Treatment Given", "If Incorrect Treatment Given"
+- Each stage must have realistic vital sign changes tied to the clinical logic.
+- Assessment fields should highlight what changed, deteriorated, or improved compared to initial assessment.
+- vitals in each stage must follow the same format as vitalSigns firstSet and secondSet (hr with rhythm and volume, rr with rhythm and volume, full vital set with ecgInterpretation).
+- Stages must reflect plausible patient responses and support different teaching scenarios.
+- Use these stages to help instructors or learners see the consequences of different care paths without branching the main scenario.
 
 - transportPhase must contain:
 {
@@ -7682,6 +7720,8 @@ Quality rubric (target before returning JSON):
 - Overall quality score target: >= 85/100.
 - Keep all core narrative fields concrete and call-specific.
 - caseProgression should contain at least 2 meaningful steps in each branch.
+- vitalSigns must always have firstSet and secondSet; additionalSets should only appear when there is clear clinical justification (deterioration, treatment response, movement-related change, or other meaningful reassessment moment).
+- progressionStages should contain 3-4 distinct stages with realistic vital sign trends and assessment updates tied to scenario logic.
 - transportPhase should include practical detail in transportConsiderations, ongoingCare, reassessmentFocus, and handoffConsiderations.
 - expectedTreatment should usually contain 6-8 actionable items.
 - protocolNotes should usually contain 4-6 concise items with Ontario references.
@@ -7699,11 +7739,14 @@ GRS rules:
   - resourceUtilization
   - proceduralSkills
 - Each domain must contain exactly these score keys: "3", "5", "7"
-- Each score key must contain an array
-- Each score array must contain at least 3 short, scenario-specific behavioural bullet examples
+- Each score key must contain an array with EXACTLY 3 items (no more, no less).
+- Each score array must contain 3 short, scenario-specific behavioural bullet examples.
+- Each example should be detailed and concrete (1-2 full sentences) rather than vague fragments.
 - Score 3 = developing but inconsistent, delayed, hesitant, or shallow
 - Score 5 = competent semester-appropriate performance
 - Score 7 = exceptional, anticipatory, organized, calm, and highly effective
+- Do not add extra bullets or score levels beyond 3, 5, and 7.
+- All 7 domains must be present and properly populated in every scenario.
 
 ECG rules:
 Use ONLY these exact ECG values:
@@ -7754,6 +7797,7 @@ Teaching cue behavior:
 - Do not use "..." inside cues unless the source content truly requires it; shorten the thought cleanly instead.
 - Do not use emojis inside cue text.
 - Keep readability high by avoiding cue clustering in only one section.
+- Teaching language: Avoid overusing the word "trap". Use varied vocabulary like "pitfall", "miss", "overlook", "common error", "the risk", "anchor bias", "cognitive trap", "what you might miss", "easy to skip", "easy to misjudge", "look out for", or "don't get pulled into" depending on context. Each teaching point should have distinct language to maintain variety.
 - If Include teaching cues is false, do not include any cue markup anywhere in the JSON.
 
 Control summary:
@@ -7843,7 +7887,8 @@ Critical output rules:
 - The paragraph should usually be compact and natural, with several distinct teaching beats woven together without sounding formulaic.
 - Use direct preceptor voice that sounds helpful, clear, and practical. Light humor is allowed when it improves memorability and does not undercut safety.
 - Include what happened in this case, why it matters clinically, and concrete improvement advice for the learner's next call.
-- Keep the paragraph case-specific and clinically grounded; include a common pitfall, bias, or hesitation trap when it genuinely fits the case.
+- Keep the paragraph case-specific and clinically grounded; include a common pitfall, bias, or hesitation challenge when it genuinely fits the case.
+- Avoid overusing the word "trap". Use varied vocabulary like "pitfall", "miss", "overlook", "common error", "the risk", "anchor bias", "hesitation", "cognitive bias", "what you might miss", "easy to skip", "easy to misjudge", "look out for", or "where crews get into trouble" depending on context.
 - Avoid repeating the same teaching intent from sentence to sentence.
 - NEVER sound like a generic AI template or textbook rubric. Never use phrases like "This scenario is designed to teach," "It is important to," "Students should," "This highlights the need to," or similar hedge-heavy framing.
 - Write like you are actually debriefing this specific call with your crew after it happened, not like you are writing instructional copy.
