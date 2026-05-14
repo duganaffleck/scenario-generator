@@ -2893,8 +2893,6 @@ const REQUIRED_FIELDS = {
     withIncorrectTreatment: []
   },
 
-  progressionStages: [],
-
   transportPhase: {
     transportConsiderations: [],
     ongoingCare: [],
@@ -7560,7 +7558,6 @@ Return these top-level fields:
 - additionalAssessments
 - vitalSigns
 - caseProgression
-- progressionStages
 - transportPhase
 - expectedTreatment
 - protocolNotes
@@ -7720,37 +7717,10 @@ Case progression rules:
 - withoutProperTreatment must be an array of 2-3 behavioral steps describing how the patient changes if care is delayed, incomplete, or absent.
 - withIncorrectTreatment must be an array of 2-3 behavioral steps describing how the patient changes if clinically important mistakes are made.
 - Each step in the case progression should be grounded in specific, concrete clinical changes: vital sign trends, assessment findings, symptom evolution, or observable deterioration/improvement.
-- Reference progression stage triggers and outcomes (e.g., "HR rises to X when Y is missed" or "BP stabilizes to X after treatment is given").
+- Reference concrete triggers and outcomes (e.g., "HR rises to X when Y is missed" or "BP stabilizes to X after treatment is given").
 - Do not write generic behavioral descriptions; include measurable changes (vitals, GCS, breath sounds, perfusion, responsiveness) that align with the progression stages.
 - Case progression must feel dynamic and physiologic, not scripted like a simple OSCE answer key.
 - The patient should evolve like a real call.
-
-- progressionStages must contain an array of 3-4 scenario milestones with updated vitals and assessment findings:
-{
-  "progressionStages": [
-    {
-      "stageName": "string (e.g., 'After Movement to Stretcher', 'After Appropriate Treatment', 'If No Treatment Given', 'If Incorrect Treatment Given')",
-      "context": "string explaining what has happened to trigger this stage",
-      "vitalSigns": { "hr": "", "rr": "", "bp": "", "spo2": "", "etco2": "", "temp": "", "gcs": "", "bgl": "", "ecgInterpretation": "" },
-      "assessment": {
-        "airway": "",
-        "breathing": "",
-        "circulation": "",
-        "neuro": "",
-        "other": ""
-      }
-    }
-  ]
-}
-
-Progression stages rules:
-- Include 3-4 distinct stages showing the call at different decision points.
-- Common stages: "After Movement to Stretcher", "After Appropriate Treatment", "If No Treatment Given", "If Incorrect Treatment Given"
-- Each stage must have realistic vital sign changes tied to the clinical logic.
-- Assessment fields should highlight what changed, deteriorated, or improved compared to initial assessment.
-- vitals in each stage must follow the same format as vitalSigns firstSet and secondSet (hr with rhythm and volume, rr with rhythm and volume, full vital set with ecgInterpretation).
-- Stages must reflect plausible patient responses and support different teaching scenarios.
-- Use these stages to help instructors or learners see the consequences of different care paths without branching the main scenario.
 
 - transportPhase must contain:
 {
@@ -7791,7 +7761,6 @@ Quality rubric (target before returning JSON):
 - Keep all core narrative fields concrete and call-specific.
 - caseProgression should contain at least 2 meaningful steps in each branch.
 - vitalSigns must always have firstSet and secondSet; additionalSets should only appear when there is clear clinical justification (deterioration, treatment response, movement-related change, or other meaningful reassessment moment).
-- progressionStages should contain 3-4 distinct stages with realistic vital sign trends and assessment updates tied to scenario logic.
 - transportPhase should include practical detail in transportConsiderations, ongoingCare, reassessmentFocus, and handoffConsiderations.
 - expectedTreatment should usually contain 6-8 actionable items.
 - protocolNotes should usually contain 4-6 concise items with Ontario references.
