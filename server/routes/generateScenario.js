@@ -41,7 +41,7 @@ const GENERATION_DEPTH_PROFILES = {
   Detailed: {
     label: 'Detailed',
     model: process.env.OPENAI_MODEL_DETAILED || 'gpt-5.5',
-    temperature: 0.8,
+    temperature: 1,
     maxTokens: parsePositiveInt(process.env.OPENAI_MAX_TOKENS_DETAILED, 24000),
     promptInstruction:
       'Prioritize instructor-quality depth, internal coherence, clinical realism, and educational usefulness. Expand patient presentation, assessment findings, progression, clinical reasoning, expected management, teacher points, and GRS anchors with richer scenario-specific detail.'
