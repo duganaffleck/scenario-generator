@@ -13,6 +13,34 @@ const __dirname = path.dirname(__filename);
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
+function readTokenBudget(envName, fallback) {
+  const rawValue = process.env[envName] || process.env.OPENAI_MAX_TOKENS || process.env.OPENAI_MAX_OUTPUT_TOKENS;
+  const parsedValue = Number.parseInt(rawValue, 10);
+  return Number.isFinite(parsedValue) && parsedValue > 0 ? parsedValue : fallback;
+}
+
+const GENERATION_DEPTH_PROFILES = {
+  "Quick Draft": {
+    label: "Quick Draft",
+    maxTokens: readTokenBudget("OPENAI_MAX_TOKENS_QUICK", 16384),
+    instruction: "Generate a lean but complete scenario. Preserve all required fields and keep every section usable, but avoid unnecessary expansion."
+  },
+  Standard: {
+    label: "Standard",
+    maxTokens: readTokenBudget("OPENAI_MAX_TOKENS_STANDARD", 16384),
+    instruction: "Generate a balanced scenario with strong realism, coherent progression, and solid instructional detail."
+  },
+  Detailed: {
+    label: "Detailed",
+    maxTokens: readTokenBudget("OPENAI_MAX_TOKENS_DETAILED", 16384),
+    instruction: "Generate a richer instructor-level scenario with deeper clinical reasoning, more coherent section-to-section detail, and highly scenario-specific GRS anchors."
+  }
+};
+
+function getGenerationDepthProfile(value) {
+  return GENERATION_DEPTH_PROFILES[value] || GENERATION_DEPTH_PROFILES.Standard;
+}
+
 const ECG_WHITELIST = [
   'Normal Sinus Rhythm',
   'Sinus Bradycardia',
@@ -1225,8 +1253,6 @@ function buildGenerationPrompt({
   environment,
   complexity,
   uniqueness,
-  generationDepth,
-  generationDepthInstruction,
   includeBystanders,
   includeTeachingCues,
   customPrompt,
@@ -1235,7 +1261,8 @@ function buildGenerationPrompt({
   today,
   scenarioCore,
   medicationPlan,
-  semesterProfile
+  semesterProfile,
+  generationProfile
 }) {
   const directiveAddendum = buildDirectivePromptAddendum({
     semester,
@@ -1332,8 +1359,9 @@ Scenario parameters:
 - Type: ${type}
 - Environment: ${environment}
 - Complexity: ${complexity}
+- Generation depth: ${generationProfile.label}
+- Generation depth instruction: ${generationProfile.instruction}
 - Uniqueness: ${uniqueness}
-- Generation depth: ${generationDepth || 'Standard'}
 - Bystanders: ${includeBystanders ? 'Include them when useful.' : 'Do not include them.'}
 - Teaching cues: ${includeTeachingCues ? 'Embed brief inline cues using the exact format *(💡 cue text)* where helpful.' : 'Do not include inline teaching cues.'}
 
@@ -1373,7 +1401,6 @@ Scenario shaping rules:
 - ${getEnvironmentInstruction(environment)}
 - ${getComplexityInstruction(complexity)}
 - ${getUniquenessInstruction(uniqueness)}
-- ${generationDepthInstruction || 'Generation depth selected: Standard. Balance generation time with realistic detail and teaching value.'}
 - ${medicationPlan.instructionText}
 - Write like an experienced Ontario paramedic instructor building a realistic teaching case for lab.
 - Prioritize realism over textbook neatness.
@@ -1460,28 +1487,6 @@ function loadStaticData() {
   return cachedDataPromise;
 }
 
-const GENERATION_DEPTH_PROFILES = {
-  'Quick Draft': {
-    label: 'Quick Draft',
-    maxTokens: Number(process.env.OPENAI_MAX_TOKENS_QUICK || 8192),
-    instruction: 'Generation depth selected: Quick Draft. Keep the scenario complete and usable, but leaner and more direct. Do not omit required sections.'
-  },
-  Standard: {
-    label: 'Standard',
-    maxTokens: Number(process.env.OPENAI_MAX_TOKENS_STANDARD || 16384),
-    instruction: 'Generation depth selected: Standard. Balance generation time with realistic detail, scenario coherence, and teaching value.'
-  },
-  Detailed: {
-    label: 'Detailed',
-    maxTokens: Number(process.env.OPENAI_MAX_TOKENS_DETAILED || 16384),
-    instruction: 'Generation depth selected: Detailed. Prioritize richer instructional detail, stronger internal coherence, scenario-specific GRS anchors, dynamic progression, and field realism.'
-  }
-};
-
-const getGenerationDepthProfile = (generationDepth = 'Standard') => {
-  return GENERATION_DEPTH_PROFILES[generationDepth] || GENERATION_DEPTH_PROFILES.Standard;
-};
-
 router.post('/', async (req, res) => {
   res.header('Access-Control-Allow-Origin', '*');
 
@@ -1490,8 +1495,8 @@ router.post('/', async (req, res) => {
     type = 'Medical',
     environment = 'Urban',
     complexity = 'Moderate',
-    uniqueness = 'Common',
     generationDepth = 'Standard',
+    uniqueness = 'Common',
     includeBystanders = true,
     includeTeachingCues = true,
     customPrompt = ''
@@ -1506,7 +1511,6 @@ router.post('/', async (req, res) => {
     } = await loadStaticData();
 
     const generationProfile = getGenerationDepthProfile(generationDepth);
-
     const semesterProfile = buildSemesterDifficultyProfile(semester);
     const scenarioCore = buildScenarioCore({
       semester,
@@ -1529,8 +1533,6 @@ router.post('/', async (req, res) => {
       environment,
       complexity,
       uniqueness,
-      generationDepth: generationProfile.label,
-      generationDepthInstruction: generationProfile.instruction,
       includeBystanders,
       includeTeachingCues,
       customPrompt,
@@ -1539,11 +1541,12 @@ router.post('/', async (req, res) => {
       today: new Date().toLocaleDateString('en-CA'),
       scenarioCore,
       medicationPlan,
-      semesterProfile
+      semesterProfile,
+      generationProfile
     });
 
     const completion = await openai.chat.completions.create({
-      model: 'gpt-4o',
+      model: process.env.OPENAI_MODEL || 'gpt-4o',
       temperature: 0.9,
       max_tokens: generationProfile.maxTokens,
       messages: [

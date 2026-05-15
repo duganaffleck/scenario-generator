@@ -32,13 +32,8 @@ const SCENARIO_TYPES = [
 const SEMESTERS = ["2", "3", "4"];
 const ENVIRONMENTS = ["Urban", "Rural", "Wilderness", "Industrial", "Home", "Public Space"];
 const COMPLEXITIES = ["Simple", "Moderate", "Complex"];
-const UNIQUENESS_LEVELS = ["Common", "Varied", "Rare/Obscure"];
 const GENERATION_DEPTHS = ["Quick Draft", "Standard", "Detailed"];
-const GENERATION_DEPTH_HELP = {
-  "Quick Draft": "Prioritizes speed for a lean, usable first draft.",
-  Standard: "Balances generation time with realistic scenario depth.",
-  Detailed: "Takes longer to produce richer, more instructor-focused detail.",
-};
+const UNIQUENESS_LEVELS = ["Common", "Varied", "Rare/Obscure"];
 
 const SECTION_GROUPS = {
   "Scene Info": ["scenarioIntro", "title", "callInformation", "incidentNarrative"],
@@ -91,8 +86,8 @@ const ScenarioForm = () => {
     type: "Medical",
     environment: "Urban",
     complexity: "Moderate",
-    uniqueness: "Common",
     generationDepth: "Standard",
+    uniqueness: "Common",
     includeTeachingCues: true,
     customPrompt: "",
   });
@@ -433,6 +428,18 @@ const ScenarioForm = () => {
           {loading ? <FaSpinner className="spin" /> : "Generate Scenario"}
         </button>
 
+        <div style={styles.howToBox}>
+          <h2 style={styles.howToTitle}>How to use</h2>
+          <p style={styles.howToLead}>Set scenario parameters:</p>
+          <ul style={styles.howToList}>
+            <li><strong>Semester:</strong> Sets the learner level and expected clinical reasoning standard.</li>
+            <li><strong>Type:</strong> Shapes the main call family, such as medical, trauma, cardiac, respiratory, or environmental.</li>
+            <li><strong>Environment:</strong> Changes the scene, operational friction, and patient access considerations.</li>
+            <li><strong>Complexity:</strong> Controls how messy, layered, or straightforward the call should feel.</li>
+            <li><strong>Generation Depth:</strong> Quick Draft is leaner, Standard balances speed and detail, and Detailed gives the model more room for richer instructor-level output.</li>
+          </ul>
+        </div>
+
         {["semester", "type", "environment", "complexity"].map((field) => (
           <div key={field} style={styles.fieldRow}>
             <label>{capitalizeFirstLetter(field)}:</label>
@@ -454,16 +461,7 @@ const ScenarioForm = () => {
         ))}
 
         <div style={styles.fieldRow}>
-          <label style={styles.depthLabel}>
-            <span>Generation Depth:</span>
-            <span
-              title="Quick Draft prioritizes speed. Standard balances speed and depth. Detailed takes longer, but generates richer, more instructor-focused scenarios."
-              style={styles.infoIcon}
-              aria-label="Generation depth information"
-            >
-              ⓘ
-            </span>
-          </label>
+          <label>Generation Depth:</label>
           <select
             name="generationDepth"
             value={formData.generationDepth}
@@ -476,10 +474,6 @@ const ScenarioForm = () => {
               </option>
             ))}
           </select>
-          <p style={styles.depthTimingText}>
-            Wait times vary by mode. Quick Draft is fastest, while Detailed may take longer for richer output.
-          </p>
-          <p style={styles.modeHelperText}>{GENERATION_DEPTH_HELP[formData.generationDepth]}</p>
         </div>
 
         <div style={styles.fieldRow}>
@@ -688,6 +682,26 @@ const styles = {
     borderRadius: "12px",
     marginBottom: "1rem",
   },
+  howToBox: {
+    gridColumn: "1 / -1",
+    backgroundColor: "#f8fafc",
+    border: "1px solid #cbd5e1",
+    borderRadius: "10px",
+    padding: "0.85rem 1rem",
+  },
+  howToTitle: {
+    margin: "0 0 0.35rem 0",
+    fontSize: "1rem",
+    color: "#0f766e",
+  },
+  howToLead: {
+    margin: "0 0 0.35rem 0",
+    fontWeight: "bold",
+  },
+  howToList: {
+    margin: 0,
+    paddingLeft: "1.2rem",
+  },
   fieldRow: {
     display: "flex",
     flexDirection: "column",
@@ -698,29 +712,6 @@ const styles = {
     border: "1px solid #64748b",
     backgroundColor: "#ffffff",
     color: "#1e293b",
-  },
-  depthLabel: {
-    display: "flex",
-    alignItems: "center",
-    gap: "0.35rem",
-  },
-  infoIcon: {
-    cursor: "help",
-    color: "#0f766e",
-    fontWeight: "bold",
-    fontSize: "0.95rem",
-  },
-  depthTimingText: {
-    margin: "0.35rem 0 0",
-    fontSize: "0.85rem",
-    color: "#64748b",
-    lineHeight: 1.4,
-  },
-  modeHelperText: {
-    margin: "0.2rem 0 0",
-    fontSize: "0.85rem",
-    color: "#0f766e",
-    lineHeight: 1.4,
   },
   textarea: {
     padding: "0.5rem",
