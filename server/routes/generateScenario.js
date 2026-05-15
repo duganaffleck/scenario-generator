@@ -18,12 +18,17 @@ const parsePositiveInt = (value, fallback) => {
   return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
 };
 
+const parsePositiveInt = (value, fallback) => {
+  const parsed = Number.parseInt(value, 10);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
+};
+
 const GENERATION_DEPTH_PROFILES = {
   'Quick Draft': {
     label: 'Quick Draft',
     model: process.env.OPENAI_MODEL_QUICK || 'gpt-5.4-mini',
     temperature: 0.75,
-    maxTokens: parsePositiveInt(process.env.OPENAI_MAX_TOKENS_QUICK, 200000),
+    maxTokens: parsePositiveInt(process.env.OPENAI_MAX_TOKENS_QUICK, 13000),
     promptInstruction:
       'Prioritize speed, structural completeness, and immediate usability. Keep each section lean but still scenario-specific. Do not omit required fields. GRS anchors should remain specific, but shorter and more direct.'
   },
@@ -32,7 +37,7 @@ const GENERATION_DEPTH_PROFILES = {
     label: 'Standard',
     model: process.env.OPENAI_MODEL_STANDARD || 'gpt-5.4',
     temperature: 0.85,
-    maxTokens: parsePositiveInt(process.env.OPENAI_MAX_TOKENS_STANDARD, 200000),
+    maxTokens: parsePositiveInt(process.env.OPENAI_MAX_TOKENS_STANDARD, 16384),
     promptInstruction:
       'Balance generation time with realistic scenario depth. Provide coherent narrative detail, meaningful progression, useful teaching cues, and scenario-specific GRS anchors without over-expanding every field.'
   },
@@ -41,7 +46,7 @@ const GENERATION_DEPTH_PROFILES = {
     label: 'Detailed',
     model: process.env.OPENAI_MODEL_DETAILED || 'gpt-5.5',
     temperature: 0.8,
-    maxTokens: parsePositiveInt(process.env.OPENAI_MAX_TOKENS_DETAILED, 200000),
+    maxTokens: parsePositiveInt(process.env.OPENAI_MAX_TOKENS_DETAILED, 24000),
     promptInstruction:
       'Prioritize instructor-quality depth, internal coherence, clinical realism, and educational usefulness. Expand patient presentation, assessment findings, progression, clinical reasoning, expected management, teacher points, and GRS anchors with richer scenario-specific detail.'
   }
