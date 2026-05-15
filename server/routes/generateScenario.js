@@ -13,40 +13,6 @@ const __dirname = path.dirname(__filename);
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
-const DEFAULT_MAX_OUTPUT_TOKENS = Number(process.env.OPENAI_MAX_OUTPUT_TOKENS || 16384);
-const clampMaxTokens = (requested) => Math.min(requested, DEFAULT_MAX_OUTPUT_TOKENS);
-
-const GENERATION_DEPTH_PROFILES = {
-  'Quick Draft': {
-    label: 'Quick Draft',
-    model: process.env.OPENAI_MODEL_QUICK || process.env.OPENAI_MODEL || 'gpt-4o',
-    temperature: 0.75,
-    maxTokens: clampMaxTokens(13000),
-    promptInstruction:
-      'Prioritize speed, structural completeness, and immediate usability. Keep each section lean but still scenario-specific. Do not omit required fields. GRS anchors should remain specific, but shorter and more direct.'
-  },
-  Standard: {
-    label: 'Standard',
-    model: process.env.OPENAI_MODEL_STANDARD || process.env.OPENAI_MODEL || 'gpt-4o',
-    temperature: 0.85,
-    maxTokens: clampMaxTokens(16384),
-    promptInstruction:
-      'Balance generation time with realistic scenario depth. Provide coherent narrative detail, meaningful progression, useful teaching cues, and scenario-specific GRS anchors without over-expanding every field.'
-  },
-  Detailed: {
-    label: 'Detailed',
-    model: process.env.OPENAI_MODEL_DETAILED || process.env.OPENAI_MODEL || 'gpt-4o',
-    temperature: 0.8,
-    maxTokens: clampMaxTokens(24000),
-    promptInstruction:
-      'Prioritize instructor-quality depth, internal coherence, clinical realism, and educational usefulness. Expand patient presentation, assessment findings, progression, clinical reasoning, expected management, teacher points, and GRS anchors with richer scenario-specific detail.'
-  }
-};
-
-function getGenerationDepthProfile(generationDepth = 'Standard') {
-  return GENERATION_DEPTH_PROFILES[generationDepth] || GENERATION_DEPTH_PROFILES.Standard;
-}
-
 const ECG_WHITELIST = [
   'Normal Sinus Rhythm',
   'Sinus Bradycardia',
@@ -1259,6 +1225,8 @@ function buildGenerationPrompt({
   environment,
   complexity,
   uniqueness,
+  generationDepth,
+  generationDepthInstruction,
   includeBystanders,
   includeTeachingCues,
   customPrompt,
@@ -1267,8 +1235,7 @@ function buildGenerationPrompt({
   today,
   scenarioCore,
   medicationPlan,
-  semesterProfile,
-  generationProfile
+  semesterProfile
 }) {
   const directiveAddendum = buildDirectivePromptAddendum({
     semester,
@@ -1366,8 +1333,7 @@ Scenario parameters:
 - Environment: ${environment}
 - Complexity: ${complexity}
 - Uniqueness: ${uniqueness}
-- Generation depth: ${generationProfile.label}
-- Generation depth instruction: ${generationProfile.promptInstruction}
+- Generation depth: ${generationDepth || 'Standard'}
 - Bystanders: ${includeBystanders ? 'Include them when useful.' : 'Do not include them.'}
 - Teaching cues: ${includeTeachingCues ? 'Embed brief inline cues using the exact format *(💡 cue text)* where helpful.' : 'Do not include inline teaching cues.'}
 
@@ -1407,6 +1373,7 @@ Scenario shaping rules:
 - ${getEnvironmentInstruction(environment)}
 - ${getComplexityInstruction(complexity)}
 - ${getUniquenessInstruction(uniqueness)}
+- ${generationDepthInstruction || 'Generation depth selected: Standard. Balance generation time with realistic detail and teaching value.'}
 - ${medicationPlan.instructionText}
 - Write like an experienced Ontario paramedic instructor building a realistic teaching case for lab.
 - Prioritize realism over textbook neatness.
@@ -1493,6 +1460,28 @@ function loadStaticData() {
   return cachedDataPromise;
 }
 
+const GENERATION_DEPTH_PROFILES = {
+  'Quick Draft': {
+    label: 'Quick Draft',
+    maxTokens: Number(process.env.OPENAI_MAX_TOKENS_QUICK || 8192),
+    instruction: 'Generation depth selected: Quick Draft. Keep the scenario complete and usable, but leaner and more direct. Do not omit required sections.'
+  },
+  Standard: {
+    label: 'Standard',
+    maxTokens: Number(process.env.OPENAI_MAX_TOKENS_STANDARD || 16384),
+    instruction: 'Generation depth selected: Standard. Balance generation time with realistic detail, scenario coherence, and teaching value.'
+  },
+  Detailed: {
+    label: 'Detailed',
+    maxTokens: Number(process.env.OPENAI_MAX_TOKENS_DETAILED || 16384),
+    instruction: 'Generation depth selected: Detailed. Prioritize richer instructional detail, stronger internal coherence, scenario-specific GRS anchors, dynamic progression, and field realism.'
+  }
+};
+
+const getGenerationDepthProfile = (generationDepth = 'Standard') => {
+  return GENERATION_DEPTH_PROFILES[generationDepth] || GENERATION_DEPTH_PROFILES.Standard;
+};
+
 router.post('/', async (req, res) => {
   res.header('Access-Control-Allow-Origin', '*');
 
@@ -1517,6 +1506,7 @@ router.post('/', async (req, res) => {
     } = await loadStaticData();
 
     const generationProfile = getGenerationDepthProfile(generationDepth);
+
     const semesterProfile = buildSemesterDifficultyProfile(semester);
     const scenarioCore = buildScenarioCore({
       semester,
@@ -1539,6 +1529,8 @@ router.post('/', async (req, res) => {
       environment,
       complexity,
       uniqueness,
+      generationDepth: generationProfile.label,
+      generationDepthInstruction: generationProfile.instruction,
       includeBystanders,
       includeTeachingCues,
       customPrompt,
@@ -1547,13 +1539,12 @@ router.post('/', async (req, res) => {
       today: new Date().toLocaleDateString('en-CA'),
       scenarioCore,
       medicationPlan,
-      semesterProfile,
-      generationProfile
+      semesterProfile
     });
 
     const completion = await openai.chat.completions.create({
-      model: generationProfile.model,
-      temperature: generationProfile.temperature,
+      model: 'gpt-4o',
+      temperature: 0.9,
       max_tokens: generationProfile.maxTokens,
       messages: [
         { role: 'system', content: profile },
