@@ -1559,7 +1559,7 @@ router.post('/', async (req, res) => {
     const completion = await openai.chat.completions.create({
       model: generationProfile.model,
       temperature: generationProfile.temperature,
-      max_tokens: generationProfile.maxTokens,
+      max_completion_tokens: generationProfile.maxTokens,
       messages: [
         { role: 'system', content: profile },
         { role: 'user', content: `${fewShots}\n\n${prompt}` }
