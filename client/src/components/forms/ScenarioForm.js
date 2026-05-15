@@ -103,6 +103,12 @@ const SCENARIO_TYPES = [
 const SEMESTERS = ["2", "3", "4"];
 const ENVIRONMENTS = ["Urban", "Rural", "Wilderness", "Industrial", "Home", "Public Space"];
 const COMPLEXITIES = ["Simple", "Moderate", "Complex"];
+const GENERATION_DEPTHS = ["Quick Draft", "Standard", "Detailed"];
+const GENERATION_DEPTH_HELP = {
+  "Quick Draft": "Prioritizes speed for a lean, usable first draft.",
+  Standard: "Balances generation time with realistic scenario depth.",
+  Detailed: "Takes longer to produce richer, more instructor-focused detail.",
+};
 
 const FIELD_TOOLTIPS = {
   semester: "Training level: 2 = foundational skills, 3 = intermediate assessment/treatment, 4 = advanced decision-making with rare/complex presentations",
@@ -177,6 +183,7 @@ const ScenarioForm = () => {
     environment: "Urban",
     complexity: "Moderate",
     shiftMode: "Day Shift",
+    generationDepth: "Standard",
     customPrompt: "",
   });
 
@@ -286,6 +293,7 @@ const ScenarioForm = () => {
     formData.environment !== "Urban" ||
     formData.complexity !== "Moderate" ||
     formData.shiftMode !== "Day Shift" ||
+    formData.generationDepth !== "Standard" ||
     formData.customPrompt !== "";
   const canReset = scenario || isFormModified;
   const styles = buildStyles(isMobile);
@@ -549,7 +557,8 @@ const ScenarioForm = () => {
       environment: "Urban",
       complexity: "Moderate",
       shiftMode: "Day Shift",
-        customPrompt: "",
+      generationDepth: "Standard",
+      customPrompt: "",
     });
     setScenario(null);
     setSelectedECGImage(null);
@@ -1304,6 +1313,36 @@ const ScenarioForm = () => {
               </div>
             ))}
 
+            <div style={styles.fieldRow}>
+              <label
+                htmlFor="generationDepth"
+                title="Quick Draft is fastest; Detailed takes longer for richer, more instructor-focused output."
+                style={{ cursor: "help" }}
+              >
+                Generation Depth:
+              </label>
+              <select
+                id="generationDepth"
+                name="generationDepth"
+                value={formData.generationDepth}
+                onChange={handleChange}
+                style={styles.select}
+                className="a11y-focus"
+                title="Quick Draft is fastest; Detailed takes longer for richer, more instructor-focused output."
+              >
+                {GENERATION_DEPTHS.map((opt) => (
+                  <option key={opt} value={opt}>
+                    {opt}
+                  </option>
+                ))}
+              </select>
+              <small style={styles.helperText}>
+                Wait times vary by mode. Quick Draft is fastest, while Detailed may take longer for richer output.
+              </small>
+              <small style={styles.helperText}>
+                {GENERATION_DEPTH_HELP[formData.generationDepth]}
+              </small>
+            </div>
 
             <div style={styles.fieldRow}>
               <label htmlFor="customPrompt">Instructor Prompt (Optional)</label>
