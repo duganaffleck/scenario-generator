@@ -13,31 +13,39 @@ const __dirname = path.dirname(__filename);
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
+const parsePositiveInt = (value, fallback) => {
+  const parsed = Number.parseInt(value, 10);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
+};
+
 const GENERATION_DEPTH_PROFILES = {
   'Quick Draft': {
     label: 'Quick Draft',
-    model: process.env.OPENAI_MODEL_QUICK || process.env.OPENAI_MODEL || 'gpt-4o',
+    model: process.env.OPENAI_MODEL_QUICK || 'gpt-5.4-mini',
     temperature: 0.75,
-    maxTokens: 6500,
+    maxTokens: parsePositiveInt(process.env.OPENAI_MAX_TOKENS_QUICK, 200000),
     promptInstruction:
       'Prioritize speed, structural completeness, and immediate usability. Keep each section lean but still scenario-specific. Do not omit required fields. GRS anchors should remain specific, but shorter and more direct.'
   },
+
   Standard: {
     label: 'Standard',
-    model: process.env.OPENAI_MODEL_STANDARD || process.env.OPENAI_MODEL || 'gpt-4o',
+    model: process.env.OPENAI_MODEL_STANDARD || 'gpt-5.4',
     temperature: 0.85,
-    maxTokens: 8192,
+    maxTokens: parsePositiveInt(process.env.OPENAI_MAX_TOKENS_STANDARD, 200000),
     promptInstruction:
       'Balance generation time with realistic scenario depth. Provide coherent narrative detail, meaningful progression, useful teaching cues, and scenario-specific GRS anchors without over-expanding every field.'
   },
+
   Detailed: {
     label: 'Detailed',
-    model: process.env.OPENAI_MODEL_DETAILED || process.env.OPENAI_MODEL || 'gpt-4o',
+    model: process.env.OPENAI_MODEL_DETAILED || 'gpt-5.5',
     temperature: 0.8,
-    maxTokens: 12000,
+    maxTokens: parsePositiveInt(process.env.OPENAI_MAX_TOKENS_DETAILED, 200000),
     promptInstruction:
       'Prioritize instructor-quality depth, internal coherence, clinical realism, and educational usefulness. Expand patient presentation, assessment findings, progression, clinical reasoning, expected management, teacher points, and GRS anchors with richer scenario-specific detail.'
   }
+};
 };
 
 function getGenerationDepthProfile(generationDepth = 'Standard') {
