@@ -104,17 +104,25 @@ const SEMESTERS = ["2", "3", "4"];
 const ENVIRONMENTS = ["Urban", "Rural", "Wilderness", "Industrial", "Home", "Public Space"];
 const COMPLEXITIES = ["Simple", "Moderate", "Complex"];
 const GENERATION_DEPTHS = ["Quick Draft", "Standard", "Detailed"];
+
 const GENERATION_DEPTH_HELP = {
   "Quick Draft": "Prioritizes speed for a lean, usable first draft.",
   Standard: "Balances generation time with realistic scenario depth.",
   Detailed: "Takes longer to produce richer, more instructor-focused detail.",
 };
 
+const GENERATION_DEPTH_WAIT_TEXT =
+  "Wait times vary by mode. Quick Draft is fastest, while Detailed may take longer for richer output.";
+
+const GENERATION_DEPTH_TOOLTIP =
+  "Quick Draft prioritizes speed. Standard balances speed and depth. Detailed takes longer, but generates richer, more instructor-focused scenarios.";
+
 const FIELD_TOOLTIPS = {
   semester: "Training level: 2 = foundational skills, 3 = intermediate assessment/treatment, 4 = advanced decision-making with rare/complex presentations",
   type: "Scenario category: Medical (illness), Trauma (injury), Cardiac (heart/rhythm), Respiratory (breathing), Environmental (exposure/environmental illness)",
   environment: "Call location: Urban (city), Rural (countryside), Wilderness (remote outdoor), Industrial (worksite), Home (residence), Public Space (crowd areas, venues)",
   complexity: "Case difficulty: Simple (straightforward presentation), Moderate (typical multi-system or subtle findings), Complex (rare presentations or multiple competing diagnoses)",
+  generationDepth: GENERATION_DEPTH_TOOLTIP,
 };
 
 const SECTION_GROUPS = {
@@ -182,8 +190,8 @@ const ScenarioForm = () => {
     type: "Medical",
     environment: "Urban",
     complexity: "Moderate",
-    shiftMode: "Day Shift",
     generationDepth: "Standard",
+    shiftMode: "Day Shift",
     customPrompt: "",
   });
 
@@ -292,8 +300,8 @@ const ScenarioForm = () => {
     formData.type !== "Medical" ||
     formData.environment !== "Urban" ||
     formData.complexity !== "Moderate" ||
-    formData.shiftMode !== "Day Shift" ||
     formData.generationDepth !== "Standard" ||
+    formData.shiftMode !== "Day Shift" ||
     formData.customPrompt !== "";
   const canReset = scenario || isFormModified;
   const styles = buildStyles(isMobile);
@@ -556,8 +564,8 @@ const ScenarioForm = () => {
       type: "Medical",
       environment: "Urban",
       complexity: "Moderate",
-      shiftMode: "Day Shift",
       generationDepth: "Standard",
+      shiftMode: "Day Shift",
       customPrompt: "",
     });
     setScenario(null);
@@ -1314,12 +1322,15 @@ const ScenarioForm = () => {
             ))}
 
             <div style={styles.fieldRow}>
-              <label
-                htmlFor="generationDepth"
-                title="Quick Draft is fastest; Detailed takes longer for richer, more instructor-focused output."
-                style={{ cursor: "help" }}
-              >
+              <label htmlFor="generationDepth" title={GENERATION_DEPTH_TOOLTIP} style={{ cursor: "help" }}>
                 Generation Depth:
+                <span
+                  aria-hidden="true"
+                  title={GENERATION_DEPTH_TOOLTIP}
+                  style={styles.infoIcon}
+                >
+                  ⓘ
+                </span>
               </label>
               <select
                 id="generationDepth"
@@ -1328,7 +1339,7 @@ const ScenarioForm = () => {
                 onChange={handleChange}
                 style={styles.select}
                 className="a11y-focus"
-                title="Quick Draft is fastest; Detailed takes longer for richer, more instructor-focused output."
+                title={GENERATION_DEPTH_TOOLTIP}
               >
                 {GENERATION_DEPTHS.map((opt) => (
                   <option key={opt} value={opt}>
@@ -1336,12 +1347,8 @@ const ScenarioForm = () => {
                   </option>
                 ))}
               </select>
-              <small style={styles.helperText}>
-                Wait times vary by mode. Quick Draft is fastest, while Detailed may take longer for richer output.
-              </small>
-              <small style={styles.helperText}>
-                {GENERATION_DEPTH_HELP[formData.generationDepth]}
-              </small>
+              <small style={styles.helperText}>{GENERATION_DEPTH_WAIT_TEXT}</small>
+              <small style={styles.helperText}>{GENERATION_DEPTH_HELP[formData.generationDepth]}</small>
             </div>
 
             <div style={styles.fieldRow}>
@@ -1391,6 +1398,7 @@ const ScenarioForm = () => {
                     <li><b>Type:</b> Choose the main scenario category (Medical, Trauma, Cardiac, Respiratory, Environmental) to focus the case content.</li>
                     <li><b>Environment:</b> Pick the setting (Urban, Rural, Wilderness, Industrial, Home, Public Space) to shape the context and available resources.</li>
                     <li><b>Complexity:</b> Adjust the case difficulty. Simple = straightforward, Moderate = typical multi-system, Complex = rare or challenging presentations.</li>
+                    <li><b>Generation Depth:</b> Choose how much detail and generation time to prioritize. Quick Draft is fastest and leanest, Standard balances speed and depth, and Detailed may take longer but produces richer, more instructor-focused scenarios.</li>
                   </ul>
                 </li>
                 <li>
@@ -1760,6 +1768,16 @@ const buildStyles = (isMobile) => ({
     display: "flex",
     flexDirection: "column",
     gap: "0.35rem",
+  },
+
+  infoIcon: {
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    marginLeft: "0.35rem",
+    color: "var(--vn-muted-text)",
+    fontSize: "0.88rem",
+    cursor: "help",
   },
 
   select: {

@@ -13,12 +13,15 @@ const __dirname = path.dirname(__filename);
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
+const DEFAULT_MAX_OUTPUT_TOKENS = Number(process.env.OPENAI_MAX_OUTPUT_TOKENS || 16384);
+const clampMaxTokens = (requested) => Math.min(requested, DEFAULT_MAX_OUTPUT_TOKENS);
+
 const GENERATION_DEPTH_PROFILES = {
   'Quick Draft': {
     label: 'Quick Draft',
     model: process.env.OPENAI_MODEL_QUICK || process.env.OPENAI_MODEL || 'gpt-4o',
     temperature: 0.75,
-    maxTokens: 6500,
+    maxTokens: clampMaxTokens(13000),
     promptInstruction:
       'Prioritize speed, structural completeness, and immediate usability. Keep each section lean but still scenario-specific. Do not omit required fields. GRS anchors should remain specific, but shorter and more direct.'
   },
@@ -26,7 +29,7 @@ const GENERATION_DEPTH_PROFILES = {
     label: 'Standard',
     model: process.env.OPENAI_MODEL_STANDARD || process.env.OPENAI_MODEL || 'gpt-4o',
     temperature: 0.85,
-    maxTokens: 8192,
+    maxTokens: clampMaxTokens(16384),
     promptInstruction:
       'Balance generation time with realistic scenario depth. Provide coherent narrative detail, meaningful progression, useful teaching cues, and scenario-specific GRS anchors without over-expanding every field.'
   },
@@ -34,7 +37,7 @@ const GENERATION_DEPTH_PROFILES = {
     label: 'Detailed',
     model: process.env.OPENAI_MODEL_DETAILED || process.env.OPENAI_MODEL || 'gpt-4o',
     temperature: 0.8,
-    maxTokens: 12000,
+    maxTokens: clampMaxTokens(24000),
     promptInstruction:
       'Prioritize instructor-quality depth, internal coherence, clinical realism, and educational usefulness. Expand patient presentation, assessment findings, progression, clinical reasoning, expected management, teacher points, and GRS anchors with richer scenario-specific detail.'
   }
