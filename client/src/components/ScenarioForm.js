@@ -34,18 +34,11 @@ const ENVIRONMENTS = ["Urban", "Rural", "Wilderness", "Industrial", "Home", "Pub
 const COMPLEXITIES = ["Simple", "Moderate", "Complex"];
 const UNIQUENESS_LEVELS = ["Common", "Varied", "Rare/Obscure"];
 const GENERATION_DEPTHS = ["Quick Draft", "Standard", "Detailed"];
-
 const GENERATION_DEPTH_HELP = {
   "Quick Draft": "Prioritizes speed for a lean, usable first draft.",
   Standard: "Balances generation time with realistic scenario depth.",
   Detailed: "Takes longer to produce richer, more instructor-focused detail.",
 };
-
-const GENERATION_DEPTH_WAIT_NOTE =
-  "Wait times vary by mode. Quick Draft is fastest, while Detailed may take longer for richer output.";
-
-const GENERATION_DEPTH_TOOLTIP =
-  "Quick Draft prioritizes speed. Standard balances speed and depth. Detailed takes longer, but generates richer, more instructor-focused scenarios.";
 
 const SECTION_GROUPS = {
   "Scene Info": ["scenarioIntro", "title", "callInformation", "incidentNarrative"],
@@ -461,13 +454,12 @@ const ScenarioForm = () => {
         ))}
 
         <div style={styles.fieldRow}>
-          <label style={styles.labelWithHint}>
+          <label style={styles.depthLabel}>
             <span>Generation Depth:</span>
             <span
+              title="Quick Draft prioritizes speed. Standard balances speed and depth. Detailed takes longer, but generates richer, more instructor-focused scenarios."
               style={styles.infoIcon}
-              title={GENERATION_DEPTH_TOOLTIP}
-              aria-label={GENERATION_DEPTH_TOOLTIP}
-              tabIndex={0}
+              aria-label="Generation depth information"
             >
               ⓘ
             </span>
@@ -484,7 +476,9 @@ const ScenarioForm = () => {
               </option>
             ))}
           </select>
-          <p style={styles.helperText}>{GENERATION_DEPTH_WAIT_NOTE}</p>
+          <p style={styles.depthTimingText}>
+            Wait times vary by mode. Quick Draft is fastest, while Detailed may take longer for richer output.
+          </p>
           <p style={styles.modeHelperText}>{GENERATION_DEPTH_HELP[formData.generationDepth]}</p>
         </div>
 
@@ -705,42 +699,35 @@ const styles = {
     backgroundColor: "#ffffff",
     color: "#1e293b",
   },
+  depthLabel: {
+    display: "flex",
+    alignItems: "center",
+    gap: "0.35rem",
+  },
+  infoIcon: {
+    cursor: "help",
+    color: "#0f766e",
+    fontWeight: "bold",
+    fontSize: "0.95rem",
+  },
+  depthTimingText: {
+    margin: "0.35rem 0 0",
+    fontSize: "0.85rem",
+    color: "#64748b",
+    lineHeight: 1.4,
+  },
+  modeHelperText: {
+    margin: "0.2rem 0 0",
+    fontSize: "0.85rem",
+    color: "#0f766e",
+    lineHeight: 1.4,
+  },
   textarea: {
     padding: "0.5rem",
     borderRadius: "8px",
     border: "1px solid #64748b",
     backgroundColor: "#ffffff",
     color: "#1e293b",
-  },
-  labelWithHint: {
-    display: "flex",
-    alignItems: "center",
-    gap: "0.4rem",
-  },
-  infoIcon: {
-    display: "inline-flex",
-    alignItems: "center",
-    justifyContent: "center",
-    width: "1rem",
-    height: "1rem",
-    borderRadius: "999px",
-    color: "#0f766e",
-    fontSize: "0.85rem",
-    fontWeight: "bold",
-    cursor: "help",
-  },
-  helperText: {
-    margin: "0.35rem 0 0",
-    color: "#475569",
-    fontSize: "0.82rem",
-    lineHeight: "1.35",
-  },
-  modeHelperText: {
-    margin: "0.2rem 0 0",
-    color: "#0f766e",
-    fontSize: "0.8rem",
-    lineHeight: "1.35",
-    fontWeight: "600",
   },
   button: {
     gridColumn: "1 / -1",

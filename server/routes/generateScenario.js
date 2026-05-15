@@ -13,69 +13,35 @@ const __dirname = path.dirname(__filename);
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
-
 const GENERATION_DEPTH_PROFILES = {
   'Quick Draft': {
-    key: 'quick',
     label: 'Quick Draft',
-    model: process.env.OPENAI_MODEL_QUICK || 'gpt-5.4-mini',
-    reasoningEffort: 'low',
-    verbosity: 'low',
-    maxOutputTokens: 9000,
-    temperature: 0.7,
-    instructionText: [
-      'Generation depth: Quick Draft.',
-      'Produce a complete, usable scenario quickly with lean but meaningful detail.',
-      'Keep narrative sections concise while still avoiding empty, generic, or placeholder content.',
-      'GRS anchors must remain scenario-specific, but examples can be shorter and more direct.',
-      'Prioritize structural completeness, clinical accuracy, and a clean first draft over expansive teaching elaboration.'
-    ].join(' ')
+    model: process.env.OPENAI_MODEL_QUICK || process.env.OPENAI_MODEL || 'gpt-4o',
+    temperature: 0.75,
+    maxTokens: 6500,
+    promptInstruction:
+      'Prioritize speed, structural completeness, and immediate usability. Keep each section lean but still scenario-specific. Do not omit required fields. GRS anchors should remain specific, but shorter and more direct.'
   },
   Standard: {
-    key: 'standard',
     label: 'Standard',
-    model: process.env.OPENAI_MODEL_STANDARD || 'gpt-5.4',
-    reasoningEffort: 'medium',
-    verbosity: 'medium',
-    maxOutputTokens: 12000,
-    temperature: 0.8,
-    instructionText: [
-      'Generation depth: Standard.',
-      'Balance generation speed with realistic clinical depth, instructional usefulness, and scenario coherence.',
-      'Populate each section with enough detail to support assessment, treatment decisions, reassessment, debriefing, and GRS scoring.',
-      'Make the case feel like a realistic Ontario PCP lab scenario rather than a brief outline.'
-    ].join(' ')
+    model: process.env.OPENAI_MODEL_STANDARD || process.env.OPENAI_MODEL || 'gpt-4o',
+    temperature: 0.85,
+    maxTokens: 8192,
+    promptInstruction:
+      'Balance generation time with realistic scenario depth. Provide coherent narrative detail, meaningful progression, useful teaching cues, and scenario-specific GRS anchors without over-expanding every field.'
   },
   Detailed: {
-    key: 'detailed',
     label: 'Detailed',
-    model: process.env.OPENAI_MODEL_DETAILED || 'gpt-5.5',
-    reasoningEffort: 'high',
-    verbosity: 'high',
-    maxOutputTokens: 18000,
-    temperature: 0.85,
-    instructionText: [
-      'Generation depth: Detailed.',
-      'Prioritize rich instructor-quality scenario design, internal coherence, and educational usefulness over speed.',
-      'Develop the dispatch, environment, patient presentation, incident narrative, OPQRST, SAMPLE, physical exam, vitals, progression, expected management, protocol notes, clinical reasoning, and GRS anchors with clear links between sections.',
-      'Include nuanced reassessment moments, realistic uncertainty, meaningful treatment-or-withholding decisions, and scenario-specific teaching value.',
-      'GRS anchors should be especially concrete, behavioural, and tied to this exact call.'
-    ].join(' ')
+    model: process.env.OPENAI_MODEL_DETAILED || process.env.OPENAI_MODEL || 'gpt-4o',
+    temperature: 0.8,
+    maxTokens: 12000,
+    promptInstruction:
+      'Prioritize instructor-quality depth, internal coherence, clinical realism, and educational usefulness. Expand patient presentation, assessment findings, progression, clinical reasoning, expected management, teacher points, and GRS anchors with richer scenario-specific detail.'
   }
 };
 
 function getGenerationDepthProfile(generationDepth = 'Standard') {
-  const normalized = String(generationDepth || 'Standard').trim().toLowerCase();
-
-  if (normalized === 'quick' || normalized === 'quick draft') {
-    return GENERATION_DEPTH_PROFILES['Quick Draft'];
-  }
-
-  if (normalized === 'detailed' || normalized === 'detail' || normalized === 'instructor detail') {
-    return GENERATION_DEPTH_PROFILES.Detailed;
-  }
-
-  return GENERATION_DEPTH_PROFILES.Standard;
+  return GENERATION_DEPTH_PROFILES[generationDepth] || GENERATION_DEPTH_PROFILES.Standard;
 }
 
 const ECG_WHITELIST = [
@@ -220,24 +186,6 @@ function sanitizeOutput(raw = '') {
     .replace(/^```\s*/i, '')
     .replace(/```$/i, '')
     .trim();
-}
-
-function extractResponseText(response) {
-  if (response?.output_text) return response.output_text;
-
-  const output = response?.output || [];
-  const textParts = [];
-
-  for (const item of output) {
-    const content = item?.content || [];
-    for (const part of content) {
-      if (part?.type === 'output_text' && part?.text) {
-        textParts.push(part.text);
-      }
-    }
-  }
-
-  return textParts.join('\n').trim();
 }
 
 function splitLinesToArray(value) {
@@ -1415,7 +1363,8 @@ Scenario parameters:
 - Environment: ${environment}
 - Complexity: ${complexity}
 - Uniqueness: ${uniqueness}
-- Generation Depth: ${generationProfile.label}
+- Generation depth: ${generationProfile.label}
+- Generation depth instruction: ${generationProfile.promptInstruction}
 - Bystanders: ${includeBystanders ? 'Include them when useful.' : 'Do not include them.'}
 - Teaching cues: ${includeTeachingCues ? 'Embed brief inline cues using the exact format *(💡 cue text)* where helpful.' : 'Do not include inline teaching cues.'}
 
@@ -1450,7 +1399,6 @@ Medication plan:
 - Oxygen guidance: ${medicationPlan.oxygenGuidance}
 
 Scenario shaping rules:
-- ${generationProfile.instructionText}
 - ${semesterProfile.instructionText}
 - ${getTypeInstruction(type)}
 - ${getEnvironmentInstruction(environment)}
@@ -1600,27 +1548,20 @@ router.post('/', async (req, res) => {
       generationProfile
     });
 
-    const response = await openai.responses.create({
+    const completion = await openai.chat.completions.create({
       model: generationProfile.model,
-      instructions: profile,
-      input: `${fewShots}
-
-${prompt}`,
-      max_output_tokens: generationProfile.maxOutputTokens,
       temperature: generationProfile.temperature,
-      reasoning: {
-        effort: generationProfile.reasoningEffort
-      },
-      text: {
-        format: { type: 'json_object' },
-        verbosity: generationProfile.verbosity
-      }
+      max_tokens: generationProfile.maxTokens,
+      messages: [
+        { role: 'system', content: profile },
+        { role: 'user', content: `${fewShots}\n\n${prompt}` }
+      ]
     });
 
-    const rawContent = extractResponseText(response);
+    const rawContent = completion?.choices?.[0]?.message?.content;
 
     if (!rawContent) {
-      console.error('Invalid OpenAI response:', response);
+      console.error('Invalid OpenAI response:', completion);
       return res.status(500).json({ error: 'OpenAI returned malformed data.' });
     }
 
