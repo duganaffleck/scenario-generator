@@ -51,7 +51,6 @@ const GENERATION_DEPTH_PROFILES = {
       'Prioritize instructor-quality depth, internal coherence, clinical realism, and educational usefulness. Expand patient presentation, assessment findings, progression, clinical reasoning, expected management, teacher points, and GRS anchors with richer scenario-specific detail.'
   }
 };
-};
 
 function getGenerationDepthProfile(generationDepth = 'Standard') {
   return GENERATION_DEPTH_PROFILES[generationDepth] || GENERATION_DEPTH_PROFILES.Standard;
