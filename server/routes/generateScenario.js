@@ -1,4 +1,4 @@
-import 'dotenv/config';
+﻿import 'dotenv/config';
 import express from 'express';
 import OpenAI from 'openai';
 import fs from 'fs/promises';
@@ -13,32 +13,35 @@ const __dirname = path.dirname(__filename);
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
-function readTokenBudget(envName, fallback) {
-  const rawValue = process.env[envName] || process.env.OPENAI_MAX_TOKENS || process.env.OPENAI_MAX_OUTPUT_TOKENS;
-  const parsedValue = Number.parseInt(rawValue, 10);
-  return Number.isFinite(parsedValue) && parsedValue > 0 ? parsedValue : fallback;
-}
-
 const GENERATION_DEPTH_PROFILES = {
-  "Quick Draft": {
-    label: "Quick Draft",
-    maxTokens: readTokenBudget("OPENAI_MAX_TOKENS_QUICK", 16384),
-    instruction: "Generate a lean but complete scenario. Preserve all required fields and keep every section usable, but avoid unnecessary expansion."
+  'Quick Draft': {
+    label: 'Quick Draft',
+    model: process.env.OPENAI_MODEL_QUICK || process.env.OPENAI_MODEL || 'gpt-4o',
+    temperature: 0.75,
+    maxTokens: 6500,
+    promptInstruction:
+      'Prioritize speed, structural completeness, and immediate usability. Keep each section lean but still scenario-specific. Do not omit required fields. GRS anchors should remain specific, but shorter and more direct.'
   },
   Standard: {
-    label: "Standard",
-    maxTokens: readTokenBudget("OPENAI_MAX_TOKENS_STANDARD", 16384),
-    instruction: "Generate a balanced scenario with strong realism, coherent progression, and solid instructional detail."
+    label: 'Standard',
+    model: process.env.OPENAI_MODEL_STANDARD || process.env.OPENAI_MODEL || 'gpt-4o',
+    temperature: 0.85,
+    maxTokens: 8192,
+    promptInstruction:
+      'Balance generation time with realistic scenario depth. Provide coherent narrative detail, meaningful progression, useful teaching cues, and scenario-specific GRS anchors without over-expanding every field.'
   },
   Detailed: {
-    label: "Detailed",
-    maxTokens: readTokenBudget("OPENAI_MAX_TOKENS_DETAILED", 16384),
-    instruction: "Generate a richer instructor-level scenario with deeper clinical reasoning, more coherent section-to-section detail, and highly scenario-specific GRS anchors."
+    label: 'Detailed',
+    model: process.env.OPENAI_MODEL_DETAILED || process.env.OPENAI_MODEL || 'gpt-4o',
+    temperature: 0.8,
+    maxTokens: 12000,
+    promptInstruction:
+      'Prioritize instructor-quality depth, internal coherence, clinical realism, and educational usefulness. Expand patient presentation, assessment findings, progression, clinical reasoning, expected management, teacher points, and GRS anchors with richer scenario-specific detail.'
   }
 };
 
-function getGenerationDepthProfile(value) {
-  return GENERATION_DEPTH_PROFILES[value] || GENERATION_DEPTH_PROFILES.Standard;
+function getGenerationDepthProfile(generationDepth = 'Standard') {
+  return GENERATION_DEPTH_PROFILES[generationDepth] || GENERATION_DEPTH_PROFILES.Standard;
 }
 
 const ECG_WHITELIST = [
@@ -1359,9 +1362,9 @@ Scenario parameters:
 - Type: ${type}
 - Environment: ${environment}
 - Complexity: ${complexity}
-- Generation depth: ${generationProfile.label}
-- Generation depth instruction: ${generationProfile.instruction}
 - Uniqueness: ${uniqueness}
+- Generation depth: ${generationProfile.label}
+- Generation depth instruction: ${generationProfile.promptInstruction}
 - Bystanders: ${includeBystanders ? 'Include them when useful.' : 'Do not include them.'}
 - Teaching cues: ${includeTeachingCues ? 'Embed brief inline cues using the exact format *(💡 cue text)* where helpful.' : 'Do not include inline teaching cues.'}
 
@@ -1495,8 +1498,8 @@ router.post('/', async (req, res) => {
     type = 'Medical',
     environment = 'Urban',
     complexity = 'Moderate',
-    generationDepth = 'Standard',
     uniqueness = 'Common',
+    generationDepth = 'Standard',
     includeBystanders = true,
     includeTeachingCues = true,
     customPrompt = ''
@@ -1546,8 +1549,8 @@ router.post('/', async (req, res) => {
     });
 
     const completion = await openai.chat.completions.create({
-      model: process.env.OPENAI_MODEL || 'gpt-4o',
-      temperature: 0.9,
+      model: generationProfile.model,
+      temperature: generationProfile.temperature,
       max_tokens: generationProfile.maxTokens,
       messages: [
         { role: 'system', content: profile },
