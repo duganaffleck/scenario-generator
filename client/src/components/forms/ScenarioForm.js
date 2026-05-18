@@ -104,25 +104,33 @@ const SEMESTERS = ["2", "3", "4"];
 const ENVIRONMENTS = ["Urban", "Rural", "Wilderness", "Industrial", "Home", "Public Space"];
 const COMPLEXITIES = ["Simple", "Moderate", "Complex"];
 const GENERATION_DEPTHS = ["Quick Draft", "Standard", "Detailed"];
+const SCENARIO_FRICTION_LEVELS = ["Low", "Moderate", "High"];
 
 const FIELD_TOOLTIPS = {
   semester: "Training level: 2 = foundational skills, 3 = intermediate assessment/treatment, 4 = advanced decision-making with rare/complex presentations",
   type: "Scenario category: Medical (illness), Trauma (injury), Cardiac (heart/rhythm), Respiratory (breathing), Environmental (exposure/environmental illness)",
   environment: "Call location: Urban (city), Rural (countryside), Wilderness (remote outdoor), Industrial (worksite), Home (residence), Public Space (crowd areas, venues)",
   complexity: "Case difficulty: Simple (straightforward presentation), Moderate (typical multi-system or subtle findings), Complex (rare presentations or multiple competing diagnoses)",
+  generationDepth: "Generation detail: Quick Draft is lean and faster, Standard balances completeness with speed, Detailed asks for fuller instructor-grade progression, reasoning, vitals, and GRS anchors",
+  scenarioFriction: "Operational messiness: Low keeps the scene cleaner, Moderate adds realistic access/family/movement friction, High adds layered but fair scene pressure that should affect reassessment and transport",
 };
 
 const SECTION_GROUPS = {
-  "Scene Info": ["scenarioIntro", "title", "callInformation", "incidentNarrative"],
-  "Patient Info": ["patientDemographics", "patientPresentation", "opqrst", "sample"],
-  Assessment: ["physicalExam", "vitalSigns"],
+  "Scene Info": ["scenarioIntro", "title", "callInformation", "sceneArrival", "firstImpression", "incidentNarrative"],
+  "Patient Info": ["patientDemographics", "patientPresentation", "opqrst", "sample", "historyGathering"],
+  Assessment: ["initialAssessment", "physicalExam", "secondaryAssessment", "additionalAssessments", "vitalSigns"],
   "Clinical Reasoning": [
     "caseProgression",
+    "transportPhase",
     "differentialDiagnosis",
     "expectedTreatment",
     "protocolNotes",
     "scenarioRationale",
     "clinicalReasoning",
+  ],
+  "Instructor Guidance": [
+    "instructorGuidance",
+    "teachersPoints",
   ],
   Education: [
     "learningObjectives",
@@ -158,6 +166,7 @@ const TITLE_MAP = {
   vitalSigns: "Vital Signs",
   caseProgression: "Case Progression",
   transportPhase: "Transport Phase",
+  instructorGuidance: "Instructor Guidance",
   expectedTreatment: "Expected Treatment",
   protocolNotes: "Protocol Notes",
   learningObjectives: "Learning Objectives",
@@ -178,6 +187,7 @@ const ScenarioForm = () => {
     environment: "Urban",
     complexity: "Moderate",
     generationDepth: "Standard",
+    scenarioFriction: "Moderate",
     shiftMode: "Day Shift",
     customPrompt: "",
   });
@@ -287,6 +297,7 @@ const ScenarioForm = () => {
     formData.type !== "Medical" ||
     formData.environment !== "Urban" ||
     formData.complexity !== "Moderate" ||
+    formData.scenarioFriction !== "Moderate" ||
     formData.generationDepth !== "Standard" ||
     formData.shiftMode !== "Day Shift" ||
     formData.customPrompt !== "";
@@ -552,6 +563,7 @@ const ScenarioForm = () => {
       environment: "Urban",
       complexity: "Moderate",
       generationDepth: "Standard",
+      scenarioFriction: "Moderate",
       shiftMode: "Day Shift",
         customPrompt: "",
     });
@@ -883,12 +895,13 @@ const ScenarioForm = () => {
       "vitalSigns",
       "caseProgression",
       "transportPhase",
+      "instructorGuidance",
+      "teachersPoints",
       "expectedTreatment",
       "protocolNotes",
       "learningObjectives",
       "selfReflectionPrompts",
       "grsAnchors",
-      "teachersPoints",
       "scenarioRationale",
       "clinicalReasoning",
       "directiveSources",
@@ -1280,7 +1293,7 @@ const ScenarioForm = () => {
               {loading ? <FaSpinner className="spin" /> : "Generate Scenario"}
             </button>
 
-            {["semester", "type", "environment", "complexity"].map((field) => (
+            {["semester", "type", "environment", "complexity", "scenarioFriction"].map((field) => (
               <div key={field} style={styles.fieldRow}>
                 <label title={FIELD_TOOLTIPS[field]} style={{ cursor: "help" }}>
                   {capitalizeFirstLetter(field)}:
@@ -1299,7 +1312,9 @@ const ScenarioForm = () => {
                       ? SCENARIO_TYPES
                       : field === "environment"
                         ? ENVIRONMENTS
-                        : COMPLEXITIES
+                        : field === "scenarioFriction"
+                          ? SCENARIO_FRICTION_LEVELS
+                          : COMPLEXITIES
                   ).map((opt) => (
                     <option key={opt} value={opt}>
                       {opt}
@@ -1311,10 +1326,11 @@ const ScenarioForm = () => {
 
 
             <div style={styles.fieldRow}>
-              <label htmlFor="generationDepth">Generation Depth:</label>
+              <label htmlFor="generationDepth" title={FIELD_TOOLTIPS.generationDepth} style={{ cursor: "help" }}>Generation Depth:</label>
               <select
                 id="generationDepth"
                 name="generationDepth"
+                title={FIELD_TOOLTIPS.generationDepth}
                 value={formData.generationDepth}
                 onChange={handleChange}
                 style={styles.select}
@@ -1375,7 +1391,8 @@ const ScenarioForm = () => {
                     <li><b>Semester:</b> Select the learner level. Lower semesters (2) generate foundational cases; higher semesters (4) create advanced, complex scenarios.</li>
                     <li><b>Type:</b> Choose the main scenario category (Medical, Trauma, Cardiac, Respiratory, Environmental) to focus the case content.</li>
                     <li><b>Environment:</b> Pick the setting (Urban, Rural, Wilderness, Industrial, Home, Public Space) to shape the context and available resources.</li>
-                    <li><b>Complexity:</b> Adjust the case difficulty. Simple = straightforward, Moderate = typical multi-system, Complex = rare or challenging presentations.</li>
+                    <li><b>Complexity:</b> Adjust the clinical difficulty. Simple = straightforward, Moderate = typical multi-system, Complex = rare or challenging presentations.</li>
+                    <li><b>Scenario Friction:</b> Choose how messy the scene should feel. Low keeps the call cleaner, Moderate adds realistic access/family/movement pressure, and High adds layered but fair operational friction that should affect reassessment, packaging, or transport.</li>
                     <li><b>Generation Depth:</b> Choose how much detail the generator should produce. Quick Draft is leaner and faster, Standard balances speed and depth, and Detailed is designed for richer instructor-focused scenarios.</li>
                   </ul>
                 </li>
@@ -1453,7 +1470,7 @@ const ScenarioForm = () => {
                     </button>
                   </h2>
 
-                  {groupName === "Education" && scenario.teachersPoints && (
+                  {!collapsedSections[groupName] && groupName === "Instructor Guidance" && scenario.teachersPoints && (
                     <div
                       style={{
                         backgroundColor: "var(--vn-accent-card-bg)",

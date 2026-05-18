@@ -1,4 +1,4 @@
-﻿import 'dotenv/config';
+import 'dotenv/config';
 import express from 'express';
 import OpenAI from 'openai';
 import fs from 'fs/promises';
@@ -52,6 +52,53 @@ function getGenerationDepthProfile(generationDepth = 'Standard') {
   return GENERATION_DEPTH_PROFILES[generationDepth] || GENERATION_DEPTH_PROFILES.Standard;
 }
 
+function getScenarioFrictionInstruction(scenarioFriction = 'Moderate') {
+  switch (scenarioFriction) {
+    case 'Low':
+      return [
+        'Use low scenario friction: keep the operational scene relatively clean and focused.',
+        'Include at most one minor access, communication, bystander, equipment, or movement issue only when it naturally fits the selected environment.',
+        'Do not overcomplicate the scene; the learning value should mainly come from assessment, clinical reasoning, and appropriate care.',
+        'Still include reassessment and transport thinking when clinically relevant.'
+      ].join(' ');
+    case 'High':
+      return [
+        'Use high scenario friction: add layered but fair operational pressure that meaningfully affects the call.',
+        'Use two or more relevant friction elements such as access limitations, family or bystander pressure, communication barriers, equipment/logistics problems, movement intolerance, refusal tension, privacy issues, weather, terrain, or transport deterioration.',
+        'Friction must change how the crew manages assessment, reassessment, packaging, communication, or transport; it must not be random chaos or a gotcha.',
+        'Keep the case coherent, psychologically safe, and appropriate to the selected semester and clinical complexity.'
+      ].join(' ');
+    case 'Moderate':
+    default:
+      return [
+        'Use moderate scenario friction: include one or two realistic operational challenges that make the call feel lived-in without overwhelming the learner.',
+        'Examples include a narrow hallway, emotional family member, distracting but useful bystander, movement-related symptom change, limited workspace, language/privacy issue, or practical transport constraint.',
+        'The friction should support scene leadership, reassessment, communication, and transport decisions rather than simply adding noise.'
+      ].join(' ');
+  }
+}
+
+
+
+function getShiftModeInstruction(shiftMode = 'Day Shift') {
+  const isNightShift = String(shiftMode).toLowerCase().includes('night');
+
+  if (isNightShift) {
+    return [
+      'Night Shift Mode is ON: set callInformation.time between 22:00 and 06:00 unless the instructor prompt explicitly requires a different time.',
+      'Include at least two grounded night-shift details such as low light, locked doors, sleepy witnesses, delayed discovery, reduced collateral, closed services, building access issues, tired family, quiet-but-unsafe streets, or harder medication/history confirmation.',
+      'Night Shift Mode should change scene texture, timeline reliability, access, collateral history, and reassessment traps; it should not automatically make the case clinically harder unless complexity or friction also supports that.',
+      'Avoid cartoon horror, spooky clichés, or exaggerated darkness. Keep the tone realistic and paramedic-specific.'
+    ].join(' ');
+  }
+
+  return [
+    'Night Shift Mode is OFF: use daytime or evening timing unless the instructor prompt clearly asks for overnight, midnight, after-bedtime, or night-shift timing.',
+    'Do not default to 02:00-04:00 calls just for flavour when Night Shift Mode is off.',
+    'Scene texture should come from the selected environment, complexity, and scenario friction rather than night-shift atmosphere.'
+  ].join(' ');
+}
+
 const ECG_WHITELIST = [
   'Normal Sinus Rhythm',
   'Sinus Bradycardia',
@@ -71,6 +118,7 @@ const ECG_WHITELIST = [
 
 function defaultVitalSet() {
   return {
+    context: '',
     hr: '',
     rr: '',
     bp: '',
@@ -111,15 +159,94 @@ function defaultPhysicalExam() {
   };
 }
 
+function defaultSceneArrival() {
+  return {
+    sceneDescription: '',
+    environmentDetails: [],
+    hazards: [],
+    accessIssues: '',
+    bystandersPresent: '',
+    sceneEnergy: ''
+  };
+}
+
+function defaultFirstImpression() {
+  return {
+    generalAppearance: '',
+    levelOfDistress: '',
+    apparentSeverity: '',
+    positionFound: '',
+    visibleClues: [],
+    initialRedFlags: []
+  };
+}
+
+function defaultInitialAssessment() {
+  return {
+    airway: '',
+    breathing: '',
+    circulation: '',
+    disability: '',
+    exposure: '',
+    generalImpression: ''
+  };
+}
+
+function defaultHistoryGathering() {
+  return {
+    historySource: '',
+    additionalHistory: [],
+    bystanderInformation: [],
+    contradictionsOrBarriers: [],
+    sceneContextClues: []
+  };
+}
+
+function defaultSecondaryAssessment() {
+  return {
+    generalAppearance: '',
+    breathing: '',
+    circulation: '',
+    keyFindings: [],
+    missedIfNotAssessed: [],
+    evolvingFindings: []
+  };
+}
+
 function defaultGrsAnchors() {
   return {
-    situationalAwareness: { 1: [], 3: [], 5: [], 7: [] },
-    patientAssessment: { 1: [], 3: [], 5: [], 7: [] },
-    historyGathering: { 1: [], 3: [], 5: [], 7: [] },
-    decisionMaking: { 1: [], 3: [], 5: [], 7: [] },
-    proceduralSkill: { 1: [], 3: [], 5: [], 7: [] },
-    resourceUtilization: { 1: [], 3: [], 5: [], 7: [] },
-    communication: { 1: [], 3: [], 5: [], 7: [] }
+    situationalAwareness: { 3: [], 5: [], 7: [] },
+    patientAssessment: { 3: [], 5: [], 7: [] },
+    historyGathering: { 3: [], 5: [], 7: [] },
+    decisionMaking: { 3: [], 5: [], 7: [] },
+    proceduralSkill: { 3: [], 5: [], 7: [] },
+    resourceUtilization: { 3: [], 5: [], 7: [] },
+    communication: { 3: [], 5: [], 7: [] }
+  };
+}
+
+function defaultCaseProgression() {
+  return {
+    withProperTreatment: [],
+    withoutProperTreatment: [],
+    withIncorrectTreatment: [],
+    movementOrTransportChanges: []
+  };
+}
+
+function defaultTransportPhase() {
+  return {
+    transportConsiderations: [],
+    ongoingCare: [],
+    reassessmentFocus: [],
+    handoffConsiderations: ''
+  };
+}
+
+function defaultInstructorGuidance() {
+  return {
+    instructorPriorities: [],
+    psychologicalSafetyDebrief: ''
   };
 }
 
@@ -135,6 +262,8 @@ const REQUIRED_FIELDS = {
     hazardsOrFlags: [],
     crewNotes: ''
   },
+  sceneArrival: defaultSceneArrival(),
+  firstImpression: defaultFirstImpression(),
   patientDemographics: defaultPatientDemographics(),
   patientPresentation: '',
   incidentNarrative: '',
@@ -146,6 +275,10 @@ const REQUIRED_FIELDS = {
     severity: '',
     time: ''
   },
+  initialAssessment: defaultInitialAssessment(),
+  historyGathering: defaultHistoryGathering(),
+  secondaryAssessment: defaultSecondaryAssessment(),
+  additionalAssessments: [],
   sample: {
     signsAndSymptoms: '',
     allergies: '',
@@ -160,19 +293,19 @@ const REQUIRED_FIELDS = {
   physicalExam: defaultPhysicalExam(),
   vitalSigns: {
     firstSet: defaultVitalSet(),
-    secondSet: defaultVitalSet()
+    secondSet: defaultVitalSet(),
+    additionalSets: []
   },
-  caseProgression: {
-    withProperTreatment: '',
-    withoutProperTreatment: ''
-  },
+  caseProgression: defaultCaseProgression(),
+  transportPhase: defaultTransportPhase(),
+  instructorGuidance: defaultInstructorGuidance(),
   expectedTreatment: [],
   protocolNotes: [],
   learningObjectives: [],
   vocationalLearningOutcomes: [],
   selfReflectionPrompts: [],
   grsAnchors: defaultGrsAnchors(),
-  teachersPoints: [],
+  teachersPoints: '',
   scenarioRationale: '',
   clinicalReasoning: {
     summary: '',
@@ -208,6 +341,22 @@ function stringifyValue(value) {
   if (Array.isArray(value)) return value.join(', ');
   if (typeof value === 'object') return JSON.stringify(value);
   return String(value);
+}
+
+
+function removeEmDashes(value = '') {
+  return String(value).replace(/\s*-\s*/g, ' - ').replace(/\s{2,}/g, ' ').trim();
+}
+
+function scrubEmDashesDeep(value) {
+  if (typeof value === 'string') return removeEmDashes(value);
+  if (Array.isArray(value)) return value.map((item) => scrubEmDashesDeep(item));
+  if (value && typeof value === 'object') {
+    return Object.fromEntries(
+      Object.entries(value).map(([key, item]) => [key, scrubEmDashesDeep(item)])
+    );
+  }
+  return value;
 }
 
 function pickFirstDefined(...values) {
@@ -284,6 +433,13 @@ function mergeDeepStrict(base, incoming) {
 }
 
 function normalizeClinicalReasoning(value) {
+  if (typeof value === 'string') {
+    return {
+      ...REQUIRED_FIELDS.clinicalReasoning,
+      summary: value.trim()
+    };
+  }
+
   if (!value || typeof value !== 'object' || Array.isArray(value)) {
     return { ...REQUIRED_FIELDS.clinicalReasoning };
   }
@@ -303,28 +459,105 @@ function normalizeClinicalReasoning(value) {
   };
 }
 
+function sanitizeVitalSet(raw = {}, ecgInterpretation = '') {
+  const set = { ...defaultVitalSet(), ...(raw && typeof raw === 'object' ? raw : {}) };
+
+  if (ecgInterpretation && ECG_WHITELIST.includes(ecgInterpretation) && !set.ecgInterpretation) {
+    set.ecgInterpretation = ecgInterpretation;
+  }
+
+  if (set.ecgInterpretation && !ECG_WHITELIST.includes(set.ecgInterpretation)) {
+    set.ecgInterpretation = '';
+  }
+
+  return set;
+}
+
 function normalizeVitalSigns(value, ecgInterpretation) {
   const source = value && typeof value === 'object' ? value : {};
   const firstRaw = source.firstSet || source.first || {};
   const secondRaw = source.secondSet || source.second || {};
 
-  const firstSet = { ...defaultVitalSet(), ...firstRaw };
-  const secondSet = { ...defaultVitalSet(), ...secondRaw };
+  const additionalSets = Array.isArray(source.additionalSets)
+    ? source.additionalSets.map((set) => sanitizeVitalSet(set)).filter((set) => Object.values(set).some(Boolean))
+    : [];
 
-  if (ecgInterpretation && ECG_WHITELIST.includes(ecgInterpretation) && !firstSet.ecgInterpretation) {
-    firstSet.ecgInterpretation = ecgInterpretation;
-  }
-
-  if (firstSet.ecgInterpretation && !ECG_WHITELIST.includes(firstSet.ecgInterpretation)) {
-    firstSet.ecgInterpretation = '';
-  }
-
-  if (secondSet.ecgInterpretation && !ECG_WHITELIST.includes(secondSet.ecgInterpretation)) {
-    secondSet.ecgInterpretation = '';
-  }
-
-  return { firstSet, secondSet };
+  return {
+    firstSet: sanitizeVitalSet(firstRaw, ecgInterpretation),
+    secondSet: sanitizeVitalSet(secondRaw),
+    additionalSets
+  };
 }
+
+function normalizeCaseProgression(value) {
+  const source = value && typeof value === 'object' && !Array.isArray(value) ? value : {};
+
+  return {
+    withProperTreatment: coerceArray(source.withProperTreatment),
+    withoutProperTreatment: coerceArray(source.withoutProperTreatment || source.withDelayedOrNoTreatment || source.withNoTreatment),
+    withIncorrectTreatment: coerceArray(source.withIncorrectTreatment || source.incorrectTreatment),
+    movementOrTransportChanges: coerceArray(source.movementOrTransportChanges || source.transportChanges || source.movementChanges)
+  };
+}
+
+function normalizeTransportPhase(value) {
+  const source = value && typeof value === 'object' && !Array.isArray(value) ? value : {};
+
+  return {
+    transportConsiderations: coerceArray(source.transportConsiderations),
+    ongoingCare: coerceArray(source.ongoingCare),
+    reassessmentFocus: coerceArray(source.reassessmentFocus),
+    handoffConsiderations: stringifyValue(source.handoffConsiderations || source.handoff || '').trim()
+  };
+}
+
+function normalizeTeachingParagraph(value) {
+  if (Array.isArray(value)) {
+    return value.map((item) => String(item).trim()).filter(Boolean).join(' ');
+  }
+
+  if (value && typeof value === 'object') {
+    return Object.values(value).map((item) => stringifyValue(item).trim()).filter(Boolean).join(' ');
+  }
+
+  return stringifyValue(value).trim();
+}
+
+function normalizeInitialAssessment(value) {
+  const source = value && typeof value === 'object' && !Array.isArray(value) ? value : {};
+  const allowed = defaultInitialAssessment();
+
+  for (const key of Object.keys(allowed)) {
+    allowed[key] = stringifyValue(source[key] || '').trim();
+  }
+
+  return allowed;
+}
+
+function normalizeInstructorGuidance(source = {}, normalized = {}) {
+  const guidanceSource = source.instructorGuidance && typeof source.instructorGuidance === 'object' && !Array.isArray(source.instructorGuidance)
+    ? source.instructorGuidance
+    : {};
+  const initial = source.initialAssessment && typeof source.initialAssessment === 'object' && !Array.isArray(source.initialAssessment)
+    ? source.initialAssessment
+    : {};
+
+  return {
+    instructorPriorities: coerceArray(
+      guidanceSource.instructorPriorities ||
+      guidanceSource.immediatePriorities ||
+      source.instructorPriorities ||
+      initial.immediatePriorities
+    ),
+    psychologicalSafetyDebrief: normalizeTeachingParagraph(
+      guidanceSource.psychologicalSafetyDebrief ||
+      guidanceSource.debriefFraming ||
+      source.psychologicalSafetyDebrief ||
+      ''
+    )
+  };
+}
+
 
 function normalizeGrsAnchors(value) {
   const base = defaultGrsAnchors();
@@ -336,15 +569,68 @@ function normalizeGrsAnchors(value) {
       continue;
     }
 
-    for (const score of ['1', '3', '5', '7']) {
-      base[domain][score] = coerceArray(incomingDomain[score]);
+    for (const score of ['3', '5', '7']) {
+      base[domain][score] = coerceArray(incomingDomain[score]).slice(0, 3);
     }
   }
 
   return base;
 }
 
-function fillScenarioGaps(normalized) {
+
+function textHasAny(text, terms) {
+  return terms.some((term) => text.includes(term));
+}
+
+function inferChiefComplaint({ existingChiefComplaint = '', selectedType = '', scenarioText = '' }) {
+  const existing = String(existingChiefComplaint || '').trim();
+  const typeLower = String(selectedType || '').toLowerCase();
+  const text = String(scenarioText || '').toLowerCase();
+
+  const strongCardiacSignals = textHasAny(text, [
+    'chest pressure',
+    'central chest',
+    'crushing chest',
+    'heavy chest',
+    'chest discomfort',
+    'radiates to left arm',
+    'radiates to jaw',
+    'jaw radiation',
+    'stemi',
+    'acute coronary',
+    'cardiac ischemia',
+    'myocardial infarction',
+    'nitroglycerin',
+    'asa',
+    'v4r'
+  ]);
+
+  const chestPainLooksStale = /^chest\s+(pain|pressure)$/i.test(existing) && typeLower !== 'cardiac' && !strongCardiacSignals;
+  if (existing && !chestPainLooksStale) return existing;
+
+  if (typeLower === 'cardiac') {
+    if (textHasAny(text, ['palpitations', 'rapid heart', 'svt', 'atrial fibrillation', 'atrial flutter'])) return 'Palpitations';
+    return 'Chest pain';
+  }
+
+  if (typeLower === 'respiratory' || textHasAny(text, ['short of breath', 'difficulty breathing', 'wheez', 'asthma', 'copd', 'respiratory distress'])) {
+    return 'Shortness of breath';
+  }
+
+  if (typeLower === 'trauma' || textHasAny(text, ['pedestrian struck', 'fall', 'collision', 'fracture', 'injury', 'trauma', 'pinned'])) {
+    return 'Traumatic injury';
+  }
+
+  if (textHasAny(text, ['vomit', 'nausea', 'retching', 'diarrhea'])) return 'Vomiting and weakness';
+  if (textHasAny(text, ['confusion', 'confused', 'delirium', 'paranoid', 'altered mentation', 'altered mental status', 'not acting normally', 'off baseline'])) return 'Altered mental status';
+  if (textHasAny(text, ['fever', 'chills', 'sepsis', 'urinary', 'burning urination', 'foul-smelling urine'])) return 'Fever and weakness';
+  if (textHasAny(text, ['near-syncope', 'syncope', 'dizzy', 'dizziness', 'weakness', 'lightheaded'])) return 'Weakness and dizziness';
+  if (textHasAny(text, ['hypogly', 'low blood sugar', 'low sugar', 'glucagon'])) return 'Altered level of consciousness';
+
+  return existing || 'Medical complaint';
+}
+
+function fillScenarioGaps(normalized, options = {}) {
   const allScenarioText = [
     normalized.title,
     normalized.scenarioIntro,
@@ -356,9 +642,13 @@ function fillScenarioGaps(normalized) {
     ...(normalized.medications || []),
     ...(normalized.allergies || []),
     ...(normalized.pastMedicalHistory || []),
-    normalized.caseProgression?.withProperTreatment,
-    normalized.caseProgression?.withoutProperTreatment,
-    ...(normalized.teachersPoints || []),
+    stringifyValue(normalized.caseProgression?.withProperTreatment),
+    stringifyValue(normalized.caseProgression?.withoutProperTreatment),
+    stringifyValue(normalized.caseProgression?.withIncorrectTreatment),
+    stringifyValue(normalized.caseProgression?.movementOrTransportChanges),
+    stringifyValue(normalized.transportPhase),
+    stringifyValue(normalized.instructorGuidance),
+    normalized.teachersPoints,
     normalized.scenarioRationale,
     normalized.clinicalReasoning?.summary,
     normalized.clinicalReasoning?.conclusion
@@ -424,13 +714,11 @@ function fillScenarioGaps(normalized) {
   if (!demographics.sex) demographics.sex = 'Unknown';
   if (!demographics.weight) demographics.weight = '70 kg';
 
-  if (!demographics.chiefComplaint) {
-    if (respiratory) demographics.chiefComplaint = 'Difficulty breathing';
-    else if (cardiac) demographics.chiefComplaint = 'Chest pain';
-    else if (trauma) demographics.chiefComplaint = 'Traumatic injury';
-    else if (hypoglycemia) demographics.chiefComplaint = 'Altered level of consciousness';
-    else demographics.chiefComplaint = 'Medical complaint';
-  }
+  demographics.chiefComplaint = inferChiefComplaint({
+    existingChiefComplaint: demographics.chiefComplaint,
+    selectedType: options.type,
+    scenarioText: text
+  });
 
   if (!exam.generalAppearance) {
     exam.generalAppearance =
@@ -504,15 +792,26 @@ function fillScenarioGaps(normalized) {
 
   normalized.patientDemographics = demographics;
   normalized.physicalExam = exam;
-  normalized.teachersPoints = coerceArray(normalized.teachersPoints);
+  normalized.teachersPoints = normalizeTeachingParagraph(normalized.teachersPoints);
   normalized.learningObjectives = coerceArray(normalized.learningObjectives);
   normalized.vocationalLearningOutcomes = coerceArray(normalized.vocationalLearningOutcomes);
   normalized.selfReflectionPrompts = coerceArray(normalized.selfReflectionPrompts);
+  normalized.additionalAssessments = coerceArray(normalized.additionalAssessments);
   normalized.expectedTreatment = coerceArray(normalized.expectedTreatment);
   normalized.protocolNotes = coerceArray(normalized.protocolNotes);
   normalized.medications = coerceArray(normalized.medications);
   normalized.allergies = coerceArray(normalized.allergies);
   normalized.pastMedicalHistory = coerceArray(normalized.pastMedicalHistory);
+  normalized.instructorGuidance = normalized.instructorGuidance || defaultInstructorGuidance();
+  normalized.instructorGuidance.instructorPriorities = coerceArray(normalized.instructorGuidance.instructorPriorities);
+  normalized.instructorGuidance.psychologicalSafetyDebrief = normalizeTeachingParagraph(
+    normalized.instructorGuidance.psychologicalSafetyDebrief
+  );
+
+  if (!normalized.instructorGuidance.psychologicalSafetyDebrief) {
+    normalized.instructorGuidance.psychologicalSafetyDebrief =
+      'Debrief this case around observable decisions, reassessment timing, communication, and next-call improvement. If learners anchored on an early impression, first identify why that frame was understandable, then name the specific findings that should have widened the differential or changed the plan.';
+  }
 
   return normalized;
 }
@@ -526,12 +825,13 @@ function normalizeScenario(parsed, options = {}) {
   normalized.selfReflectionPrompts = coerceArray(
     pickFirstDefined(source.selfReflectionPrompts, source.selfReflectiveQuestions)
   );
+  normalized.additionalAssessments = coerceArray(source.additionalAssessments);
   normalized.expectedTreatment = coerceArray(source.expectedTreatment);
   normalized.protocolNotes = coerceArray(source.protocolNotes);
   normalized.medications = coerceArray(source.medications);
   normalized.allergies = coerceArray(source.allergies);
   normalized.pastMedicalHistory = coerceArray(source.pastMedicalHistory);
-  normalized.teachersPoints = coerceArray(source.teachersPoints);
+  normalized.teachersPoints = normalizeTeachingParagraph(source.teachersPoints);
 
   const nestedFirstEcg = source?.vitalSigns?.firstSet?.ecgInterpretation;
   const nestedSecondEcg = source?.vitalSigns?.secondSet?.ecgInterpretation;
@@ -542,6 +842,10 @@ function normalizeScenario(parsed, options = {}) {
   );
 
   normalized.vitalSigns = normalizeVitalSigns(source.vitalSigns, ecgInterpretation);
+  normalized.initialAssessment = normalizeInitialAssessment(source.initialAssessment);
+  normalized.caseProgression = normalizeCaseProgression(source.caseProgression);
+  normalized.transportPhase = normalizeTransportPhase(source.transportPhase);
+  normalized.instructorGuidance = normalizeInstructorGuidance(source, normalized);
   normalized.clinicalReasoning = normalizeClinicalReasoning(source.clinicalReasoning);
   normalized.grsAnchors = normalizeGrsAnchors(source.grsAnchors);
 
@@ -576,7 +880,7 @@ function normalizeScenario(parsed, options = {}) {
     normalized.customPrompt = options.customPrompt;
   }
 
-  return fillScenarioGaps(normalized);
+  return scrubEmDashesDeep(fillScenarioGaps(normalized, options));
 }
 
 function getEnvironmentInstruction(environment) {
@@ -1264,6 +1568,8 @@ function buildGenerationPrompt({
   environment,
   complexity,
   uniqueness,
+  scenarioFriction,
+  shiftMode,
   includeBystanders,
   includeTeachingCues,
   customPrompt,
@@ -1289,10 +1595,16 @@ Return these top-level fields:
 - scenarioIntro
 - title
 - callInformation
+- sceneArrival
+- firstImpression
 - patientDemographics
 - patientPresentation
 - incidentNarrative
 - opqrst
+- initialAssessment
+- historyGathering
+- secondaryAssessment
+- additionalAssessments
 - sample
 - medications
 - allergies
@@ -1300,6 +1612,8 @@ Return these top-level fields:
 - physicalExam
 - vitalSigns
 - caseProgression
+- transportPhase
+- instructorGuidance
 - expectedTreatment
 - protocolNotes
 - learningObjectives
@@ -1311,17 +1625,90 @@ Return these top-level fields:
 - clinicalReasoning
 
 Required object structure:
-- vitalSigns must contain:
+- sceneArrival must contain:
 {
-  "firstSet": { "hr": "", "rr": "", "bp": "", "spo2": "", "etco2": "", "temp": "", "gcs": "", "bgl": "", "ecgInterpretation": "" },
-  "secondSet": { "hr": "", "rr": "", "bp": "", "spo2": "", "etco2": "", "temp": "", "gcs": "", "bgl": "", "ecgInterpretation": "" }
+  "sceneDescription": "",
+  "environmentDetails": [],
+  "hazards": [],
+  "accessIssues": "",
+  "bystandersPresent": "",
+  "sceneEnergy": ""
 }
 
-- caseProgression must contain:
+- firstImpression must contain:
 {
-  "withProperTreatment": "",
-  "withoutProperTreatment": ""
+  "generalAppearance": "",
+  "levelOfDistress": "",
+  "apparentSeverity": "",
+  "positionFound": "",
+  "visibleClues": [],
+  "initialRedFlags": []
 }
+
+- initialAssessment must contain ONLY learner-facing assessment findings:
+{
+  "airway": "",
+  "breathing": "",
+  "circulation": "",
+  "disability": "",
+  "exposure": "",
+  "generalImpression": ""
+}
+- Do not put immediatePriorities, immediateInterventions, treatment instructions, care-plan steps, or diagnostic answers inside initialAssessment.
+
+- historyGathering must contain:
+{
+  "historySource": "",
+  "additionalHistory": [],
+  "bystanderInformation": [],
+  "contradictionsOrBarriers": [],
+  "sceneContextClues": []
+}
+
+- secondaryAssessment must contain:
+{
+  "generalAppearance": "",
+  "breathing": "",
+  "circulation": "",
+  "keyFindings": [],
+  "missedIfNotAssessed": [],
+  "evolvingFindings": []
+}
+
+- additionalAssessments must be an array of reassessment, movement, transport, or focused exam findings when applicable.
+
+- vitalSigns must contain:
+{
+  "firstSet": { "context": "", "hr": "", "rr": "", "bp": "", "spo2": "", "etco2": "", "temp": "", "gcs": "", "bgl": "", "ecgInterpretation": "" },
+  "secondSet": { "context": "", "hr": "", "rr": "", "bp": "", "spo2": "", "etco2": "", "temp": "", "gcs": "", "bgl": "", "ecgInterpretation": "" },
+  "additionalSets": [
+    { "context": "", "hr": "", "rr": "", "bp": "", "spo2": "", "etco2": "", "temp": "", "gcs": "", "bgl": "", "ecgInterpretation": "" }
+  ]
+}
+
+- caseProgression must contain these exact keys, and each key must be an array of practical timeline-style points:
+{
+  "withProperTreatment": [],
+  "withoutProperTreatment": [],
+  "withIncorrectTreatment": [],
+  "movementOrTransportChanges": []
+}
+
+- transportPhase must contain:
+{
+  "transportConsiderations": [],
+  "ongoingCare": [],
+  "reassessmentFocus": [],
+  "handoffConsiderations": ""
+}
+
+- instructorGuidance must contain instructor-only coaching content:
+{
+  "instructorPriorities": [],
+  "psychologicalSafetyDebrief": ""
+}
+- instructorPriorities is where instructor-only early care priorities and management targets belong. Expected interventions belong in expectedTreatment, not in instructorGuidance. Keep all directive coaching out of learner-facing initialAssessment.
+- psychologicalSafetyDebrief must be one short paragraph that frames feedback around observable decisions, reassessment, communication, and next-call improvement. It should avoid blame, shame, or gotcha language.
 
 - clinicalReasoning must contain:
 {
@@ -1346,12 +1733,12 @@ Required object structure:
   - communication
 
 GRS rules:
-- Each of the 7 domains must contain exactly these score keys: "1", "3", "5", "7"
+- Each of the 7 domains must contain exactly these score keys: "3", "5", "7"
+- Do not include score "1" anywhere in grsAnchors
 - Each score key must contain an array
-- Each score array must contain at least 3 short, scenario-specific behavioural bullet examples
+- Each score array must contain exactly 3 short, scenario-specific behavioural bullet examples
 - Do not use vague traits like "good communicator"
-- Score 1 = unsafe, incomplete, harmful, or clearly weak
-- Score 3 = developing but inconsistent, delayed, hesitant, or shallow
+- Score 3 = unsafe-to-borderline, important omissions, weak prioritization, inconsistent reassessment, or poor adaptation
 - Score 5 = competent semester-appropriate performance; this is the expected standard
 - Score 7 = exceptional, anticipatory, organized, calm, and highly effective
 - Keep the GRS structure standardized, but tailor the actual bullets to THIS case
@@ -1370,6 +1757,10 @@ Scenario parameters:
 - Type: ${type}
 - Environment: ${environment}
 - Complexity: ${complexity}
+- Scenario friction: ${scenarioFriction}
+- Scenario friction instruction: ${getScenarioFrictionInstruction(scenarioFriction)}
+- Shift mode: ${shiftMode}
+- Shift mode instruction: ${getShiftModeInstruction(shiftMode)}
 - Uniqueness: ${uniqueness}
 - Generation depth: ${generationProfile.label}
 - Generation depth instruction: ${generationProfile.promptInstruction}
@@ -1397,7 +1788,7 @@ Scenario core:
 - Presentation clarity: ${scenarioCore.clinicalPresentation.clarity}
 - Symptom pattern: ${scenarioCore.clinicalPresentation.symptomPattern}
 - Proper treatment progression: ${scenarioCore.progressionStyle.withProperTreatment}
-- Improper treatment progression: ${scenarioCore.progressionStyle.withoutProperTreatment}
+- Improper/no treatment progression: ${scenarioCore.progressionStyle.withoutProperTreatment}
 
 Medication plan:
 - Style: ${medicationPlan.style}
@@ -1411,6 +1802,8 @@ Scenario shaping rules:
 - ${getTypeInstruction(type)}
 - ${getEnvironmentInstruction(environment)}
 - ${getComplexityInstruction(complexity)}
+- ${getScenarioFrictionInstruction(scenarioFriction)}
+- ${getShiftModeInstruction(shiftMode)}
 - ${getUniquenessInstruction(uniqueness)}
 - ${medicationPlan.instructionText}
 - Write like an experienced Ontario paramedic instructor building a realistic teaching case for lab.
@@ -1421,21 +1814,27 @@ Scenario shaping rules:
 - The selected type, environment, complexity, semester, and uniqueness must all produce visible differences in the final scenario.
 - Avoid generic template-feeling scenarios; make this one feel deliberately authored.
 - Use patient or bystander dialogue where it adds realism, but keep it purposeful.
-- Keep the tone direct, educational, clinically grounded, and useful for paramedic teaching.
+- Keep the tone direct, educational, clinically grounded, and useful for paramedic teaching. Do not use em dashes anywhere in the generated scenario; use commas, periods, parentheses, or simple hyphens instead.
 - Teacher's Points should sound like a senior paramedic coaching a student.
+- Teaching points, self-reflection prompts, and GRS anchors must be psychologically safe: focus on observable behaviours, decisions, reassessment, communication, and next-call improvement. Do not frame learners with blame, shame, fault, punishment, or personal judgment. Clinical terms such as respiratory failure, heart failure, or renal failure remain accurate and allowed.
 - OPQRST must be fully populated when clinically applicable, with meaningful content in each element.
 - SAMPLE must be fully populated with clinically useful detail, not placeholders.
-- Chief complaint must never be blank and should be concise and patient-centered.
+- Chief complaint must never be blank and should be concise, patient-centered, and aligned with the generated call. Do not default to chest pain unless the scenario is truly cardiac or the patient actually has chest pain/pressure.
 - Physical assessment must be populated across relevant fields.
+- initialAssessment, secondaryAssessment, and additionalAssessments must show different phases of the call rather than repeat the same assessment in different words.
+- Keep initialAssessment learner-facing: describe findings only, not what the learner should do next. Move instructor-only priorities and management targets into instructorGuidance. Move intervention expectations and contraindication reminders into expectedTreatment or protocolNotes.
 - General appearance should describe what the crew sees on arrival.
 - Airway should comment on patency or obstruction.
 - Breathing should comment on rate, effort, breath sounds, and visible respiratory distress.
 - Circulation should comment on pulse, perfusion, skin findings, and shock signs where relevant.
 - Neuro should comment on mental status, orientation, and LOC where relevant.
-- Case progression must clearly show a believable path with proper treatment and a believable deterioration or lack of improvement without proper treatment.
+- instructorGuidance must contain instructor-only priorities and a psychologically safe debrief frame. Do not include a separate instructor action list because expected actions already belong in expectedTreatment.
+- Case progression must clearly separate what happens with proper treatment, without/delayed treatment, and with incorrect treatment.
+- Case progression must include movementOrTransportChanges when movement, packaging, stair-chair use, extrication, loading, or transport plausibly changes symptoms, assessment findings, vital signs, patient tolerance, or management priorities.
+- Vital sign changes must reflect treatment response, missed care, incorrect care, exertion, movement, fatigue, clinical deterioration, or transport-phase reassessment when appropriate.
 - expectedTreatment must be a structured multi-item list of practical paramedic actions, not a paragraph.
 - protocolNotes must be a structured multi-item list, not a paragraph.
-- teachersPoints must be multiple distinct coaching points, not one dense paragraph.
+- teachersPoints must be one compact instructor-style debrief paragraph, not an array and not bullet points.
 - learningObjectives, vocationalLearningOutcomes, and selfReflectionPrompts must each be list items, not combined prose.
 - Avoid empty strings for clinically relevant fields unless truly not applicable.
 - Return all required fields every time with meaningful scenario-specific content.
@@ -1506,6 +1905,8 @@ router.post('/', async (req, res) => {
     type = 'Medical',
     environment = 'Urban',
     complexity = 'Moderate',
+    scenarioFriction = 'Moderate',
+    shiftMode = 'Day Shift',
     uniqueness = 'Common',
     generationDepth = 'Standard',
     includeBystanders = true,
@@ -1544,6 +1945,8 @@ router.post('/', async (req, res) => {
       environment,
       complexity,
       uniqueness,
+      scenarioFriction,
+      shiftMode,
       includeBystanders,
       includeTeachingCues,
       customPrompt,
@@ -1582,7 +1985,9 @@ router.post('/', async (req, res) => {
     }
 
     const normalized = normalizeScenario(parsed, {
-      customPrompt
+      customPrompt,
+      type,
+      shiftMode
     });
 
     return res.json(normalized);
