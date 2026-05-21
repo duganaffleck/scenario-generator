@@ -621,11 +621,11 @@ function inferChiefComplaint({ existingChiefComplaint = '', selectedType = '', s
     return 'Traumatic injury';
   }
 
-  if (textHasAny(text, ['vomit', 'nausea', 'retching', 'diarrhea'])) return 'Vomiting and weakness';
   if (textHasAny(text, ['confusion', 'confused', 'delirium', 'paranoid', 'altered mentation', 'altered mental status', 'not acting normally', 'off baseline'])) return 'Altered mental status';
+  if (textHasAny(text, ['hypogly', 'low blood sugar', 'low sugar', 'glucagon'])) return 'Altered level of consciousness';
   if (textHasAny(text, ['fever', 'chills', 'sepsis', 'urinary', 'burning urination', 'foul-smelling urine'])) return 'Fever and weakness';
   if (textHasAny(text, ['near-syncope', 'syncope', 'dizzy', 'dizziness', 'weakness', 'lightheaded'])) return 'Weakness and dizziness';
-  if (textHasAny(text, ['hypogly', 'low blood sugar', 'low sugar', 'glucagon'])) return 'Altered level of consciousness';
+  if (textHasAny(text, ['vomit', 'nausea', 'retching', 'diarrhea'])) return 'Vomiting and weakness';
 
   return existing || 'Medical complaint';
 }
