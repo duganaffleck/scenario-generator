@@ -134,6 +134,7 @@ const SECTION_GROUPS = {
   ],
   Education: [
     "learningObjectives",
+    "vocationalLearningOutcomes",
     "selfReflectionPrompts",
     "grsAnchors",
   ],
@@ -170,6 +171,7 @@ const TITLE_MAP = {
   expectedTreatment: "Expected Treatment",
   protocolNotes: "Protocol Notes",
   learningObjectives: "Learning Objectives",
+  vocationalLearningOutcomes: "Vocational Learning Outcomes (VLOs)",
   teachersPoints: "Teaching Points",
   directiveSources: "Directive Sources",
   customPrompt: "Custom Prompt",
