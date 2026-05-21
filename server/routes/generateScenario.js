@@ -46,16 +46,9 @@ function getGenerationDepthProfile(generationDepth = 'Quick Draft') {
 
 function getScenarioFrictionInstruction(scenarioFriction = 'Clean') {
   switch (scenarioFriction) {
-    case 'REMOVEME':
-      return [
-        'Use low scenario friction: keep the operational scene relatively clean and focused.',
-        'Include at most one minor access, communication, bystander, equipment, or movement issue only when it naturally fits the selected environment.',
-        'Do not overcomplicate the scene; the learning value should mainly come from assessment, clinical reasoning, and appropriate care.',
-        'Still include reassessment and transport thinking when clinically relevant.'
-      ].join(' ');
     case 'Pressured':
       return [
-        'Use high scenario friction: add layered but fair operational pressure that meaningfully affects the call.',
+        'Use pressured scenario friction: add layered but fair operational pressure that meaningfully affects the call.',
         'Use two or more relevant friction elements such as access limitations, family or bystander pressure, communication barriers, equipment/logistics problems, movement intolerance, refusal tension, privacy issues, weather, terrain, or transport deterioration.',
         'Friction must change how the crew manages assessment, reassessment, packaging, communication, or transport; it must not be random chaos or a gotcha.',
         'Keep the case coherent, psychologically safe, and appropriate to the selected semester and clinical complexity.'
@@ -63,9 +56,10 @@ function getScenarioFrictionInstruction(scenarioFriction = 'Clean') {
     case 'Clean':
     default:
       return [
-        'Use moderate scenario friction: include one or two realistic operational challenges that make the call feel lived-in without overwhelming the learner.',
-        'Examples include a narrow hallway, emotional family member, distracting but useful bystander, movement-related symptom change, limited workspace, language/privacy issue, or practical transport constraint.',
-        'The friction should support scene leadership, reassessment, communication, and transport decisions rather than simply adding noise.'
+        'Use a clean scene: keep the operational environment relatively straightforward and focused.',
+        'Include at most one minor access, communication, bystander, equipment, or movement issue only when it naturally fits the selected environment.',
+        'Do not overcomplicate the scene; the learning value should mainly come from assessment, clinical reasoning, and appropriate care.',
+        'Still include reassessment and transport thinking when clinically relevant.'
       ].join(' ');
   }
 }
@@ -927,6 +921,7 @@ function getComplexityInstruction(complexity) {
         'Avoid excessive branching, unusual combinations, or stacked complications.',
         'The educational value should come from doing the basics well.'
       ].join(' ');
+<<<<<<< HEAD
     case 'Clean':
       return [
         'Use one clear primary problem plus one or two meaningful complicating factors.',
@@ -934,6 +929,8 @@ function getComplexityInstruction(complexity) {
         'Allow a few distracting or overlapping clues, but keep the case understandable and teachable.',
         'This should feel like a realistic training call that requires thought without becoming overloaded.'
       ].join(' ');
+=======
+>>>>>>> e5822ef (refactor: simplify complexity, friction, and depth options to two choices each with fallback mapping for old values)
     case 'Complex':
       return [
         'Layer the case with competing cues, clinical ambiguity, operational demands, or evolving deterioration.',
@@ -942,7 +939,9 @@ function getComplexityInstruction(complexity) {
         'The complexity should challenge organization, judgment, and transport/resource planning.'
       ].join(' ');
     default:
-      return `Use ${complexity} complexity in a clinically meaningful way.`;
+      return getComplexityInstruction(
+        complexity === 'Complex' ? 'Complex' : 'Simple'
+      );
   }
 }
 
@@ -1906,6 +1905,20 @@ router.post('/', async (req, res) => {
     customPrompt = ''
   } = req.body || {};
 
+  const normalizedFriction =
+    scenarioFriction === 'Low' ? 'Clean' :
+    scenarioFriction === 'High' ? 'Pressured' :
+    scenarioFriction === 'Moderate' ? 'Clean' :
+    scenarioFriction;
+
+  const normalizedDepth =
+    generationDepth === 'Standard' ? 'Quick Draft' :
+    generationDepth;
+
+  const normalizedComplexity =
+    complexity === 'Moderate' ? 'Simple' :
+    complexity;
+
   try {
     const {
       profile,
@@ -1914,13 +1927,13 @@ router.post('/', async (req, res) => {
       alsStandards
     } = await loadStaticData();
 
-    const generationProfile = getGenerationDepthProfile(generationDepth);
+    const generationProfile = getGenerationDepthProfile(normalizedDepth);
     const semesterProfile = buildSemesterDifficultyProfile(semester);
     const scenarioCore = buildScenarioCore({
       semester,
       type,
       environment,
-      complexity,
+      complexity: normalizedComplexity,
       uniqueness,
       customPrompt
     });
@@ -1935,9 +1948,9 @@ router.post('/', async (req, res) => {
       semester,
       type,
       environment,
-      complexity,
+      complexity: normalizedComplexity,
       uniqueness,
-      scenarioFriction,
+      scenarioFriction: normalizedFriction,
       shiftMode,
       includeBystanders,
       includeTeachingCues,

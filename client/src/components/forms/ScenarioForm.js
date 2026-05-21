@@ -102,9 +102,9 @@ const SCENARIO_TYPES = [
 
 const SEMESTERS = ["2", "3", "4"];
 const ENVIRONMENTS = ["Urban", "Rural", "Wilderness", "Industrial", "Home", "Public Space"];
-const COMPLEXITIES = ["Simple", "Moderate", "Complex"];
-const GENERATION_DEPTHS = ["Quick Draft", "Standard", "Detailed"];
-const SCENARIO_FRICTION_LEVELS = ["Low", "Moderate", "High"];
+const COMPLEXITIES = ["Simple", "Complex"];
+const GENERATION_DEPTHS = ["Quick Draft", "Detailed"];
+const SCENARIO_FRICTION_LEVELS = ["Clean", "Pressured"];
 
 const FIELD_TOOLTIPS = {
   semester: "Training level: 2 = foundational skills, 3 = intermediate assessment/treatment, 4 = advanced decision-making with rare/complex presentations",
@@ -206,9 +206,9 @@ const ScenarioForm = () => {
     semester: "3",
     type: "Medical",
     environment: "Urban",
-    complexity: "Moderate",
-    generationDepth: "Standard",
-    scenarioFriction: "Moderate",
+    complexity: "Simple",
+    generationDepth: "Quick Draft",
+    scenarioFriction: "Clean",
     shiftMode: "Day Shift",
     customPrompt: "",
   });
@@ -317,9 +317,9 @@ const ScenarioForm = () => {
     formData.semester !== "3" ||
     formData.type !== "Medical" ||
     formData.environment !== "Urban" ||
-    formData.complexity !== "Moderate" ||
-    formData.scenarioFriction !== "Moderate" ||
-    formData.generationDepth !== "Standard" ||
+    formData.complexity !== "Simple" ||
+    formData.scenarioFriction !== "Clean" ||
+    formData.generationDepth !== "Quick Draft" ||
     formData.shiftMode !== "Day Shift" ||
     formData.customPrompt !== "";
   const canReset = scenario || isFormModified;
@@ -582,9 +582,9 @@ const ScenarioForm = () => {
       semester: "3",
       type: "Medical",
       environment: "Urban",
-      complexity: "Moderate",
-      generationDepth: "Standard",
-      scenarioFriction: "Moderate",
+      complexity: "Simple",
+      generationDepth: "Quick Draft",
+      scenarioFriction: "Clean",
       shiftMode: "Day Shift",
         customPrompt: "",
     });
