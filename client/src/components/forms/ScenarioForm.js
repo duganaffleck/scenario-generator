@@ -1159,7 +1159,7 @@ const ScenarioForm = () => {
                       style={{
                         cursor: "pointer",
                         textDecoration: "underline",
-                        color: "#0ea5e9",
+                        color: "var(--vn-teal)",
                         marginLeft: "6px",
                         marginRight: "6px",
                         background: "transparent",
