@@ -157,7 +157,6 @@ const SECTION_GROUPS = {
   ],
 };
 
-// eslint-disable-next-line no-unused-vars
 const PAUSE_AFTER_GROUP = "What Was Happening";
 
 const TITLE_MAP = {
