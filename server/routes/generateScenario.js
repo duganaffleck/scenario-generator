@@ -29,15 +29,6 @@ const GENERATION_DEPTH_PROFILES = {
       'Prioritize speed, structural completeness, and immediate usability. Keep each section lean but still scenario-specific. Do not omit required fields. GRS anchors should remain specific, but shorter and more direct.'
   },
 
-  Standard: {
-    label: 'Standard',
-    model: process.env.OPENAI_MODEL_STANDARD || 'gpt-5.4',
-    temperature: 0.85,
-    maxTokens: parsePositiveInt(process.env.OPENAI_MAX_TOKENS_STANDARD, 16384),
-    promptInstruction:
-      'Balance generation time with realistic scenario depth. Provide coherent narrative detail, meaningful progression, useful teaching cues, and scenario-specific GRS anchors without over-expanding every field.'
-  },
-
   Detailed: {
     label: 'Detailed',
     model: process.env.OPENAI_MODEL_DETAILED || 'gpt-5.5',
@@ -48,27 +39,28 @@ const GENERATION_DEPTH_PROFILES = {
   }
 };
 
-function getGenerationDepthProfile(generationDepth = 'Standard') {
-  return GENERATION_DEPTH_PROFILES[generationDepth] || GENERATION_DEPTH_PROFILES.Standard;
+function getGenerationDepthProfile(generationDepth = 'Quick Draft') {
+  return GENERATION_DEPTH_PROFILES[generationDepth] ||
+         GENERATION_DEPTH_PROFILES['Quick Draft'];
 }
 
-function getScenarioFrictionInstruction(scenarioFriction = 'Moderate') {
+function getScenarioFrictionInstruction(scenarioFriction = 'Clean') {
   switch (scenarioFriction) {
-    case 'Low':
+    case 'REMOVEME':
       return [
         'Use low scenario friction: keep the operational scene relatively clean and focused.',
         'Include at most one minor access, communication, bystander, equipment, or movement issue only when it naturally fits the selected environment.',
         'Do not overcomplicate the scene; the learning value should mainly come from assessment, clinical reasoning, and appropriate care.',
         'Still include reassessment and transport thinking when clinically relevant.'
       ].join(' ');
-    case 'High':
+    case 'Pressured':
       return [
         'Use high scenario friction: add layered but fair operational pressure that meaningfully affects the call.',
         'Use two or more relevant friction elements such as access limitations, family or bystander pressure, communication barriers, equipment/logistics problems, movement intolerance, refusal tension, privacy issues, weather, terrain, or transport deterioration.',
         'Friction must change how the crew manages assessment, reassessment, packaging, communication, or transport; it must not be random chaos or a gotcha.',
         'Keep the case coherent, psychologically safe, and appropriate to the selected semester and clinical complexity.'
       ].join(' ');
-    case 'Moderate':
+    case 'Clean':
     default:
       return [
         'Use moderate scenario friction: include one or two realistic operational challenges that make the call feel lived-in without overwhelming the learner.',
@@ -935,7 +927,7 @@ function getComplexityInstruction(complexity) {
         'Avoid excessive branching, unusual combinations, or stacked complications.',
         'The educational value should come from doing the basics well.'
       ].join(' ');
-    case 'Moderate':
+    case 'Clean':
       return [
         'Use one clear primary problem plus one or two meaningful complicating factors.',
         'Require reassessment, prioritization, and some interpretation rather than simple pattern matching.',
@@ -1904,11 +1896,11 @@ router.post('/', async (req, res) => {
     semester = '3',
     type = 'Medical',
     environment = 'Urban',
-    complexity = 'Moderate',
-    scenarioFriction = 'Moderate',
+    complexity = 'Simple',
+    scenarioFriction = 'Clean',
     shiftMode = 'Day Shift',
     uniqueness = 'Common',
-    generationDepth = 'Standard',
+    generationDepth = 'Quick Draft',
     includeBystanders = true,
     includeTeachingCues = true,
     customPrompt = ''
