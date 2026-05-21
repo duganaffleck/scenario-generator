@@ -334,3 +334,177 @@ body {
     font-size: 0.9rem;
   }
 }
+
+/* === VitalNotes brand alignment === */
+
+/* Orange corner triangle on phase group headers */
+.scenario-phase-header {
+  position: relative;
+  overflow: hidden;
+}
+
+.scenario-phase-header::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: clamp(1.8rem, 3.5vw, 2.6rem);
+  height: clamp(1.8rem, 3.5vw, 2.6rem);
+  clip-path: polygon(100% 0, 0 0, 100% 100%);
+  background: var(--vn-orange);
+  opacity: 0.88;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Phase eyebrow label */
+.scenario-phase-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.42rem;
+  margin-bottom: 0.45rem;
+  color: var(--vn-orange);
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.scenario-phase-eyebrow::before {
+  content: "";
+  display: inline-block;
+  width: 0.42rem;
+  height: 0.42rem;
+  border-radius: 999px;
+  background: var(--vn-orange);
+  box-shadow: 0 0 0 3px rgba(242, 140, 40, 0.15);
+  flex-shrink: 0;
+}
+
+/* Section heading inside output cards —
+   left orange border with gradient fade */
+.scenario-section-h2 {
+  position: relative;
+  width: fit-content;
+  max-width: 100%;
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  padding: 0.52rem 1.1rem 0.56rem 0.9rem;
+  border: none;
+  border-left: 4px solid rgba(242, 140, 40, 0.88);
+  border-radius: 0.75rem 0 0 0.75rem;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 247, 214, 0.92) 0%,
+    rgba(255, 247, 214, 0.58) 45%,
+    rgba(255, 247, 214, 0.18) 72%,
+    rgba(255, 247, 214, 0) 100%
+  );
+  color: var(--vn-accent-text);
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: -0.018em;
+  line-height: 1.22;
+}
+
+html[data-theme="night"] .scenario-section-h2 {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 180, 92, 0.14) 0%,
+    rgba(255, 180, 92, 0.07) 45%,
+    rgba(255, 180, 92, 0.02) 72%,
+    rgba(255, 180, 92, 0) 100%
+  );
+  border-left-color: rgba(255, 180, 92, 0.72);
+}
+
+/* Pause and Decide divider card —
+   VitalNotes student-problem panel style */
+.scenario-pause-card {
+  position: relative;
+  overflow: hidden;
+  border: none;
+  border-left: 4px solid rgba(242, 140, 40, 0.85);
+  border-radius: 0.9rem;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 247, 234, 0.82),
+    rgba(255, 255, 255, 0.56)
+  );
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.42),
+    0 8px 20px rgba(18, 48, 71, 0.07);
+  padding: 1.1rem 1.2rem;
+  margin-bottom: 1rem;
+}
+
+html[data-theme="night"] .scenario-pause-card {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 180, 92, 0.1),
+    rgba(18, 33, 51, 0.6)
+  );
+  border-left-color: rgba(255, 180, 92, 0.7);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.06),
+    0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.scenario-pause-label {
+  display: block;
+  margin-bottom: 0.4rem;
+  color: var(--vn-orange);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+html[data-theme="night"] .scenario-pause-label {
+  color: var(--vn-orange);
+}
+
+.scenario-pause-card p {
+  margin: 0;
+  color: var(--vn-ink);
+  font-size: 0.97rem;
+  line-height: 1.65;
+}
+
+html[data-theme="night"] .scenario-pause-card p {
+  color: var(--vn-ink);
+}
+
+/* Phase group heading button —
+   replaces the current plain sectionHeadingButton style */
+.scenario-phase-heading-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid var(--vn-orange);
+  text-align: left;
+  color: var(--vn-ink);
+  font-size: 1.12rem;
+  font-weight: 800;
+  cursor: pointer;
+  padding: 0.38rem 0.1rem;
+  border-radius: 0;
+  letter-spacing: -0.018em;
+}
+
+.scenario-phase-heading-btn:focus-visible {
+  outline: 3px solid rgba(242, 140, 40, 0.34);
+  outline-offset: 2px;
+}
+
+/* Spectral font for phase group titles */
+.scenario-phase-title {
+  font-family: var(--vn-font-heading);
+  font-weight: 700;
+  font-size: 1.12rem;
+  color: var(--vn-ink);
+  letter-spacing: -0.01em;
+}
