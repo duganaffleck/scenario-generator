@@ -910,6 +910,9 @@ const ScenarioForm = () => {
       "secondaryAssessment",
       "additionalAssessments",
       "transportPhase",
+      "medications",
+      "allergies",
+      "pastMedicalHistory",
     ]);
 
     // Phase group order matching SECTION_GROUPS
