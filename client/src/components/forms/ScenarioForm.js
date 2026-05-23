@@ -123,24 +123,18 @@ const SECTION_GROUPS = {
     "title",
     "callInformation",
     "sceneArrival",
-    "firstImpression",
     "patientDemographics",
     "patientPresentation",
     "incidentNarrative",
-    "historyGathering",
     "opqrst",
     "sample",
-    "initialAssessment",
     "physicalExam",
-    "secondaryAssessment",
-    "additionalAssessments",
     "vitalSigns",
     "ecgRhythm",
   ],
   "What Was Happening": [
     "clinicalReasoning",
     "caseProgression",
-    "transportPhase",
     "scenarioRationale",
   ],
   "Expected Management": [
@@ -150,13 +144,11 @@ const SECTION_GROUPS = {
   "Teaching Points": [
     "teachersPoints",
     "learningObjectives",
+    "instructorGuidance",
   ],
   "Self-Assessment": [
     "selfReflectionPrompts",
     "grsAnchors",
-  ],
-  "Instructor Guidance": [
-    "instructorGuidance",
   ],
 };
 
@@ -1528,12 +1520,41 @@ const ScenarioForm = () => {
       );
     }
 
+    if (title === "sceneArrival") {
+      const sceneData = scenario.sceneArrival;
+      const firstImpressionData = scenario.firstImpression;
+      return (
+        <div style={styles.card} key="sceneArrival">
+          <h3 className="scenario-section-h2">Scene &amp; First Impression</h3>
+          {sceneData && renderSafeContent(sceneData, "sceneArrival")}
+          {firstImpressionData && (
+            <div style={{ marginTop: "0.75rem", borderTop: "1px solid var(--vn-border)", paddingTop: "0.75rem" }}>
+              <div style={{ fontSize: "0.72rem", fontWeight: 700, color: "var(--vn-muted-text)",
+                textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "0.4rem" }}>
+                First Impression
+              </div>
+              {renderSafeContent(firstImpressionData, "firstImpression")}
+            </div>
+          )}
+        </div>
+      );
+    }
+
     const isProtocolNote = title === "protocolNotes";
+    const isInstructorGuidance = title === "instructorGuidance";
 
     const highlightStyle = isProtocolNote
       ? {
           backgroundColor: "var(--vn-protocol-card-bg)",
           borderLeft: "5px solid var(--vn-protocol-card-border)",
+          padding: "1rem",
+          borderRadius: "8px",
+          marginBottom: "1rem",
+        }
+      : isInstructorGuidance
+      ? {
+          backgroundColor: "var(--vn-accent-card-bg)",
+          borderLeft: "5px solid var(--vn-teal)",
           padding: "1rem",
           borderRadius: "8px",
           marginBottom: "1rem",
@@ -1733,9 +1754,6 @@ const ScenarioForm = () => {
                       boxShadow: "var(--vn-panel-shadow)",
                     }}
                   >
-                    <div className="scenario-phase-eyebrow">
-                      {groupName}
-                    </div>
                     <h2 style={{ margin: 0 }}>
                       <button
                         type="button"
