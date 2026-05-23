@@ -165,7 +165,7 @@ Indications:
 - Injury occurred within the past 3 hours
 
 Treatment:
-- TXA 1 g IV/IO over 10 minutes (infusion or slow push)
+- TXA 1 g IV over 10 minutes (infusion or slow push)
 - May dilute in 100 mL NS/D5W or administer via pump
 
 Contraindications:

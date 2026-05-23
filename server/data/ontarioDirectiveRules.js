@@ -18,7 +18,8 @@ export const ONTARIO_DIRECTIVE_RULES = {
       "Reference Ontario standards URLs in reasoning and briefs:",
       "- https://files.ontario.ca/moh_2/moh-standards-basic-life-support-patient-care-standards-v3-4-en-2023-03-10.pdf",
       "- https://www.ontario.ca/files/2025-04/moh-advanced-life-support-als-patient-care-standards-pcs-5.4-en-2025-04-23.pdf",
-      "- https://ontariobasehospitalgroup.ca/wp-content/uploads/2023/03/2023-02-01_v5.1_Companion-Document.pdf"
+      "- https://ontariobasehospitalgroup.ca/wp-content/uploads/2023/03/2023-02-01_v5.1_Companion-Document.pdf",
+      "When printing any URL, output it as a single complete unbroken string with no spaces, no line breaks, and no hyphens inserted within the URL itself. URLs must be copy-pasteable exactly as printed."
     ],
     commonDriftErrors: [
       "Generic North American EMS advice replacing Ontario-specific logic.",
