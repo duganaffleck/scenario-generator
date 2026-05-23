@@ -985,14 +985,16 @@ function buildSemesterDifficultyProfile(semester) {
         reassessmentBurden: 'basic',
         leadershipDemand: 'low',
         expectedReasoning: 'foundational assessment, communication, and safe basic management only',
-        instructionText: [
-          'This scenario is for a Semester 2 PCP learner.',
-          'No medications should be expected or required by design.',
-          'Keep the case more straightforward, with clearer patterns and lower ambiguity.',
-          'Emphasize scene approach, primary survey, basic assessment, history gathering, communication, oxygen decisions where appropriate, and safe foundational care.',
-          'Expected treatment and GRS anchors should reflect an earlier learner who is still building structure, confidence, and organization.',
-          'Avoid making the case depend on subtle advanced interpretation, destination complexity, or nuanced treatment sequencing.'
-        ].join(' ')
+        instructionText: 'This scenario is for a Semester 2 PCP learner. ' +
+          'No medications must appear in expectedTreatment or protocolNotes. ' +
+          'The case must be solvable through assessment, communication, ' +
+          'positioning, oxygen decisions, and safe transport only. ' +
+          'GRS anchors must not reference medication decisions, ' +
+          'contraindication checks, or advanced directive knowledge. ' +
+          'Score 5 represents a learner who is organized, communicates ' +
+          'clearly, and completes a structured assessment safely. ' +
+          'Do not make the case feel hand-held or patronizing, ' +
+          'but do not hide the answer behind ambiguity.'
       };
 
     case '3':
@@ -1007,14 +1009,15 @@ function buildSemesterDifficultyProfile(semester) {
         reassessmentBurden: 'meaningful',
         leadershipDemand: 'moderate',
         expectedReasoning: 'directive interpretation, treatment selection, contraindication awareness, and reassessment with reasonable autonomy',
-        instructionText: [
-          'This scenario is for a Semester 3 PCP learner.',
-          'All clinically appropriate PCP medication options may be included when justified by the case.',
-          'Use moderate complexity with clearer teachable moments, but expect more independent assessment and decision-making than Semester 2.',
-          'The learner should be able to recognize common patterns, initiate appropriate treatment, notice straightforward contraindications, and reassess appropriately.',
-          'Allow some realistic messiness, but keep the case manageable and fair rather than overloaded.',
-          'Expected treatment and GRS anchors should reflect a learner developing autonomy, not a fully polished field practitioner.'
-        ].join(' ')
+        instructionText: 'This scenario is for a Semester 3 PCP learner. ' +
+          'PCP medications are available when clinically justified. ' +
+          'The learner should recognize common patterns, initiate ' +
+          'appropriate treatment, check contraindications, and reassess. ' +
+          'Include at least one medication decision point when the type ' +
+          'supports it. GRS score 5 represents a learner who acts ' +
+          'correctly without being prompted, not one who needs coaching ' +
+          'through each step. Allow realistic messiness but keep the ' +
+          'case fair and teachable.'
       };
 
     case '4':
@@ -1029,15 +1032,17 @@ function buildSemesterDifficultyProfile(semester) {
         reassessmentBurden: 'significant',
         leadershipDemand: 'high',
         expectedReasoning: 'advanced prioritization, contraindication recognition, destination thinking, leadership, and near-graduation call organization',
-        instructionText: [
-          'This scenario is for a Semester 4 PCP learner.',
-          'All clinically appropriate PCP medication options may be included when justified by the case.',
-          'Use fuller PCP scope, stronger autonomy, more realistic field messiness, and more layered decision-making.',
-          'Allow greater ambiguity, operational pressure, competing problems, and responsibility for prioritization, communication, destination decisions, and resource use.',
-          'The learner should be expected to notice contraindications, withhold treatments appropriately when needed, and adapt to changing reassessment findings.',
-          'Expected treatment and GRS anchors should reflect a near-graduation learner who is expected to organize the call well, think ahead, and lead effectively.',
-          'Do not make it artificially simple or overly hand-held.'
-        ].join(' ')
+        instructionText: 'This scenario is for a Semester 4 PCP learner. ' +
+          'This is a near-graduation learner. Do not hand-hold. ' +
+          'The case should require prioritization under pressure, ' +
+          'contraindication recognition, destination thinking, and ' +
+          'leadership of a messy scene. ' +
+          'GRS score 5 represents competent near-graduation performance. ' +
+          'Score 7 requires anticipatory thinking, not just correct action. ' +
+          'At least one decision should require withholding a treatment ' +
+          'or adapting the plan based on reassessment findings. ' +
+          'The case should feel like something a real crew would ' +
+          'debrief after shift.'
       };
 
     default:
@@ -1815,8 +1820,8 @@ Scenario shaping rules:
 - Vital sign changes must reflect treatment response, missed care, incorrect care, exertion, movement, fatigue, clinical deterioration, or transport-phase reassessment when appropriate.
 - expectedTreatment must be a structured multi-item list of practical paramedic actions, not a paragraph.
 - protocolNotes must be a structured multi-item list, not a paragraph.
-- teachersPoints must be one compact instructor-style debrief paragraph, not an array and not bullet points.
-- learningObjectives, vocationalLearningOutcomes, and selfReflectionPrompts must each be list items, not combined prose.
+- teachersPoints must be one compact instructor-voice paragraph, maximum 4 sentences. Name the trap or the easy miss in this specific case. Name the pivot point or the finding that should change the call. End with one concrete next-call adjustment. Do not restate the expected management. Do not restate the learning objectives. Sound like a senior paramedic debriefing after the call, not a textbook summary.
+- learningObjectives and vocationalLearningOutcomes must each be list items, not combined prose. selfReflectionPrompts must be scenario-specific questions that ask what the student would do differently or what changed their thinking. Each prompt must be answerable in one or two sentences. Avoid open-ended emotional questions. Focus on reasoning, prioritization, reassessment decisions, and communication choices specific to this case. Do not restate the learning objectives as questions.
 - Avoid empty strings for clinically relevant fields unless truly not applicable.
 - Return all required fields every time with meaningful scenario-specific content.
 - For Semester 3 and 4, when clinically appropriate, prefer scenarios that involve multiple Ontario-appropriate PCP medication decisions rather than a single-medication pathway.
