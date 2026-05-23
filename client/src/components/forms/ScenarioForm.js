@@ -1149,6 +1149,80 @@ const ScenarioForm = () => {
   );
 }
 
+    if (parentKey === "grsAnchors" && data && typeof data === "object" && !Array.isArray(data)) {
+      const domainLabels = {
+        situationalAwareness: "Situational Awareness",
+        patientAssessment: "Patient Assessment",
+        historyGathering: "History Gathering",
+        decisionMaking: "Decision Making",
+        proceduralSkill: "Procedural Skill",
+        resourceUtilization: "Resource Utilization",
+        communication: "Communication",
+      };
+      const scoreLabels = { "3": "Score 3 — Unsafe to Borderline", "5": "Score 5 — Competent", "7": "Score 7 — Exceptional" };
+      const scoreColors = {
+        "3": { bg: "var(--vn-accent-card-bg)", border: "var(--vn-accent-card-border)", label: "#92400e" },
+        "5": { bg: "var(--vn-card-bg)", border: "var(--vn-card-border)", label: "var(--vn-muted-text)" },
+        "7": { bg: "var(--vn-protocol-card-bg)", border: "var(--vn-protocol-card-border)", label: "var(--vn-accent-text)" },
+      };
+      return (
+        <div>
+          {Object.entries(data).map(([domain, scores]) => (
+            <div key={domain} style={{ marginBottom: "1.25rem" }}>
+              <div style={{
+                fontSize: "0.95rem",
+                fontWeight: 800,
+                color: "var(--vn-ink)",
+                borderLeft: "4px solid var(--vn-teal)",
+                paddingLeft: "0.6rem",
+                marginBottom: "0.6rem",
+                fontFamily: "var(--vn-font-heading)",
+              }}>
+                {domainLabels[domain] || domain}
+              </div>
+              {["3", "5", "7"].map((score) => {
+                const bullets = Array.isArray(scores[score]) ? scores[score] : [];
+                if (!bullets.length) return null;
+                const colors = scoreColors[score] || scoreColors["5"];
+                return (
+                  <div key={score} style={{
+                    backgroundColor: colors.bg,
+                    border: `1px solid ${colors.border}`,
+                    borderRadius: "8px",
+                    padding: "0.6rem 0.8rem",
+                    marginBottom: "0.4rem",
+                  }}>
+                    <div style={{
+                      fontSize: "0.72rem",
+                      fontWeight: 800,
+                      letterSpacing: "0.06em",
+                      textTransform: "uppercase",
+                      color: colors.label,
+                      marginBottom: "0.35rem",
+                    }}>
+                      {scoreLabels[score]}
+                    </div>
+                    <ul style={{ margin: 0, paddingLeft: "1.2rem" }}>
+                      {bullets.map((bullet, i) => (
+                        <li key={i} style={{
+                          fontSize: "0.88rem",
+                          color: "var(--vn-ink)",
+                          marginBottom: "0.2rem",
+                          lineHeight: "1.5",
+                        }}>
+                          {bullet}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                );
+              })}
+            </div>
+          ))}
+        </div>
+      );
+    }
+
     if (typeof data === "object" && data !== null) {
       return (
         <ul style={{ paddingLeft: "1rem", marginTop: "0.5rem" }}>
@@ -1429,29 +1503,6 @@ const ScenarioForm = () => {
           )}
           {scenario && (
             <>
-
-              <div
-                style={{
-                  backgroundColor: "var(--vn-card-bg)",
-                  border: "1px solid var(--vn-border)",
-                  borderLeft: "6px solid var(--vn-teal)",
-                  borderRadius: "14px",
-                  padding: "1rem 1.15rem",
-                  marginBottom: "1rem",
-                  boxShadow: "0 2px 10px rgba(18,48,71,0.06)",
-                }}
-              >
-                <h2 style={{ marginTop: 0, marginBottom: "0.6rem", fontSize: "1.05rem", color: "var(--vn-teal-deep)" }}>
-                  How to use this scenario
-                </h2>
-                <p style={{ marginTop: 0, marginBottom: "0.6rem" }}>Work through this in two steps.</p>
-                <p style={{ marginTop: 0, marginBottom: "0.5rem" }}>
-                  <strong>Step 1 - Practice first:</strong> Read the Scene Info, Patient Info, and Assessment sections. Work through the call in your head or with a partner. Decide what you would do and why before reading further.
-                </p>
-                <p style={{ marginTop: 0, marginBottom: 0 }}>
-                  <strong>Step 2 - Compare after:</strong> Read Expected Treatment, Case Progression, GRS Anchors, and Clinical Reasoning after you have worked through the case. Use the Self-Reflection Prompts to check your thinking, not to preview it.
-                </p>
-              </div>
             <div style={styles.outputBox}>
               {scenario.customPrompt && (
                 <div
