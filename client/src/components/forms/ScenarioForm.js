@@ -135,6 +135,7 @@ const SECTION_GROUPS = {
     "secondaryAssessment",
     "additionalAssessments",
     "vitalSigns",
+    "ecgRhythm",
   ],
   "What Was Happening": [
     "clinicalReasoning",
@@ -186,6 +187,7 @@ const TITLE_MAP = {
   opqrst: "OPQRST",
   physicalExam: "Physical Assessment",
   vitalSigns: "Vital Signs",
+  ecgRhythm: "ECG / Rhythm",
   caseProgression: "Case Progression",
   transportPhase: "Transport Phase",
   instructorGuidance: "Instructor Guidance",
@@ -1229,6 +1231,16 @@ const ScenarioForm = () => {
           {Object.entries(data).map(([key, value], index) => {
             const contextKey = `${parentKey}-${key}`;
 
+            if (
+              key === "ecgInterpretation" &&
+              (parentKey === "firstSet" ||
+               parentKey === "secondSet" ||
+               parentKey === "additionalSets" ||
+               String(parentKey).toLowerCase().includes("set"))
+            ) {
+              return null;
+            }
+
             if (key === "ecgInterpretation") {
               const interpretation = typeof value === "string" ? value : "";
               const rawECG = interpretation.replace(/[\u0080-\uFFFF]/g, '').trim();
@@ -1339,6 +1351,92 @@ const ScenarioForm = () => {
   };
 
   const renderSection = (title, content) => {
+    if (title === "ecgRhythm") {
+      const vitalSigns = scenario.vitalSigns;
+      if (!vitalSigns) return null;
+
+      const sets = [
+        { label: vitalSigns.firstSet?.context || "Initial Assessment",
+          ecg: vitalSigns.firstSet?.ecgInterpretation },
+        { label: vitalSigns.secondSet?.context || "Reassessment",
+          ecg: vitalSigns.secondSet?.ecgInterpretation },
+        ...(Array.isArray(vitalSigns.additionalSets)
+          ? vitalSigns.additionalSets.map((s, i) => ({
+              label: s.context || `Additional Set ${i + 1}`,
+              ecg: s.ecgInterpretation,
+            }))
+          : []),
+      ].filter((s) => s.ecg && s.ecg.trim());
+
+      if (!sets.length) return null;
+
+      const cleanEcg = (val) =>
+        val ? val.replace(/[^\x20-\x7E]/g, "").trim() : "";
+
+      return (
+        <div style={{ ...styles.card }} key="ecgRhythm">
+          <h3 className="scenario-section-h2">ECG / Rhythm</h3>
+          <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}>
+            {sets.map((s, i) => {
+              const clean = cleanEcg(s.ecg);
+              const hasImage = !!ecgImageMap[clean];
+              return (
+                <div key={i} style={{
+                  display: "flex",
+                  alignItems: "flex-start",
+                  gap: "0.75rem",
+                  padding: "0.5rem 0.6rem",
+                  borderRadius: "8px",
+                  border: "1px solid var(--vn-border)",
+                  backgroundColor: "var(--vn-card-bg)",
+                }}>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{
+                      fontSize: "0.74rem",
+                      fontWeight: 700,
+                      color: "var(--vn-muted-text)",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.06em",
+                      marginBottom: "0.2rem",
+                    }}>
+                      {s.label}
+                    </div>
+                    <div style={{
+                      fontSize: "0.95rem",
+                      fontWeight: 600,
+                      color: "var(--vn-ink)",
+                    }}>
+                      {clean}
+                    </div>
+                  </div>
+                  {hasImage && (
+                    <button
+                      type="button"
+                      onClick={() => setSelectedECGImage(ecgImageMap[clean])}
+                      style={{
+                        cursor: "pointer",
+                        color: "var(--vn-teal)",
+                        background: "transparent",
+                        border: "none",
+                        fontSize: "1.1rem",
+                        padding: "0.1rem 0.25rem",
+                        borderRadius: "6px",
+                        flexShrink: 0,
+                      }}
+                      title={`View ${clean} tracing`}
+                      aria-label={`View ECG for ${clean}`}
+                    >
+                      📈
+                    </button>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      );
+    }
+
     const isProtocolNote = title === "protocolNotes";
 
     const highlightStyle = isProtocolNote
