@@ -1762,12 +1762,14 @@ ${ECG_WHITELIST.map((item) => `- ${item}`).join('\n')}
 
 Also return a top-level ecgFindings object with these fields:
 - ecgType: "rhythm" for basic medical calls, "12-lead" for cardiac, respiratory with hypoxia, AMS, syncope, overdose, post-ROSC, or any call where a 12-lead would be clinically indicated. "15-lead" only when inferior STEMI or right ventricular involvement is suspected.
-- rhythmInterpretation: one to two sentences describing the rhythm in plain clinical language including rate, regularity, and any notable features. Always populate this field.
+- rhythmInterpretation: one to two sentences describing the rhythm in plain clinical language including rate, regularity, and any notable features. Always populate this field. Do not just name the rhythm — briefly explain why that rhythm is present in the context of this specific patient and condition. For example: sinus bradycardia in a missed dialysis patient should connect to metabolic or electrolyte cause; sinus tachycardia in a febrile sepsis patient should connect to physiologic demand; a rhythm in a chest pain patient should note what it does or does not suggest about ischemia.
 - twelveLeadFindings: describe the 12-lead findings in plain clinical language when ecgType is "12-lead" or "15-lead". Include axis, ST changes, intervals, and any notable findings. Leave empty string if ecgType is "rhythm" only.
 - fifteenLeadFindings: describe right-sided or posterior lead findings when ecgType is "15-lead". Focus on RV involvement, posterior changes, or right-sided ST changes. Leave empty string if ecgType is "rhythm" or "12-lead".
 - ecgClinicalNote: one sentence connecting the ECG findings to the clinical presentation and treatment decisions.
 - Do not leave rhythmInterpretation blank on any call that has an ECG value in vitalSigns.
 - Do not generate 12-lead or 15-lead findings for isolated trauma without medical concern.
+- When ECG or rhythm findings are clinically relevant to the case, teachersPoints or instructorGuidance must reference them explicitly. If the rhythm supports the diagnosis, say so. If the rhythm is a red flag that could be missed, name it. If the rhythm is secondary and not the teaching focus, one sentence is enough.
+- If ETCO2 values are generated and show a clinically meaningful trend across vital sign sets, teachersPoints or clinicalReasoning must name that trend and explain what it means in this patient's context. Do not leave ETCO2 as a bare number when it is changing in a meaningful direction.
 
 Scenario parameters:
 - Semester: ${semester}
