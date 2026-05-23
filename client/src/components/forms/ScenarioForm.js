@@ -1681,7 +1681,7 @@ const ScenarioForm = () => {
               marginRight: 'auto',
               boxShadow: '0 2px 12px rgba(18,48,71,0.06)'
             }}>
-              <h2 style={{marginTop: 0, color: 'var(--vn-teal-deep, #0a6e72)'}}>Who this is for</h2>
+              <h2 style={{marginTop: 0, color: 'var(--vn-orange, #f28c28)'}}>Who this is for</h2>
               <p style={{marginBottom: '1.2rem'}}>Paramedic educators, simulation facilitators, and learners seeking high-fidelity, protocol-aligned scenario practice with built-in teaching cues.</p>
               <h2 style={{marginTop: 0, color: 'var(--vn-orange, #f28c28)'}}>How to use</h2>
               <ol style={{paddingLeft: '1.2em', margin: 0}}>
