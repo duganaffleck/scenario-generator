@@ -1178,7 +1178,7 @@ const ScenarioForm = () => {
                 borderLeft: "4px solid var(--vn-teal)",
                 paddingLeft: "0.6rem",
                 marginBottom: "0.6rem",
-                fontFamily: "var(--vn-font-heading)",
+                fontFamily: "var(--vn-font-body)",
               }}>
                 {domainLabels[domain] || domain}
               </div>
@@ -1687,7 +1687,12 @@ const ScenarioForm = () => {
                   {!collapsedSections[groupName] &&
                     keys
                       .filter((key) => key !== "teachersPoints")
-                      .map((key) => scenario[key] && renderSection(key, scenario[key]))}
+                      .map((key) => {
+                        if (key === "ecgRhythm") {
+                          return scenario ? renderSection("ecgRhythm", true) : null;
+                        }
+                        return scenario[key] && renderSection(key, scenario[key]);
+                      })}
                 </div>
               ))}
             </div>
