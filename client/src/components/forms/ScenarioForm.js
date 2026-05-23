@@ -108,6 +108,7 @@ const SCENARIO_FRICTION_LEVELS = ["Clean", "Pressured"];
 
 const USE_PILL_TOGGLES = false;
 
+// eslint-disable-next-line no-unused-vars
 const FIELD_TOOLTIPS = {
   semester: "Training level: 2 = foundational assessment and safe basic care, 3 = directive-aware treatment with medication decisions, 4 = near-graduation complexity with prioritization under pressure",
   type: "Scenario category: Medical, Trauma, Cardiac, Respiratory, or Environmental",
@@ -152,6 +153,7 @@ const SECTION_GROUPS = {
   ],
 };
 
+// eslint-disable-next-line no-unused-vars
 const PAUSE_AFTER_GROUP = "What Was Happening";
 
 const TITLE_MAP = {
