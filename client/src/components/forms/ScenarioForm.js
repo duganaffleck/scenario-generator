@@ -860,78 +860,141 @@ const ScenarioForm = () => {
     if (!scenario) return;
 
     const doc = new jsPDF({ unit: "mm", format: "a4" });
+
     const palette = {
-      ink: [18, 48, 71],
-      teal: [13, 139, 139],
-      tealDeep: [10, 110, 114],
+      ink: [31, 41, 51],
+      inkSoft: [51, 65, 85],
       orange: [242, 140, 40],
-      paper: [247, 244, 238],
-      softBlue: [223, 240, 245],
-      neutralText: [40, 58, 76],
-      mutedText: [95, 116, 133],
-      line: [193, 214, 220],
+      orangeDeep: [201, 111, 22],
+      teal: [40, 124, 122],
+      tealDeep: [31, 101, 100],
+      paper: [247, 243, 234],
+      cardBg: [255, 253, 249],
+      warmAccent: [255, 247, 234],
+      neutralText: [75, 93, 106],
+      mutedText: [100, 112, 125],
+      line: [222, 214, 200],
+      linesoft: [240, 236, 228],
     };
+
     const pageHeight = doc.internal.pageSize.getHeight();
     const pageWidth = doc.internal.pageSize.getWidth();
-    const marginX = 20;
-    const marginY = 20;
-    const textColumnX = marginX + 5;
+    const marginX = 18;
+    const marginY = 22;
+    const textColumnX = marginX + 4;
     const maxLineWidth = pageWidth - marginX - textColumnX;
-    const bodySize = 10;
-    const bodyLH = 5.8;
-    const footerY = pageHeight - 12;
+    const bodySize = 9.8;
+    const bodyLH = 5.6;
+    const footerY = pageHeight - 11;
     let y = marginY;
 
     const documentTitle = sanitizePdfText(scenario.title || "Untitled Scenario") || "Untitled Scenario";
     const exportedAt = new Date().toLocaleString();
-
     const safeFileName = sanitizePdfText(documentTitle)
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/^-+|-+$/g, "") || "scenario";
 
-    const preferredOrder = [
-      "scenarioIntro",
+    // Keys to exclude from PDF entirely
+    const excludedKeys = new Set([
       "title",
-      "callInformation",
-      "patientDemographics",
-      "patientPresentation",
-      "incidentNarrative",
-      "sceneArrival",
+      "ecgRhythm",
+      "ecgFindings",
+      "vocationalLearningOutcomes",
+      "generationMetadata",
+      "customPrompt",
+      "directiveSources",
       "firstImpression",
       "initialAssessment",
       "historyGathering",
-      "opqrst",
-      "sample",
-      "medications",
-      "allergies",
-      "pastMedicalHistory",
-      "physicalExam",
       "secondaryAssessment",
       "additionalAssessments",
-      "vitalSigns",
-      "caseProgression",
       "transportPhase",
-      "instructorGuidance",
-      "teachersPoints",
+    ]);
+
+    // Phase group order matching SECTION_GROUPS
+    const phaseOrder = [
+      // The Call
+      "scenarioIntro",
+      "callInformation",
+      "sceneArrival",
+      "patientDemographics",
+      "patientPresentation",
+      "incidentNarrative",
+      "opqrst",
+      "sample",
+      "physicalExam",
+      "vitalSigns",
+      // What Was Happening
+      "clinicalReasoning",
+      "caseProgression",
+      "scenarioRationale",
+      // Expected Management
       "expectedTreatment",
       "protocolNotes",
+      // Teaching Points
+      "teachersPoints",
       "learningObjectives",
+      "instructorGuidance",
+      // Self-Assessment
       "selfReflectionPrompts",
       "grsAnchors",
-      "scenarioRationale",
-      "clinicalReasoning",
-      "directiveSources",
-      "customPrompt"
     ];
 
-    const orderedKeys = [...new Set([...preferredOrder, ...Object.keys(scenario)])];
+    // Phase group labels for dividers
+    const phaseGroupMap = {
+      scenarioIntro: "The Call",
+      callInformation: "The Call",
+      sceneArrival: "The Call",
+      patientDemographics: "The Call",
+      patientPresentation: "The Call",
+      incidentNarrative: "The Call",
+      opqrst: "The Call",
+      sample: "The Call",
+      physicalExam: "The Call",
+      vitalSigns: "The Call",
+      clinicalReasoning: "What Was Happening",
+      caseProgression: "What Was Happening",
+      scenarioRationale: "What Was Happening",
+      expectedTreatment: "Expected Management",
+      protocolNotes: "Expected Management",
+      teachersPoints: "Teaching Points",
+      learningObjectives: "Teaching Points",
+      instructorGuidance: "Teaching Points",
+      selfReflectionPrompts: "Self-Assessment",
+      grsAnchors: "Self-Assessment",
+    };
+
+    // Build merged sceneArrival + firstImpression content
+    const buildSceneArrivalContent = () => {
+      const parts = [];
+      if (scenario.sceneArrival) parts.push(formatFieldValue(scenario.sceneArrival));
+      if (scenario.firstImpression) {
+        parts.push("First Impression:");
+        parts.push(formatFieldValue(scenario.firstImpression));
+      }
+      return parts.filter(Boolean).join("\n");
+    };
+
+    // Build ordered section entries
+    const orderedKeys = [...new Set([...phaseOrder, ...Object.keys(scenario)])];
     const sectionEntries = orderedKeys
-      .filter((key) => key in scenario)
+      .filter((key) => {
+        if (excludedKeys.has(key)) return false;
+        if (!(key in scenario)) return false;
+        return true;
+      })
       .map((key) => {
-        const formattedValue = formatFieldValue(scenario[key]);
-        if (!formattedValue) return null;
-        return { key, label: TITLE_MAP[key] || capitalizeFirstLetter(key), formattedValue };
+        const rawValue = key === "sceneArrival"
+          ? buildSceneArrivalContent()
+          : formatFieldValue(scenario[key]);
+        if (!rawValue) return null;
+        return {
+          key,
+          label: TITLE_MAP[key] || capitalizeFirstLetter(key),
+          formattedValue: rawValue,
+          phase: phaseGroupMap[key] || null,
+        };
       })
       .filter(Boolean);
 
@@ -946,59 +1009,102 @@ const ScenarioForm = () => {
     };
 
     const drawCoverBackground = () => {
-      doc.setFillColor(249, 253, 255);
+      doc.setFillColor(...palette.paper);
       doc.rect(0, 0, pageWidth, pageHeight, "F");
+      // Subtle warm gradient strip at top
+      doc.setFillColor(242, 140, 40);
+      doc.rect(0, 0, pageWidth, 3, "F");
     };
 
     const drawContentHeader = () => {
-      const headerBarWidth = 3;
       doc.setFillColor(...palette.ink);
-      doc.rect(0, 0, pageWidth, 16, "F");
+      doc.rect(0, 0, pageWidth, 15, "F");
       doc.setFillColor(...palette.orange);
-      doc.rect(0, 0, headerBarWidth, 16, "F");
+      doc.rect(0, 0, 3.5, 15, "F");
+
       doc.setFont(undefined, "bold");
-      doc.setFontSize(8.8);
-      doc.setTextColor(244, 252, 255);
-      doc.text("VitalNotes Scenario Generator", textColumnX, 10.2);
+      doc.setFontSize(8.5);
+      doc.setTextColor(244, 250, 252);
+      doc.text("VitalNotes Scenario Generator", textColumnX, 9.5);
 
       doc.setFont(undefined, "normal");
-      doc.setFontSize(7.8);
-      doc.setTextColor(206, 230, 238);
-      doc.text("Protocol-aligned simulation scenario", textColumnX, 14.1);
+      doc.setFontSize(7.5);
+      doc.setTextColor(190, 218, 224);
+      doc.text("Ontario PCP simulation scenario", textColumnX, 13.2);
 
       doc.setDrawColor(...palette.line);
-      doc.setLineWidth(0.2);
-      doc.line(0, 16, pageWidth, 16);
+      doc.setLineWidth(0.18);
+      doc.line(0, 15, pageWidth, 15);
     };
 
     const drawPageFooter = (pageNum, total) => {
       doc.setFont(undefined, "normal");
-      doc.setFontSize(8);
+      doc.setFontSize(7.8);
       doc.setTextColor(...palette.mutedText);
       doc.setDrawColor(...palette.line);
-      doc.setLineWidth(0.2);
+      doc.setLineWidth(0.18);
       doc.line(marginX, footerY, pageWidth - marginX, footerY);
-      doc.text(documentTitle, marginX, footerY + 4.5);
-      doc.text(`Page ${pageNum} of ${total}`, pageWidth - marginX, footerY + 4.5, { align: "right" });
+      doc.text(documentTitle, marginX, footerY + 4.2);
+      doc.text(`Page ${pageNum} of ${total}`, pageWidth - marginX, footerY + 4.2, { align: "right" });
+    };
+
+    const drawPhaseDivider = (label) => {
+      needsNewPage(12);
+      y += 5;
+      doc.setFillColor(...palette.warmAccent);
+      doc.roundedRect(marginX - 2, y - 5, pageWidth - marginX * 2 + 4, 8, 2, 2, "F");
+      doc.setFillColor(...palette.orange);
+      doc.rect(marginX - 2, y - 5, 3, 8, "F");
+      doc.setFont(undefined, "bold");
+      doc.setFontSize(7.5);
+      doc.setTextColor(...palette.orangeDeep);
+      doc.text(label.toUpperCase(), textColumnX, y);
+      y += 6;
+      doc.setDrawColor(...palette.line);
+      doc.setLineWidth(0.15);
+      doc.line(textColumnX, y, pageWidth - marginX, y);
+      y += 4;
+    };
+
+    const drawSectionHeading = (label) => {
+      needsNewPage(14);
+      y += 3;
+      doc.setFillColor(255, 253, 249);
+      doc.roundedRect(marginX - 1.5, y - 4.5, pageWidth - marginX * 2 + 3, 8, 1.8, 1.8, "F");
+      doc.setFillColor(...palette.orange);
+      doc.rect(marginX - 1.5, y - 4.5, 2.5, 8, "F");
+      doc.setFont(undefined, "bold");
+      doc.setFontSize(11);
+      doc.setTextColor(...palette.ink);
+      doc.text(label, textColumnX, y);
+      y += 2;
+      doc.setDrawColor(...palette.line);
+      doc.setLineWidth(0.2);
+      doc.line(textColumnX, y, pageWidth - marginX, y);
+      y += 5;
     };
 
     // -- Cover page ----------------------------------------------------------
     drawCoverBackground();
     drawContentHeader();
 
-    y = 30;
+    y = 26;
     doc.setFont(undefined, "bold");
-    doc.setFontSize(20);
+    doc.setFontSize(22);
     doc.setTextColor(...palette.ink);
     const titleWrapped = doc.splitTextToSize(documentTitle, maxLineWidth);
     doc.text(titleWrapped, textColumnX, y);
-    y += titleWrapped.length * 8.4 + 5;
+    y += titleWrapped.length * 9 + 4;
 
+    // Orange accent line under title
+    doc.setDrawColor(...palette.orange);
+    doc.setLineWidth(1.2);
+    doc.line(textColumnX, y, textColumnX + 40, y);
+    doc.setLineWidth(0.2);
     doc.setDrawColor(...palette.line);
-    doc.setLineWidth(0.3);
-    doc.line(textColumnX, y, pageWidth - marginX, y);
-    y += 7;
+    y += 6;
 
+    // Meta card
     const metaFields = [
       ["Shift", sanitizePdfText(formData.shiftMode)],
       ["Semester", sanitizePdfText(formData.semester)],
@@ -1008,91 +1114,76 @@ const ScenarioForm = () => {
       ["Generation Depth", sanitizePdfText(formData.generationDepth)],
     ];
     const visibleMetaFields = metaFields.filter(([, val]) => Boolean(val));
-    const metaRowHeight = 6.7;
-    const metaPaddingTop = 4.8;
-    const metaPaddingBottom = 3.8;
-    const metaCardY = y - 3.5;
-    const metaCardHeight = metaPaddingTop + metaPaddingBottom + (visibleMetaFields.length * metaRowHeight);
+    const metaRowHeight = 6.5;
+    const metaPaddingTop = 4.5;
+    const metaPaddingBottom = 3.5;
+    const metaCardY = y - 3;
+    const metaCardHeight = metaPaddingTop + metaPaddingBottom + visibleMetaFields.length * metaRowHeight;
     const metaLabelX = textColumnX;
-    const metaValueX = textColumnX + 36;
+    const metaValueX = textColumnX + 38;
 
-    doc.setFillColor(...palette.softBlue);
+    doc.setFillColor(...palette.warmAccent);
     doc.roundedRect(marginX - 2, metaCardY, pageWidth - marginX * 2 + 4, metaCardHeight, 3, 3, "F");
     doc.setDrawColor(...palette.line);
+    doc.setLineWidth(0.15);
     doc.roundedRect(marginX - 2, metaCardY, pageWidth - marginX * 2 + 4, metaCardHeight, 3, 3, "S");
 
     let metaY = metaCardY + metaPaddingTop;
     visibleMetaFields.forEach(([label, val], idx) => {
       doc.setFont(undefined, "bold");
-      doc.setFontSize(9.5);
+      doc.setFontSize(9);
       doc.setTextColor(...palette.tealDeep);
       doc.text(`${label}:`, metaLabelX, metaY);
       doc.setFont(undefined, "normal");
       doc.setTextColor(...palette.neutralText);
       doc.text(val, metaValueX, metaY);
-
       if (idx < visibleMetaFields.length - 1) {
-        doc.setDrawColor(210, 226, 233);
-        doc.setLineWidth(0.12);
-        doc.line(metaLabelX, metaY + 2.2, pageWidth - marginX - 2, metaY + 2.2);
+        doc.setDrawColor(...palette.linesoft);
+        doc.setLineWidth(0.1);
+        doc.line(metaLabelX, metaY + 2, pageWidth - marginX - 2, metaY + 2);
       }
-
       metaY += metaRowHeight;
     });
 
     y = metaCardY + metaCardHeight + 5;
     doc.setDrawColor(...palette.line);
-    doc.setLineWidth(0.2);
+    doc.setLineWidth(0.15);
     doc.line(textColumnX, y, pageWidth - marginX, y);
-    y += 6;
+    y += 5;
 
     doc.setFont(undefined, "normal");
-    doc.setFontSize(8.5);
+    doc.setFontSize(8);
     doc.setTextColor(...palette.mutedText);
     doc.text(`Generated: ${exportedAt}`, textColumnX, y);
     y += 10;
 
     // -- Sections -------------------------------------------------------------
+    let lastPhase = null;
+
     sectionEntries.forEach((entry) => {
-      const sectionBarWidth = 2.2;
-      const sectionTextX = textColumnX;
-      // Section heading
-      needsNewPage(16);
-      y += 4;
+      // Draw phase divider when group changes
+      if (entry.phase && entry.phase !== lastPhase) {
+        drawPhaseDivider(entry.phase);
+        lastPhase = entry.phase;
+      }
 
-      doc.setFillColor(...palette.softBlue);
-      doc.roundedRect(marginX - 1.5, y - 5.5, pageWidth - marginX * 2 + 3, 8.5, 2.2, 2.2, "F");
-      doc.setFillColor(...palette.orange);
-      doc.rect(marginX - 1.5, y - 5.5, sectionBarWidth, 8.5, "F");
+      drawSectionHeading(entry.label);
 
-      doc.setFont(undefined, "bold");
-      doc.setFontSize(12);
-      doc.setTextColor(...palette.ink);
-      doc.text(entry.label, sectionTextX, y);
-      y += 2.5;
-      doc.setDrawColor(...palette.line);
-      doc.setLineWidth(0.25);
-      doc.line(textColumnX, y, pageWidth - marginX, y);
-      y += 5;
-
-      // Body content
       const rawLines = String(entry.formattedValue).split("\n");
       rawLines.forEach((rawLine) => {
         const expanded = rawLine.replace(/\t/g, "  ");
         const trimmed = expanded.trim();
         if (!trimmed) {
-          y += 2.5;
+          y += 2;
           return;
         }
 
         const isBullet = trimmed.startsWith("- ");
         const isLabelLine = /^[A-Z][^:]{1,35}:\s*$/.test(trimmed);
         const sanitizedLine = sanitizePdfText(isBullet ? trimmed.slice(2) : trimmed);
-
-        // Keep pure label lines as headings; render all other content as point-form lines.
         const shouldBulletize = !isLabelLine;
-        const displayText = shouldBulletize ? `- ${sanitizedLine}` : sanitizedLine;
-        const indent = shouldBulletize ? 3.5 : 0;
+        const displayText = shouldBulletize ? `–  ${sanitizedLine}` : sanitizedLine;
+        const indent = shouldBulletize ? 4 : 0;
         const textX = textColumnX + indent;
         const textWidth = maxLineWidth - indent;
 
@@ -1107,6 +1198,8 @@ const ScenarioForm = () => {
           y += bodyLH;
         });
       });
+
+      y += 2;
     });
 
     // -- Footer on every page -------------------------------------------------
