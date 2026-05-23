@@ -1854,6 +1854,7 @@ Scenario shaping rules:
 - Vital sign changes must reflect treatment response, missed care, incorrect care, exertion, movement, fatigue, clinical deterioration, or transport-phase reassessment when appropriate.
 - expectedTreatment must be a structured multi-item list of practical paramedic actions, not a paragraph.
 - protocolNotes must be a structured multi-item list, not a paragraph.
+- Do not include URLs, web links, or external references in any field.
 - teachersPoints must be one compact instructor-voice paragraph, maximum 4 sentences. Name the trap or the easy miss in this specific case. Name the pivot point or the finding that should change the call. End with one concrete next-call adjustment. Do not restate the expected management. Do not restate the learning objectives. Sound like a senior paramedic debriefing after the call, not a textbook summary.
 - learningObjectives and vocationalLearningOutcomes must each be list items, not combined prose. selfReflectionPrompts must be scenario-specific questions that ask what the student would do differently or what changed their thinking. Each prompt must be answerable in one or two sentences. Avoid open-ended emotional questions. Focus on reasoning, prioritization, reassessment decisions, and communication choices specific to this case. Do not restate the learning objectives as questions.
 - Avoid empty strings for clinically relevant fields unless truly not applicable.
