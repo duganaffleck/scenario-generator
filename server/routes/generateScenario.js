@@ -921,16 +921,6 @@ function getComplexityInstruction(complexity) {
         'Avoid excessive branching, unusual combinations, or stacked complications.',
         'The educational value should come from doing the basics well.'
       ].join(' ');
-<<<<<<< HEAD
-    case 'Clean':
-      return [
-        'Use one clear primary problem plus one or two meaningful complicating factors.',
-        'Require reassessment, prioritization, and some interpretation rather than simple pattern matching.',
-        'Allow a few distracting or overlapping clues, but keep the case understandable and teachable.',
-        'This should feel like a realistic training call that requires thought without becoming overloaded.'
-      ].join(' ');
-=======
->>>>>>> e5822ef (refactor: simplify complexity, friction, and depth options to two choices each with fallback mapping for old values)
     case 'Complex':
       return [
         'Layer the case with competing cues, clinical ambiguity, operational demands, or evolving deterioration.',
