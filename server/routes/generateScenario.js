@@ -282,6 +282,13 @@ const REQUIRED_FIELDS = {
     secondSet: defaultVitalSet(),
     additionalSets: []
   },
+  ecgFindings: {
+    ecgType: "",
+    rhythmInterpretation: "",
+    twelveLeadFindings: "",
+    fifteenLeadFindings: "",
+    ecgClinicalNote: "",
+  },
   caseProgression: defaultCaseProgression(),
   transportPhase: defaultTransportPhase(),
   instructorGuidance: defaultInstructorGuidance(),
@@ -828,6 +835,17 @@ function normalizeScenario(parsed, options = {}) {
   );
 
   normalized.vitalSigns = normalizeVitalSigns(source.vitalSigns, ecgInterpretation);
+
+  if (source.ecgFindings && typeof source.ecgFindings === "object") {
+    normalized.ecgFindings = {
+      ecgType: source.ecgFindings.ecgType || "",
+      rhythmInterpretation: source.ecgFindings.rhythmInterpretation || "",
+      twelveLeadFindings: source.ecgFindings.twelveLeadFindings || "",
+      fifteenLeadFindings: source.ecgFindings.fifteenLeadFindings || "",
+      ecgClinicalNote: source.ecgFindings.ecgClinicalNote || "",
+    };
+  }
+
   normalized.initialAssessment = normalizeInitialAssessment(source.initialAssessment);
   normalized.caseProgression = normalizeCaseProgression(source.caseProgression);
   normalized.transportPhase = normalizeTransportPhase(source.transportPhase);
@@ -1737,6 +1755,15 @@ ${ECG_WHITELIST.map((item) => `- ${item}`).join('\n')}
 - Update vitalSigns.secondSet.ecgInterpretation only if the rhythm changes
 - Do not use a separate top-level ecgInterpretation field
 - If the case is isolated trauma, leave ecgInterpretation blank
+
+Also return a top-level ecgFindings object with these fields:
+- ecgType: "rhythm" for basic medical calls, "12-lead" for cardiac, respiratory with hypoxia, AMS, syncope, overdose, post-ROSC, or any call where a 12-lead would be clinically indicated. "15-lead" only when inferior STEMI or right ventricular involvement is suspected.
+- rhythmInterpretation: one to two sentences describing the rhythm in plain clinical language including rate, regularity, and any notable features. Always populate this field.
+- twelveLeadFindings: describe the 12-lead findings in plain clinical language when ecgType is "12-lead" or "15-lead". Include axis, ST changes, intervals, and any notable findings. Leave empty string if ecgType is "rhythm" only.
+- fifteenLeadFindings: describe right-sided or posterior lead findings when ecgType is "15-lead". Focus on RV involvement, posterior changes, or right-sided ST changes. Leave empty string if ecgType is "rhythm" or "12-lead".
+- ecgClinicalNote: one sentence connecting the ECG findings to the clinical presentation and treatment decisions.
+- Do not leave rhythmInterpretation blank on any call that has an ECG value in vitalSigns.
+- Do not generate 12-lead or 15-lead findings for isolated trauma without medical concern.
 
 Scenario parameters:
 - Semester: ${semester}

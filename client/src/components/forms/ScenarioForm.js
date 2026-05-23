@@ -1433,6 +1433,97 @@ const ScenarioForm = () => {
               );
             })}
           </div>
+
+          {scenario.ecgFindings && (scenario.ecgFindings.rhythmInterpretation ||
+            scenario.ecgFindings.twelveLeadFindings ||
+            scenario.ecgFindings.fifteenLeadFindings) && (
+            <div style={{ marginTop: "0.85rem", borderTop: "1px solid var(--vn-border)", paddingTop: "0.85rem" }}>
+
+              {scenario.ecgFindings.rhythmInterpretation && (
+                <div style={{ marginBottom: "0.65rem" }}>
+                  <div style={{
+                    fontSize: "0.72rem", fontWeight: 700,
+                    color: "var(--vn-muted-text)", textTransform: "uppercase",
+                    letterSpacing: "0.06em", marginBottom: "0.25rem",
+                  }}>
+                    Rhythm Interpretation
+                  </div>
+                  <div style={{ fontSize: "0.9rem", color: "var(--vn-ink)", lineHeight: "1.6" }}>
+                    {scenario.ecgFindings.rhythmInterpretation}
+                  </div>
+                </div>
+              )}
+
+              {scenario.ecgFindings.twelveLeadFindings && (
+                <div style={{ marginBottom: "0.65rem" }}>
+                  <div style={{
+                    fontSize: "0.72rem", fontWeight: 700,
+                    color: "var(--vn-muted-text)", textTransform: "uppercase",
+                    letterSpacing: "0.06em", marginBottom: "0.25rem",
+                  }}>
+                    12-Lead Findings
+                    <button
+                      type="button"
+                      style={{
+                        marginLeft: "0.5rem", cursor: "pointer",
+                        color: "var(--vn-teal)", background: "transparent",
+                        border: "1px solid var(--vn-teal)", borderRadius: "4px",
+                        fontSize: "0.68rem", padding: "0.1rem 0.4rem",
+                        fontWeight: 700, verticalAlign: "middle",
+                      }}
+                      title="12-Lead image coming soon"
+                      onClick={() => alert("12-Lead ECG image repository coming soon.")}
+                    >
+                      View Strip
+                    </button>
+                  </div>
+                  <div style={{ fontSize: "0.9rem", color: "var(--vn-ink)", lineHeight: "1.6" }}>
+                    {scenario.ecgFindings.twelveLeadFindings}
+                  </div>
+                </div>
+              )}
+
+              {scenario.ecgFindings.fifteenLeadFindings && (
+                <div style={{ marginBottom: "0.65rem" }}>
+                  <div style={{
+                    fontSize: "0.72rem", fontWeight: 700,
+                    color: "var(--vn-muted-text)", textTransform: "uppercase",
+                    letterSpacing: "0.06em", marginBottom: "0.25rem",
+                  }}>
+                    15-Lead / Right-Sided Findings
+                    <button
+                      type="button"
+                      style={{
+                        marginLeft: "0.5rem", cursor: "pointer",
+                        color: "var(--vn-teal)", background: "transparent",
+                        border: "1px solid var(--vn-teal)", borderRadius: "4px",
+                        fontSize: "0.68rem", padding: "0.1rem 0.4rem",
+                        fontWeight: 700, verticalAlign: "middle",
+                      }}
+                      title="15-Lead image coming soon"
+                      onClick={() => alert("15-Lead ECG image repository coming soon.")}
+                    >
+                      View Strip
+                    </button>
+                  </div>
+                  <div style={{ fontSize: "0.9rem", color: "var(--vn-ink)", lineHeight: "1.6" }}>
+                    {scenario.ecgFindings.fifteenLeadFindings}
+                  </div>
+                </div>
+              )}
+
+              {scenario.ecgFindings.ecgClinicalNote && (
+                <div style={{
+                  fontSize: "0.85rem", color: "var(--vn-muted-text)",
+                  fontStyle: "italic", lineHeight: "1.6",
+                  borderLeft: "3px solid var(--vn-teal)",
+                  paddingLeft: "0.6rem", marginTop: "0.3rem",
+                }}>
+                  {scenario.ecgFindings.ecgClinicalNote}
+                </div>
+              )}
+            </div>
+          )}
         </div>
       );
     }
