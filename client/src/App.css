@@ -1,18 +1,18 @@
 @import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Spectral:wght@600;700&display=swap");
 
 :root {
-  --vn-ink: #123047;
+  --vn-ink: #1f2933;
   --vn-teal: #0d8b8b;
   --vn-teal-deep: #0a6e72;
   --vn-orange: #f28c28;
-  --vn-paper: #f7f4ee;
+  --vn-paper: #f7f3ea;
   --vn-sky: #dff0f5;
   --vn-shell: #f1f6f8;
-  --vn-border: #c7d9df;
+  --vn-border: rgba(31, 41, 51, 0.12);
   --vn-page-bg:
-    radial-gradient(circle at 12% 15%, rgba(13, 139, 139, 0.16), transparent 38%),
-    radial-gradient(circle at 88% 10%, rgba(242, 140, 40, 0.14), transparent 32%),
-    linear-gradient(180deg, #edf4f6 0%, #f8f5ef 65%, #eef5f7 100%);
+    radial-gradient(circle at 12% 10%, rgba(242, 140, 40, 0.12), transparent 30rem),
+    radial-gradient(circle at 88% 4%, rgba(40, 124, 122, 0.08), transparent 28rem),
+    linear-gradient(180deg, #fbfaf6 0%, #f7f3ea 58%, #f2eee6 100%);
   --vn-orb-left-bg: radial-gradient(circle, rgba(13, 139, 139, 0.24) 0%, rgba(13, 139, 139, 0) 70%);
   --vn-orb-right-bg: radial-gradient(circle, rgba(242, 140, 40, 0.22) 0%, rgba(242, 140, 40, 0) 72%);
   --vn-hero-bg: linear-gradient(138deg, rgba(18, 48, 71, 0.95), rgba(10, 110, 114, 0.92));
@@ -38,23 +38,23 @@
   --vn-export-end: #d97706;
   --vn-export-text: #fffaf0;
   --vn-export-shadow: 0 6px 14px rgba(217, 119, 6, 0.34);
-  --vn-panel-shadow: 0 10px 24px rgba(18, 48, 71, 0.14);
-  --vn-panel-border: #bdd7e2;
+  --vn-panel-shadow: 0 12px 28px rgba(31, 41, 51, 0.065);
+  --vn-panel-border: rgba(31, 41, 51, 0.12);
   --vn-form-top: #eaf5fb;
   --vn-form-bottom: #f8fcff;
   --vn-shift-card-bg: rgba(255, 255, 255, 0.65);
   --vn-shift-card-border: rgba(155, 193, 208, 0.72);
   --vn-input-bg: #ffffff;
   --vn-input-border: #94a3b8;
-  --vn-muted-text: #475569;
+  --vn-muted-text: #64707d;
   --vn-button-start: #0d8b8b;
   --vn-button-end: #0a6e72;
   --vn-button-text: #ffffff;
   --vn-button-shadow: 0 8px 16px rgba(10, 110, 114, 0.25);
-  --vn-output-top: #ffffff;
-  --vn-output-bottom: #f1f8fc;
-  --vn-card-bg: #ffffff;
-  --vn-card-border: #d8e7ef;
+  --vn-output-top: rgba(255, 255, 255, 0.88);
+  --vn-output-bottom: rgba(251, 250, 246, 0.78);
+  --vn-card-bg: rgba(255, 255, 255, 0.82);
+  --vn-card-border: rgba(31, 41, 51, 0.12);
   --vn-accent-text: #0d9488;
   --vn-error-text: #dc2626;
   --vn-loading-overlay: rgba(15, 23, 42, 0.45);
