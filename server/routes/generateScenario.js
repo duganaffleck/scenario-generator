@@ -603,7 +603,7 @@ function inferChiefComplaint({ existingChiefComplaint = '', selectedType = '', s
     return 'Shortness of breath';
   }
 
-  if (typeLower === 'trauma' || textHasAny(text, ['pedestrian struck', 'fall', 'collision', 'fracture', 'pinned'])) {
+  if (typeLower === 'trauma' || textHasAny(text, ['pedestrian struck', 'collision', 'fracture', 'pinned'])) {
     return 'Traumatic injury';
   }
 
