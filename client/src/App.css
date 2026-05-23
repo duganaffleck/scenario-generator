@@ -502,8 +502,8 @@ html[data-theme="night"] .scenario-pause-card p {
 
 /* Spectral font for phase group titles */
 .scenario-phase-title {
-  font-family: var(--vn-font-heading);
-  font-weight: 700;
+  font-family: var(--vn-font-body);
+  font-weight: 800;
   font-size: 1.12rem;
   color: var(--vn-ink);
   letter-spacing: -0.01em;
