@@ -1581,7 +1581,6 @@ const ScenarioForm = () => {
         </>
       )}
       <div style={styles.headerBar}>
-        <h1 style={styles.heading}>VitalNotes Scenario Generator</h1>
         <div style={styles.headerActionWrap}>
           <button
             type="button"
