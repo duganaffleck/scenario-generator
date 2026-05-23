@@ -1474,13 +1474,15 @@ function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
     return {
       style: 'trauma pain management scenario',
       likelyMedicationOpportunities: [
-        'Ketorolac if clinically indicated'
+        'Ketorolac if clinically indicated',
+        'TXA (IM or IV) when criteria and timing are met per protocol'
       ],
       contraindicationChecks: [
-        'Consider bleeding risk',
+        'Consider bleeding risk before analgesia',
         'Consider hypotension',
-        'Consider allergy or contraindications',
-        'Consider reasons to withhold analgesia'
+        'Consider allergy or contraindications to analgesia',
+        'Consider reasons to withhold analgesia',
+        'TXA eligibility: suspected significant traumatic hemorrhage within protocol timing window'
       ],
       supportiveCareOpportunities: [
         'SMR decision making',
@@ -1492,6 +1494,7 @@ function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
       oxygenGuidance: 'Use oxygen only when clinically indicated.',
       instructionText: [
         'Pain management should be a decision, not automatic.',
+        'TXA is an established and increasingly common Ontario PCP intervention for suspected significant traumatic hemorrhage; it can be given IM or IV and should be included when mechanism, presentation, and timing make it clinically appropriate.',
         'Scene management, packaging, and transport decisions should be important parts of the call.'
       ].join(' ')
     };
@@ -1726,6 +1729,7 @@ Required object structure:
   ],
   "conclusion": ""
 }
+- differentialDiagnosis must contain a maximum of 3 conditions. Do not generate more than 3 entries.
 
 - grsAnchors must contain these EXACT 7 domains:
   - situationalAwareness
