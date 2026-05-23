@@ -26,7 +26,7 @@ const GENERATION_DEPTH_PROFILES = {
     temperature: 0.75,
     maxTokens: parsePositiveInt(process.env.OPENAI_MAX_TOKENS_QUICK, 13000),
     promptInstruction:
-      'Prioritize speed, structural completeness, and immediate usability. Keep each section lean but still scenario-specific. Do not omit required fields. GRS anchors should remain specific, but shorter and more direct.'
+      'Prioritize speed and structural completeness. Keep scenarioIntro to 2 sentences. Keep patientPresentation to 2 to 3 sentences. Keep incidentNarrative to 3 to 4 sentences. Keep physicalExam to one specific finding per field with no elaboration. Keep caseProgression to 2 points per track. Keep clinicalReasoning.summary to 2 sentences. Keep GRS anchors to one direct sentence per bullet. Keep teachersPoints to 2 to 3 sentences. Keep selfReflectionPrompts to 3 prompts. Do not omit required fields. Keep every section scenario-specific even when short.'
   },
 
   Detailed: {
@@ -35,7 +35,7 @@ const GENERATION_DEPTH_PROFILES = {
     temperature: 1,
     maxTokens: parsePositiveInt(process.env.OPENAI_MAX_TOKENS_DETAILED, 24000),
     promptInstruction:
-      'Prioritize instructor-quality depth, internal coherence, clinical realism, and educational usefulness. Expand patient presentation, assessment findings, progression, clinical reasoning, expected management, teacher points, and GRS anchors with richer scenario-specific detail.'
+      'Prioritize instructor-quality depth and clinical realism throughout. Write scenarioIntro as 3 to 5 sentences that name the teaching purpose. Write patientPresentation as a full paragraph with behavioral, positional, and speech details. Write incidentNarrative as a full timeline with contextual and clinical detail. Write physicalExam with specific findings and brief clinical context per field. Write caseProgression with 3 to 4 points per track showing realistic clinical cause and effect. Write clinicalReasoning with a full argument per differential including mechanism and distinguishing features. Write GRS anchors as 2 to 3 sentences per bullet describing specific observable behaviors tied to this call. Write teachersPoints as a full 4-sentence paragraph. Write selfReflectionPrompts as 4 to 5 specific clinical reasoning questions.'
   }
 };
 
@@ -935,16 +935,24 @@ function getComplexityInstruction(complexity) {
     case 'Simple':
       return [
         'Keep the case clean, teachable, and centered on one dominant problem.',
-        'Presentation should be recognizable, with limited ambiguity and limited competing distractions.',
+        'History should be reliable, mostly consistent, and straightforward to gather.',
+        'Physical assessment findings should be clear and directly support the working diagnosis.',
+        'Vital signs should be abnormal in a recognizable expected direction rather than borderline or ambiguous.',
+        'The differential diagnosis should have one clear leading diagnosis and at most one plausible alternative.',
         'Avoid excessive branching, unusual combinations, or stacked complications.',
-        'The educational value should come from doing the basics well.'
+        'The educational value should come from doing the basics well, choosing the right treatment, and completing a clean reassessment loop.'
       ].join(' ');
     case 'Complex':
       return [
         'Layer the case with competing cues, clinical ambiguity, operational demands, or evolving deterioration.',
+        'History should have gaps, inconsistencies, or competing explanations that require active clarification to resolve.',
+        'Physical assessment findings should include at least one misleading or unexpected finding that requires interpretation rather than pattern-matching.',
+        'Vital signs should be borderline, evolving, or only partially explained rather than clearly abnormal in one direction.',
+        'The differential diagnosis should include at least two plausible competing diagnoses that require active reasoning to separate.',
+        'Include at least one complicating factor such as a relevant comorbidity, a medication interaction, a contraindication decision point, a scene challenge, or a patient factor that changes management.',
         'Require stronger prioritization, reassessment, and differentiation between plausible problems.',
-        'Use more realistic uncertainty, but do not make the scenario unfair or incoherent.',
-        'The complexity should challenge organization, judgment, and transport/resource planning.'
+        'Use realistic uncertainty but do not make the scenario unfair or incoherent.',
+        'The complexity should challenge organization, judgment, and transport and resource planning.'
       ].join(' ');
     default:
       return getComplexityInstruction(
