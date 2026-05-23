@@ -1459,52 +1459,46 @@ const ScenarioForm = () => {
 
         <div style={styles.rightPanel}>
           {showInfoSection && (
-            <section className="info-section">
-              <div style={{
-                backgroundColor: "var(--vn-card-bg)",
-                border: "1px solid var(--vn-card-border)",
-                borderLeft: "4px solid var(--vn-teal)",
-                borderRadius: "12px",
-                padding: "1.1rem 1.25rem",
-                marginBottom: "1rem",
-              }}>
-                <p style={{
-                  margin: "0 0 0.6rem",
-                  fontWeight: 700,
-                  fontSize: "0.95rem",
-                  color: "var(--vn-ink)",
-                }}>
-                  How to use this scenario
-                </p>
-                <p style={{
-                  margin: "0 0 0.5rem",
-                  fontSize: "0.88rem",
-                  color: "var(--vn-muted-text)",
-                  lineHeight: "1.6",
-                }}>
-                  Generate a scenario, then work through it in two steps.
-                </p>
-                <p style={{
-                  margin: "0 0 0.3rem",
-                  fontSize: "0.88rem",
-                  color: "var(--vn-ink)",
-                  lineHeight: "1.6",
-                }}>
-                  <strong>Step 1 — Practice first.</strong> Read The Call.
-                  Work through it in your head or with a partner.
-                  Decide what you would do before reading on.
-                </p>
-                <p style={{
-                  margin: "0",
-                  fontSize: "0.88rem",
-                  color: "var(--vn-ink)",
-                  lineHeight: "1.6",
-                }}>
-                  <strong>Step 2 — Compare after.</strong> Read What Was
-                  Happening, Expected Management, Teaching Points, and
-                  Self-Assessment after you have worked through the case.
-                </p>
-              </div>
+            <section className="info-section" style={{
+              background: 'var(--vn-sky, #dff0f5)',
+              border: '1px solid var(--vn-border, #c7d9df)',
+              borderRadius: '1rem',
+              padding: '1.5rem 2rem',
+              marginBottom: '2rem',
+              width: '88%',
+              maxWidth: '1800px',
+              marginLeft: 'auto',
+              marginRight: 'auto',
+              boxShadow: '0 2px 12px rgba(18,48,71,0.06)'
+            }}>
+              <h2 style={{marginTop: 0, color: 'var(--vn-teal-deep, #0a6e72)'}}>Who this is for</h2>
+              <p style={{marginBottom: '1.2rem'}}>Paramedic educators, simulation facilitators, and learners seeking high-fidelity, protocol-aligned scenario practice with built-in teaching cues.</p>
+              <h2 style={{marginTop: 0, color: 'var(--vn-orange, #f28c28)'}}>How to use</h2>
+              <ol style={{paddingLeft: '1.2em', margin: 0}}>
+                <li>
+                  <b>Set scenario parameters:</b>
+                  <ul style={{marginTop: '0.5em', marginBottom: '0.5em'}}>
+                    <li><b>Semester:</b> Select the learner level. Lower semesters (2) generate foundational cases; higher semesters (4) create advanced, complex scenarios.</li>
+                    <li><b>Type:</b> Choose the main scenario category (Medical, Trauma, Cardiac, Respiratory, Environmental) to focus the case content.</li>
+                    <li><b>Environment:</b> Pick the setting (Urban, Rural, Wilderness, Industrial, Home, Public Space) to shape the context and available resources.</li>
+                    <li><b>Complexity:</b> Simple keeps the call focused on one clear problem. Complex layers competing cues and ambiguity.</li>
+                    <li><b>Scenario Friction:</b> Clean keeps the scene operationally straightforward. Pressured adds realistic friction that affects assessment, packaging, and transport.</li>
+                    <li><b>Generation Depth:</b> Quick Draft is lean and fast. Detailed produces fuller instructor-grade scenarios.</li>
+                  </ul>
+                </li>
+                <li>
+                  <b>Use the Instructor Prompt (optional):</b>
+                  <ul style={{marginTop: '0.5em', marginBottom: '0.5em'}}>
+                    <li>Enter a specific theme, patient profile, or teaching focus to customize the scenario. Example: <i>"Make this a sports injury in a teen with subtle signs of head trauma."</i></li>
+                    <li>Be as clear and concrete as possible for best results. You can specify age, setting, clinical twist, or learning goal.</li>
+                    <li>Leave blank for a general scenario based on your other selections.</li>
+                  </ul>
+                </li>
+                <li>Click <b>Generate Scenario</b> to create a detailed, protocol-aligned case with teaching cues.</li>
+                <li>Use the <b>Night Shift</b> button (moon/sun icon) to toggle between day and night themes and shift-specific scenario flavor.</li>
+                <li>Use the <b>Reset</b> button to clear all fields and start over.</li>
+                <li>Use the <b>Export</b> button to download the generated scenario as a PDF (enabled after generating a scenario).</li>
+              </ol>
             </section>
           )}
           {scenario && (
