@@ -1581,7 +1581,7 @@ const ScenarioForm = () => {
         </>
       )}
       <div style={styles.headerBar}>
-        <h1 style={styles.heading}>Scenario Generator 1.0</h1>
+        <h1 style={styles.heading}>VitalNotes Scenario Generator</h1>
         <div style={styles.headerActionWrap}>
           <button
             type="button"
@@ -1682,33 +1682,19 @@ const ScenarioForm = () => {
               boxShadow: '0 2px 12px rgba(18,48,71,0.06)'
             }}>
               <h2 style={{marginTop: 0, color: 'var(--vn-orange, #f28c28)'}}>Who this is for</h2>
-              <p style={{marginBottom: '1.2rem'}}>Paramedic educators, simulation facilitators, and learners seeking high-fidelity, protocol-aligned scenario practice with built-in teaching cues.</p>
+              <p style={{marginBottom: '1.2rem'}}>Paramedic students and instructors who want scenarios that think. Each call is built around realistic clinical reasoning, Ontario scope, and the kind of ambiguity that actually shows up on a truck.</p>
               <h2 style={{marginTop: 0, color: 'var(--vn-orange, #f28c28)'}}>How to use</h2>
-              <ol style={{paddingLeft: '1.2em', margin: 0}}>
-                <li>
-                  <b>Set scenario parameters:</b>
-                  <ul style={{marginTop: '0.5em', marginBottom: '0.5em'}}>
-                    <li><b>Semester:</b> Select the learner level. Lower semesters (2) generate foundational cases; higher semesters (4) create advanced, complex scenarios.</li>
-                    <li><b>Type:</b> Choose the main scenario category (Medical, Trauma, Cardiac, Respiratory, Environmental) to focus the case content.</li>
-                    <li><b>Environment:</b> Pick the setting (Urban, Rural, Wilderness, Industrial, Home, Public Space) to shape the context and available resources.</li>
-                    <li><b>Complexity:</b> Simple keeps the call focused on one clear problem. Complex layers competing cues and ambiguity.</li>
-                    <li><b>Scenario Friction:</b> Clean keeps the scene operationally straightforward. Pressured adds realistic friction that affects assessment, packaging, and transport.</li>
-                    <li><b>Generation Depth:</b> Quick Draft is lean and fast. Detailed produces fuller instructor-grade scenarios.</li>
-                  </ul>
-                </li>
-                <li>
-                  <b>Use the Instructor Prompt (optional):</b>
-                  <ul style={{marginTop: '0.5em', marginBottom: '0.5em'}}>
-                    <li>Enter a specific theme, patient profile, or teaching focus to customize the scenario. Example: <i>"Make this a sports injury in a teen with subtle signs of head trauma."</i></li>
-                    <li>Be as clear and concrete as possible for best results. You can specify age, setting, clinical twist, or learning goal.</li>
-                    <li>Leave blank for a general scenario based on your other selections.</li>
-                  </ul>
-                </li>
-                <li>Click <b>Generate Scenario</b> to create a detailed, protocol-aligned case with teaching cues.</li>
-                <li>Use the <b>Night Shift</b> button (moon/sun icon) to toggle between day and night themes and shift-specific scenario flavor.</li>
-                <li>Use the <b>Reset</b> button to clear all fields and start over.</li>
-                <li>Use the <b>Export</b> button to download the generated scenario as a PDF (enabled after generating a scenario).</li>
-              </ol>
+              <p style={{marginBottom: '0.75rem'}}>Set your parameters and hit Generate. Here's what each option does:</p>
+              <ul style={{paddingLeft: '1.2em', margin: '0 0 1.2rem 0'}}>
+                <li style={{marginBottom: '0.5rem'}}><b>Semester</b> — controls clinical expectations. Semester 2 stays BLS-focused. Semester 3 opens directive-aware treatment. Semester 4 expects integrated reasoning under pressure.</li>
+                <li style={{marginBottom: '0.5rem'}}><b>Type</b> — the main call category. Medical, Trauma, Cardiac, Respiratory, or Environmental.</li>
+                <li style={{marginBottom: '0.5rem'}}><b>Environment</b> — shapes scene texture, access, and transport decisions. Urban calls feel different from rural ones.</li>
+                <li style={{marginBottom: '0.5rem'}}><b>Complexity</b> — Simple means one clear problem done well. Complex means competing cues, ambiguity, and harder prioritization.</li>
+                <li style={{marginBottom: '0.5rem'}}><b>Scenario Friction</b> — Clean keeps the scene operationally straightforward so the learning stays clinical. Pressured layers realistic scene problems that change how you assess, package, and move.</li>
+                <li style={{marginBottom: '0.5rem'}}><b>Generation Depth</b> — Quick Draft is lean and fast. Detailed adds fuller progression, richer clinical reasoning, and more specific GRS anchors.</li>
+              </ul>
+              <p style={{marginBottom: '0.5rem'}}>The <b>Instructor Prompt</b> field is optional. Use it to push the scenario in a specific direction — a patient profile, a clinical twist, a teaching focus, or a setting detail. The more specific you are, the better the result.</p>
+              <p style={{margin: 0}}>Use <b>Night Shift</b> to switch to a darker reading mode with overnight call flavour. Use <b>Export</b> to download the scenario as a PDF once it's generated.</p>
             </section>
           )}
           {scenario && (
