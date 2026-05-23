@@ -1358,7 +1358,7 @@ const ScenarioForm = () => {
             {renderPillGroup("Environment", ENVIRONMENTS, formData.environment, (val) => setFormData(prev => ({ ...prev, environment: val })))}
             {renderPillGroup("Complexity", COMPLEXITIES, formData.complexity, (val) => setFormData(prev => ({ ...prev, complexity: val })))}
             {renderPillGroup("Scenario Friction", SCENARIO_FRICTION_LEVELS, formData.scenarioFriction, (val) => setFormData(prev => ({ ...prev, scenarioFriction: val })))}
-            {renderPillGroup("Generation Depth", GENERATION_DEPTHS, formData.generationDepth, (val) => setFormData(prev => ({ ...prev, generationDepth: val }))}}
+            {renderPillGroup("Generation Depth", GENERATION_DEPTHS, formData.generationDepth, (val) => setFormData(prev => ({ ...prev, generationDepth: val })))}
 
 
             <div style={styles.fieldRow}>
