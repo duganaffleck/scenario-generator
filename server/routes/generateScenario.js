@@ -1173,9 +1173,7 @@ function buildScenarioCore({ semester, type, environment, complexity, uniqueness
     plausibleDifferentials = [
       'ACS',
       'arrhythmia',
-      'angina',
-      'non-cardiac chest pain',
-      'anxiety or stress-related presentation'
+      'non-cardiac chest pain'
     ];
     symptomPattern = pick([
       'cardiac symptoms with pressure, discomfort, autonomic features, or exertional context',
@@ -1193,9 +1191,7 @@ function buildScenarioCore({ semester, type, environment, complexity, uniqueness
     plausibleDifferentials = [
       'asthma',
       'COPD exacerbation',
-      'pneumonia',
-      'allergic respiratory process',
-      'other respiratory distress cause'
+      'pneumonia'
     ];
     symptomPattern = pick([
       'respiratory distress with visible work of breathing and believable reassessment points',
@@ -1231,9 +1227,7 @@ function buildScenarioCore({ semester, type, environment, complexity, uniqueness
     plausibleDifferentials = [
       'heat illness',
       'cold exposure',
-      'dehydration',
-      'toxin or exposure-related illness',
-      'other environmentally triggered process'
+      'dehydration'
     ];
     symptomPattern = pick([
       'environment-linked physiology with scene and transport implications',
@@ -1263,8 +1257,7 @@ function buildScenarioCore({ semester, type, environment, complexity, uniqueness
     plausibleDifferentials = [
       'medical problem suggested by presentation',
       'reasonable alternative supported by history',
-      'one misleading but fair possibility',
-      'comorbidity-related complication'
+      'one misleading but fair possibility'
     ];
 
     symptomPattern = pick([
