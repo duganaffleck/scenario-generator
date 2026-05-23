@@ -136,7 +136,6 @@ const SECTION_GROUPS = {
   "What Was Happening": [
     "clinicalReasoning",
     "caseProgression",
-    "scenarioRationale",
   ],
   "Expected Management": [
     "expectedTreatment",
@@ -145,6 +144,7 @@ const SECTION_GROUPS = {
   "Teaching Points": [
     "teachersPoints",
     "learningObjectives",
+    "scenarioRationale",
     "instructorGuidance",
   ],
   "Self-Assessment": [
