@@ -109,12 +109,12 @@ const SCENARIO_FRICTION_LEVELS = ["Clean", "Pressured"];
 const USE_PILL_TOGGLES = false;
 
 const FIELD_TOOLTIPS = {
-  semester: "Training level: 2 = foundational skills, 3 = intermediate assessment/treatment, 4 = advanced decision-making with rare/complex presentations",
-  type: "Scenario category: Medical (illness), Trauma (injury), Cardiac (heart/rhythm), Respiratory (breathing), Environmental (exposure/environmental illness)",
-  environment: "Call location: Urban (city), Rural (countryside), Wilderness (remote outdoor), Industrial (worksite), Home (residence), Public Space (crowd areas, venues)",
-  complexity: "Case difficulty: Simple is one clear problem done well, Complex layers competing cues and ambiguity requiring stronger prioritization and reassessment.",
-  generationDepth: "Generation detail: Quick Draft is lean and faster, Detailed produces fuller instructor-grade scenarios with richer progression, reasoning, and GRS anchors.",
-  scenarioFriction: "Operational pressure: Clean keeps the scene focused and straightforward, Pressured adds layered realistic friction that meaningfully affects assessment, packaging, and transport.",
+  semester: "Training level: 2 = foundational assessment and safe basic care, 3 = directive-aware treatment with medication decisions, 4 = near-graduation complexity with prioritization under pressure",
+  type: "Scenario category: Medical, Trauma, Cardiac, Respiratory, or Environmental",
+  environment: "Call location affects scene texture, access, collateral, and transport decisions",
+  complexity: "Simple = one clear problem done well. Complex = competing cues and ambiguity requiring stronger prioritization.",
+  generationDepth: "Quick Draft = lean and fast. Detailed = fuller instructor-grade depth with richer progression, reasoning, and GRS anchors.",
+  scenarioFriction: "Clean = operationally straightforward, learning comes from clinical reasoning. Pressured = layered realistic friction that meaningfully affects assessment, packaging, and transport.",
 };
 
 const SECTION_GROUPS = {
@@ -1459,46 +1459,52 @@ const ScenarioForm = () => {
 
         <div style={styles.rightPanel}>
           {showInfoSection && (
-            <section className="info-section" style={{
-              background: 'var(--vn-sky, #dff0f5)',
-              border: '1px solid var(--vn-border, #c7d9df)',
-              borderRadius: '1rem',
-              padding: '1.5rem 2rem',
-              marginBottom: '2rem',
-              width: '88%',
-              maxWidth: '1800px',
-              marginLeft: 'auto',
-              marginRight: 'auto',
-              boxShadow: '0 2px 12px rgba(18,48,71,0.06)'
-            }}>
-              <h2 style={{marginTop: 0, color: 'var(--vn-teal-deep, #0a6e72)'}}>Who this is for</h2>
-              <p style={{marginBottom: '1.2rem'}}>Paramedic educators, simulation facilitators, and learners seeking high-fidelity, protocol-aligned scenario practice with built-in teaching cues.</p>
-              <h2 style={{marginTop: 0, color: 'var(--vn-orange, #f28c28)'}}>How to use</h2>
-              <ol style={{paddingLeft: '1.2em', margin: 0}}>
-                <li>
-                  <b>Set scenario parameters:</b>
-                  <ul style={{marginTop: '0.5em', marginBottom: '0.5em'}}>
-                    <li><b>Semester:</b> Select the learner level. Lower semesters (2) generate foundational cases; higher semesters (4) create advanced, complex scenarios.</li>
-                    <li><b>Type:</b> Choose the main scenario category (Medical, Trauma, Cardiac, Respiratory, Environmental) to focus the case content.</li>
-                    <li><b>Environment:</b> Pick the setting (Urban, Rural, Wilderness, Industrial, Home, Public Space) to shape the context and available resources.</li>
-                    <li><b>Complexity:</b> Adjust the clinical difficulty. Simple = straightforward, Moderate = typical multi-system, Complex = rare or challenging presentations.</li>
-                    <li><b>Scenario Friction:</b> Choose how messy the scene should feel. Low keeps the call cleaner, Moderate adds realistic access/family/movement pressure, and High adds layered but fair operational friction that should affect reassessment, packaging, or transport.</li>
-                    <li><b>Generation Depth:</b> Choose how much detail the generator should produce. Quick Draft is leaner and faster, Standard balances speed and depth, and Detailed is designed for richer instructor-focused scenarios.</li>
-                  </ul>
-                </li>
-                <li>
-                  <b>Use the Instructor Prompt (optional):</b>
-                  <ul style={{marginTop: '0.5em', marginBottom: '0.5em'}}>
-                    <li>Enter a specific theme, patient profile, or teaching focus to customize the scenario. Example: <i>"Make this a sports injury in a teen with subtle signs of head trauma."</i></li>
-                    <li>Be as clear and concrete as possible for best results. You can specify age, setting, clinical twist, or learning goal.</li>
-                    <li>Leave blank for a general scenario based on your other selections.</li>
-                  </ul>
-                </li>
-                <li>Click <b>Generate Scenario</b> to create a detailed, protocol-aligned case with teaching cues.</li>
-                <li>Use the <b>Night Shift</b> button (moon/sun icon) to toggle between day and night themes and shift-specific scenario flavor.</li>
-                <li>Use the <b>Reset</b> button to clear all fields and start over.</li>
-                <li>Use the <b>Export</b> button to download the generated scenario as a PDF (enabled after generating a scenario).</li>
-              </ol>
+            <section className="info-section">
+              <div style={{
+                backgroundColor: "var(--vn-card-bg)",
+                border: "1px solid var(--vn-card-border)",
+                borderLeft: "4px solid var(--vn-teal)",
+                borderRadius: "12px",
+                padding: "1.1rem 1.25rem",
+                marginBottom: "1rem",
+              }}>
+                <p style={{
+                  margin: "0 0 0.6rem",
+                  fontWeight: 700,
+                  fontSize: "0.95rem",
+                  color: "var(--vn-ink)",
+                }}>
+                  How to use this scenario
+                </p>
+                <p style={{
+                  margin: "0 0 0.5rem",
+                  fontSize: "0.88rem",
+                  color: "var(--vn-muted-text)",
+                  lineHeight: "1.6",
+                }}>
+                  Generate a scenario, then work through it in two steps.
+                </p>
+                <p style={{
+                  margin: "0 0 0.3rem",
+                  fontSize: "0.88rem",
+                  color: "var(--vn-ink)",
+                  lineHeight: "1.6",
+                }}>
+                  <strong>Step 1 — Practice first.</strong> Read The Call.
+                  Work through it in your head or with a partner.
+                  Decide what you would do before reading on.
+                </p>
+                <p style={{
+                  margin: "0",
+                  fontSize: "0.88rem",
+                  color: "var(--vn-ink)",
+                  lineHeight: "1.6",
+                }}>
+                  <strong>Step 2 — Compare after.</strong> Read What Was
+                  Happening, Expected Management, Teaching Points, and
+                  Self-Assessment after you have worked through the case.
+                </p>
+              </div>
             </section>
           )}
           {scenario && (
