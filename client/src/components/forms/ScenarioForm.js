@@ -106,7 +106,7 @@ const COMPLEXITIES = ["Simple", "Complex"];
 const GENERATION_DEPTHS = ["Quick Draft", "Detailed"];
 const SCENARIO_FRICTION_LEVELS = ["Clean", "Pressured"];
 
-const USE_PILL_TOGGLES = true;
+const USE_PILL_TOGGLES = false;
 
 const FIELD_TOOLTIPS = {
   semester: "Training level: 2 = foundational skills, 3 = intermediate assessment/treatment, 4 = advanced decision-making with rare/complex presentations",
@@ -1161,9 +1161,9 @@ const ScenarioForm = () => {
       };
       const scoreLabels = { "3": "Score 3 — Unsafe to Borderline", "5": "Score 5 — Competent", "7": "Score 7 — Exceptional" };
       const scoreColors = {
-        "3": { bg: "var(--vn-accent-card-bg)", border: "var(--vn-accent-card-border)", label: "#92400e" },
-        "5": { bg: "var(--vn-card-bg)", border: "var(--vn-card-border)", label: "var(--vn-muted-text)" },
-        "7": { bg: "var(--vn-protocol-card-bg)", border: "var(--vn-protocol-card-border)", label: "var(--vn-accent-text)" },
+        "3": { bg: "transparent", border: "var(--vn-border)", label: "var(--vn-muted-text)" },
+        "5": { bg: "transparent", border: "var(--vn-border)", label: "var(--vn-muted-text)" },
+        "7": { bg: "transparent", border: "var(--vn-border)", label: "var(--vn-accent-text)" },
       };
       return (
         <div>
