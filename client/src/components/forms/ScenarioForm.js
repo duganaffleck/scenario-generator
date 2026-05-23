@@ -106,13 +106,15 @@ const COMPLEXITIES = ["Simple", "Complex"];
 const GENERATION_DEPTHS = ["Quick Draft", "Detailed"];
 const SCENARIO_FRICTION_LEVELS = ["Clean", "Pressured"];
 
+const USE_PILL_TOGGLES = true;
+
 const FIELD_TOOLTIPS = {
   semester: "Training level: 2 = foundational skills, 3 = intermediate assessment/treatment, 4 = advanced decision-making with rare/complex presentations",
   type: "Scenario category: Medical (illness), Trauma (injury), Cardiac (heart/rhythm), Respiratory (breathing), Environmental (exposure/environmental illness)",
   environment: "Call location: Urban (city), Rural (countryside), Wilderness (remote outdoor), Industrial (worksite), Home (residence), Public Space (crowd areas, venues)",
-  complexity: "Case difficulty: Simple (straightforward presentation), Moderate (typical multi-system or subtle findings), Complex (rare presentations or multiple competing diagnoses)",
-  generationDepth: "Generation detail: Quick Draft is lean and faster, Standard balances completeness with speed, Detailed asks for fuller instructor-grade progression, reasoning, vitals, and GRS anchors",
-  scenarioFriction: "Operational messiness: Low keeps the scene cleaner, Moderate adds realistic access/family/movement friction, High adds layered but fair scene pressure that should affect reassessment and transport",
+  complexity: "Case difficulty: Simple is one clear problem done well, Complex layers competing cues and ambiguity requiring stronger prioritization and reassessment.",
+  generationDepth: "Generation detail: Quick Draft is lean and faster, Detailed produces fuller instructor-grade scenarios with richer progression, reasoning, and GRS anchors.",
+  scenarioFriction: "Operational pressure: Clean keeps the scene focused and straightforward, Pressured adds layered realistic friction that meaningfully affects assessment, packaging, and transport.",
 };
 
 const SECTION_GROUPS = {
@@ -1225,6 +1227,43 @@ const ScenarioForm = () => {
     return <span>{String(data)}</span>;
   };
 
+  const renderPillGroup = (label, options, currentValue, onChange) => {
+    if (!USE_PILL_TOGGLES) {
+      return (
+        <div style={styles.fieldRow}>
+          <label style={styles.pillLabel}>{label}</label>
+          <select
+            style={styles.select}
+            value={currentValue}
+            onChange={(e) => onChange(e.target.value)}
+          >
+            {options.map((opt) => (
+              <option key={opt} value={opt}>{opt}</option>
+            ))}
+          </select>
+        </div>
+      );
+    }
+    return (
+      <div style={styles.fieldRow}>
+        <span style={styles.pillLabel}>{label}</span>
+        <div style={styles.pillGroup}>
+          {options.map((opt) => (
+            <button
+              key={opt}
+              type="button"
+              style={currentValue === opt ? styles.pillOptionActive : styles.pillOption}
+              onClick={() => onChange(opt)}
+              disabled={loading}
+            >
+              {opt}
+            </button>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
   const renderSection = (title, content) => {
     const isProtocolNote = title === "protocolNotes";
 
@@ -1314,56 +1353,12 @@ const ScenarioForm = () => {
               {loading ? <FaSpinner className="spin" /> : "Generate Scenario"}
             </button>
 
-            {["semester", "type", "environment", "complexity", "scenarioFriction"].map((field) => (
-              <div key={field} style={styles.fieldRow}>
-                <label title={FIELD_TOOLTIPS[field]} style={{ cursor: "help" }}>
-                  {capitalizeFirstLetter(field)}:
-                </label>
-                <select
-                  name={field}
-                  value={formData[field]}
-                  onChange={handleChange}
-                  style={styles.select}
-                  className="a11y-focus"
-                  title={FIELD_TOOLTIPS[field]}
-                >
-                  {(field === "semester"
-                    ? SEMESTERS
-                    : field === "type"
-                      ? SCENARIO_TYPES
-                      : field === "environment"
-                        ? ENVIRONMENTS
-                        : field === "scenarioFriction"
-                          ? SCENARIO_FRICTION_LEVELS
-                          : COMPLEXITIES
-                  ).map((opt) => (
-                    <option key={opt} value={opt}>
-                      {opt}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            ))}
-
-
-            <div style={styles.fieldRow}>
-              <label htmlFor="generationDepth" title={FIELD_TOOLTIPS.generationDepth} style={{ cursor: "help" }}>Generation Depth:</label>
-              <select
-                id="generationDepth"
-                name="generationDepth"
-                title={FIELD_TOOLTIPS.generationDepth}
-                value={formData.generationDepth}
-                onChange={handleChange}
-                style={styles.select}
-                className="a11y-focus"
-              >
-                {GENERATION_DEPTHS.map((opt) => (
-                  <option key={opt} value={opt}>
-                    {opt}
-                  </option>
-                ))}
-              </select>
-            </div>
+            {renderPillGroup("Semester", SEMESTERS, formData.semester, (val) => setFormData(prev => ({ ...prev, semester: val })))}
+            {renderPillGroup("Type", SCENARIO_TYPES, formData.type, (val) => setFormData(prev => ({ ...prev, type: val })))}
+            {renderPillGroup("Environment", ENVIRONMENTS, formData.environment, (val) => setFormData(prev => ({ ...prev, environment: val })))}
+            {renderPillGroup("Complexity", COMPLEXITIES, formData.complexity, (val) => setFormData(prev => ({ ...prev, complexity: val })))}
+            {renderPillGroup("Scenario Friction", SCENARIO_FRICTION_LEVELS, formData.scenarioFriction, (val) => setFormData(prev => ({ ...prev, scenarioFriction: val })))}
+            {renderPillGroup("Generation Depth", GENERATION_DEPTHS, formData.generationDepth, (val) => setFormData(prev => ({ ...prev, generationDepth: val }))}}
 
 
             <div style={styles.fieldRow}>
@@ -1641,7 +1636,7 @@ const buildStyles = (isMobile) => ({
     padding: isMobile ? "0.62rem 0" : "0.28rem 0 1rem",
     backgroundColor: "transparent",
     color: "var(--vn-ink)",
-    fontFamily: '"Manrope", "Segoe UI", sans-serif',
+    fontFamily: "var(--vn-font-body)",
     fontSize: "14px",
     minHeight: "100vh",
     height: "auto",
@@ -1802,6 +1797,7 @@ const buildStyles = (isMobile) => ({
     boxShadow: "var(--vn-panel-shadow)",
     border: "1px solid var(--vn-panel-border)",
     backdropFilter: "blur(2px)",
+    borderLeft: "4px solid rgba(242, 140, 40, 0.7)",
   },
 
   fieldRow: {
@@ -1845,6 +1841,40 @@ const buildStyles = (isMobile) => ({
     boxShadow: "var(--vn-button-shadow)",
   },
 
+  pillGroup: {
+    display: "flex",
+    flexWrap: "wrap",
+    gap: "0.4rem",
+  },
+
+  pillOption: {
+    padding: "0.3rem 0.75rem",
+    borderRadius: "999px",
+    border: "1px solid var(--vn-input-border)",
+    background: "var(--vn-input-bg)",
+    color: "var(--vn-ink)",
+    fontSize: "0.85rem",
+    cursor: "pointer",
+    fontWeight: 500,
+  },
+
+  pillOptionActive: {
+    padding: "0.3rem 0.75rem",
+    borderRadius: "999px",
+    border: "1px solid var(--vn-orange)",
+    background: "var(--vn-orange)",
+    color: "#fff",
+    fontSize: "0.85rem",
+    cursor: "pointer",
+    fontWeight: 700,
+  },
+
+  pillLabel: {
+    fontSize: "0.85rem",
+    color: "var(--vn-muted-text)",
+    fontWeight: 600,
+  },
+
   outputBox: {
     maxHeight: "none",
     overflowY: "visible",
@@ -1861,13 +1891,6 @@ const buildStyles = (isMobile) => ({
     borderRadius: "10px",
     marginBottom: "1rem",
     border: "1px solid var(--vn-card-border)",
-  },
-
-  cardTitle: {
-    marginBottom: "0.5rem",
-    fontWeight: "bold",
-    fontSize: "1.05rem",
-    color: "var(--vn-accent-text)",
   },
 
   error: {
@@ -1891,23 +1914,6 @@ const buildStyles = (isMobile) => ({
   sectionHeadingWrap: {
     marginTop: "0.5rem",
     marginBottom: "0.35rem",
-  },
-
-  sectionHeadingButton: {
-    width: "100%",
-    display: "flex",
-    alignItems: "center",
-    gap: "0.5rem",
-    background: "transparent",
-    border: "none",
-    textAlign: "left",
-    color: "var(--vn-ink)",
-    fontSize: isMobile ? "1rem" : "1.15rem",
-    fontWeight: 700,
-    cursor: "pointer",
-    padding: isMobile ? "0.55rem 0.2rem" : "0.35rem 0.1rem",
-    borderRadius: "8px",
-    borderBottom: "2px solid var(--vn-accent-text)",
   },
 
   sectionHeadingIcon: {
