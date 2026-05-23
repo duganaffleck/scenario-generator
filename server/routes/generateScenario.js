@@ -1868,54 +1868,19 @@ Scenario shaping rules:
 
 - When multiple medications are appropriate, ensure they occur at different decision points (e.g., ASA early, nitro after BP check, antiemetic later, repeat medication after reassessment).
 - Medication decisions should be tied to assessment findings and reassessment findings, not given automatically.
-PCP scope enforcement — these rules are absolute and override all other instructions:
+PCP scope — strict enforcement:
+Only medications and procedures listed in the ALS PCS reference above are within PCP or PCP-IV scope. Anything not listed there is ACP-only and must not appear.
 
-Medications that must NEVER appear in any PCP scenario under any circumstance:
-- Atropine
-- Dopamine
-- Amiodarone
-- Lidocaine
-- Magnesium
-- Adenosine
-- Morphine
-- Fentanyl
-- Midazolam
-- Diazepam
-- Any other ACP-only medication not listed above
-Do not suggest, reference, or imply these medications even as options the PCP considered and withheld.
+Common scope violations to prevent:
+- Epinephrine is PCP scope for anaphylaxis and severe allergic reaction only. Do not use it for cardiac arrest, shockable rhythms, PEA, or asystole.
+- IO (intraosseous) access is ACP auxiliary only. Use IV only.
+- Transcutaneous pacing, synchronized cardioversion, RSI, surgical airway, and endotracheal intubation are ACP-only.
+- Atropine, dopamine, amiodarone, lidocaine, magnesium, adenosine, morphine, fentanyl, midazolam, and diazepam are ACP-only. Do not reference them even as withheld options.
 
-Epinephrine rules for PCP scope:
-- Epinephrine 1:1000 IM is within PCP scope for anaphylaxis and severe allergic reaction only.
-- Epinephrine is NOT within PCP scope for cardiac arrest unless the arrest is anaphylactic in origin.
-- Do not generate scenarios where a PCP gives or considers epinephrine for cardiac arrest, shockable rhythms, PEA, asystole, or any non-anaphylactic indication.
+When a patient deteriorates beyond PCP scope, the correct response is rapid transport, ALS intercept request, or base hospital contact — not an ACP intervention.
 
-Procedures that must NEVER appear in PCP scenarios:
-- IO access (intraosseous) — ACP auxiliary only, never PCP
-- Rapid sequence intubation
-- Surgical airway or cricothyrotomy
-- Transcutaneous pacing — ACP only under the Symptomatic Bradycardia directive
-- Synchronized cardioversion — ACP only
-- Advanced airway beyond supraglottic airways (e.g., endotracheal intubation)
-
-PCP IV scope — these are within PCP scope and may appear:
-- IV access and line establishment
-- Normal saline fluid administration
-- TXA IM or IV when base hospital authorized under the Traumatic Hemorrhage auxiliary directive
-- Dextrose 10% IV for confirmed hypoglycemia
-- Ketorolac IV or IM when not contraindicated
-- Other medications with an established PCP IV route per current Ontario directives
-
-PCP Auxiliary Directives — base hospital authorization required; may appear in Semester 3 and 4 scenarios when clinically relevant:
-- CPAP (auxiliary directive)
-- Cardiogenic Shock auxiliary directive
-- Traumatic Hemorrhage auxiliary directive — includes TXA IM or IV
-- Tachydysrhythmia auxiliary directive — this is a PCP-level directive introduced in ALS PCS v5.4; label it as base-hospital-authorized auxiliary when referenced
-- IV and Fluid Therapy auxiliary directive
-- Seizure auxiliary directive
-When referencing any auxiliary directive, label it clearly as base-hospital-authorized and do not imply it is standard BLS scope.
-
-Absolute rule — ACP interventions in PCP scenarios:
-The generated scenario must never suggest, imply, or leave open the expectation that a PCP would perform or consider an ACP-only intervention. If a patient deteriorates beyond PCP scope, the correct response is rapid transport, early ACP backup or ALS intercept request, or base hospital contact — not the ACP intervention itself. This applies to all fields including expectedTreatment, protocolNotes, caseProgression, teachersPoints, instructorGuidance, and GRS anchors.
+PCP Auxiliary Directives (base hospital authorization required; Semester 3 and 4 when clinically relevant):
+CPAP, Cardiogenic Shock, Traumatic Hemorrhage (includes TXA IM or IV), IV and Fluid Therapy, Seizure, Tachydysrhythmia (ALS PCS v5.4, PCP level). Always label these as base-hospital-authorized when referenced.
 
 Ontario directive accuracy rules:
 ${directiveAddendum.map((line) => `- ${line}`).join('\n')}

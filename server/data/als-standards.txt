@@ -2,6 +2,8 @@ ALS PCS — PCP & PCP-IV DIRECTIVES (2025)
 Source: ALS PCS v5.4 (April 2025)
 Scope: Primary Care Paramedic + PCP-IV Certified
 
+SCOPE BOUNDARY: This file defines the complete medication and procedure scope for PCP and PCP-IV paramedics under current Ontario BLS PCS and ALS PCS. Any medication, procedure, or intervention not explicitly listed in this file is outside PCP scope and must not appear in generated PCP scenarios. When in doubt, treat it as ACP-only.
+
 ────────────────────────────────────────
 1. Bronchoconstriction (PCP)
 ────────────────────────────────────────
