@@ -36,3 +36,6 @@ Thumbs.db
 *.local
 *.env
 *.swp
+
+# Stress test output
+server/scripts/stress-test-results.json
