@@ -2216,13 +2216,16 @@ const ScenarioForm = () => {
 
       const sets = [
         { label: vitalSigns.firstSet?.context || "Initial Assessment",
-          ecg: vitalSigns.firstSet?.ecgInterpretation },
+          ecg: vitalSigns.firstSet?.ecgInterpretation,
+          hr: vitalSigns.firstSet?.hr },
         { label: vitalSigns.secondSet?.context || "Reassessment",
-          ecg: vitalSigns.secondSet?.ecgInterpretation },
+          ecg: vitalSigns.secondSet?.ecgInterpretation,
+          hr: vitalSigns.secondSet?.hr },
         ...(Array.isArray(vitalSigns.additionalSets)
           ? vitalSigns.additionalSets.map((s, i) => ({
               label: s.context || `Additional Set ${i + 1}`,
               ecg: s.ecgInterpretation,
+              hr: s.hr,
             }))
           : []),
       ].filter((s) => s.ecg && s.ecg.trim());
