@@ -2241,7 +2241,7 @@ const ScenarioForm = () => {
           <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}>
             {sets.map((s, i) => {
               const clean = cleanEcg(s.ecg);
-              const hasImage = !!clean && clean.length > 3;
+              const hasImage = !!clean && clean.length > 2;
               return (
                 <div key={i} style={{
                   display: "flex",
