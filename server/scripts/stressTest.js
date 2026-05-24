@@ -1,4 +1,3 @@
-import fetch from 'node-fetch';
 import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -53,10 +52,11 @@ function checkConsistency(hr, ecgLabel) {
 // ── Blank field detection ───────────────────────────────────────────────────
 
 const TOP_LEVEL_KEYS = [
-  'scenarioTitle', 'patientDemographics', 'sceneInformation',
-  'chiefComplaint', 'historyOfPresentIllness', 'vitalSigns',
-  'physicalExamination', 'differentialDiagnosis', 'workingDiagnosis',
-  'treatmentPlan', 'teachingPoints',
+  'title', 'patientDemographics', 'patientPresentation',
+  'incidentNarrative', 'opqrst', 'sample', 'vitalSigns',
+  'physicalExam', 'caseProgression', 'expectedTreatment',
+  'clinicalReasoning', 'grsAnchors', 'teachersPoints',
+  'learningObjectives', 'selfReflectionPrompts',
 ];
 
 function findBlankFields(data) {
@@ -100,7 +100,7 @@ async function runCase(caseParams, index) {
     const data = await res.json();
     const elapsed = Date.now() - start;
 
-    const title = data?.scenarioTitle || data?.title || '';
+    const title = data?.title || data?.scenarioTitle || '';
     const chiefComplaint =
       data?.patientDemographics?.chiefComplaint || data?.chiefComplaint || '';
     const firstSet = data?.vitalSigns?.firstSet || {};
