@@ -288,6 +288,185 @@ function RhythmStripSVG({ rhythm, hr, isNightShift }) {
     </div>
   );
 }
+function pickTwelveLeadPattern(ecgType, rhythmInterp, twelveLeadFindings, fifteenLeadFindings) {
+  const txt = ((twelveLeadFindings || '') + ' ' + (rhythmInterp || '')).toLowerCase();
+  if (ecgType === '15-lead' || fifteenLeadFindings) {
+    if (txt.includes('posterior')) return 'posterior';
+    return 'inferiorRV';
+  }
+  if (txt.includes('anterior') && (txt.includes('stemi') || txt.includes('elevation') || txt.includes('v1') || txt.includes('v2') || txt.includes('v3') || txt.includes('v4'))) return 'anteriorSTEMI';
+  if (txt.includes('lateral') && (txt.includes('stemi') || txt.includes('elevation'))) return 'lateralSTEMI';
+  if (txt.includes('inferior') && (txt.includes('stemi') || txt.includes('elevation'))) return 'inferiorSTEMI';
+  if (txt.includes('left bundle') || txt.includes('lbbb')) return 'lbbb';
+  if (txt.includes('right bundle') || txt.includes('rbbb')) return 'rbbb';
+  if (txt.includes('fibrillation') || txt.includes('afib') || txt.includes('a-fib')) return 'afib12';
+  if (txt.includes('ventricular tach') || txt.includes('vtach') || txt.includes('v-tach')) return 'vtach12';
+  return 'normal';
+}
+
+const _TL_W = 200, _TL_H = 40, _TL_BL = 28, _TL_PX = _TL_W / 2400, _TL_MV = 10, _TL_TOTAL = 2400;
+function _tlPt(ms, mv) { return [ms * _TL_PX, _TL_BL - mv * _TL_MV]; }
+function _tlD(pts) { return pts.map((p, i) => (i === 0 ? 'M' : 'L') + p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join(' '); }
+
+function _tlSinusBeat(t, opts) {
+  const { pr = 160, pA = 0.15, rA = 1.0, qD = 0.08, sD = 0.15, tA = 0.3, st = 0, noP = false, wide = false, flip = false, pFlip = false } = opts;
+  const s = flip ? -1 : 1; const ps = pFlip ? -1 : 1;
+  const pts = [];
+  if (!noP) {
+    pts.push(_tlPt(t, 0)); pts.push(_tlPt(t + 20, ps * pA * 0.5)); pts.push(_tlPt(t + 40, ps * pA));
+    pts.push(_tlPt(t + 60, ps * pA * 0.5)); pts.push(_tlPt(t + 80, 0)); pts.push(_tlPt(t + pr - 5, 0));
+  } else { pts.push(_tlPt(t, 0)); pts.push(_tlPt(t + pr - 5, 0)); }
+  const qs = t + pr;
+  if (wide) {
+    pts.push(_tlPt(qs, 0)); pts.push(_tlPt(qs + 15, s * -qD * 2)); pts.push(_tlPt(qs + 40, s * rA * 0.5));
+    pts.push(_tlPt(qs + 70, s * rA * 0.9)); pts.push(_tlPt(qs + 100, s * -sD * 2.5)); pts.push(_tlPt(qs + 140, s * st));
+    pts.push(_tlPt(qs + 220, s * st)); pts.push(_tlPt(qs + 280, s * tA * 0.5 + s * st));
+    pts.push(_tlPt(qs + 340, s * tA + s * st)); pts.push(_tlPt(qs + 400, s * tA * 0.2)); pts.push(_tlPt(qs + 440, 0));
+  } else {
+    pts.push(_tlPt(qs, 0)); pts.push(_tlPt(qs + 10, s * -qD)); pts.push(_tlPt(qs + 22, s * rA));
+    pts.push(_tlPt(qs + 35, s * -sD)); pts.push(_tlPt(qs + 55, s * st)); pts.push(_tlPt(qs + 110, s * st));
+    pts.push(_tlPt(qs + 170, s * tA + s * st)); pts.push(_tlPt(qs + 230, s * tA * 0.3 + s * st)); pts.push(_tlPt(qs + 270, 0));
+  }
+  return pts;
+}
+
+function _tlBuildLead(rr, opts) {
+  const pts = [_tlPt(0, 0)]; let t = 30;
+  while (t + rr < _TL_TOTAL + rr * 0.5) { _tlSinusBeat(t, opts).forEach(p => pts.push(p)); t += rr; }
+  pts.push(_tlPt(_TL_TOTAL, 0)); return pts;
+}
+
+function _tlBuildAFib(rr, seed, opts) {
+  const rand = _seededRand(seed); const pts = [_tlPt(0, 0)]; let t = 30, last = 0;
+  const vr = rr * 0.4;
+  while (t < _TL_TOTAL - rr * 0.3) {
+    const tr = rr + (rand() - 0.5) * vr * 2;
+    for (let ms = last; ms < t; ms += 18) pts.push(_tlPt(ms, (rand() - 0.5) * 0.06));
+    const { rA = 1, sD = 0.15, tA = 0.3, st = 0, flip = false } = opts;
+    const s = flip ? -1 : 1; const qs = t;
+    pts.push(_tlPt(qs, 0)); pts.push(_tlPt(qs + 10, s * -0.07)); pts.push(_tlPt(qs + 22, s * rA));
+    pts.push(_tlPt(qs + 35, s * -sD)); pts.push(_tlPt(qs + 55, s * st)); pts.push(_tlPt(qs + 110, s * st));
+    pts.push(_tlPt(qs + 170, s * tA + s * st)); pts.push(_tlPt(qs + 230, s * tA * 0.3)); pts.push(_tlPt(qs + 270, 0));
+    last = qs + 270; t += Math.max(280, tr);
+  }
+  for (let ms = last; ms < _TL_TOTAL; ms += 18) pts.push(_tlPt(ms, (rand() - 0.5) * 0.06));
+  pts.push(_tlPt(_TL_TOTAL, 0)); return pts;
+}
+
+function _tlBuildVTach(rr, opts) {
+  const { rA = 1.1, flip = false } = opts; const s = flip ? -1 : 1;
+  const pts = [_tlPt(0, 0)]; let t = 20;
+  while (t < _TL_TOTAL - rr * 0.3) {
+    pts.push(_tlPt(t, 0)); pts.push(_tlPt(t + 20, s * -0.15)); pts.push(_tlPt(t + 40, s * rA));
+    pts.push(_tlPt(t + 55, s * rA * 0.85)); pts.push(_tlPt(t + 70, s * -0.35)); pts.push(_tlPt(t + 90, s * -0.1));
+    pts.push(_tlPt(t + 130, s * -0.25)); pts.push(_tlPt(t + 160, 0)); t += rr;
+  }
+  pts.push(_tlPt(_TL_TOTAL, 0)); return pts;
+}
+
+// eslint-disable-next-line no-unused-vars
+function _tlGrid(w, h) {
+  let g = '';
+  for (let ms = 0; ms <= _TL_TOTAL; ms += 40) {
+    const lx = (ms * _TL_PX).toFixed(1); const hv = ms % 200 === 0;
+    g += `<line x1="${lx}" y1="0" x2="${lx}" y2="${h}" stroke="${hv ? '#ff9999' : '#ffcccc'}" stroke-width="${hv ? 0.7 : 0.3}"/>`;
+  }
+  for (let mv = -3; mv <= 5; mv++) {
+    const ly = (_TL_BL - mv * _TL_MV).toFixed(1); if (parseFloat(ly) < -1 || parseFloat(ly) > h + 1) continue;
+    const hv = mv % 5 === 0;
+    g += `<line x1="0" y1="${ly}" x2="${w}" y2="${ly}" stroke="${hv ? '#ff9999' : '#ffcccc'}" stroke-width="${hv ? 0.7 : 0.3}"/>`;
+  }
+  return g;
+}
+
+const _TL_PATTERNS = {
+  normal: { title: 'Normal 12-Lead ECG', leads: { 'I': {rA:0.6,tA:0.25,pA:0.12,sD:0.08}, 'II': {rA:1.0,tA:0.30,pA:0.15,sD:0.15}, 'III': {rA:0.4,tA:0.20,pA:0.10,sD:0.05}, 'aVR': {rA:0.3,tA:0.12,flip:true,pFlip:true}, 'aVL': {rA:0.35,tA:0.18,pA:0.08,sD:0.06}, 'aVF': {rA:0.7,tA:0.25,pA:0.13,sD:0.10}, 'V1': {rA:0.2,tA:-0.15,sD:0.4,qD:0.05}, 'V2': {rA:0.4,tA:-0.2,sD:0.3}, 'V3': {rA:0.7,tA:0.05,sD:0.2}, 'V4': {rA:1.0,tA:0.3,sD:0.12}, 'V5': {rA:1.1,tA:0.32,sD:0.08}, 'V6': {rA:0.9,tA:0.28,sD:0.06} } },
+  inferiorSTEMI: { title: 'Inferior STEMI — ST Elevation in II, III, aVF', leads: { 'I': {rA:0.6,tA:0.25,st:-0.08}, 'II': {rA:1.0,tA:0.35,st:0.28,pA:0.15}, 'III': {rA:0.8,tA:0.32,st:0.32,pA:0.12}, 'aVR': {rA:0.3,flip:true,pFlip:true,st:-0.05}, 'aVL': {rA:0.35,tA:0.10,st:-0.12}, 'aVF': {rA:0.9,tA:0.35,st:0.30,pA:0.13}, 'V1': {rA:0.2,tA:-0.15,sD:0.4}, 'V2': {rA:0.4,tA:-0.1,sD:0.3}, 'V3': {rA:0.7,tA:0.2,sD:0.2}, 'V4': {rA:1.0,tA:0.3,sD:0.12}, 'V5': {rA:1.1,tA:0.32,sD:0.08}, 'V6': {rA:0.9,tA:0.28,sD:0.06} } },
+  anteriorSTEMI: { title: 'Anterior STEMI — ST Elevation in V1-V4', leads: { 'I': {rA:0.6,tA:0.25}, 'II': {rA:1.0,tA:0.30,pA:0.15}, 'III': {rA:0.4,tA:0.20}, 'aVR': {rA:0.3,flip:true,pFlip:true}, 'aVL': {rA:0.35,tA:0.22,st:0.10}, 'aVF': {rA:0.7,tA:0.25}, 'V1': {rA:0.15,tA:0.25,st:0.30,sD:0.5,qD:0.12}, 'V2': {rA:0.3,tA:0.35,st:0.35,sD:0.35,qD:0.10}, 'V3': {rA:0.5,tA:0.32,st:0.28,sD:0.22}, 'V4': {rA:0.8,tA:0.28,st:0.18,sD:0.14}, 'V5': {rA:1.1,tA:0.30,sD:0.08}, 'V6': {rA:0.9,tA:0.28,sD:0.06} } },
+  lateralSTEMI: { title: 'Lateral STEMI — ST Elevation in I, aVL, V5-V6', leads: { 'I': {rA:0.8,tA:0.35,st:0.25}, 'II': {rA:1.0,tA:0.25,st:-0.08,pA:0.15}, 'III': {rA:0.4,tA:0.15,st:-0.15}, 'aVR': {rA:0.3,flip:true,pFlip:true}, 'aVL': {rA:0.55,tA:0.32,st:0.22}, 'aVF': {rA:0.7,tA:0.18,st:-0.10}, 'V1': {rA:0.2,tA:-0.15,sD:0.4}, 'V2': {rA:0.4,tA:-0.1,sD:0.3}, 'V3': {rA:0.7,tA:0.2,sD:0.2}, 'V4': {rA:1.0,tA:0.28,sD:0.12}, 'V5': {rA:1.1,tA:0.38,st:0.22,sD:0.08}, 'V6': {rA:0.9,tA:0.35,st:0.20,sD:0.06} } },
+  lbbb: { title: 'Left Bundle Branch Block', leads: { 'I': {rA:0.9,wide:true,tA:-0.2,sD:0.05,qD:0.02}, 'II': {rA:0.8,wide:true,tA:-0.18,pA:0.15}, 'III': {rA:0.3,wide:true,tA:0.12,flip:true}, 'aVR': {rA:0.4,wide:true,flip:true,pFlip:true}, 'aVL': {rA:0.7,wide:true,tA:-0.15}, 'aVF': {rA:0.5,wide:true,tA:0.10,flip:true}, 'V1': {rA:0.1,wide:true,tA:0.30,flip:true,sD:0.6}, 'V2': {rA:0.15,wide:true,tA:0.28,flip:true,sD:0.5}, 'V3': {rA:0.3,wide:true,tA:0.15,flip:true,sD:0.3}, 'V4': {rA:0.7,wide:true,tA:-0.12,sD:0.1}, 'V5': {rA:1.0,wide:true,tA:-0.18,sD:0.06}, 'V6': {rA:0.9,wide:true,tA:-0.15,sD:0.04} } },
+  rbbb: { title: 'Right Bundle Branch Block', leads: { 'I': {rA:0.7,tA:-0.15,sD:0.35}, 'II': {rA:1.0,tA:0.22,pA:0.15,sD:0.20}, 'III': {rA:0.5,tA:0.18,sD:0.12}, 'aVR': {rA:0.3,flip:true,pFlip:true}, 'aVL': {rA:0.3,tA:-0.12,sD:0.28}, 'aVF': {rA:0.7,tA:0.22,sD:0.10}, 'V1': {rA:0.8,wide:true,tA:-0.20,sD:0.05,qD:0.02}, 'V2': {rA:0.9,wide:true,tA:-0.18,sD:0.04}, 'V3': {rA:0.85,tA:-0.10,sD:0.15}, 'V4': {rA:1.0,tA:0.22,sD:0.20}, 'V5': {rA:0.9,tA:0.28,sD:0.28}, 'V6': {rA:0.7,tA:0.22,sD:0.32} } },
+  afib12: { afib: true, title: 'Atrial Fibrillation — 12-Lead', leads: { 'I': {rA:0.6,tA:0.22,sD:0.08}, 'II': {rA:1.0,tA:0.28,sD:0.15}, 'III': {rA:0.4,tA:0.18,sD:0.05}, 'aVR': {rA:0.3,flip:true}, 'aVL': {rA:0.35,tA:0.15}, 'aVF': {rA:0.7,tA:0.22,sD:0.10}, 'V1': {rA:0.2,tA:-0.12,sD:0.4}, 'V2': {rA:0.4,tA:-0.08,sD:0.3}, 'V3': {rA:0.7,tA:0.15,sD:0.2}, 'V4': {rA:1.0,tA:0.28,sD:0.12}, 'V5': {rA:1.1,tA:0.30,sD:0.08}, 'V6': {rA:0.9,tA:0.26,sD:0.06} } },
+  vtach12: { vtach: true, title: 'Ventricular Tachycardia — 12-Lead', leads: { 'I': {rA:0.9}, 'II': {rA:1.1}, 'III': {rA:0.7,flip:true}, 'aVR': {rA:0.8,flip:true}, 'aVL': {rA:0.5}, 'aVF': {rA:0.8}, 'V1': {rA:1.0,flip:true}, 'V2': {rA:1.1,flip:true}, 'V3': {rA:0.9}, 'V4': {rA:0.8}, 'V5': {rA:0.7}, 'V6': {rA:0.6} } },
+  inferiorRV: { title: 'Inferior + RV STEMI (V3R, V4R, V5R)', leads: { 'I': {rA:0.6,tA:0.25,st:-0.08}, 'II': {rA:1.0,tA:0.35,st:0.28,pA:0.15}, 'III': {rA:0.8,tA:0.32,st:0.32,pA:0.12}, 'aVR': {rA:0.3,flip:true,pFlip:true}, 'aVL': {rA:0.35,tA:0.10,st:-0.12}, 'aVF': {rA:0.9,tA:0.35,st:0.30}, 'V1': {rA:0.2,tA:-0.15,sD:0.4}, 'V2': {rA:0.4,tA:-0.1,sD:0.3}, 'V3': {rA:0.7,tA:0.2,sD:0.2}, 'V4': {rA:1.0,tA:0.3,sD:0.12}, 'V5': {rA:1.1,tA:0.32,sD:0.08}, 'V6': {rA:0.9,tA:0.28,sD:0.06}, 'V3R': {rA:0.15,tA:0.28,st:0.25,sD:0.5}, 'V4R': {rA:0.12,tA:0.30,st:0.28,sD:0.55}, 'V5R': {rA:0.10,tA:0.22,st:0.18,sD:0.5} } },
+  posterior: { title: 'Posterior STEMI (V7, V8, V9)', leads: { 'I': {rA:0.6,tA:0.25}, 'II': {rA:1.0,tA:0.30,pA:0.15}, 'III': {rA:0.4,tA:0.20}, 'aVR': {rA:0.3,flip:true,pFlip:true}, 'aVL': {rA:0.35,tA:0.18}, 'aVF': {rA:0.7,tA:0.25}, 'V1': {rA:0.7,tA:-0.25,sD:0.08,st:-0.20}, 'V2': {rA:0.8,tA:-0.22,sD:0.06,st:-0.18}, 'V3': {rA:0.75,tA:-0.12,sD:0.1,st:-0.10}, 'V4': {rA:1.0,tA:0.28,sD:0.12}, 'V5': {rA:1.1,tA:0.30,sD:0.08}, 'V6': {rA:0.9,tA:0.28,sD:0.06}, 'V7': {rA:0.4,tA:0.30,st:0.22,sD:0.2}, 'V8': {rA:0.35,tA:0.28,st:0.25,sD:0.18}, 'V9': {rA:0.3,tA:0.25,st:0.20,sD:0.15} } },
+};
+
+function TwelveLeadSVG({ ecgType, rhythmInterp, twelveLeadFindings, fifteenLeadFindings, hr, isNightShift }) {
+  const pattern = pickTwelveLeadPattern(ecgType, rhythmInterp, twelveLeadFindings, fifteenLeadFindings);
+  const p = _TL_PATTERNS[pattern] || _TL_PATTERNS.normal;
+  const rr = Math.round(60000 / Math.max(30, Math.min(280, hr || 75)));
+  const stdLeads = ['I','II','III','aVR','aVL','aVF','V1','V2','V3','V4','V5','V6'];
+  const extraLeads = Object.keys(p.leads).filter(l => !stdLeads.includes(l));
+  const bgC = isNightShift ? '#1a0a0a' : '#fff8f8';
+  const heavyC = isNightShift ? '#6a2828' : '#ff9999';
+  const waveC = isNightShift ? '#00e87a' : '#111111';
+  const labelC = isNightShift ? '#ff6060' : '#c05050';
+
+  function makLeadSVG(pts, w, h) {
+    let g = '';
+    const gridC = isNightShift ? '#3a1a1a' : '#ffcccc';
+    for (let ms = 0; ms <= _TL_TOTAL; ms += 40) {
+      const lx = (ms * _TL_PX).toFixed(1); const hv = ms % 200 === 0;
+      g += `<line x1="${lx}" y1="0" x2="${lx}" y2="${h}" stroke="${hv ? heavyC : gridC}" stroke-width="${hv ? 0.7 : 0.3}"/>`;
+    }
+    for (let mv = -3; mv <= 5; mv++) {
+      const ly = (_TL_BL - mv * _TL_MV).toFixed(1); if (parseFloat(ly) < -1 || parseFloat(ly) > h + 1) continue;
+      const hv = mv % 5 === 0;
+      g += `<line x1="0" y1="${ly}" x2="${w}" y2="${ly}" stroke="${hv ? heavyC : gridC}" stroke-width="${hv ? 0.7 : 0.3}"/>`;
+    }
+    return (
+      <svg viewBox={`0 0 ${w} ${h}`} style={{ width: '100%', display: 'block' }} preserveAspectRatio="none"
+        dangerouslySetInnerHTML={{ __html: `<rect width="${w}" height="${h}" fill="${bgC}"/>${g}<path d="${_tlD(pts)}" stroke="${waveC}" stroke-width="1.2" fill="none" stroke-linejoin="round"/>` }}
+      />
+    );
+  }
+
+  function buildPts(lead) {
+    const opts = p.leads[lead] || {};
+    if (p.afib) return _tlBuildAFib(rr, lead.charCodeAt(0) * 37, opts);
+    if (p.vtach) return _tlBuildVTach(rr, opts);
+    return _tlBuildLead(rr, opts);
+  }
+
+  return (
+    <div>
+      <div style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--vn-muted-text)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '0.5rem' }}>
+        {p.title} — {hr} bpm
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '2px', backgroundColor: heavyC, border: `1px solid ${heavyC}`, borderRadius: '4px', overflow: 'hidden', marginBottom: '3px' }}>
+        {stdLeads.map(lead => (
+          <div key={lead} style={{ backgroundColor: bgC, padding: '2px 4px' }}>
+            <div style={{ fontSize: '9px', fontWeight: 700, color: labelC, letterSpacing: '0.04em', marginBottom: '1px', fontFamily: 'monospace' }}>{lead}</div>
+            {makLeadSVG(buildPts(lead), _TL_W, _TL_H)}
+          </div>
+        ))}
+      </div>
+      {extraLeads.length > 0 && (
+        <>
+          <div style={{ fontSize: '9px', fontWeight: 700, color: labelC, letterSpacing: '0.05em', padding: '3px 0 2px', fontFamily: 'monospace' }}>
+            {ecgType === '15-lead' ? 'RIGHT-SIDED / POSTERIOR LEADS' : 'ADDITIONAL LEADS'}
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '2px', backgroundColor: heavyC, border: `1px solid ${heavyC}`, borderRadius: '4px', overflow: 'hidden', marginBottom: '3px' }}>
+            {extraLeads.map(lead => (
+              <div key={lead} style={{ backgroundColor: bgC, padding: '2px 4px' }}>
+                <div style={{ fontSize: '9px', fontWeight: 700, color: labelC, letterSpacing: '0.04em', marginBottom: '1px', fontFamily: 'monospace' }}>{lead}</div>
+                {makLeadSVG(buildPts(lead), _TL_W, _TL_H)}
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+      <div style={{ backgroundColor: bgC, border: `1px solid ${heavyC}`, borderRadius: '4px', padding: '2px 4px', marginBottom: '3px' }}>
+        <div style={{ fontSize: '9px', fontWeight: 700, color: labelC, letterSpacing: '0.04em', marginBottom: '1px', fontFamily: 'monospace' }}>II — RHYTHM STRIP</div>
+        {makLeadSVG(buildPts('II'), 800, _TL_H)}
+      </div>
+      <div style={{ fontSize: '9px', color: 'var(--vn-muted-text)', textAlign: 'right', fontFamily: 'monospace' }}>
+        25 mm/s · 10 mm/mV · Standard Layout
+      </div>
+    </div>
+  );
+}
 // ── End ECG SVG Generator ────────────────────────────────────────────────────
 
 const SCENARIO_TYPES = [
@@ -1760,8 +1939,15 @@ const ScenarioForm = () => {
                         fontSize: "0.68rem", padding: "0.1rem 0.4rem",
                         fontWeight: 700, verticalAlign: "middle",
                       }}
-                      title="12-Lead image coming soon"
-                      onClick={() => alert("12-Lead ECG image repository coming soon.")}
+                      title="View 12-Lead ECG"
+                      onClick={() => setSelectedECGImage({
+                        type: '12lead',
+                        ecgType: scenario.ecgFindings.ecgType,
+                        rhythmInterp: scenario.vitalSigns?.firstSet?.ecgInterpretation || '',
+                        twelveLeadFindings: scenario.ecgFindings.twelveLeadFindings,
+                        fifteenLeadFindings: scenario.ecgFindings.fifteenLeadFindings || '',
+                        hr: parseECGHR(scenario.vitalSigns?.firstSet?.hr),
+                      })}
                     >
                       View Strip
                     </button>
@@ -1789,8 +1975,15 @@ const ScenarioForm = () => {
                         fontSize: "0.68rem", padding: "0.1rem 0.4rem",
                         fontWeight: 700, verticalAlign: "middle",
                       }}
-                      title="15-Lead image coming soon"
-                      onClick={() => alert("15-Lead ECG image repository coming soon.")}
+                      title="View 15-Lead ECG"
+                      onClick={() => setSelectedECGImage({
+                        type: '15lead',
+                        ecgType: '15-lead',
+                        rhythmInterp: scenario.vitalSigns?.firstSet?.ecgInterpretation || '',
+                        twelveLeadFindings: scenario.ecgFindings.twelveLeadFindings || '',
+                        fifteenLeadFindings: scenario.ecgFindings.fifteenLeadFindings,
+                        hr: parseECGHR(scenario.vitalSigns?.firstSet?.hr),
+                      })}
                     >
                       View Strip
                     </button>
@@ -2157,19 +2350,18 @@ const ScenarioForm = () => {
             }}
             onClick={(e) => e.stopPropagation()}
           >
-            {typeof selectedECGImage === "object" && selectedECGImage !== null ? (
-              <RhythmStripSVG
-                rhythm={selectedECGImage.rhythm}
+            {selectedECGImage && selectedECGImage.rhythm ? (
+              <RhythmStripSVG rhythm={selectedECGImage.rhythm} hr={selectedECGImage.hr} isNightShift={isNightShift} />
+            ) : selectedECGImage && (selectedECGImage.type === '12lead' || selectedECGImage.type === '15lead') ? (
+              <TwelveLeadSVG
+                ecgType={selectedECGImage.ecgType}
+                rhythmInterp={selectedECGImage.rhythmInterp}
+                twelveLeadFindings={selectedECGImage.twelveLeadFindings}
+                fifteenLeadFindings={selectedECGImage.fifteenLeadFindings}
                 hr={selectedECGImage.hr}
                 isNightShift={isNightShift}
               />
-            ) : (
-              <img
-                src={selectedECGImage}
-                alt="ECG Rhythm"
-                style={{ width: "100%", height: "auto", borderRadius: "8px" }}
-              />
-            )}
+            ) : null}
             <button
               onClick={() => setSelectedECGImage(null)}
               className="a11y-focus"
