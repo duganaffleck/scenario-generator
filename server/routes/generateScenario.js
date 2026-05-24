@@ -24,7 +24,7 @@ const GENERATION_DEPTH_PROFILES = {
     label: 'Quick Draft',
     model: process.env.OPENAI_MODEL_QUICK || 'gpt-5.4-mini',
     temperature: 0.75,
-    maxTokens: parsePositiveInt(process.env.OPENAI_MAX_TOKENS_QUICK, 13000),
+    maxTokens: parsePositiveInt(process.env.OPENAI_MAX_TOKENS_QUICK, 16000),
     promptInstruction:
       'Prioritize speed and structural completeness. Keep scenarioIntro to 2 sentences. Keep patientPresentation to 2 to 3 sentences. Keep incidentNarrative to 3 to 4 sentences. Keep physicalExam to one specific finding per field with no elaboration. Keep caseProgression to 2 points per track. Keep clinicalReasoning.summary to 2 sentences. Keep GRS anchors to one direct sentence per bullet. Keep teachersPoints to 2 to 3 sentences. Keep selfReflectionPrompts to 3 prompts. Do not omit required fields. Keep every section scenario-specific even when short.'
   },
