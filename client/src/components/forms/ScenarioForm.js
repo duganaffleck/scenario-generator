@@ -108,146 +108,292 @@ const _ECG_PX_MS = _ECG_W / 6000, _ECG_MV = 28, _ECG_TOTAL = 6000;
 function _pt(ms, mv) { return [ms * _ECG_PX_MS, _ECG_BASELINE - mv * _ECG_MV]; }
 function _ptsToD(pts) { return pts.map((p, i) => (i === 0 ? 'M' : 'L') + p[0].toFixed(2) + ' ' + p[1].toFixed(2)).join(' '); }
 function _sinusBeat(t, opts) {
-  const { prInterval = 160, pAmp = 0.15, rAmp = 1.0, qDepth = 0.08, sDepth = 0.15, tAmp = 0.3, stElev = 0, showP = true, wideQRS = false } = opts;
+  const {
+    prInterval = 160, pAmp = 0.15, rAmp = 1.0,
+    qDepth = 0.08, sDepth = 0.15, tAmp = 0.3,
+    stElev = 0, showP = true, wideQRS = false,
+    tFlat = false
+  } = opts;
   const pts = [];
   if (showP) {
-    pts.push(_pt(t, 0)); pts.push(_pt(t + 20, pAmp * 0.5)); pts.push(_pt(t + 40, pAmp));
-    pts.push(_pt(t + 60, pAmp * 0.5)); pts.push(_pt(t + 80, 0)); pts.push(_pt(t + prInterval - 5, 0));
-  } else { pts.push(_pt(t, 0)); pts.push(_pt(t + prInterval - 5, 0)); }
+    pts.push(_pt(t, 0));
+    pts.push(_pt(t + 20, pAmp * 0.5));
+    pts.push(_pt(t + 40, pAmp));
+    pts.push(_pt(t + 60, pAmp * 0.5));
+    pts.push(_pt(t + 80, 0));
+    pts.push(_pt(t + prInterval - 5, 0));
+  } else {
+    pts.push(_pt(t, 0));
+    pts.push(_pt(t + prInterval - 5, 0));
+  }
   const qs = t + prInterval;
   if (wideQRS) {
-    pts.push(_pt(qs, 0)); pts.push(_pt(qs + 15, -qDepth * 1.5)); pts.push(_pt(qs + 35, rAmp * 0.7));
-    pts.push(_pt(qs + 55, rAmp * 0.85)); pts.push(_pt(qs + 80, -sDepth * 2)); pts.push(_pt(qs + 120, stElev));
-    pts.push(_pt(qs + 200, stElev)); pts.push(_pt(qs + 260, tAmp * 0.5 + stElev));
-    pts.push(_pt(qs + 320, tAmp + stElev)); pts.push(_pt(qs + 380, tAmp * 0.2 + stElev)); pts.push(_pt(qs + 420, 0));
+    pts.push(_pt(qs, 0));
+    pts.push(_pt(qs + 15, -qDepth * 1.5));
+    pts.push(_pt(qs + 30, rAmp * 0.6));
+    pts.push(_pt(qs + 50, rAmp * 0.85));
+    pts.push(_pt(qs + 70, rAmp * 0.4));
+    pts.push(_pt(qs + 95, -sDepth * 2.2));
+    pts.push(_pt(qs + 130, stElev));
+    pts.push(_pt(qs + 200, stElev));
+    pts.push(_pt(qs + 260, tFlat ? stElev * 0.3 : tAmp * 0.5 + stElev));
+    pts.push(_pt(qs + 330, tFlat ? stElev * 0.1 : tAmp + stElev));
+    pts.push(_pt(qs + 400, 0));
   } else {
-    pts.push(_pt(qs, 0)); pts.push(_pt(qs + 10, -qDepth)); pts.push(_pt(qs + 22, rAmp));
-    pts.push(_pt(qs + 35, -sDepth)); pts.push(_pt(qs + 55, stElev)); pts.push(_pt(qs + 110, stElev));
-    pts.push(_pt(qs + 170, tAmp + stElev)); pts.push(_pt(qs + 230, tAmp * 0.3 + stElev)); pts.push(_pt(qs + 270, 0));
+    pts.push(_pt(qs, 0));
+    pts.push(_pt(qs + 8, -qDepth));
+    pts.push(_pt(qs + 20, rAmp));
+    pts.push(_pt(qs + 32, -sDepth));
+    pts.push(_pt(qs + 50, stElev));
+    pts.push(_pt(qs + 100, stElev));
+    pts.push(_pt(qs + 155, tFlat ? stElev * 0.2 : tAmp * 0.8 + stElev));
+    pts.push(_pt(qs + 200, tFlat ? 0 : tAmp + stElev));
+    pts.push(_pt(qs + 250, tFlat ? 0 : tAmp * 0.25 + stElev));
+    pts.push(_pt(qs + 280, 0));
   }
   return pts;
 }
+
 function _buildSinus(rr, opts = {}) {
-  const pts = [_pt(0, 0)]; let t = 40;
-  while (t + rr < _ECG_TOTAL + rr * 0.5) { _sinusBeat(t, opts).forEach(p => pts.push(p)); t += rr; }
-  pts.push(_pt(_ECG_TOTAL, 0)); return pts;
+  const pts = [_pt(0, 0)];
+  let t = 40;
+  while (t + rr < _ECG_TOTAL + rr * 0.5) {
+    _sinusBeat(t, opts).forEach(p => pts.push(p));
+    t += rr;
+  }
+  pts.push(_pt(_ECG_TOTAL, 0));
+  return pts;
 }
+
 function _buildAFib(rr) {
-  const rand = _seededRand(rr); const pts = [_pt(0, 0)]; let t = 40, lastMs = 0;
-  const vrr = rr * 0.4;
-  function fibLine(start, end) { for (let ms = start; ms < end; ms += 18) pts.push(_pt(ms, (rand() - 0.5) * 0.07)); }
+  const rand = _seededRand(rr);
+  const pts = [_pt(0, 0)];
+  let t = 40, lastMs = 0;
+  const vrr = rr * 0.5;
+  function fibLine(start, end) {
+    for (let ms = start; ms < end; ms += 14) {
+      const fibAmp = (rand() - 0.5) * 0.14;
+      pts.push(_pt(ms, fibAmp));
+    }
+  }
   while (t < _ECG_TOTAL - rr * 0.3) {
     const thisRR = rr + (rand() - 0.5) * vrr * 2;
-    fibLine(lastMs, t);
-    pts.push(_pt(t, 0)); pts.push(_pt(t + 10, -0.07)); pts.push(_pt(t + 22, 1.0));
-    pts.push(_pt(t + 35, -0.12)); pts.push(_pt(t + 55, 0)); pts.push(_pt(t + 110, 0));
-    pts.push(_pt(t + 160, 0.22)); pts.push(_pt(t + 220, 0));
-    lastMs = t + 220; t += Math.max(200, thisRR);
+    fibLine(lastMs, t - 10);
+    pts.push(_pt(t, 0));
+    pts.push(_pt(t + 8, -0.08));
+    pts.push(_pt(t + 20, 1.0));
+    pts.push(_pt(t + 32, -0.14));
+    pts.push(_pt(t + 50, 0));
+    pts.push(_pt(t + 100, 0));
+    pts.push(_pt(t + 155, 0.22));
+    pts.push(_pt(t + 205, 0.08));
+    pts.push(_pt(t + 230, 0));
+    lastMs = t + 230;
+    t += Math.max(220, thisRR);
   }
-  fibLine(lastMs, _ECG_TOTAL); pts.push(_pt(_ECG_TOTAL, 0)); return pts;
+  fibLine(lastMs, _ECG_TOTAL);
+  pts.push(_pt(_ECG_TOTAL, 0));
+  return pts;
 }
+
 function _buildFlutter(rr) {
-  const pts = [_pt(0, 0)]; const flutterRR = 200; const ratio = Math.max(2, Math.round(rr / flutterRR));
+  const pts = [_pt(0, 0)];
+  const flutterRR = 200;
+  const ratio = Math.max(2, Math.round(rr / flutterRR));
   let fms = 0, beatCount = 0;
   while (fms < _ECG_TOTAL) {
-    pts.push(_pt(fms, 0)); pts.push(_pt(fms + flutterRR * 0.3, -0.18));
-    pts.push(_pt(fms + flutterRR * 0.5, 0.05)); pts.push(_pt(fms + flutterRR * 0.7, -0.07));
+    const cycEnd = fms + flutterRR;
+    pts.push(_pt(fms, 0));
+    pts.push(_pt(fms + flutterRR * 0.15, -0.22));
+    pts.push(_pt(fms + flutterRR * 0.35, -0.04));
+    pts.push(_pt(fms + flutterRR * 0.5, -0.18));
+    pts.push(_pt(fms + flutterRR * 0.65, 0.08));
+    pts.push(_pt(fms + flutterRR * 0.85, -0.05));
     beatCount++;
     if (beatCount % ratio === 0) {
-      const qs = fms + flutterRR * 0.5;
-      pts.push(_pt(qs, 0)); pts.push(_pt(qs + 10, -0.07)); pts.push(_pt(qs + 22, 1.0));
-      pts.push(_pt(qs + 35, -0.12)); pts.push(_pt(qs + 55, 0));
+      const qs = fms + flutterRR * 0.4;
+      pts.push(_pt(qs, 0));
+      pts.push(_pt(qs + 8, -0.08));
+      pts.push(_pt(qs + 20, 1.0));
+      pts.push(_pt(qs + 32, -0.14));
+      pts.push(_pt(qs + 52, 0));
+      pts.push(_pt(qs + 100, 0));
+      pts.push(_pt(qs + 150, 0.18));
+      pts.push(_pt(qs + 200, 0));
     }
-    fms += flutterRR;
+    fms = cycEnd;
   }
-  pts.push(_pt(_ECG_TOTAL, 0)); return pts;
+  pts.push(_pt(_ECG_TOTAL, 0));
+  return pts;
 }
+
 function _buildVTach(rr) {
-  const pts = [_pt(0, 0)]; let t = 20;
+  const rand = _seededRand(rr + 7);
+  const pts = [_pt(0, 0)];
+  let t = 20;
+  const pRate = Math.round(60000 / 72);
+  let pTime = 60;
   while (t < _ECG_TOTAL - rr * 0.3) {
-    pts.push(_pt(t, 0)); pts.push(_pt(t + 20, -0.15)); pts.push(_pt(t + 40, 1.1));
-    pts.push(_pt(t + 55, 0.9)); pts.push(_pt(t + 70, -0.35)); pts.push(_pt(t + 90, -0.1));
-    pts.push(_pt(t + 130, -0.25)); pts.push(_pt(t + 160, 0)); t += rr;
+    while (pTime < t - 20 && pTime < _ECG_TOTAL) {
+      pts.push(_pt(pTime, 0));
+      pts.push(_pt(pTime + 15, 0.07));
+      pts.push(_pt(pTime + 30, 0.09));
+      pts.push(_pt(pTime + 45, 0.07));
+      pts.push(_pt(pTime + 60, 0));
+      pTime += pRate;
+    }
+    const slur = 0.08 + rand() * 0.04;
+    pts.push(_pt(t, 0));
+    pts.push(_pt(t + 25, -0.18));
+    pts.push(_pt(t + 50, 0.3 + slur));
+    pts.push(_pt(t + 75, 1.1));
+    pts.push(_pt(t + 95, 0.85));
+    pts.push(_pt(t + 115, -0.4));
+    pts.push(_pt(t + 140, -0.5));
+    pts.push(_pt(t + 165, -0.32));
+    pts.push(_pt(t + 185, -0.10));
+    pts.push(_pt(t + 200, 0));
+    t += rr;
   }
-  pts.push(_pt(_ECG_TOTAL, 0)); return pts;
+  pts.push(_pt(_ECG_TOTAL, 0));
+  return pts;
 }
+
 function _buildVFib() {
-  const rand = _seededRand(42); const pts = [_pt(0, 0)];
-  for (let ms = 0; ms <= _ECG_TOTAL; ms += 12) {
-    const phase = ms / _ECG_TOTAL; const amp = (0.5 + rand() * 0.6) * (1 - phase * 0.3);
-    pts.push(_pt(ms, (rand() > 0.5 ? 1 : -1) * amp * (0.6 + Math.sin(ms / 60) * 0.3)));
+  const rand = _seededRand(42);
+  const pts = [_pt(0, 0)];
+  let lastAmp = 0;
+  for (let ms = 0; ms <= _ECG_TOTAL; ms += 10) {
+    const phase = ms / _ECG_TOTAL;
+    const maxAmp = (0.8 + rand() * 0.5) * (1 - phase * 0.45);
+    const target = (rand() - 0.48) * maxAmp * 2;
+    lastAmp = lastAmp * 0.6 + target * 0.4;
+    pts.push(_pt(ms, lastAmp));
   }
-  pts.push(_pt(_ECG_TOTAL, 0)); return pts;
+  pts.push(_pt(_ECG_TOTAL, 0));
+  return pts;
 }
+
 function _buildAsystole() {
-  const rand = _seededRand(99); const pts = [_pt(0, 0)];
-  for (let ms = 0; ms <= _ECG_TOTAL; ms += 40) pts.push(_pt(ms, (rand() - 0.5) * 0.03));
-  pts.push(_pt(_ECG_TOTAL, 0)); return pts;
+  const rand = _seededRand(99);
+  const pts = [_pt(0, 0)];
+  for (let ms = 0; ms <= _ECG_TOTAL; ms += 30) {
+    pts.push(_pt(ms, (rand() - 0.5) * 0.04));
+  }
+  pts.push(_pt(_ECG_TOTAL, 0));
+  return pts;
 }
+
 function _buildMobitzI(rr) {
-  const pts = [_pt(0, 0)]; let t = 40, pr = 140;
+  const pts = [_pt(0, 0)];
+  let t = 40, pr = 140;
   while (t < _ECG_TOTAL - rr) {
-    if (pr > 320) {
-      pts.push(_pt(t, 0)); pts.push(_pt(t + 20, 0.13)); pts.push(_pt(t + 40, 0.15));
-      pts.push(_pt(t + 60, 0.13)); pts.push(_pt(t + 80, 0)); pts.push(_pt(t + rr - 10, 0));
+    if (pr > 340) {
+      pts.push(_pt(t, 0));
+      pts.push(_pt(t + 20, 0.07));
+      pts.push(_pt(t + 40, 0.14));
+      pts.push(_pt(t + 60, 0.07));
+      pts.push(_pt(t + 80, 0));
+      pts.push(_pt(t + rr * 0.6, 0));
       pr = 140;
     } else {
-      _sinusBeat(t, { prInterval: pr, pAmp: 0.15, rAmp: 1.0, qDepth: 0.08, sDepth: 0.15, tAmp: 0.3 }).forEach(p => pts.push(p));
-      pr += 50;
+      _sinusBeat(t, { prInterval: pr, pAmp: 0.14, rAmp: 1.0, qDepth: 0.08, sDepth: 0.14, tAmp: 0.28 }).forEach(p => pts.push(p));
+      pr += 60;
     }
     t += rr;
   }
-  pts.push(_pt(_ECG_TOTAL, 0)); return pts;
+  pts.push(_pt(_ECG_TOTAL, 0));
+  return pts;
 }
+
 function _buildMobitzII(rr) {
-  const pts = [_pt(0, 0)]; let t = 40, beatNum = 0;
+  const pts = [_pt(0, 0)];
+  let t = 40, beatNum = 0;
   while (t < _ECG_TOTAL - rr) {
     beatNum++;
     if (beatNum % 3 === 0) {
-      pts.push(_pt(t, 0)); pts.push(_pt(t + 20, 0.13)); pts.push(_pt(t + 40, 0.15));
-      pts.push(_pt(t + 60, 0.13)); pts.push(_pt(t + 80, 0)); pts.push(_pt(t + rr - 10, 0));
+      pts.push(_pt(t, 0));
+      pts.push(_pt(t + 20, 0.07));
+      pts.push(_pt(t + 40, 0.14));
+      pts.push(_pt(t + 60, 0.07));
+      pts.push(_pt(t + 80, 0));
+      pts.push(_pt(t + rr * 0.5, 0));
     } else {
-      _sinusBeat(t, { prInterval: 180, pAmp: 0.15, rAmp: 1.0, qDepth: 0.08, sDepth: 0.15, tAmp: 0.3 }).forEach(p => pts.push(p));
+      _sinusBeat(t, { prInterval: 180, pAmp: 0.14, rAmp: 1.0, qDepth: 0.08, sDepth: 0.14, tAmp: 0.28 }).forEach(p => pts.push(p));
     }
     t += rr;
   }
-  pts.push(_pt(_ECG_TOTAL, 0)); return pts;
+  pts.push(_pt(_ECG_TOTAL, 0));
+  return pts;
 }
+
 function _buildThirdDegree() {
   const pts = [_pt(0, 0)];
-  const pRR = Math.round(60000 / 70), escRR = Math.round(60000 / 35);
-  let pTime = 30, escTime = 180;
+  const pRR = Math.round(60000 / 72);
+  const escRR = Math.round(60000 / 38);
+  let pTime = 30, escTime = 200;
   while (pTime < _ECG_TOTAL || escTime < _ECG_TOTAL) {
     if (pTime <= escTime && pTime < _ECG_TOTAL) {
-      pts.push(_pt(pTime, 0)); pts.push(_pt(pTime + 20, 0.08)); pts.push(_pt(pTime + 40, 0.12));
-      pts.push(_pt(pTime + 60, 0.08)); pts.push(_pt(pTime + 80, 0)); pTime += pRR;
+      pts.push(_pt(pTime, 0));
+      pts.push(_pt(pTime + 15, 0.07));
+      pts.push(_pt(pTime + 35, 0.13));
+      pts.push(_pt(pTime + 55, 0.07));
+      pts.push(_pt(pTime + 75, 0));
+      pTime += pRR;
     } else if (escTime < _ECG_TOTAL) {
-      pts.push(_pt(escTime, 0)); pts.push(_pt(escTime + 15, -0.12)); pts.push(_pt(escTime + 35, 0.9));
-      pts.push(_pt(escTime + 50, 0.75)); pts.push(_pt(escTime + 70, -0.28)); pts.push(_pt(escTime + 95, 0));
-      pts.push(_pt(escTime + 150, 0)); pts.push(_pt(escTime + 210, 0.22)); pts.push(_pt(escTime + 270, 0));
+      pts.push(_pt(escTime, 0));
+      pts.push(_pt(escTime + 20, -0.10));
+      pts.push(_pt(escTime + 45, 0.75));
+      pts.push(_pt(escTime + 65, 0.60));
+      pts.push(_pt(escTime + 85, -0.22));
+      pts.push(_pt(escTime + 115, -0.28));
+      pts.push(_pt(escTime + 155, 0));
+      pts.push(_pt(escTime + 210, 0.20));
+      pts.push(_pt(escTime + 270, 0.08));
+      pts.push(_pt(escTime + 300, 0));
       escTime += escRR;
     } else break;
   }
-  pts.push(_pt(_ECG_TOTAL, 0)); return pts;
+  pts.push(_pt(_ECG_TOTAL, 0));
+  return pts;
 }
+
 function _buildECGStrip(rhythm, hr) {
   const rr = Math.round(60000 / Math.max(20, Math.min(280, hr || 75)));
+  const isTach = hr > 100;
+  // eslint-disable-next-line no-unused-vars
+  const isBrad = hr < 60;
   switch (rhythm) {
-    case 'Normal Sinus Rhythm': return _buildSinus(rr, {});
-    case 'Sinus Tachycardia': return _buildSinus(rr, { tAmp: 0.25 });
-    case 'Sinus Bradycardia': return _buildSinus(rr, { tAmp: 0.35 });
-    case 'Atrial Fibrillation': return _buildAFib(rr);
-    case 'Atrial Flutter': return _buildFlutter(rr);
-    case 'SVT': return _buildSinus(rr, { showP: false, prInterval: 80, rAmp: 0.95, sDepth: 0.1, tAmp: 0.2 });
-    case 'Ventricular Tachycardia': return _buildVTach(rr);
-    case 'Ventricular Fibrillation': return _buildVFib();
-    case 'Asystole': return _buildAsystole();
-    case 'Pulseless Electrical Activity': return _buildSinus(rr, { prInterval: 180, rAmp: 0.6, pAmp: 0.1, tAmp: 0.15 });
-    case 'First Degree AV Block': return _buildSinus(rr, { prInterval: 240, pAmp: 0.14 });
-    case 'Second Degree AV Block Type I': return _buildMobitzI(rr);
-    case 'Second Degree AV Block Type II': return _buildMobitzII(rr);
-    case 'Third Degree AV Block': return _buildThirdDegree();
-    default: return _buildSinus(rr, {});
+    case 'Normal Sinus Rhythm':
+      return _buildSinus(rr, { pAmp: 0.15, rAmp: 1.0, qDepth: 0.08, sDepth: 0.14, tAmp: 0.30, prInterval: 160 });
+    case 'Sinus Tachycardia':
+      return _buildSinus(rr, { pAmp: 0.16, rAmp: 1.0, qDepth: 0.07, sDepth: 0.13, tAmp: 0.24, prInterval: 150, tFlat: isTach && hr > 140 });
+    case 'Sinus Bradycardia':
+      return _buildSinus(rr, { pAmp: 0.16, rAmp: 1.0, qDepth: 0.09, sDepth: 0.14, tAmp: 0.36, prInterval: 170 });
+    case 'Atrial Fibrillation':
+      return _buildAFib(rr);
+    case 'Atrial Flutter':
+      return _buildFlutter(rr);
+    case 'SVT':
+      return _buildSinus(rr, { showP: false, prInterval: 60, rAmp: 0.92, qDepth: 0.05, sDepth: 0.09, tAmp: 0.18 });
+    case 'Ventricular Tachycardia':
+      return _buildVTach(rr);
+    case 'Ventricular Fibrillation':
+      return _buildVFib();
+    case 'Asystole':
+      return _buildAsystole();
+    case 'Pulseless Electrical Activity':
+      return _buildSinus(rr, { prInterval: 180, rAmp: 0.55, pAmp: 0.10, tAmp: 0.13, qDepth: 0.05, sDepth: 0.10 });
+    case 'First Degree AV Block':
+      return _buildSinus(rr, { prInterval: 240, pAmp: 0.15, rAmp: 1.0, qDepth: 0.08, sDepth: 0.14, tAmp: 0.30 });
+    case 'Second Degree AV Block Type I':
+      return _buildMobitzI(rr);
+    case 'Second Degree AV Block Type II':
+      return _buildMobitzII(rr);
+    case 'Third Degree AV Block':
+      return _buildThirdDegree();
+    default:
+      return _buildSinus(rr, {});
   }
 }
 function RhythmStripSVG({ rhythm, hr, isNightShift }) {
@@ -1993,8 +2139,7 @@ const ScenarioForm = () => {
                         setSelectedECGImage({ rhythm: rawECG, hr: parseECGHR(data.hr) });
                       }}
                     >
-                     
-                      📈
+                      View Strip
                     </button>
      ) : null}
                   {rawECG}
@@ -2140,7 +2285,7 @@ const ScenarioForm = () => {
                       title={`View ${clean} tracing`}
                       aria-label={`View ECG for ${clean}`}
                     >
-                      📈
+                      View Strip
                     </button>
                   )}
                 </div>
