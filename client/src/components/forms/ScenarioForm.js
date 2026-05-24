@@ -429,40 +429,61 @@ function TwelveLeadSVG({ ecgType, rhythmInterp, twelveLeadFindings, fifteenLeadF
     return _tlBuildLead(rr, opts);
   }
 
+  const rowA = ['I',   'aVR', 'V1', 'V4'];
+  const rowB = ['II',  'aVL', 'V2', 'V5'];
+  const rowC = ['III', 'aVF', 'V3', 'V6'];
+  const stdRows = [rowA, rowB, rowC];
+
+  function leadCell(lead) {
+    return (
+      <div key={lead} style={{ backgroundColor: bgC, padding: '2px 4px' }}>
+        <div style={{ fontSize: '9px', fontWeight: 700, color: labelC, letterSpacing: '0.04em', marginBottom: '1px', fontFamily: 'monospace' }}>{lead}</div>
+        {makLeadSVG(buildPts(lead), _TL_W, _TL_H)}
+      </div>
+    );
+  }
+
+  const gridStyle = {
+    display: 'grid',
+    gridTemplateColumns: '1fr 1fr 1fr 1fr',
+    gap: '2px',
+    backgroundColor: heavyC,
+    border: `1px solid ${heavyC}`,
+    borderRadius: '4px',
+    overflow: 'hidden',
+    marginBottom: '3px',
+  };
+
   return (
     <div>
       <div style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--vn-muted-text)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '0.5rem' }}>
         {p.title} — {hr} bpm
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '2px', backgroundColor: heavyC, border: `1px solid ${heavyC}`, borderRadius: '4px', overflow: 'hidden', marginBottom: '3px' }}>
-        {stdLeads.map(lead => (
-          <div key={lead} style={{ backgroundColor: bgC, padding: '2px 4px' }}>
-            <div style={{ fontSize: '9px', fontWeight: 700, color: labelC, letterSpacing: '0.04em', marginBottom: '1px', fontFamily: 'monospace' }}>{lead}</div>
-            {makLeadSVG(buildPts(lead), _TL_W, _TL_H)}
-          </div>
-        ))}
-      </div>
-      {extraLeads.length > 0 && (
-        <>
-          <div style={{ fontSize: '9px', fontWeight: 700, color: labelC, letterSpacing: '0.05em', padding: '3px 0 2px', fontFamily: 'monospace' }}>
-            {ecgType === '15-lead' ? 'RIGHT-SIDED / POSTERIOR LEADS' : 'ADDITIONAL LEADS'}
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '2px', backgroundColor: heavyC, border: `1px solid ${heavyC}`, borderRadius: '4px', overflow: 'hidden', marginBottom: '3px' }}>
-            {extraLeads.map(lead => (
-              <div key={lead} style={{ backgroundColor: bgC, padding: '2px 4px' }}>
-                <div style={{ fontSize: '9px', fontWeight: 700, color: labelC, letterSpacing: '0.04em', marginBottom: '1px', fontFamily: 'monospace' }}>{lead}</div>
-                {makLeadSVG(buildPts(lead), _TL_W, _TL_H)}
-              </div>
-            ))}
-          </div>
-        </>
-      )}
+
+      {stdRows.map((row, ri) => (
+        <div key={ri} style={gridStyle}>
+          {row.map(lead => leadCell(lead))}
+        </div>
+      ))}
+
       <div style={{ backgroundColor: bgC, border: `1px solid ${heavyC}`, borderRadius: '4px', padding: '2px 4px', marginBottom: '3px' }}>
         <div style={{ fontSize: '9px', fontWeight: 700, color: labelC, letterSpacing: '0.04em', marginBottom: '1px', fontFamily: 'monospace' }}>II — RHYTHM STRIP</div>
         {makLeadSVG(buildPts('II'), 800, _TL_H)}
       </div>
-      <div style={{ fontSize: '9px', color: 'var(--vn-muted-text)', textAlign: 'right', fontFamily: 'monospace' }}>
-        25 mm/s · 10 mm/mV · Standard Layout
+
+      {extraLeads.length > 0 && (
+        <>
+          <div style={{ fontSize: '9px', fontWeight: 700, color: labelC, letterSpacing: '0.05em', padding: '4px 0 2px', fontFamily: 'monospace' }}>
+            {ecgType === '15-lead' ? '— RIGHT-SIDED / POSTERIOR LEADS —' : '— ADDITIONAL LEADS —'}
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: `repeat(${Math.min(extraLeads.length, 4)}, 1fr)`, gap: '2px', backgroundColor: heavyC, border: `1px solid ${heavyC}`, borderRadius: '4px', overflow: 'hidden', marginBottom: '3px' }}>
+            {extraLeads.map(lead => leadCell(lead))}
+          </div>
+        </>
+      )}
+
+      <div style={{ fontSize: '9px', color: 'var(--vn-muted-text)', textAlign: 'right', fontFamily: 'monospace', marginTop: '2px' }}>
+        25 mm/s · 10 mm/mV · Standard 12-Lead Layout
       </div>
     </div>
   );
