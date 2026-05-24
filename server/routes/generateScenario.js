@@ -463,6 +463,19 @@ function sanitizeVitalSet(raw = {}, ecgInterpretation = '') {
     set.ecgInterpretation = '';
   }
 
+  if (set.ecgInterpretation && set.hr) {
+    const hrNum = parseInt(String(set.hr).replace(/[^0-9]/g, ''), 10);
+    if (!isNaN(hrNum)) {
+      if (set.ecgInterpretation === 'Sinus Tachycardia' && hrNum <= 100) {
+        set.ecgInterpretation = hrNum < 60 ? 'Sinus Bradycardia' : 'Normal Sinus Rhythm';
+      } else if (set.ecgInterpretation === 'Sinus Bradycardia' && hrNum >= 60) {
+        set.ecgInterpretation = hrNum > 100 ? 'Sinus Tachycardia' : 'Normal Sinus Rhythm';
+      } else if (set.ecgInterpretation === 'Normal Sinus Rhythm' && (hrNum < 60 || hrNum > 100)) {
+        set.ecgInterpretation = hrNum > 100 ? 'Sinus Tachycardia' : 'Sinus Bradycardia';
+      }
+    }
+  }
+
   return set;
 }
 
