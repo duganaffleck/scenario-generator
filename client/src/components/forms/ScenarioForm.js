@@ -92,6 +92,203 @@ const ecgImageMap = {
   "Third Degree AV Block": "/ecg/thirddegree.jpg",
 };
 
+// ── ECG SVG Rhythm Strip Generator ──────────────────────────────────────────
+function parseECGHR(hrStr) {
+  if (!hrStr) return 75;
+  const n = parseInt(String(hrStr).replace(/[^0-9]/g, ''));
+  return isNaN(n) || n < 20 || n > 300 ? 75 : n;
+}
+function _seededRand(seed) {
+  let s = seed >>> 0;
+  return function () { s = (Math.imul(s, 1664525) + 1013904223) >>> 0; return s / 4294967296; };
+}
+const _ECG_W = 800, _ECG_H = 120, _ECG_BASELINE = 82;
+const _ECG_PX_MS = _ECG_W / 6000, _ECG_MV = 28, _ECG_TOTAL = 6000;
+function _pt(ms, mv) { return [ms * _ECG_PX_MS, _ECG_BASELINE - mv * _ECG_MV]; }
+function _ptsToD(pts) { return pts.map((p, i) => (i === 0 ? 'M' : 'L') + p[0].toFixed(2) + ' ' + p[1].toFixed(2)).join(' '); }
+function _sinusBeat(t, opts) {
+  const { prInterval = 160, pAmp = 0.15, rAmp = 1.0, qDepth = 0.08, sDepth = 0.15, tAmp = 0.3, stElev = 0, showP = true, wideQRS = false } = opts;
+  const pts = [];
+  if (showP) {
+    pts.push(_pt(t, 0)); pts.push(_pt(t + 20, pAmp * 0.5)); pts.push(_pt(t + 40, pAmp));
+    pts.push(_pt(t + 60, pAmp * 0.5)); pts.push(_pt(t + 80, 0)); pts.push(_pt(t + prInterval - 5, 0));
+  } else { pts.push(_pt(t, 0)); pts.push(_pt(t + prInterval - 5, 0)); }
+  const qs = t + prInterval;
+  if (wideQRS) {
+    pts.push(_pt(qs, 0)); pts.push(_pt(qs + 15, -qDepth * 1.5)); pts.push(_pt(qs + 35, rAmp * 0.7));
+    pts.push(_pt(qs + 55, rAmp * 0.85)); pts.push(_pt(qs + 80, -sDepth * 2)); pts.push(_pt(qs + 120, stElev));
+    pts.push(_pt(qs + 200, stElev)); pts.push(_pt(qs + 260, tAmp * 0.5 + stElev));
+    pts.push(_pt(qs + 320, tAmp + stElev)); pts.push(_pt(qs + 380, tAmp * 0.2 + stElev)); pts.push(_pt(qs + 420, 0));
+  } else {
+    pts.push(_pt(qs, 0)); pts.push(_pt(qs + 10, -qDepth)); pts.push(_pt(qs + 22, rAmp));
+    pts.push(_pt(qs + 35, -sDepth)); pts.push(_pt(qs + 55, stElev)); pts.push(_pt(qs + 110, stElev));
+    pts.push(_pt(qs + 170, tAmp + stElev)); pts.push(_pt(qs + 230, tAmp * 0.3 + stElev)); pts.push(_pt(qs + 270, 0));
+  }
+  return pts;
+}
+function _buildSinus(rr, opts = {}) {
+  const pts = [_pt(0, 0)]; let t = 40;
+  while (t + rr < _ECG_TOTAL + rr * 0.5) { _sinusBeat(t, opts).forEach(p => pts.push(p)); t += rr; }
+  pts.push(_pt(_ECG_TOTAL, 0)); return pts;
+}
+function _buildAFib(rr) {
+  const rand = _seededRand(rr); const pts = [_pt(0, 0)]; let t = 40, lastMs = 0;
+  const vrr = rr * 0.4;
+  function fibLine(start, end) { for (let ms = start; ms < end; ms += 18) pts.push(_pt(ms, (rand() - 0.5) * 0.07)); }
+  while (t < _ECG_TOTAL - rr * 0.3) {
+    const thisRR = rr + (rand() - 0.5) * vrr * 2;
+    fibLine(lastMs, t);
+    pts.push(_pt(t, 0)); pts.push(_pt(t + 10, -0.07)); pts.push(_pt(t + 22, 1.0));
+    pts.push(_pt(t + 35, -0.12)); pts.push(_pt(t + 55, 0)); pts.push(_pt(t + 110, 0));
+    pts.push(_pt(t + 160, 0.22)); pts.push(_pt(t + 220, 0));
+    lastMs = t + 220; t += Math.max(200, thisRR);
+  }
+  fibLine(lastMs, _ECG_TOTAL); pts.push(_pt(_ECG_TOTAL, 0)); return pts;
+}
+function _buildFlutter(rr) {
+  const pts = [_pt(0, 0)]; const flutterRR = 200; const ratio = Math.max(2, Math.round(rr / flutterRR));
+  let fms = 0, beatCount = 0;
+  while (fms < _ECG_TOTAL) {
+    pts.push(_pt(fms, 0)); pts.push(_pt(fms + flutterRR * 0.3, -0.18));
+    pts.push(_pt(fms + flutterRR * 0.5, 0.05)); pts.push(_pt(fms + flutterRR * 0.7, -0.07));
+    beatCount++;
+    if (beatCount % ratio === 0) {
+      const qs = fms + flutterRR * 0.5;
+      pts.push(_pt(qs, 0)); pts.push(_pt(qs + 10, -0.07)); pts.push(_pt(qs + 22, 1.0));
+      pts.push(_pt(qs + 35, -0.12)); pts.push(_pt(qs + 55, 0));
+    }
+    fms += flutterRR;
+  }
+  pts.push(_pt(_ECG_TOTAL, 0)); return pts;
+}
+function _buildVTach(rr) {
+  const pts = [_pt(0, 0)]; let t = 20;
+  while (t < _ECG_TOTAL - rr * 0.3) {
+    pts.push(_pt(t, 0)); pts.push(_pt(t + 20, -0.15)); pts.push(_pt(t + 40, 1.1));
+    pts.push(_pt(t + 55, 0.9)); pts.push(_pt(t + 70, -0.35)); pts.push(_pt(t + 90, -0.1));
+    pts.push(_pt(t + 130, -0.25)); pts.push(_pt(t + 160, 0)); t += rr;
+  }
+  pts.push(_pt(_ECG_TOTAL, 0)); return pts;
+}
+function _buildVFib() {
+  const rand = _seededRand(42); const pts = [_pt(0, 0)];
+  for (let ms = 0; ms <= _ECG_TOTAL; ms += 12) {
+    const phase = ms / _ECG_TOTAL; const amp = (0.5 + rand() * 0.6) * (1 - phase * 0.3);
+    pts.push(_pt(ms, (rand() > 0.5 ? 1 : -1) * amp * (0.6 + Math.sin(ms / 60) * 0.3)));
+  }
+  pts.push(_pt(_ECG_TOTAL, 0)); return pts;
+}
+function _buildAsystole() {
+  const rand = _seededRand(99); const pts = [_pt(0, 0)];
+  for (let ms = 0; ms <= _ECG_TOTAL; ms += 40) pts.push(_pt(ms, (rand() - 0.5) * 0.03));
+  pts.push(_pt(_ECG_TOTAL, 0)); return pts;
+}
+function _buildMobitzI(rr) {
+  const pts = [_pt(0, 0)]; let t = 40, pr = 140;
+  while (t < _ECG_TOTAL - rr) {
+    if (pr > 320) {
+      pts.push(_pt(t, 0)); pts.push(_pt(t + 20, 0.13)); pts.push(_pt(t + 40, 0.15));
+      pts.push(_pt(t + 60, 0.13)); pts.push(_pt(t + 80, 0)); pts.push(_pt(t + rr - 10, 0));
+      pr = 140;
+    } else {
+      _sinusBeat(t, { prInterval: pr, pAmp: 0.15, rAmp: 1.0, qDepth: 0.08, sDepth: 0.15, tAmp: 0.3 }).forEach(p => pts.push(p));
+      pr += 50;
+    }
+    t += rr;
+  }
+  pts.push(_pt(_ECG_TOTAL, 0)); return pts;
+}
+function _buildMobitzII(rr) {
+  const pts = [_pt(0, 0)]; let t = 40, beatNum = 0;
+  while (t < _ECG_TOTAL - rr) {
+    beatNum++;
+    if (beatNum % 3 === 0) {
+      pts.push(_pt(t, 0)); pts.push(_pt(t + 20, 0.13)); pts.push(_pt(t + 40, 0.15));
+      pts.push(_pt(t + 60, 0.13)); pts.push(_pt(t + 80, 0)); pts.push(_pt(t + rr - 10, 0));
+    } else {
+      _sinusBeat(t, { prInterval: 180, pAmp: 0.15, rAmp: 1.0, qDepth: 0.08, sDepth: 0.15, tAmp: 0.3 }).forEach(p => pts.push(p));
+    }
+    t += rr;
+  }
+  pts.push(_pt(_ECG_TOTAL, 0)); return pts;
+}
+function _buildThirdDegree() {
+  const pts = [_pt(0, 0)];
+  const pRR = Math.round(60000 / 70), escRR = Math.round(60000 / 35);
+  let pTime = 30, escTime = 180;
+  while (pTime < _ECG_TOTAL || escTime < _ECG_TOTAL) {
+    if (pTime <= escTime && pTime < _ECG_TOTAL) {
+      pts.push(_pt(pTime, 0)); pts.push(_pt(pTime + 20, 0.08)); pts.push(_pt(pTime + 40, 0.12));
+      pts.push(_pt(pTime + 60, 0.08)); pts.push(_pt(pTime + 80, 0)); pTime += pRR;
+    } else if (escTime < _ECG_TOTAL) {
+      pts.push(_pt(escTime, 0)); pts.push(_pt(escTime + 15, -0.12)); pts.push(_pt(escTime + 35, 0.9));
+      pts.push(_pt(escTime + 50, 0.75)); pts.push(_pt(escTime + 70, -0.28)); pts.push(_pt(escTime + 95, 0));
+      pts.push(_pt(escTime + 150, 0)); pts.push(_pt(escTime + 210, 0.22)); pts.push(_pt(escTime + 270, 0));
+      escTime += escRR;
+    } else break;
+  }
+  pts.push(_pt(_ECG_TOTAL, 0)); return pts;
+}
+function _buildECGStrip(rhythm, hr) {
+  const rr = Math.round(60000 / Math.max(20, Math.min(280, hr || 75)));
+  switch (rhythm) {
+    case 'Normal Sinus Rhythm': return _buildSinus(rr, {});
+    case 'Sinus Tachycardia': return _buildSinus(rr, { tAmp: 0.25 });
+    case 'Sinus Bradycardia': return _buildSinus(rr, { tAmp: 0.35 });
+    case 'Atrial Fibrillation': return _buildAFib(rr);
+    case 'Atrial Flutter': return _buildFlutter(rr);
+    case 'SVT': return _buildSinus(rr, { showP: false, prInterval: 80, rAmp: 0.95, sDepth: 0.1, tAmp: 0.2 });
+    case 'Ventricular Tachycardia': return _buildVTach(rr);
+    case 'Ventricular Fibrillation': return _buildVFib();
+    case 'Asystole': return _buildAsystole();
+    case 'Pulseless Electrical Activity': return _buildSinus(rr, { prInterval: 180, rAmp: 0.6, pAmp: 0.1, tAmp: 0.15 });
+    case 'First Degree AV Block': return _buildSinus(rr, { prInterval: 240, pAmp: 0.14 });
+    case 'Second Degree AV Block Type I': return _buildMobitzI(rr);
+    case 'Second Degree AV Block Type II': return _buildMobitzII(rr);
+    case 'Third Degree AV Block': return _buildThirdDegree();
+    default: return _buildSinus(rr, {});
+  }
+}
+function RhythmStripSVG({ rhythm, hr, isNightShift }) {
+  const pts = _buildECGStrip(rhythm, hr);
+  const pathD = _ptsToD(pts);
+  const gridC = isNightShift ? '#3a1a1a' : '#ffcccc';
+  const heavyC = isNightShift ? '#6a2828' : '#ff9999';
+  const bgC = isNightShift ? '#1a0a0a' : '#fff8f8';
+  const waveC = isNightShift ? '#00e87a' : '#111111';
+  const vLines = [];
+  for (let ms = 0; ms <= 6000; ms += 40) {
+    const lx = (ms * _ECG_PX_MS).toFixed(2);
+    const heavy = ms % 200 === 0;
+    vLines.push(<line key={'v' + ms} x1={lx} y1="0" x2={lx} y2={_ECG_H} stroke={heavy ? heavyC : gridC} strokeWidth={heavy ? 0.9 : 0.4} />);
+  }
+  const hLines = [];
+  for (let step = -5; step <= 15; step++) {
+    const ly = (_ECG_BASELINE - step * 0.1 * _ECG_MV).toFixed(2);
+    if (parseFloat(ly) >= -2 && parseFloat(ly) <= _ECG_H + 2) {
+      const heavy = step % 5 === 0;
+      hLines.push(<line key={'h' + step} x1="0" y1={ly} x2={_ECG_W} y2={ly} stroke={heavy ? heavyC : gridC} strokeWidth={heavy ? 0.9 : 0.4} />);
+    }
+  }
+  return (
+    <div>
+      <div style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--vn-muted-text)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '0.4rem' }}>
+        Lead II — {rhythm} — {hr} bpm
+      </div>
+      <svg viewBox={`0 0 ${_ECG_W} ${_ECG_H}`} style={{ width: '100%', display: 'block', borderRadius: '6px' }} preserveAspectRatio="none">
+        <rect width={_ECG_W} height={_ECG_H} fill={bgC} />
+        {vLines}
+        {hLines}
+        <path d={pathD} stroke={waveC} strokeWidth="1.5" fill="none" strokeLinejoin="round" />
+      </svg>
+      <div style={{ fontSize: '0.68rem', color: 'var(--vn-muted-text)', marginTop: '0.3rem', textAlign: 'right' }}>
+        25 mm/s · 10 mm/mV · Lead II
+      </div>
+    </div>
+  );
+}
+// ── End ECG SVG Generator ────────────────────────────────────────────────────
+
 const SCENARIO_TYPES = [
   "Medical",
   "Trauma",
@@ -136,7 +333,6 @@ const SECTION_GROUPS = {
   "What Was Happening": [
     "clinicalReasoning",
     "caseProgression",
-    "scenarioRationale",
   ],
   "Expected Management": [
     "expectedTreatment",
@@ -145,6 +341,7 @@ const SECTION_GROUPS = {
   "Teaching Points": [
     "teachersPoints",
     "learningObjectives",
+    "scenarioRationale",
     "instructorGuidance",
   ],
   "Self-Assessment": [
@@ -1334,7 +1531,7 @@ const ScenarioForm = () => {
             if (key === "ecgInterpretation") {
               const interpretation = typeof value === "string" ? value : "";
               const rawECG = interpretation.replace(/[\u0080-\uFFFF]/g, '').trim();
-              const ecgImageUrl = ecgImageMap[rawECG] || null;
+              const ecgImageUrl = !!rawECG && rawECG.length > 3;
 
               const labelPrefix = parentKey?.toLowerCase().includes("second")
                 ? "Second Set"
@@ -1347,7 +1544,7 @@ const ScenarioForm = () => {
                   <strong>
                     {labelPrefix ? `${labelPrefix} ECG Interpretation` : "ECG Interpretation"}:
                   </strong>{" "}
-                  {ecgImageUrl ? (
+                  {rawECG ? (
                     <button
                       type="button"
                       className="a11y-focus"
@@ -1366,7 +1563,7 @@ const ScenarioForm = () => {
                       }}
                       onClick={(e) => {
                         e.stopPropagation();
-                        setSelectedECGImage(ecgImageUrl);
+                        setSelectedECGImage({ rhythm: rawECG, hr: parseECGHR(data.hr) });
                       }}
                     >
                      
@@ -1469,7 +1666,7 @@ const ScenarioForm = () => {
           <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}>
             {sets.map((s, i) => {
               const clean = cleanEcg(s.ecg);
-              const hasImage = !!ecgImageMap[clean];
+              const hasImage = !!clean && clean.length > 3;
               return (
                 <div key={i} style={{
                   display: "flex",
@@ -1502,7 +1699,7 @@ const ScenarioForm = () => {
                   {hasImage && (
                     <button
                       type="button"
-                      onClick={() => setSelectedECGImage(ecgImageMap[clean])}
+                      onClick={() => setSelectedECGImage({ rhythm: clean, hr: parseECGHR(s.hr) })}
                       style={{
                         cursor: "pointer",
                         color: "var(--vn-teal)",
@@ -1958,11 +2155,19 @@ const ScenarioForm = () => {
             }}
             onClick={(e) => e.stopPropagation()}
           >
-            <img
-              src={selectedECGImage}
-              alt="ECG Rhythm"
-              style={{ width: "100%", height: "auto", borderRadius: "8px" }}
-            />
+            {typeof selectedECGImage === "object" && selectedECGImage !== null ? (
+              <RhythmStripSVG
+                rhythm={selectedECGImage.rhythm}
+                hr={selectedECGImage.hr}
+                isNightShift={isNightShift}
+              />
+            ) : (
+              <img
+                src={selectedECGImage}
+                alt="ECG Rhythm"
+                style={{ width: "100%", height: "auto", borderRadius: "8px" }}
+              />
+            )}
             <button
               onClick={() => setSelectedECGImage(null)}
               className="a11y-focus"
