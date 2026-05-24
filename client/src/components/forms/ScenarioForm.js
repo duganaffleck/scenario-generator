@@ -75,6 +75,7 @@ function FlashOverlay({onEnd}) {
   ) : null;
 }
 
+// eslint-disable-next-line no-unused-vars
 const ecgImageMap = {
   "Normal Sinus Rhythm": "/ecg/NSR.jpg",
   "Sinus Bradycardia": "/ecg/sinusbrad.jpeg",
@@ -1531,6 +1532,7 @@ const ScenarioForm = () => {
             if (key === "ecgInterpretation") {
               const interpretation = typeof value === "string" ? value : "";
               const rawECG = interpretation.replace(/[\u0080-\uFFFF]/g, '').trim();
+              // eslint-disable-next-line no-unused-vars
               const ecgImageUrl = !!rawECG && rawECG.length > 3;
 
               const labelPrefix = parentKey?.toLowerCase().includes("second")
