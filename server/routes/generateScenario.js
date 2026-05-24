@@ -1760,6 +1760,9 @@ ${ECG_WHITELIST.map((item) => `- ${item}`).join('\n')}
 - Update vitalSigns.secondSet.ecgInterpretation only if the rhythm changes
 - Do not use a separate top-level ecgInterpretation field
 - If the case is isolated trauma, leave ecgInterpretation blank
+- Do not label a rhythm as "Sinus Tachycardia" unless HR is above 100
+- Do not label a rhythm as "Sinus Bradycardia" unless HR is below 60
+- Do not label a rhythm as "Normal Sinus Rhythm" unless HR is 60–100
 
 Also return a top-level ecgFindings object with these fields:
 - ecgType: "rhythm" for basic medical calls, "12-lead" for cardiac, respiratory with hypoxia, AMS, syncope, overdose, post-ROSC, or any call where a 12-lead would be clinically indicated. "15-lead" only when inferior STEMI or right ventricular involvement is suspected.
