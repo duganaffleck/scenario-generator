@@ -483,15 +483,22 @@ function normalizeVitalSigns(value, ecgInterpretation) {
   const source = value && typeof value === 'object' ? value : {};
   const firstRaw = source.firstSet || source.first || {};
   const secondRaw = source.secondSet || source.second || {};
-
   const additionalSets = Array.isArray(source.additionalSets)
     ? source.additionalSets.map((set) => sanitizeVitalSet(set)).filter((set) => Object.values(set).some(Boolean))
     : [];
-
+  const firstSet = sanitizeVitalSet(firstRaw, ecgInterpretation);
+  const secondSet = sanitizeVitalSet(secondRaw, firstSet.ecgInterpretation);
+  const normalizedAdditional = additionalSets.map((set, i) => {
+    if (!set.ecgInterpretation) {
+      const prev = i === 0 ? secondSet : additionalSets[i - 1];
+      set.ecgInterpretation = prev?.ecgInterpretation || firstSet.ecgInterpretation || '';
+    }
+    return set;
+  });
   return {
-    firstSet: sanitizeVitalSet(firstRaw, ecgInterpretation),
-    secondSet: sanitizeVitalSet(secondRaw),
-    additionalSets
+    firstSet,
+    secondSet,
+    additionalSets: normalizedAdditional
   };
 }
 
@@ -1770,7 +1777,10 @@ Use only these exact ECG values when appropriate:
 ${ECG_WHITELIST.map((item) => `- ${item}`).join('\n')}
 - Do not add rate, qualifiers, or extra descriptors
 - If ECG is relevant, place it in vitalSigns.firstSet.ecgInterpretation
-- Update vitalSigns.secondSet.ecgInterpretation only if the rhythm changes
+- Update vitalSigns.secondSet.ecgInterpretation only if the rhythm changes clinically. If the rhythm is unchanged, leave secondSet.ecgInterpretation as an empty string.
+- Rhythm progression should reflect the clinical trajectory. Examples of appropriate rhythm changes: sinus tachycardia improving to normal sinus rhythm after treatment; normal sinus rhythm deteriorating to atrial fibrillation in a sepsis or cardiac patient; sinus tachycardia progressing to SVT in a palpitations scenario; any rhythm deteriorating to ventricular tachycardia, ventricular fibrillation, or asystole in a cardiac arrest scenario; bradycardia worsening through heart block progression in a medication toxicity case.
+- Do not change the rhythm in secondSet unless the clinical scenario, treatment response, or deterioration genuinely supports it. A stable patient with sinus tachycardia should still show sinus tachycardia in secondSet unless something changed.
+- When a rhythm change occurs, it must be explained in ecgFindings.rhythmInterpretation and referenced in caseProgression.
 - Do not use a separate top-level ecgInterpretation field
 - If the case is isolated trauma, leave ecgInterpretation blank
 - Do not label a rhythm as "Sinus Tachycardia" unless the numeric HR value is strictly above 100. If HR is 100 or below, use Normal Sinus Rhythm or Sinus Bradycardia as appropriate.
