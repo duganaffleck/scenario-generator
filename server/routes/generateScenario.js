@@ -1760,9 +1760,10 @@ ${ECG_WHITELIST.map((item) => `- ${item}`).join('\n')}
 - Update vitalSigns.secondSet.ecgInterpretation only if the rhythm changes
 - Do not use a separate top-level ecgInterpretation field
 - If the case is isolated trauma, leave ecgInterpretation blank
-- Do not label a rhythm as "Sinus Tachycardia" unless HR is above 100
-- Do not label a rhythm as "Sinus Bradycardia" unless HR is below 60
-- Do not label a rhythm as "Normal Sinus Rhythm" unless HR is 60–100
+- Do not label a rhythm as "Sinus Tachycardia" unless the numeric HR value is strictly above 100. If HR is 100 or below, use Normal Sinus Rhythm or Sinus Bradycardia as appropriate.
+- Do not label a rhythm as "Sinus Bradycardia" unless the numeric HR value is strictly below 60. If HR is 60 or above, use Normal Sinus Rhythm or Sinus Tachycardia as appropriate.
+- Do not label a rhythm as "Normal Sinus Rhythm" unless the numeric HR value is between 60 and 100 inclusive.
+- The ECG label in ecgInterpretation must always be consistent with the numeric HR in the same vital sign set. Check this before returning the JSON.
 
 Also return a top-level ecgFindings object with these fields:
 - ecgType: "rhythm" for basic medical calls, "12-lead" for cardiac, respiratory with hypoxia, AMS, syncope, overdose, post-ROSC, or any call where a 12-lead would be clinically indicated. "15-lead" only when inferior STEMI or right ventricular involvement is suspected.
@@ -1836,6 +1837,8 @@ Scenario shaping rules:
 - Make the scenario internally coherent across chief complaint, history, physical findings, vital signs, ECG use, progression, differential, and treatment.
 - The selected type, environment, complexity, semester, and uniqueness must all produce visible differences in the final scenario.
 - Avoid generic template-feeling scenarios; make this one feel deliberately authored.
+- The title must be specific to this exact call. Do not use generic titles like "The Chest Pain Call" or "Diabetic Emergency". Use specific scene detail, patient context, or clinical tension. Examples of strong titles: "Skipped Lunch at the Transit Stop", "Too Slow After Lunch", "Rural Station Fast Pulse Tight Chest". Never reuse a title pattern from a previous scenario in the same session.
+- Titles should vary significantly across scenario types. A trauma title should sound different from a medical title. An OB title should sound different from a cardiac title.
 - Use patient or bystander dialogue where it adds realism, but keep it purposeful.
 - Keep the tone direct, educational, clinically grounded, and useful for paramedic teaching. Do not use em dashes anywhere in the generated scenario; use commas, periods, parentheses, or simple hyphens instead.
 - Teacher's Points should sound like a senior paramedic coaching a student.
