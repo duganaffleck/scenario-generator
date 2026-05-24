@@ -379,17 +379,241 @@ function _tlGrid(w, h) {
   return g;
 }
 
+function _tlRBBBBeat(t, opts) {
+  const { pr = 160, pA = 0.15, rA = 0.5, sA = 0.8, rPrime = 0.9, sLate = 0, flip = false, noP = false } = opts;
+  const s = flip ? -1 : 1; const ps = flip ? -1 : 1;
+  const pts = [];
+  if (!noP) {
+    pts.push(_tlPt(t, 0)); pts.push(_tlPt(t + 20, ps * pA * 0.5)); pts.push(_tlPt(t + 40, ps * pA));
+    pts.push(_tlPt(t + 60, ps * pA * 0.5)); pts.push(_tlPt(t + 80, 0)); pts.push(_tlPt(t + pr - 5, 0));
+  } else { pts.push(_tlPt(t, 0)); pts.push(_tlPt(t + pr - 5, 0)); }
+  const qs = t + pr;
+  pts.push(_tlPt(qs, 0));
+  pts.push(_tlPt(qs + 10, s * rA * 0.4));
+  pts.push(_tlPt(qs + 22, s * rA));
+  pts.push(_tlPt(qs + 35, s * -sA));
+  pts.push(_tlPt(qs + 55, s * -sA * 0.3));
+  pts.push(_tlPt(qs + 75, s * rPrime));
+  pts.push(_tlPt(qs + 100, s * -sLate));
+  pts.push(_tlPt(qs + 130, 0));
+  pts.push(_tlPt(qs + 180, s * -0.18));
+  pts.push(_tlPt(qs + 240, s * -0.08));
+  pts.push(_tlPt(qs + 270, 0));
+  return pts;
+}
+
+function _tlRBBBLateralBeat(t, opts) {
+  const { pr = 160, pA = 0.15, rA = 1.0, sLate = 0.35, tA = 0.28, flip = false } = opts;
+  const s = flip ? -1 : 1;
+  const pts = [];
+  pts.push(_tlPt(t, 0)); pts.push(_tlPt(t + 20, pA * 0.5)); pts.push(_tlPt(t + 40, pA));
+  pts.push(_tlPt(t + 60, pA * 0.5)); pts.push(_tlPt(t + 80, 0)); pts.push(_tlPt(t + pr - 5, 0));
+  const qs = t + pr;
+  pts.push(_tlPt(qs, 0));
+  pts.push(_tlPt(qs + 8, -0.06));
+  pts.push(_tlPt(qs + 22, s * rA));
+  pts.push(_tlPt(qs + 35, -0.08));
+  pts.push(_tlPt(qs + 55, 0));
+  pts.push(_tlPt(qs + 90, -sLate));
+  pts.push(_tlPt(qs + 130, -sLate * 0.5));
+  pts.push(_tlPt(qs + 160, 0));
+  pts.push(_tlPt(qs + 200, s * tA));
+  pts.push(_tlPt(qs + 255, s * tA * 0.3));
+  pts.push(_tlPt(qs + 280, 0));
+  return pts;
+}
+
+function _tlBuildRBBBLead(rr, opts) {
+  const pts = [_tlPt(0, 0)]; let t = 30;
+  const useRSR = opts.rsrPattern;
+  while (t + rr < _TL_TOTAL + rr * 0.5) {
+    if (useRSR) { _tlRBBBBeat(t, opts).forEach(p => pts.push(p)); }
+    else { _tlRBBBLateralBeat(t, opts).forEach(p => pts.push(p)); }
+    t += rr;
+  }
+  pts.push(_tlPt(_TL_TOTAL, 0)); return pts;
+}
+
 const _TL_PATTERNS = {
-  normal: { title: 'Normal 12-Lead ECG', leads: { 'I': {rA:0.6,tA:0.25,pA:0.12,sD:0.08}, 'II': {rA:1.0,tA:0.30,pA:0.15,sD:0.15}, 'III': {rA:0.4,tA:0.20,pA:0.10,sD:0.05}, 'aVR': {rA:0.3,tA:0.12,flip:true,pFlip:true}, 'aVL': {rA:0.35,tA:0.18,pA:0.08,sD:0.06}, 'aVF': {rA:0.7,tA:0.25,pA:0.13,sD:0.10}, 'V1': {rA:0.2,tA:-0.15,sD:0.4,qD:0.05}, 'V2': {rA:0.4,tA:-0.2,sD:0.3}, 'V3': {rA:0.7,tA:0.05,sD:0.2}, 'V4': {rA:1.0,tA:0.3,sD:0.12}, 'V5': {rA:1.1,tA:0.32,sD:0.08}, 'V6': {rA:0.9,tA:0.28,sD:0.06} } },
-  inferiorSTEMI: { title: 'Inferior STEMI — ST Elevation in II, III, aVF', leads: { 'I': {rA:0.6,tA:0.25,st:-0.08}, 'II': {rA:1.0,tA:0.35,st:0.28,pA:0.15}, 'III': {rA:0.8,tA:0.32,st:0.32,pA:0.12}, 'aVR': {rA:0.3,flip:true,pFlip:true,st:-0.05}, 'aVL': {rA:0.35,tA:0.10,st:-0.12}, 'aVF': {rA:0.9,tA:0.35,st:0.30,pA:0.13}, 'V1': {rA:0.2,tA:-0.15,sD:0.4}, 'V2': {rA:0.4,tA:-0.1,sD:0.3}, 'V3': {rA:0.7,tA:0.2,sD:0.2}, 'V4': {rA:1.0,tA:0.3,sD:0.12}, 'V5': {rA:1.1,tA:0.32,sD:0.08}, 'V6': {rA:0.9,tA:0.28,sD:0.06} } },
-  anteriorSTEMI: { title: 'Anterior STEMI — ST Elevation in V1-V4', leads: { 'I': {rA:0.6,tA:0.25}, 'II': {rA:1.0,tA:0.30,pA:0.15}, 'III': {rA:0.4,tA:0.20}, 'aVR': {rA:0.3,flip:true,pFlip:true}, 'aVL': {rA:0.35,tA:0.22,st:0.10}, 'aVF': {rA:0.7,tA:0.25}, 'V1': {rA:0.15,tA:0.25,st:0.30,sD:0.5,qD:0.12}, 'V2': {rA:0.3,tA:0.35,st:0.35,sD:0.35,qD:0.10}, 'V3': {rA:0.5,tA:0.32,st:0.28,sD:0.22}, 'V4': {rA:0.8,tA:0.28,st:0.18,sD:0.14}, 'V5': {rA:1.1,tA:0.30,sD:0.08}, 'V6': {rA:0.9,tA:0.28,sD:0.06} } },
-  lateralSTEMI: { title: 'Lateral STEMI — ST Elevation in I, aVL, V5-V6', leads: { 'I': {rA:0.8,tA:0.35,st:0.25}, 'II': {rA:1.0,tA:0.25,st:-0.08,pA:0.15}, 'III': {rA:0.4,tA:0.15,st:-0.15}, 'aVR': {rA:0.3,flip:true,pFlip:true}, 'aVL': {rA:0.55,tA:0.32,st:0.22}, 'aVF': {rA:0.7,tA:0.18,st:-0.10}, 'V1': {rA:0.2,tA:-0.15,sD:0.4}, 'V2': {rA:0.4,tA:-0.1,sD:0.3}, 'V3': {rA:0.7,tA:0.2,sD:0.2}, 'V4': {rA:1.0,tA:0.28,sD:0.12}, 'V5': {rA:1.1,tA:0.38,st:0.22,sD:0.08}, 'V6': {rA:0.9,tA:0.35,st:0.20,sD:0.06} } },
-  lbbb: { title: 'Left Bundle Branch Block', leads: { 'I': {rA:0.9,wide:true,tA:-0.2,sD:0.05,qD:0.02}, 'II': {rA:0.8,wide:true,tA:-0.18,pA:0.15}, 'III': {rA:0.3,wide:true,tA:0.12,flip:true}, 'aVR': {rA:0.4,wide:true,flip:true,pFlip:true}, 'aVL': {rA:0.7,wide:true,tA:-0.15}, 'aVF': {rA:0.5,wide:true,tA:0.10,flip:true}, 'V1': {rA:0.1,wide:true,tA:0.30,flip:true,sD:0.6}, 'V2': {rA:0.15,wide:true,tA:0.28,flip:true,sD:0.5}, 'V3': {rA:0.3,wide:true,tA:0.15,flip:true,sD:0.3}, 'V4': {rA:0.7,wide:true,tA:-0.12,sD:0.1}, 'V5': {rA:1.0,wide:true,tA:-0.18,sD:0.06}, 'V6': {rA:0.9,wide:true,tA:-0.15,sD:0.04} } },
-  rbbb: { title: 'Right Bundle Branch Block', leads: { 'I': {rA:0.7,tA:-0.15,sD:0.35}, 'II': {rA:1.0,tA:0.22,pA:0.15,sD:0.20}, 'III': {rA:0.5,tA:0.18,sD:0.12}, 'aVR': {rA:0.3,flip:true,pFlip:true}, 'aVL': {rA:0.3,tA:-0.12,sD:0.28}, 'aVF': {rA:0.7,tA:0.22,sD:0.10}, 'V1': {rA:0.8,wide:true,tA:-0.20,sD:0.05,qD:0.02}, 'V2': {rA:0.9,wide:true,tA:-0.18,sD:0.04}, 'V3': {rA:0.85,tA:-0.10,sD:0.15}, 'V4': {rA:1.0,tA:0.22,sD:0.20}, 'V5': {rA:0.9,tA:0.28,sD:0.28}, 'V6': {rA:0.7,tA:0.22,sD:0.32} } },
-  afib12: { afib: true, title: 'Atrial Fibrillation — 12-Lead', leads: { 'I': {rA:0.6,tA:0.22,sD:0.08}, 'II': {rA:1.0,tA:0.28,sD:0.15}, 'III': {rA:0.4,tA:0.18,sD:0.05}, 'aVR': {rA:0.3,flip:true}, 'aVL': {rA:0.35,tA:0.15}, 'aVF': {rA:0.7,tA:0.22,sD:0.10}, 'V1': {rA:0.2,tA:-0.12,sD:0.4}, 'V2': {rA:0.4,tA:-0.08,sD:0.3}, 'V3': {rA:0.7,tA:0.15,sD:0.2}, 'V4': {rA:1.0,tA:0.28,sD:0.12}, 'V5': {rA:1.1,tA:0.30,sD:0.08}, 'V6': {rA:0.9,tA:0.26,sD:0.06} } },
-  vtach12: { vtach: true, title: 'Ventricular Tachycardia — 12-Lead', leads: { 'I': {rA:0.9}, 'II': {rA:1.1}, 'III': {rA:0.7,flip:true}, 'aVR': {rA:0.8,flip:true}, 'aVL': {rA:0.5}, 'aVF': {rA:0.8}, 'V1': {rA:1.0,flip:true}, 'V2': {rA:1.1,flip:true}, 'V3': {rA:0.9}, 'V4': {rA:0.8}, 'V5': {rA:0.7}, 'V6': {rA:0.6} } },
-  inferiorRV: { title: 'Inferior + RV STEMI (V3R, V4R, V5R)', leads: { 'I': {rA:0.6,tA:0.25,st:-0.08}, 'II': {rA:1.0,tA:0.35,st:0.28,pA:0.15}, 'III': {rA:0.8,tA:0.32,st:0.32,pA:0.12}, 'aVR': {rA:0.3,flip:true,pFlip:true}, 'aVL': {rA:0.35,tA:0.10,st:-0.12}, 'aVF': {rA:0.9,tA:0.35,st:0.30}, 'V1': {rA:0.2,tA:-0.15,sD:0.4}, 'V2': {rA:0.4,tA:-0.1,sD:0.3}, 'V3': {rA:0.7,tA:0.2,sD:0.2}, 'V4': {rA:1.0,tA:0.3,sD:0.12}, 'V5': {rA:1.1,tA:0.32,sD:0.08}, 'V6': {rA:0.9,tA:0.28,sD:0.06}, 'V3R': {rA:0.15,tA:0.28,st:0.25,sD:0.5}, 'V4R': {rA:0.12,tA:0.30,st:0.28,sD:0.55}, 'V5R': {rA:0.10,tA:0.22,st:0.18,sD:0.5} } },
-  posterior: { title: 'Posterior STEMI (V7, V8, V9)', leads: { 'I': {rA:0.6,tA:0.25}, 'II': {rA:1.0,tA:0.30,pA:0.15}, 'III': {rA:0.4,tA:0.20}, 'aVR': {rA:0.3,flip:true,pFlip:true}, 'aVL': {rA:0.35,tA:0.18}, 'aVF': {rA:0.7,tA:0.25}, 'V1': {rA:0.7,tA:-0.25,sD:0.08,st:-0.20}, 'V2': {rA:0.8,tA:-0.22,sD:0.06,st:-0.18}, 'V3': {rA:0.75,tA:-0.12,sD:0.1,st:-0.10}, 'V4': {rA:1.0,tA:0.28,sD:0.12}, 'V5': {rA:1.1,tA:0.30,sD:0.08}, 'V6': {rA:0.9,tA:0.28,sD:0.06}, 'V7': {rA:0.4,tA:0.30,st:0.22,sD:0.2}, 'V8': {rA:0.35,tA:0.28,st:0.25,sD:0.18}, 'V9': {rA:0.3,tA:0.25,st:0.20,sD:0.15} } },
+  normal: {
+    title: 'Normal 12-Lead ECG',
+    leads: {
+      'I':   { pr:160, pA:0.12, rA:0.65, qD:0.06, sD:0.06, tA:0.22, st:0 },
+      'II':  { pr:160, pA:0.15, rA:1.00, qD:0.08, sD:0.14, tA:0.30, st:0 },
+      'III': { pr:160, pA:0.08, rA:0.40, qD:0.04, sD:0.05, tA:0.15, st:0 },
+      'aVR': { pr:160, pA:0.12, rA:0.30, qD:0.08, sD:0.05, tA:0.12, st:0, flip:true, pFlip:true },
+      'aVL': { pr:160, pA:0.08, rA:0.35, qD:0.06, sD:0.06, tA:0.12, st:0 },
+      'aVF': { pr:160, pA:0.13, rA:0.72, qD:0.06, sD:0.10, tA:0.25, st:0 },
+      'V1':  { pr:160, pA:0.06, rA:0.18, qD:0.04, sD:0.45, tA:-0.10, st:0 },
+      'V2':  { pr:160, pA:0.08, rA:0.35, qD:0.04, sD:0.38, tA:-0.08, st:0.05 },
+      'V3':  { pr:160, pA:0.10, rA:0.65, qD:0.05, sD:0.22, tA:0.12, st:0.04 },
+      'V4':  { pr:160, pA:0.12, rA:1.00, qD:0.07, sD:0.14, tA:0.30, st:0 },
+      'V5':  { pr:160, pA:0.12, rA:1.10, qD:0.06, sD:0.10, tA:0.32, st:0 },
+      'V6':  { pr:160, pA:0.12, rA:0.88, qD:0.06, sD:0.08, tA:0.28, st:0 },
+    }
+  },
+  inferiorSTEMI: {
+    title: 'Inferior STEMI — ST Elevation II, III, aVF',
+    leads: {
+      'I':   { pr:160, pA:0.12, rA:0.60, qD:0.06, sD:0.06, tA:0.15, st:-0.10 },
+      'II':  { pr:160, pA:0.15, rA:1.00, qD:0.12, sD:0.14, tA:0.40, st:0.25 },
+      'III': { pr:160, pA:0.10, rA:0.85, qD:0.18, sD:0.10, tA:0.42, st:0.32 },
+      'aVR': { pr:160, pA:0.12, rA:0.28, qD:0.06, sD:0.05, tA:0.08, st:0, flip:true, pFlip:true },
+      'aVL': { pr:160, pA:0.06, rA:0.28, qD:0.04, sD:0.05, tA:-0.15, st:-0.18 },
+      'aVF': { pr:160, pA:0.13, rA:0.90, qD:0.16, sD:0.10, tA:0.38, st:0.28 },
+      'V1':  { pr:160, pA:0.06, rA:0.18, qD:0.04, sD:0.45, tA:-0.10, st:-0.08 },
+      'V2':  { pr:160, pA:0.08, rA:0.35, qD:0.04, sD:0.38, tA:-0.05, st:-0.06 },
+      'V3':  { pr:160, pA:0.10, rA:0.65, qD:0.05, sD:0.22, tA:0.12, st:0 },
+      'V4':  { pr:160, pA:0.12, rA:1.00, qD:0.07, sD:0.14, tA:0.30, st:0 },
+      'V5':  { pr:160, pA:0.12, rA:1.10, qD:0.06, sD:0.10, tA:0.32, st:0 },
+      'V6':  { pr:160, pA:0.12, rA:0.88, qD:0.06, sD:0.08, tA:0.28, st:0 },
+    }
+  },
+  anteriorSTEMI: {
+    title: 'Anterior STEMI — ST Elevation V1-V4',
+    leads: {
+      'I':   { pr:160, pA:0.12, rA:0.65, qD:0.06, sD:0.06, tA:0.25, st:0.08 },
+      'II':  { pr:160, pA:0.15, rA:1.00, qD:0.08, sD:0.14, tA:0.20, st:-0.08 },
+      'III': { pr:160, pA:0.08, rA:0.38, qD:0.04, sD:0.05, tA:0.10, st:-0.10 },
+      'aVR': { pr:160, pA:0.12, rA:0.30, qD:0.08, sD:0.05, tA:0.10, st:0, flip:true, pFlip:true },
+      'aVL': { pr:160, pA:0.10, rA:0.42, qD:0.06, sD:0.06, tA:0.22, st:0.12 },
+      'aVF': { pr:160, pA:0.12, rA:0.68, qD:0.06, sD:0.10, tA:0.15, st:-0.08 },
+      'V1':  { pr:160, pA:0.06, rA:0.12, qD:0.14, sD:0.50, tA:0.28, st:0.32 },
+      'V2':  { pr:160, pA:0.08, rA:0.22, qD:0.12, sD:0.40, tA:0.38, st:0.38 },
+      'V3':  { pr:160, pA:0.10, rA:0.45, qD:0.10, sD:0.28, tA:0.35, st:0.30 },
+      'V4':  { pr:160, pA:0.12, rA:0.75, qD:0.08, sD:0.18, tA:0.30, st:0.18 },
+      'V5':  { pr:160, pA:0.12, rA:1.10, qD:0.06, sD:0.10, tA:0.32, st:0 },
+      'V6':  { pr:160, pA:0.12, rA:0.88, qD:0.06, sD:0.08, tA:0.28, st:0 },
+    }
+  },
+  lateralSTEMI: {
+    title: 'Lateral STEMI — ST Elevation I, aVL, V5-V6',
+    leads: {
+      'I':   { pr:160, pA:0.12, rA:0.80, qD:0.06, sD:0.05, tA:0.38, st:0.25 },
+      'II':  { pr:160, pA:0.15, rA:0.90, qD:0.08, sD:0.14, tA:0.15, st:-0.10 },
+      'III': { pr:160, pA:0.08, rA:0.35, qD:0.04, sD:0.05, tA:0.05, st:-0.15 },
+      'aVR': { pr:160, pA:0.12, rA:0.30, qD:0.08, sD:0.05, tA:0.10, st:0, flip:true, pFlip:true },
+      'aVL': { pr:160, pA:0.10, rA:0.55, qD:0.06, sD:0.05, tA:0.35, st:0.22 },
+      'aVF': { pr:160, pA:0.12, rA:0.65, qD:0.06, sD:0.10, tA:0.12, st:-0.12 },
+      'V1':  { pr:160, pA:0.06, rA:0.18, qD:0.04, sD:0.45, tA:-0.10, st:0 },
+      'V2':  { pr:160, pA:0.08, rA:0.35, qD:0.04, sD:0.38, tA:-0.05, st:0 },
+      'V3':  { pr:160, pA:0.10, rA:0.65, qD:0.05, sD:0.22, tA:0.12, st:0 },
+      'V4':  { pr:160, pA:0.12, rA:1.00, qD:0.07, sD:0.14, tA:0.28, st:0.08 },
+      'V5':  { pr:160, pA:0.12, rA:1.10, qD:0.06, sD:0.10, tA:0.40, st:0.22 },
+      'V6':  { pr:160, pA:0.12, rA:0.90, qD:0.06, sD:0.08, tA:0.38, st:0.20 },
+    }
+  },
+  lbbb: {
+    title: 'Left Bundle Branch Block',
+    leads: {
+      'I':   { pr:160, pA:0.12, rA:0.90, qD:0.00, sD:0.04, tA:-0.22, st:-0.08, wide:true },
+      'II':  { pr:160, pA:0.15, rA:0.75, qD:0.00, sD:0.08, tA:-0.18, st:-0.06, wide:true },
+      'III': { pr:160, pA:0.06, rA:0.00, qD:0.00, sD:0.60, tA:0.20, st:0.10, wide:true, flip:true },
+      'aVR': { pr:160, pA:0.12, rA:0.00, qD:0.00, sD:0.70, tA:0.25, st:0.12, wide:true, flip:true, pFlip:true },
+      'aVL': { pr:160, pA:0.10, rA:0.85, qD:0.00, sD:0.04, tA:-0.20, st:-0.08, wide:true },
+      'aVF': { pr:160, pA:0.10, rA:0.00, qD:0.00, sD:0.55, tA:0.18, st:0.08, wide:true, flip:true },
+      'V1':  { pr:160, pA:0.06, rA:0.00, qD:0.00, sD:0.75, tA:0.32, st:0.18, wide:true, flip:true },
+      'V2':  { pr:160, pA:0.08, rA:0.00, qD:0.00, sD:0.70, tA:0.28, st:0.15, wide:true, flip:true },
+      'V3':  { pr:160, pA:0.08, rA:0.20, qD:0.00, sD:0.50, tA:0.18, st:0.10, wide:true, flip:true },
+      'V4':  { pr:160, pA:0.10, rA:0.60, qD:0.00, sD:0.15, tA:-0.10, st:-0.04, wide:true },
+      'V5':  { pr:160, pA:0.12, rA:1.00, qD:0.00, sD:0.06, tA:-0.20, st:-0.08, wide:true },
+      'V6':  { pr:160, pA:0.12, rA:0.92, qD:0.00, sD:0.04, tA:-0.18, st:-0.06, wide:true },
+    }
+  },
+  rbbb: {
+    title: 'Right Bundle Branch Block',
+    rbbb: true,
+    leads: {
+      'I':   { pr:160, pA:0.12, rA:1.00, sLate:0.38, tA:0.28 },
+      'II':  { pr:160, pA:0.15, rA:0.95, sLate:0.22, tA:0.25 },
+      'III': { pr:160, pA:0.08, rA:0.42, sLate:0.10, tA:0.18 },
+      'aVR': { pr:160, pA:0.12, rA:0.30, sLate:0.10, tA:0.12, flip:true },
+      'aVL': { pr:160, pA:0.08, rA:0.32, sLate:0.30, tA:-0.12 },
+      'aVF': { pr:160, pA:0.13, rA:0.70, sLate:0.12, tA:0.22 },
+      'V1':  { pr:160, pA:0.06, rA:0.35, sA:0.70, rPrime:0.90, sLate:0, tA:-0.18, rsrPattern:true },
+      'V2':  { pr:160, pA:0.08, rA:0.30, sA:0.65, rPrime:0.85, sLate:0, tA:-0.15, rsrPattern:true },
+      'V3':  { pr:160, pA:0.10, rA:0.60, sLate:0.28, tA:-0.08 },
+      'V4':  { pr:160, pA:0.12, rA:0.95, sLate:0.22, tA:0.18 },
+      'V5':  { pr:160, pA:0.12, rA:1.05, sLate:0.32, tA:0.28 },
+      'V6':  { pr:160, pA:0.12, rA:0.85, sLate:0.35, tA:0.25 },
+    }
+  },
+  afib12: {
+    afib: true,
+    title: 'Atrial Fibrillation — 12-Lead',
+    leads: {
+      'I':   { rA:0.65, sD:0.08, tA:0.22 },
+      'II':  { rA:1.00, sD:0.14, tA:0.28 },
+      'III': { rA:0.40, sD:0.05, tA:0.15 },
+      'aVR': { rA:0.30, flip:true, tA:-0.10 },
+      'aVL': { rA:0.35, sD:0.06, tA:0.12 },
+      'aVF': { rA:0.70, sD:0.10, tA:0.22 },
+      'V1':  { rA:0.18, sD:0.45, tA:-0.08 },
+      'V2':  { rA:0.35, sD:0.38, tA:-0.05 },
+      'V3':  { rA:0.65, sD:0.22, tA:0.12 },
+      'V4':  { rA:1.00, sD:0.14, tA:0.30 },
+      'V5':  { rA:1.10, sD:0.10, tA:0.32 },
+      'V6':  { rA:0.88, sD:0.08, tA:0.28 },
+    }
+  },
+  vtach12: {
+    vtach: true,
+    title: 'Ventricular Tachycardia — 12-Lead',
+    leads: {
+      'I':   { rA:0.90, flip:false },
+      'II':  { rA:1.10, flip:false },
+      'III': { rA:0.75, flip:true },
+      'aVR': { rA:0.85, flip:true },
+      'aVL': { rA:0.55, flip:false },
+      'aVF': { rA:0.80, flip:false },
+      'V1':  { rA:1.00, flip:true },
+      'V2':  { rA:1.10, flip:true },
+      'V3':  { rA:0.95, flip:false },
+      'V4':  { rA:0.85, flip:false },
+      'V5':  { rA:0.75, flip:false },
+      'V6':  { rA:0.65, flip:false },
+    }
+  },
+  inferiorRV: {
+    title: 'Inferior + RV STEMI — 15-Lead',
+    leads: {
+      'I':   { pr:160, pA:0.12, rA:0.60, qD:0.06, sD:0.06, tA:0.15, st:-0.10 },
+      'II':  { pr:160, pA:0.15, rA:1.00, qD:0.12, sD:0.14, tA:0.40, st:0.25 },
+      'III': { pr:160, pA:0.10, rA:0.90, qD:0.20, sD:0.10, tA:0.45, st:0.35 },
+      'aVR': { pr:160, pA:0.12, rA:0.28, qD:0.06, sD:0.05, tA:0.08, st:0, flip:true, pFlip:true },
+      'aVL': { pr:160, pA:0.06, rA:0.28, qD:0.04, sD:0.05, tA:-0.18, st:-0.20 },
+      'aVF': { pr:160, pA:0.13, rA:0.90, qD:0.16, sD:0.10, tA:0.40, st:0.28 },
+      'V1':  { pr:160, pA:0.06, rA:0.20, qD:0.04, sD:0.42, tA:0.10, st:0.12 },
+      'V2':  { pr:160, pA:0.08, rA:0.35, qD:0.04, sD:0.38, tA:-0.05, st:-0.05 },
+      'V3':  { pr:160, pA:0.10, rA:0.65, qD:0.05, sD:0.22, tA:0.12, st:0 },
+      'V4':  { pr:160, pA:0.12, rA:1.00, qD:0.07, sD:0.14, tA:0.30, st:0 },
+      'V5':  { pr:160, pA:0.12, rA:1.10, qD:0.06, sD:0.10, tA:0.32, st:0 },
+      'V6':  { pr:160, pA:0.12, rA:0.88, qD:0.06, sD:0.08, tA:0.28, st:0 },
+      'V3R': { pr:160, pA:0.06, rA:0.14, qD:0.04, sD:0.50, tA:0.20, st:0.22 },
+      'V4R': { pr:160, pA:0.06, rA:0.12, qD:0.04, sD:0.52, tA:0.22, st:0.25 },
+      'V5R': { pr:160, pA:0.06, rA:0.10, qD:0.04, sD:0.48, tA:0.16, st:0.18 },
+    }
+  },
+  posterior: {
+    title: 'Posterior STEMI — 15-Lead',
+    leads: {
+      'I':   { pr:160, pA:0.12, rA:0.65, qD:0.06, sD:0.06, tA:0.22, st:0 },
+      'II':  { pr:160, pA:0.15, rA:1.00, qD:0.08, sD:0.14, tA:0.28, st:0 },
+      'III': { pr:160, pA:0.08, rA:0.40, qD:0.04, sD:0.05, tA:0.15, st:0 },
+      'aVR': { pr:160, pA:0.12, rA:0.30, qD:0.08, sD:0.05, tA:0.10, st:0, flip:true, pFlip:true },
+      'aVL': { pr:160, pA:0.08, rA:0.35, qD:0.06, sD:0.06, tA:0.12, st:0 },
+      'aVF': { pr:160, pA:0.13, rA:0.72, qD:0.06, sD:0.10, tA:0.25, st:0 },
+      'V1':  { pr:160, pA:0.06, rA:0.72, qD:0.02, sD:0.08, tA:0.25, st:-0.22 },
+      'V2':  { pr:160, pA:0.08, rA:0.80, qD:0.02, sD:0.06, tA:0.28, st:-0.20 },
+      'V3':  { pr:160, pA:0.10, rA:0.75, qD:0.04, sD:0.10, tA:0.18, st:-0.12 },
+      'V4':  { pr:160, pA:0.12, rA:1.00, qD:0.07, sD:0.14, tA:0.30, st:0 },
+      'V5':  { pr:160, pA:0.12, rA:1.10, qD:0.06, sD:0.10, tA:0.32, st:0 },
+      'V6':  { pr:160, pA:0.12, rA:0.88, qD:0.06, sD:0.08, tA:0.28, st:0 },
+      'V7':  { pr:160, pA:0.10, rA:0.38, qD:0.04, sD:0.18, tA:0.30, st:0.20 },
+      'V8':  { pr:160, pA:0.10, rA:0.32, qD:0.04, sD:0.16, tA:0.28, st:0.22 },
+      'V9':  { pr:160, pA:0.10, rA:0.28, qD:0.04, sD:0.14, tA:0.25, st:0.18 },
+    }
+  },
 };
 
 function TwelveLeadSVG({ ecgType, rhythmInterp, twelveLeadFindings, fifteenLeadFindings, hr, isNightShift }) {
@@ -426,6 +650,7 @@ function TwelveLeadSVG({ ecgType, rhythmInterp, twelveLeadFindings, fifteenLeadF
     const opts = p.leads[lead] || {};
     if (p.afib) return _tlBuildAFib(rr, lead.charCodeAt(0) * 37, opts);
     if (p.vtach) return _tlBuildVTach(rr, opts);
+    if (p.rbbb) return _tlBuildRBBBLead(rr, opts);
     return _tlBuildLead(rr, opts);
   }
 
