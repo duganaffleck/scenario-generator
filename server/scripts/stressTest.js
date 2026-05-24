@@ -82,7 +82,7 @@ async function runCase(caseParams, index) {
   try {
     const res = await fetch(BASE_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'Origin': 'https://scenario-generator-ten.vercel.app' },
       body: JSON.stringify({
         ...caseParams,
         generationDepth: 'Quick Draft',
