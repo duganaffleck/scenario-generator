@@ -1777,6 +1777,14 @@ ${ECG_WHITELIST.map((item) => `- ${item}`).join('\n')}
 - Do not label a rhythm as "Sinus Bradycardia" unless the numeric HR value is strictly below 60. If HR is 60 or above, use Normal Sinus Rhythm or Sinus Tachycardia as appropriate.
 - Do not label a rhythm as "Normal Sinus Rhythm" unless the numeric HR value is between 60 and 100 inclusive.
 - The ECG label in ecgInterpretation must always be consistent with the numeric HR in the same vital sign set. Check this before returning the JSON.
+- Use SVT when the presentation involves paroxysmal palpitations, abrupt onset tachycardia at 150-220 bpm, narrow complex rhythm, absent or retrograde P waves, and no clear sinus origin. Do not use Sinus Tachycardia for SVT presentations.
+- Use Atrial Fibrillation when the presentation involves an irregularly irregular pulse, absent P waves, and a clinical context supporting AFib such as known AFib history, alcohol use, hyperthyroidism, heart failure, or new onset palpitations with irregular rhythm on assessment.
+- Use Atrial Flutter when the presentation involves a regular tachycardia at approximately 150 bpm with a 2:1 block pattern, or 75-100 bpm with higher degree block, and a clinical context supporting flutter.
+- Use Ventricular Tachycardia when the presentation involves a wide complex tachycardia above 100 bpm, hemodynamic compromise, known structural heart disease, or post-MI context. Do not use Sinus Tachycardia for VT presentations.
+- Use First Degree AV Block, Second Degree AV Block Type I, Second Degree AV Block Type II, or Third Degree AV Block when the presentation involves bradycardia, syncope, near-syncope, medication toxicity such as beta blocker or calcium channel blocker overdose, or known conduction disease.
+- Use Ventricular Fibrillation or Asystole only in cardiac arrest scenarios.
+- Use Pulseless Electrical Activity only in cardiac arrest with organized rhythm but no pulse.
+- Default to Normal Sinus Rhythm, Sinus Tachycardia, or Sinus Bradycardia for all other presentations where no specific dysrhythmia is clinically indicated.
 
 Also return a top-level ecgFindings object with these fields:
 - ecgType: "rhythm" for basic medical calls, "12-lead" for cardiac, respiratory with hypoxia, AMS, syncope, overdose, post-ROSC, or any call where a 12-lead would be clinically indicated. "15-lead" only when inferior STEMI or right ventricular involvement is suspected.
