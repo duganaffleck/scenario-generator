@@ -2,7 +2,7 @@ import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-const BASE_URL = 'http://localhost:10000/api/generate-scenario';
+const BASE_URL = 'https://scenario-backend.onrender.com/api/generate-scenario';
 const CONCURRENCY = 3;
 const RESULTS_PATH = path.join(path.dirname(fileURLToPath(import.meta.url)), 'stress-test-results.json');
 
