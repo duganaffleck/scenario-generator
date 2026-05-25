@@ -519,6 +519,119 @@ function _tlBuildFlutter(rr, opts) {
   pts.push(_tlPt(_TL_TOTAL, 0));
   return pts;
 }
+function _tlBuildWenckebach(rr, opts) {
+  const pts = [_tlPt(0, 0)];
+  const { rA = 1, sD = 0.14, tA = 0.28, flip = false } = opts;
+  const s = flip ? -1 : 1;
+  let t = 20;
+  let beatInCycle = 0;
+  let pr = 160;
+  while (t < _TL_TOTAL - rr) {
+    beatInCycle++;
+    if (beatInCycle === 4) {
+      pts.push(_tlPt(t, 0));
+      pts.push(_tlPt(t + 20, s * 0.13));
+      pts.push(_tlPt(t + 40, s * 0.13));
+      pts.push(_tlPt(t + 55, s * 0.07));
+      pts.push(_tlPt(t + 70, 0));
+      beatInCycle = 0;
+      pr = 160;
+      t += rr * 0.85;
+    } else {
+      pts.push(_tlPt(t, 0));
+      pts.push(_tlPt(t + 20, s * 0.13));
+      pts.push(_tlPt(t + 40, s * 0.13));
+      pts.push(_tlPt(t + 55, s * 0.07));
+      pts.push(_tlPt(t + 70, 0));
+      pts.push(_tlPt(t + pr - 5, 0));
+      const qs = t + pr;
+      pts.push(_tlPt(qs, 0));
+      pts.push(_tlPt(qs + 8, s * -0.07));
+      pts.push(_tlPt(qs + 20, s * rA));
+      pts.push(_tlPt(qs + 32, s * -sD));
+      pts.push(_tlPt(qs + 50, 0));
+      pts.push(_tlPt(qs + 100, 0));
+      pts.push(_tlPt(qs + 150, s * tA * 0.8));
+      pts.push(_tlPt(qs + 200, s * tA));
+      pts.push(_tlPt(qs + 250, s * tA * 0.25));
+      pts.push(_tlPt(qs + 280, 0));
+      pr += 60;
+      t += rr;
+    }
+  }
+  pts.push(_tlPt(_TL_TOTAL, 0));
+  return pts;
+}
+
+function _tlBuildMobitzII(rr, opts) {
+  const pts = [_tlPt(0, 0)];
+  const { rA = 1, sD = 0.16, tA = 0.26, flip = false } = opts;
+  const s = flip ? -1 : 1;
+  const pr = 180;
+  let t = 20;
+  let beatCount = 0;
+  while (t < _TL_TOTAL - rr) {
+    beatCount++;
+    pts.push(_tlPt(t, 0));
+    pts.push(_tlPt(t + 20, s * 0.12));
+    pts.push(_tlPt(t + 40, s * 0.12));
+    pts.push(_tlPt(t + 55, s * 0.06));
+    pts.push(_tlPt(t + 70, 0));
+    if (beatCount % 3 !== 0) {
+      pts.push(_tlPt(t + pr - 5, 0));
+      const qs = t + pr;
+      pts.push(_tlPt(qs, 0));
+      pts.push(_tlPt(qs + 12, s * -0.09));
+      pts.push(_tlPt(qs + 28, s * rA));
+      pts.push(_tlPt(qs + 44, s * -sD));
+      pts.push(_tlPt(qs + 65, 0));
+      pts.push(_tlPt(qs + 120, 0));
+      pts.push(_tlPt(qs + 175, s * tA * 0.8));
+      pts.push(_tlPt(qs + 220, s * tA));
+      pts.push(_tlPt(qs + 265, s * tA * 0.25));
+      pts.push(_tlPt(qs + 295, 0));
+    }
+    t += rr;
+  }
+  pts.push(_tlPt(_TL_TOTAL, 0));
+  return pts;
+}
+
+function _tlBuildCompleteBlock(rr, opts) {
+  const pts = [_tlPt(0, 0)];
+  const { rA = 0.85, sD = 0.16, tA = 0.22, flip = false } = opts;
+  const s = flip ? -1 : 1;
+  const pRate = Math.round(60000 / 72);
+  const escapeRate = Math.round(60000 / 38);
+  let pTime = 15;
+  let escTime = 280;
+  while (pTime < _TL_TOTAL || escTime < _TL_TOTAL) {
+    if (pTime <= escTime && pTime < _TL_TOTAL) {
+      pts.push(_tlPt(pTime, 0));
+      pts.push(_tlPt(pTime + 15, s * 0.11));
+      pts.push(_tlPt(pTime + 35, s * 0.12));
+      pts.push(_tlPt(pTime + 50, s * 0.07));
+      pts.push(_tlPt(pTime + 65, 0));
+      pTime += pRate;
+    } else if (escTime < _TL_TOTAL) {
+      pts.push(_tlPt(escTime, 0));
+      pts.push(_tlPt(escTime + 15, s * -0.09));
+      pts.push(_tlPt(escTime + 32, s * rA));
+      pts.push(_tlPt(escTime + 50, s * rA * 0.85));
+      pts.push(_tlPt(escTime + 68, s * -sD));
+      pts.push(_tlPt(escTime + 95, s * -sD * 0.6));
+      pts.push(_tlPt(escTime + 130, 0));
+      pts.push(_tlPt(escTime + 190, s * tA * 0.7));
+      pts.push(_tlPt(escTime + 240, s * tA));
+      pts.push(_tlPt(escTime + 285, s * tA * 0.3));
+      pts.push(_tlPt(escTime + 310, 0));
+      escTime += escapeRate;
+    } else break;
+  }
+  pts.push(_tlPt(_TL_TOTAL, 0));
+  return pts;
+}
+
 function _tlBuildLead(rr, opts) {
   const pts = [_tlPt(0, 0)]; let t = 30;
   while (t + rr < _TL_TOTAL + rr * 0.5) { _tlSinusBeat(t, opts).forEach(p => pts.push(p)); t += rr; }
@@ -936,6 +1049,77 @@ const _TL_PATTERNS = {
       'V6':  { rA:0.88, sD:0.08, tA:0.20 },
     }
   },
+  firstDegreeAVBlock: {
+    title: 'First Degree AV Block — Prolonged PR',
+    leads: {
+      'I':   { pr:240, pA:0.12, rA:0.65, qD:0.06, sD:0.06, tA:0.22, st:0 },
+      'II':  { pr:240, pA:0.15, rA:1.00, qD:0.08, sD:0.14, tA:0.30, st:0 },
+      'III': { pr:240, pA:0.08, rA:0.40, qD:0.04, sD:0.05, tA:0.15, st:0 },
+      'aVR': { pr:240, pA:0.12, rA:0.30, qD:0.08, sD:0.05, tA:-0.12, st:0, flip:true, pFlip:true },
+      'aVL': { pr:240, pA:0.08, rA:0.35, qD:0.06, sD:0.06, tA:0.12, st:0 },
+      'aVF': { pr:240, pA:0.13, rA:0.72, qD:0.06, sD:0.10, tA:0.25, st:0 },
+      'V1':  { pr:240, pA:0.06, rA:0.18, qD:0.04, sD:0.42, tA:-0.08, st:0 },
+      'V2':  { pr:240, pA:0.08, rA:0.35, qD:0.04, sD:0.38, tA:-0.05, st:0 },
+      'V3':  { pr:240, pA:0.10, rA:0.65, qD:0.05, sD:0.22, tA:0.12, st:0 },
+      'V4':  { pr:240, pA:0.12, rA:1.00, qD:0.07, sD:0.14, tA:0.30, st:0 },
+      'V5':  { pr:240, pA:0.12, rA:1.10, qD:0.06, sD:0.10, tA:0.32, st:0 },
+      'V6':  { pr:240, pA:0.12, rA:0.88, qD:0.06, sD:0.08, tA:0.28, st:0 },
+    }
+  },
+  secondDegreeTypeI: {
+    title: 'Second Degree AV Block Type I — Wenckebach',
+    wenckebach: true,
+    leads: {
+      'I':   { pr:160, pA:0.12, rA:0.65, qD:0.06, sD:0.06, tA:0.22, st:0 },
+      'II':  { pr:160, pA:0.15, rA:1.00, qD:0.08, sD:0.14, tA:0.30, st:0 },
+      'III': { pr:160, pA:0.08, rA:0.40, qD:0.04, sD:0.05, tA:0.15, st:0 },
+      'aVR': { pr:160, pA:0.12, rA:0.30, qD:0.08, sD:0.05, tA:-0.12, st:0, flip:true, pFlip:true },
+      'aVL': { pr:160, pA:0.08, rA:0.35, qD:0.06, sD:0.06, tA:0.12, st:0 },
+      'aVF': { pr:160, pA:0.13, rA:0.72, qD:0.06, sD:0.10, tA:0.25, st:0 },
+      'V1':  { pr:160, pA:0.06, rA:0.18, qD:0.04, sD:0.42, tA:-0.08, st:0 },
+      'V2':  { pr:160, pA:0.08, rA:0.35, qD:0.04, sD:0.38, tA:-0.05, st:0 },
+      'V3':  { pr:160, pA:0.10, rA:0.65, qD:0.05, sD:0.22, tA:0.12, st:0 },
+      'V4':  { pr:160, pA:0.12, rA:1.00, qD:0.07, sD:0.14, tA:0.30, st:0 },
+      'V5':  { pr:160, pA:0.12, rA:1.10, qD:0.06, sD:0.10, tA:0.32, st:0 },
+      'V6':  { pr:160, pA:0.12, rA:0.88, qD:0.06, sD:0.08, tA:0.28, st:0 },
+    }
+  },
+  secondDegreeTypeII: {
+    title: 'Second Degree AV Block Type II — Mobitz II',
+    mobitzII: true,
+    leads: {
+      'I':   { pr:180, pA:0.12, rA:0.65, qD:0.10, sD:0.08, tA:0.22, st:0 },
+      'II':  { pr:180, pA:0.15, rA:1.00, qD:0.12, sD:0.16, tA:0.28, st:0 },
+      'III': { pr:180, pA:0.08, rA:0.40, qD:0.08, sD:0.06, tA:0.14, st:0 },
+      'aVR': { pr:180, pA:0.12, rA:0.30, qD:0.10, sD:0.05, tA:-0.12, st:0, flip:true, pFlip:true },
+      'aVL': { pr:180, pA:0.08, rA:0.35, qD:0.08, sD:0.06, tA:0.12, st:0 },
+      'aVF': { pr:180, pA:0.13, rA:0.72, qD:0.10, sD:0.10, tA:0.22, st:0 },
+      'V1':  { pr:180, pA:0.06, rA:0.18, qD:0.06, sD:0.48, tA:-0.08, st:0 },
+      'V2':  { pr:180, pA:0.08, rA:0.35, qD:0.06, sD:0.42, tA:-0.05, st:0 },
+      'V3':  { pr:180, pA:0.10, rA:0.65, qD:0.08, sD:0.28, tA:0.10, st:0 },
+      'V4':  { pr:180, pA:0.12, rA:1.00, qD:0.10, sD:0.18, tA:0.26, st:0 },
+      'V5':  { pr:180, pA:0.12, rA:1.10, qD:0.08, sD:0.12, tA:0.28, st:0 },
+      'V6':  { pr:180, pA:0.12, rA:0.88, qD:0.08, sD:0.10, tA:0.25, st:0 },
+    }
+  },
+  thirdDegreeAVBlock: {
+    title: 'Third Degree AV Block — Complete Heart Block',
+    completeBlock: true,
+    leads: {
+      'I':   { pr:160, pA:0.12, rA:0.55, qD:0.10, sD:0.08, tA:0.18, st:0 },
+      'II':  { pr:160, pA:0.14, rA:0.85, qD:0.14, sD:0.16, tA:0.22, st:0 },
+      'III': { pr:160, pA:0.08, rA:0.38, qD:0.08, sD:0.06, tA:0.12, st:0 },
+      'aVR': { pr:160, pA:0.12, rA:0.28, qD:0.10, sD:0.05, tA:-0.10, st:0, flip:true, pFlip:true },
+      'aVL': { pr:160, pA:0.08, rA:0.32, qD:0.08, sD:0.06, tA:0.10, st:0 },
+      'aVF': { pr:160, pA:0.12, rA:0.68, qD:0.10, sD:0.10, tA:0.20, st:0 },
+      'V1':  { pr:160, pA:0.06, rA:0.16, qD:0.06, sD:0.50, tA:-0.08, st:0 },
+      'V2':  { pr:160, pA:0.08, rA:0.30, qD:0.06, sD:0.44, tA:-0.05, st:0 },
+      'V3':  { pr:160, pA:0.10, rA:0.58, qD:0.08, sD:0.28, tA:0.10, st:0 },
+      'V4':  { pr:160, pA:0.12, rA:0.90, qD:0.10, sD:0.18, tA:0.22, st:0 },
+      'V5':  { pr:160, pA:0.12, rA:1.00, qD:0.08, sD:0.12, tA:0.24, st:0 },
+      'V6':  { pr:160, pA:0.12, rA:0.80, qD:0.08, sD:0.10, tA:0.22, st:0 },
+    }
+  },
 };
 
 function TwelveLeadSVG({ ecgType, rhythmInterp, twelveLeadFindings, fifteenLeadFindings, hr, isNightShift }) {
@@ -972,6 +1156,9 @@ function TwelveLeadSVG({ ecgType, rhythmInterp, twelveLeadFindings, fifteenLeadF
     if (p.vtach) return _tlBuildVTach(rr, opts);
     if (p.rbbb) return _tlBuildRBBBLead(rr, opts);
     if (p.flutter) return _tlBuildFlutter(rr, opts);
+    if (p.wenckebach) return _tlBuildWenckebach(rr, opts);
+    if (p.mobitzII) return _tlBuildMobitzII(rr, opts);
+    if (p.completeBlock) return _tlBuildCompleteBlock(rr, opts);
     return _tlBuildLead(rr, opts);
   }
 
