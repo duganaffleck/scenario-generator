@@ -839,13 +839,13 @@ function TwelveLeadSVG({ ecgType, rhythmInterp, twelveLeadFindings, fifteenLeadF
 
       <div style={{ backgroundColor: bgC, border: `1px solid ${heavyC}`, borderRadius: '4px', padding: '2px 4px', marginBottom: '3px' }}>
         <div style={{ fontSize: '9px', fontWeight: 700, color: labelC, letterSpacing: '0.04em', marginBottom: '1px', fontFamily: 'monospace' }}>II — RHYTHM STRIP</div>
-        {makLeadSVG(buildPts('II'), 800, _TL_H)}
+        {makLeadSVG(buildPts('II'), _TL_W * 4, _TL_H)}
       </div>
 
-      {extraLeads.length > 0 && (
+      {extraLeads.length > 0 && ecgType === '15-lead' && (
         <>
           <div style={{ fontSize: '9px', fontWeight: 700, color: labelC, letterSpacing: '0.05em', padding: '4px 0 2px', fontFamily: 'monospace' }}>
-            {ecgType === '15-lead' ? '— RIGHT-SIDED / POSTERIOR LEADS —' : '— ADDITIONAL LEADS —'}
+            — RIGHT-SIDED / POSTERIOR LEADS —
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: `repeat(${Math.min(extraLeads.length, 4)}, 1fr)`, gap: '2px', backgroundColor: heavyC, border: `1px solid ${heavyC}`, borderRadius: '4px', overflow: 'hidden', marginBottom: '3px' }}>
             {extraLeads.map(lead => leadCell(lead))}
