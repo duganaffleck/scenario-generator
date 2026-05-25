@@ -2478,7 +2478,7 @@ const ScenarioForm = () => {
                 </div>
               )}
 
-              {scenario.ecgFindings.twelveLeadFindings && (
+              {(scenario.ecgFindings.twelveLeadFindings || scenario.ecgFindings.ecgType === '12-lead') && (
                 <div style={{ marginBottom: "0.65rem" }}>
                   <div style={{
                     fontSize: "0.72rem", fontWeight: 700,
