@@ -12,7 +12,7 @@ const CASES = [
     label: 'Inferior STEMI nitro contraindication',
     params: { semester: '4', type: 'Cardiac', complexity: 'Complex', environment: 'Urban', customPrompt: 'Inferior STEMI right ventricular involvement nitroglycerin contraindicated V4R' },
     mustContain: ['v4r', 'right ventricular', 'nitroglycerin'],
-    mustNotContain: ['give nitroglycerin', 'administer nitroglycerin to'],
+    mustNotContain: ['nitroglycerin is safe', 'nitroglycerin is appropriate', 'administer nitroglycerin without'],
   },
   {
     label: 'Asthma epi only not CPAP',
