@@ -760,8 +760,6 @@ function TwelveLeadSVG({ ecgType, rhythmInterp, twelveLeadFindings, fifteenLeadF
   const pattern = pickTwelveLeadPattern(ecgType, rhythmInterp, twelveLeadFindings, fifteenLeadFindings);
   const p = _TL_PATTERNS[pattern] || _TL_PATTERNS.normal;
   const rr = Math.round(60000 / Math.max(30, Math.min(280, hr || 75)));
-  const stdLeads = ['I','II','III','aVR','aVL','aVF','V1','V2','V3','V4','V5','V6'];
-  const extraLeads = Object.keys(p.leads).filter(l => !stdLeads.includes(l));
   const bgC = isNightShift ? '#1a0a0a' : '#fff8f8';
   const heavyC = isNightShift ? '#6a2828' : '#ff9999';
   const waveC = isNightShift ? '#00e87a' : '#111111';
