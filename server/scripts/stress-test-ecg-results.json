@@ -1,0 +1,117 @@
+{
+  "runAt": "2026-05-25T15:04:54.137Z",
+  "baseUrl": "https://scenario-backend.onrender.com/api/generate-scenario",
+  "total": 15,
+  "errors": 15,
+  "matched": 0,
+  "mismatched": 0,
+  "modelKeyPresentCount": 0,
+  "modelKeyCorrectCount": 0,
+  "results": [
+    {
+      "index": 1,
+      "label": "Inferior STEMI",
+      "intended": "inferiorSTEMI",
+      "error": "HTTP 403",
+      "durationMs": 431
+    },
+    {
+      "index": 2,
+      "label": "Anterior STEMI",
+      "intended": "anteriorSTEMI",
+      "error": "HTTP 403",
+      "durationMs": 307
+    },
+    {
+      "index": 3,
+      "label": "Lateral STEMI",
+      "intended": "lateralSTEMI",
+      "error": "HTTP 403",
+      "durationMs": 315
+    },
+    {
+      "index": 4,
+      "label": "Inferolateral STEMI",
+      "intended": "inferolateralSTEMI",
+      "error": "HTTP 403",
+      "durationMs": 44
+    },
+    {
+      "index": 5,
+      "label": "High Lateral STEMI",
+      "intended": "highLateralSTEMI",
+      "error": "HTTP 403",
+      "durationMs": 5
+    },
+    {
+      "index": 6,
+      "label": "Posterior STEMI",
+      "intended": "posterior",
+      "error": "HTTP 403",
+      "durationMs": 5
+    },
+    {
+      "index": 7,
+      "label": "RV STEMI (Inferior + RV)",
+      "intended": "inferiorRV",
+      "error": "HTTP 403",
+      "durationMs": 7
+    },
+    {
+      "index": 8,
+      "label": "Wellens Syndrome",
+      "intended": "wellens",
+      "error": "HTTP 403",
+      "durationMs": 9
+    },
+    {
+      "index": 9,
+      "label": "De Winter Pattern",
+      "intended": "deWinter",
+      "error": "HTTP 403",
+      "durationMs": 8
+    },
+    {
+      "index": 10,
+      "label": "Pericarditis",
+      "intended": "pericarditis",
+      "error": "HTTP 403",
+      "durationMs": 6
+    },
+    {
+      "index": 11,
+      "label": "Hyperkalemia",
+      "intended": "hyperkalemia",
+      "error": "HTTP 403",
+      "durationMs": 6
+    },
+    {
+      "index": 12,
+      "label": "LBBB",
+      "intended": "lbbb",
+      "error": "HTTP 403",
+      "durationMs": 5
+    },
+    {
+      "index": 13,
+      "label": "RBBB",
+      "intended": "rbbb",
+      "error": "HTTP 403",
+      "durationMs": 4
+    },
+    {
+      "index": 14,
+      "label": "AFib 12-lead",
+      "intended": "afib12",
+      "error": "HTTP 403",
+      "durationMs": 9
+    },
+    {
+      "index": 15,
+      "label": "SVT 12-lead",
+      "intended": "svt12",
+      "error": "HTTP 403",
+      "durationMs": 8
+    }
+  ]
+}
