@@ -104,8 +104,11 @@ async function runCase(caseParams, index) {
     const chiefComplaint =
       data?.patientDemographics?.chiefComplaint || data?.chiefComplaint || '';
     const firstSet = data?.vitalSigns?.firstSet || {};
+    const secondSet = data?.vitalSigns?.secondSet || {};
     const hrRaw = firstSet.hr || '';
     const ecgLabel = firstSet.ecgInterpretation || '';
+    const ecgLabel2 = secondSet.ecgInterpretation || '';
+    const hrRaw2 = secondSet.hr || '';
     const hr = parseHR(hrRaw);
     const consistency = checkConsistency(hr, ecgLabel);
     const blanks = findBlankFields(data);
@@ -116,8 +119,10 @@ async function runCase(caseParams, index) {
       title,
       chiefComplaint,
       hrRaw,
+      hrRaw2,
       hr,
       ecgLabel,
+      ecgLabel2,
       consistency,
       blanks,
       durationMs: elapsed,
@@ -163,9 +168,12 @@ async function main() {
     const consistencyFlag = r.consistency.consistent === false ? '⚠ MISMATCH' :
                             r.consistency.consistent === null  ? '? NO-DATA' : '✓';
     const blankFlag = r.blanks.length > 0 ? `⚠ BLANKS(${r.blanks.length})` : '✓';
+    const ecgProgression = r.ecgLabel2 && r.ecgLabel2 !== r.ecgLabel
+      ? `ECG1=${r.ecgLabel}→ECG2=${r.ecgLabel2}`
+      : `ECG1=${r.ecgLabel}`;
     console.log(
       `${tag} sem=${r.caseParams.semester} type=${r.caseParams.type.padEnd(11)} cplx=${r.caseParams.complexity.padEnd(7)}` +
-      ` | HR=${String(r.hrRaw).padEnd(20)} ECG=${String(r.ecgLabel).padEnd(30)}` +
+      ` | HR=${String(r.hrRaw).padEnd(18)} ${ecgProgression.padEnd(55)}` +
       ` | ECG ${consistencyFlag.padEnd(12)} | Fields ${blankFlag}` +
       ` | "${r.title}" (${r.durationMs}ms)`
     );
@@ -205,7 +213,9 @@ async function main() {
       title: r.title || null,
       chiefComplaint: r.chiefComplaint || null,
       hrRaw: r.hrRaw || null,
+      hrRaw2: r.hrRaw2 || null,
       ecgLabel: r.ecgLabel || null,
+      ecgLabel2: r.ecgLabel2 || null,
       consistency: r.consistency || null,
       blanks: r.blanks || [],
       durationMs: r.durationMs,
