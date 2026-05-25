@@ -440,12 +440,20 @@ function pickTwelveLeadPattern(ecgType, rhythmInterp, twelveLeadFindings, fiftee
     if (txt.includes('posterior')) return 'posterior';
     return 'inferiorRV';
   }
+  if (txt.includes('wellens') || txt.includes('lad warning') || txt.includes('biphasic t') || (txt.includes('t wave inversion') && (txt.includes('v2') || txt.includes('v3')))) return 'wellens';
+  if (txt.includes('de winter') || txt.includes('winter t') || txt.includes('upsloping st depression')) return 'deWinter';
+  if (txt.includes('pericarditis') || txt.includes('saddle') || txt.includes('pr depression')) return 'pericarditis';
+  if (txt.includes('hyperkal') || (txt.includes('peaked t') && txt.includes('potassium'))) return 'hyperkalemia';
+  if (txt.includes('inferolateral') || (txt.includes('inferior') && txt.includes('lateral') && txt.includes('stemi'))) return 'inferolateralSTEMI';
+  if (txt.includes('high lateral') || (txt.includes('diagonal') && txt.includes('stemi'))) return 'highLateralSTEMI';
   if (txt.includes('anterior') && (txt.includes('stemi') || txt.includes('elevation') || txt.includes('v1') || txt.includes('v2') || txt.includes('v3') || txt.includes('v4'))) return 'anteriorSTEMI';
   if (txt.includes('lateral') && (txt.includes('stemi') || txt.includes('elevation'))) return 'lateralSTEMI';
   if (txt.includes('inferior') && (txt.includes('stemi') || txt.includes('elevation'))) return 'inferiorSTEMI';
   if (txt.includes('left bundle') || txt.includes('lbbb')) return 'lbbb';
   if (txt.includes('right bundle') || txt.includes('rbbb')) return 'rbbb';
+  if (txt.includes('flutter')) return 'atrialFlutter12';
   if (txt.includes('fibrillation') || txt.includes('afib') || txt.includes('a-fib')) return 'afib12';
+  if (txt.includes('supraventricular') || txt.includes('svt')) return 'svt12';
   if (txt.includes('ventricular tach') || txt.includes('vtach') || txt.includes('v-tach')) return 'vtach12';
   return 'normal';
 }
@@ -476,6 +484,37 @@ function _tlSinusBeat(t, opts) {
   return pts;
 }
 
+function _tlBuildFlutter(rr, opts) {
+  const pts = [_tlPt(0, 0)];
+  const flutterRR = 200;
+  const ratio = Math.max(2, Math.round(rr / flutterRR));
+  let fms = 0, beatCount = 0;
+  const { rA = 1, sD = 0.14, tA = 0.22, flip = false } = opts;
+  const s = flip ? -1 : 1;
+  while (fms < _TL_TOTAL) {
+    pts.push(_tlPt(fms, 0));
+    pts.push(_tlPt(fms + flutterRR * 0.15, -0.20));
+    pts.push(_tlPt(fms + flutterRR * 0.35, -0.04));
+    pts.push(_tlPt(fms + flutterRR * 0.5, -0.16));
+    pts.push(_tlPt(fms + flutterRR * 0.65, 0.06));
+    pts.push(_tlPt(fms + flutterRR * 0.85, -0.04));
+    beatCount++;
+    if (beatCount % ratio === 0) {
+      const qs = fms + flutterRR * 0.4;
+      pts.push(_tlPt(qs, 0));
+      pts.push(_tlPt(qs + 8, s * -0.07));
+      pts.push(_tlPt(qs + 20, s * rA));
+      pts.push(_tlPt(qs + 32, s * -sD));
+      pts.push(_tlPt(qs + 50, 0));
+      pts.push(_tlPt(qs + 100, 0));
+      pts.push(_tlPt(qs + 150, s * tA));
+      pts.push(_tlPt(qs + 195, 0));
+    }
+    fms += flutterRR;
+  }
+  pts.push(_tlPt(_TL_TOTAL, 0));
+  return pts;
+}
 function _tlBuildLead(rr, opts) {
   const pts = [_tlPt(0, 0)]; let t = 30;
   while (t + rr < _TL_TOTAL + rr * 0.5) { _tlSinusBeat(t, opts).forEach(p => pts.push(p)); t += rr; }
@@ -754,6 +793,145 @@ const _TL_PATTERNS = {
       'V9':  { pr:160, pA:0.10, rA:0.28, qD:0.04, sD:0.14, tA:0.25, st:0.18 },
     }
   },
+  wellens: {
+    title: "Wellens Syndrome — LAD T-Wave Warning",
+    leads: {
+      'I':   { pr:160, pA:0.12, rA:0.65, qD:0.06, sD:0.06, tA:0.18, st:0 },
+      'II':  { pr:160, pA:0.15, rA:1.00, qD:0.08, sD:0.14, tA:0.22, st:0 },
+      'III': { pr:160, pA:0.08, rA:0.40, qD:0.04, sD:0.05, tA:0.12, st:0 },
+      'aVR': { pr:160, pA:0.12, rA:0.30, qD:0.08, sD:0.05, tA:0.10, st:0, flip:true, pFlip:true },
+      'aVL': { pr:160, pA:0.08, rA:0.35, qD:0.06, sD:0.06, tA:0.10, st:0 },
+      'aVF': { pr:160, pA:0.13, rA:0.72, qD:0.06, sD:0.10, tA:0.18, st:0 },
+      'V1':  { pr:160, pA:0.06, rA:0.18, qD:0.04, sD:0.42, tA:-0.28, st:0 },
+      'V2':  { pr:160, pA:0.08, rA:0.32, qD:0.04, sD:0.35, tA:-0.55, st:0 },
+      'V3':  { pr:160, pA:0.10, rA:0.55, qD:0.05, sD:0.20, tA:-0.60, st:0 },
+      'V4':  { pr:160, pA:0.12, rA:0.85, qD:0.07, sD:0.14, tA:-0.45, st:0 },
+      'V5':  { pr:160, pA:0.12, rA:1.05, qD:0.06, sD:0.10, tA:-0.25, st:0 },
+      'V6':  { pr:160, pA:0.12, rA:0.88, qD:0.06, sD:0.08, tA:-0.12, st:0 },
+    }
+  },
+  deWinter: {
+    title: "De Winter Pattern — STEMI Equivalent (LAD)",
+    leads: {
+      'I':   { pr:160, pA:0.12, rA:0.65, qD:0.06, sD:0.06, tA:0.28, st:0.08 },
+      'II':  { pr:160, pA:0.15, rA:1.00, qD:0.08, sD:0.14, tA:0.25, st:0 },
+      'III': { pr:160, pA:0.08, rA:0.40, qD:0.04, sD:0.05, tA:0.15, st:-0.05 },
+      'aVR': { pr:160, pA:0.12, rA:0.30, qD:0.08, sD:0.05, tA:0.15, st:0.15, flip:true, pFlip:true },
+      'aVL': { pr:160, pA:0.08, rA:0.35, qD:0.06, sD:0.06, tA:0.22, st:0.10 },
+      'aVF': { pr:160, pA:0.13, rA:0.72, qD:0.06, sD:0.10, tA:0.18, st:-0.05 },
+      'V1':  { pr:160, pA:0.06, rA:0.15, qD:0.04, sD:0.48, tA:0.42, st:-0.15 },
+      'V2':  { pr:160, pA:0.08, rA:0.25, qD:0.04, sD:0.40, tA:0.55, st:-0.18 },
+      'V3':  { pr:160, pA:0.10, rA:0.45, qD:0.05, sD:0.28, tA:0.58, st:-0.20 },
+      'V4':  { pr:160, pA:0.12, rA:0.70, qD:0.07, sD:0.18, tA:0.52, st:-0.18 },
+      'V5':  { pr:160, pA:0.12, rA:0.95, qD:0.06, sD:0.12, tA:0.42, st:-0.12 },
+      'V6':  { pr:160, pA:0.12, rA:0.85, qD:0.06, sD:0.08, tA:0.30, st:-0.06 },
+    }
+  },
+  inferolateralSTEMI: {
+    title: "Inferolateral STEMI — II, III, aVF, V5, V6",
+    leads: {
+      'I':   { pr:160, pA:0.12, rA:0.65, qD:0.06, sD:0.06, tA:0.28, st:0.18 },
+      'II':  { pr:160, pA:0.15, rA:1.00, qD:0.14, sD:0.14, tA:0.42, st:0.28 },
+      'III': { pr:160, pA:0.10, rA:0.88, qD:0.20, sD:0.10, tA:0.45, st:0.35 },
+      'aVR': { pr:160, pA:0.12, rA:0.28, qD:0.06, sD:0.05, tA:0.08, st:-0.10, flip:true, pFlip:true },
+      'aVL': { pr:160, pA:0.06, rA:0.28, qD:0.04, sD:0.05, tA:-0.18, st:-0.22 },
+      'aVF': { pr:160, pA:0.13, rA:0.90, qD:0.16, sD:0.10, tA:0.40, st:0.30 },
+      'V1':  { pr:160, pA:0.06, rA:0.18, qD:0.04, sD:0.45, tA:-0.10, st:-0.08 },
+      'V2':  { pr:160, pA:0.08, rA:0.35, qD:0.04, sD:0.38, tA:-0.05, st:-0.05 },
+      'V3':  { pr:160, pA:0.10, rA:0.65, qD:0.05, sD:0.22, tA:0.12, st:0 },
+      'V4':  { pr:160, pA:0.12, rA:1.00, qD:0.07, sD:0.14, tA:0.28, st:0.10 },
+      'V5':  { pr:160, pA:0.12, rA:1.10, qD:0.06, sD:0.10, tA:0.42, st:0.25 },
+      'V6':  { pr:160, pA:0.12, rA:0.90, qD:0.06, sD:0.08, tA:0.38, st:0.22 },
+    }
+  },
+  highLateralSTEMI: {
+    title: "High Lateral STEMI — I, aVL (Diagonal Branch)",
+    leads: {
+      'I':   { pr:160, pA:0.12, rA:0.80, qD:0.06, sD:0.05, tA:0.42, st:0.30 },
+      'II':  { pr:160, pA:0.15, rA:0.90, qD:0.08, sD:0.14, tA:0.18, st:-0.12 },
+      'III': { pr:160, pA:0.08, rA:0.38, qD:0.04, sD:0.05, tA:0.08, st:-0.18 },
+      'aVR': { pr:160, pA:0.12, rA:0.30, qD:0.08, sD:0.05, tA:0.10, st:0, flip:true, pFlip:true },
+      'aVL': { pr:160, pA:0.10, rA:0.60, qD:0.06, sD:0.05, tA:0.40, st:0.28 },
+      'aVF': { pr:160, pA:0.12, rA:0.65, qD:0.06, sD:0.10, tA:0.12, st:-0.14 },
+      'V1':  { pr:160, pA:0.06, rA:0.18, qD:0.04, sD:0.45, tA:-0.10, st:0 },
+      'V2':  { pr:160, pA:0.08, rA:0.35, qD:0.04, sD:0.38, tA:-0.05, st:0 },
+      'V3':  { pr:160, pA:0.10, rA:0.65, qD:0.05, sD:0.22, tA:0.12, st:0 },
+      'V4':  { pr:160, pA:0.12, rA:1.00, qD:0.07, sD:0.14, tA:0.28, st:0 },
+      'V5':  { pr:160, pA:0.12, rA:1.10, qD:0.06, sD:0.10, tA:0.32, st:0 },
+      'V6':  { pr:160, pA:0.12, rA:0.88, qD:0.06, sD:0.08, tA:0.28, st:0 },
+    }
+  },
+  pericarditis: {
+    title: "Acute Pericarditis — Diffuse Saddle ST Elevation",
+    leads: {
+      'I':   { pr:150, pA:0.12, rA:0.65, qD:0.04, sD:0.06, tA:0.35, st:0.12 },
+      'II':  { pr:150, pA:0.15, rA:1.00, qD:0.06, sD:0.14, tA:0.42, st:0.15 },
+      'III': { pr:150, pA:0.10, rA:0.42, qD:0.04, sD:0.05, tA:0.28, st:0.10 },
+      'aVR': { pr:150, pA:0.12, rA:0.30, qD:0.06, sD:0.05, tA:-0.15, st:-0.14, flip:true, pFlip:true },
+      'aVL': { pr:150, pA:0.08, rA:0.35, qD:0.04, sD:0.06, tA:0.28, st:0.08 },
+      'aVF': { pr:150, pA:0.13, rA:0.72, qD:0.06, sD:0.10, tA:0.38, st:0.12 },
+      'V1':  { pr:150, pA:0.06, rA:0.18, qD:0.04, sD:0.42, tA:-0.08, st:-0.10 },
+      'V2':  { pr:150, pA:0.08, rA:0.35, qD:0.04, sD:0.38, tA:0.20, st:0.12 },
+      'V3':  { pr:150, pA:0.10, rA:0.65, qD:0.05, sD:0.22, tA:0.32, st:0.14 },
+      'V4':  { pr:150, pA:0.12, rA:1.00, qD:0.07, sD:0.14, tA:0.40, st:0.15 },
+      'V5':  { pr:150, pA:0.12, rA:1.10, qD:0.06, sD:0.10, tA:0.45, st:0.15 },
+      'V6':  { pr:150, pA:0.12, rA:0.90, qD:0.06, sD:0.08, tA:0.42, st:0.14 },
+    }
+  },
+  hyperkalemia: {
+    title: "Hyperkalemia — Peaked T Waves",
+    leads: {
+      'I':   { pr:200, pA:0.06, rA:0.65, qD:0.10, sD:0.10, tA:0.52, st:0, wide:true },
+      'II':  { pr:200, pA:0.06, rA:1.00, qD:0.10, sD:0.16, tA:0.68, st:0, wide:true },
+      'III': { pr:200, pA:0.04, rA:0.40, qD:0.06, sD:0.06, tA:0.45, st:0, wide:true },
+      'aVR': { pr:200, pA:0.05, rA:0.30, qD:0.08, sD:0.06, tA:-0.35, st:0, wide:true, flip:true, pFlip:true },
+      'aVL': { pr:200, pA:0.04, rA:0.35, qD:0.08, sD:0.08, tA:0.38, st:0, wide:true },
+      'aVF': { pr:200, pA:0.05, rA:0.72, qD:0.08, sD:0.12, tA:0.55, st:0, wide:true },
+      'V1':  { pr:200, pA:0.04, rA:0.20, qD:0.06, sD:0.45, tA:0.55, st:0, wide:true },
+      'V2':  { pr:200, pA:0.04, rA:0.38, qD:0.06, sD:0.40, tA:0.75, st:0, wide:true },
+      'V3':  { pr:200, pA:0.05, rA:0.68, qD:0.08, sD:0.28, tA:0.80, st:0, wide:true },
+      'V4':  { pr:200, pA:0.06, rA:1.05, qD:0.09, sD:0.18, tA:0.75, st:0, wide:true },
+      'V5':  { pr:200, pA:0.06, rA:1.12, qD:0.08, sD:0.12, tA:0.65, st:0, wide:true },
+      'V6':  { pr:200, pA:0.06, rA:0.90, qD:0.08, sD:0.10, tA:0.55, st:0, wide:true },
+    }
+  },
+  svt12: {
+    afib: false,
+    vtach: false,
+    title: "SVT — Narrow Complex Tachycardia",
+    leads: {
+      'I':   { pr:80, pA:0, noP:true, rA:0.65, qD:0.04, sD:0.06, tA:0.18 },
+      'II':  { pr:80, pA:0, noP:true, rA:1.00, qD:0.05, sD:0.12, tA:0.22 },
+      'III': { pr:80, pA:0, noP:true, rA:0.40, qD:0.03, sD:0.04, tA:0.12 },
+      'aVR': { pr:80, pA:0, noP:true, rA:0.30, qD:0.05, sD:0.04, tA:-0.12, flip:true },
+      'aVL': { pr:80, pA:0, noP:true, rA:0.35, qD:0.04, sD:0.05, tA:0.10 },
+      'aVF': { pr:80, pA:0, noP:true, rA:0.72, qD:0.04, sD:0.08, tA:0.18 },
+      'V1':  { pr:80, pA:0, noP:true, rA:0.18, qD:0.03, sD:0.40, tA:-0.08 },
+      'V2':  { pr:80, pA:0, noP:true, rA:0.35, qD:0.03, sD:0.35, tA:-0.05 },
+      'V3':  { pr:80, pA:0, noP:true, rA:0.65, qD:0.04, sD:0.20, tA:0.10 },
+      'V4':  { pr:80, pA:0, noP:true, rA:1.00, qD:0.05, sD:0.12, tA:0.22 },
+      'V5':  { pr:80, pA:0, noP:true, rA:1.10, qD:0.04, sD:0.08, tA:0.24 },
+      'V6':  { pr:80, pA:0, noP:true, rA:0.88, qD:0.04, sD:0.06, tA:0.20 },
+    }
+  },
+  atrialFlutter12: {
+    flutter: true,
+    title: "Atrial Flutter — Sawtooth Pattern",
+    leads: {
+      'I':   { rA:0.65, sD:0.06, tA:0.18 },
+      'II':  { rA:1.00, sD:0.14, tA:0.22 },
+      'III': { rA:0.40, sD:0.05, tA:0.12 },
+      'aVR': { rA:0.30, flip:true, tA:-0.10 },
+      'aVL': { rA:0.35, sD:0.06, tA:0.10 },
+      'aVF': { rA:0.70, sD:0.10, tA:0.18 },
+      'V1':  { rA:0.18, sD:0.45, tA:-0.08 },
+      'V2':  { rA:0.35, sD:0.38, tA:-0.05 },
+      'V3':  { rA:0.65, sD:0.22, tA:0.10 },
+      'V4':  { rA:1.00, sD:0.14, tA:0.22 },
+      'V5':  { rA:1.10, sD:0.10, tA:0.24 },
+      'V6':  { rA:0.88, sD:0.08, tA:0.20 },
+    }
+  },
 };
 
 function TwelveLeadSVG({ ecgType, rhythmInterp, twelveLeadFindings, fifteenLeadFindings, hr, isNightShift }) {
@@ -789,6 +967,7 @@ function TwelveLeadSVG({ ecgType, rhythmInterp, twelveLeadFindings, fifteenLeadF
     if (p.afib) return _tlBuildAFib(rr, lead.charCodeAt(0) * 37, opts);
     if (p.vtach) return _tlBuildVTach(rr, opts);
     if (p.rbbb) return _tlBuildRBBBLead(rr, opts);
+    if (p.flutter) return _tlBuildFlutter(rr, opts);
     return _tlBuildLead(rr, opts);
   }
 
