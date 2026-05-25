@@ -15,11 +15,7 @@ export const ONTARIO_DIRECTIVE_RULES = {
       "When relevant, BLS and ALS care should be treated as simultaneous rather than separate layers.",
       "Do not let outdated few-shot habits override these rules.",
       "Expected treatment and protocol notes should reflect Ontario directive logic rather than generic EMS habits.",
-      "Reference Ontario standards URLs in reasoning and briefs:",
-      "- https://files.ontario.ca/moh_2/moh-standards-basic-life-support-patient-care-standards-v3-4-en-2023-03-10.pdf",
-      "- https://www.ontario.ca/files/2025-04/moh-advanced-life-support-als-patient-care-standards-pcs-5.4-en-2025-04-23.pdf",
-      "- https://ontariobasehospitalgroup.ca/wp-content/uploads/2023/03/2023-02-01_v5.1_Companion-Document.pdf",
-      "When printing any URL, output it as a single complete unbroken string with no spaces, no line breaks, and no hyphens inserted within the URL itself. URLs must be copy-pasteable exactly as printed."
+      "Do not include URLs, web links, or external references in any generated field. Ontario standards should inform the content but never appear as printed links in scenario output.",
     ],
     commonDriftErrors: [
       "Generic North American EMS advice replacing Ontario-specific logic.",
