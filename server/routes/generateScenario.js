@@ -2373,6 +2373,7 @@ function buildGenerationPrompt({
   return `
 Generate exactly one paramedic training scenario as valid JSON only.
 No markdown. No commentary. No code fences.
+ABSOLUTE RULE: Do not include URLs, web links, http addresses, or external references anywhere in the output. Not in protocolNotes, not in clinicalReasoning, not in any field. Ontario standards inform the content but must never appear as printed links.
 
 ${directiveAddendum.length > 0 ? `MANDATORY CLINICAL RULES — these override all other instructions and must be followed exactly in expectedTreatment, protocolNotes, and all clinical fields:
 ${directiveAddendum.map((line) => `- ${line}`).join('\n')}
