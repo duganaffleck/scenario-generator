@@ -721,7 +721,7 @@ const _TL_PATTERNS = {
     }
   },
   inferiorRV: {
-    title: 'Inferior + RV STEMI — 15-Lead',
+    title: 'Inferior + RV STEMI — Modified 15-Lead',
     leads: {
       'I':   { pr:160, pA:0.12, rA:0.60, qD:0.06, sD:0.06, tA:0.15, st:-0.10 },
       'II':  { pr:160, pA:0.15, rA:1.00, qD:0.12, sD:0.14, tA:0.40, st:0.25 },
@@ -732,16 +732,13 @@ const _TL_PATTERNS = {
       'V1':  { pr:160, pA:0.06, rA:0.20, qD:0.04, sD:0.42, tA:0.10, st:0.12 },
       'V2':  { pr:160, pA:0.08, rA:0.35, qD:0.04, sD:0.38, tA:-0.05, st:-0.05 },
       'V3':  { pr:160, pA:0.10, rA:0.65, qD:0.05, sD:0.22, tA:0.12, st:0 },
-      'V4':  { pr:160, pA:0.12, rA:1.00, qD:0.07, sD:0.14, tA:0.30, st:0 },
-      'V5':  { pr:160, pA:0.12, rA:1.10, qD:0.06, sD:0.10, tA:0.32, st:0 },
-      'V6':  { pr:160, pA:0.12, rA:0.88, qD:0.06, sD:0.08, tA:0.28, st:0 },
-      'V3R': { pr:160, pA:0.06, rA:0.14, qD:0.04, sD:0.50, tA:0.20, st:0.22 },
       'V4R': { pr:160, pA:0.06, rA:0.12, qD:0.04, sD:0.52, tA:0.22, st:0.25 },
-      'V5R': { pr:160, pA:0.06, rA:0.10, qD:0.04, sD:0.48, tA:0.16, st:0.18 },
+      'V8':  { pr:160, pA:0.10, rA:0.32, qD:0.04, sD:0.16, tA:0.28, st:0.10 },
+      'V9':  { pr:160, pA:0.10, rA:0.28, qD:0.04, sD:0.14, tA:0.25, st:0.08 },
     }
   },
   posterior: {
-    title: 'Posterior STEMI — 15-Lead',
+    title: 'Posterior STEMI — Modified 15-Lead',
     leads: {
       'I':   { pr:160, pA:0.12, rA:0.65, qD:0.06, sD:0.06, tA:0.22, st:0 },
       'II':  { pr:160, pA:0.15, rA:1.00, qD:0.08, sD:0.14, tA:0.28, st:0 },
@@ -752,10 +749,7 @@ const _TL_PATTERNS = {
       'V1':  { pr:160, pA:0.06, rA:0.72, qD:0.02, sD:0.08, tA:0.25, st:-0.22 },
       'V2':  { pr:160, pA:0.08, rA:0.80, qD:0.02, sD:0.06, tA:0.28, st:-0.20 },
       'V3':  { pr:160, pA:0.10, rA:0.75, qD:0.04, sD:0.10, tA:0.18, st:-0.12 },
-      'V4':  { pr:160, pA:0.12, rA:1.00, qD:0.07, sD:0.14, tA:0.30, st:0 },
-      'V5':  { pr:160, pA:0.12, rA:1.10, qD:0.06, sD:0.10, tA:0.32, st:0 },
-      'V6':  { pr:160, pA:0.12, rA:0.88, qD:0.06, sD:0.08, tA:0.28, st:0 },
-      'V7':  { pr:160, pA:0.10, rA:0.38, qD:0.04, sD:0.18, tA:0.30, st:0.20 },
+      'V4R': { pr:160, pA:0.06, rA:0.14, qD:0.04, sD:0.50, tA:0.20, st:0.15 },
       'V8':  { pr:160, pA:0.10, rA:0.32, qD:0.04, sD:0.16, tA:0.28, st:0.22 },
       'V9':  { pr:160, pA:0.10, rA:0.28, qD:0.04, sD:0.14, tA:0.25, st:0.18 },
     }
@@ -800,9 +794,10 @@ function TwelveLeadSVG({ ecgType, rhythmInterp, twelveLeadFindings, fifteenLeadF
     return _tlBuildLead(rr, opts);
   }
 
-  const rowA = ['I',   'aVR', 'V1', 'V4'];
-  const rowB = ['II',  'aVL', 'V2', 'V5'];
-  const rowC = ['III', 'aVF', 'V3', 'V6'];
+  const is15Lead = ecgType === '15-lead';
+  const rowA = ['I',   'aVR', 'V1', is15Lead ? 'V4R' : 'V4'];
+  const rowB = ['II',  'aVL', 'V2', is15Lead ? 'V8'  : 'V5'];
+  const rowC = ['III', 'aVF', 'V3', is15Lead ? 'V9'  : 'V6'];
   const stdRows = [rowA, rowB, rowC];
 
   function leadCell(lead) {
@@ -842,15 +837,10 @@ function TwelveLeadSVG({ ecgType, rhythmInterp, twelveLeadFindings, fifteenLeadF
         {makLeadSVG(buildPts('II'), _TL_W * 4, _TL_H)}
       </div>
 
-      {extraLeads.length > 0 && ecgType === '15-lead' && (
-        <>
-          <div style={{ fontSize: '9px', fontWeight: 700, color: labelC, letterSpacing: '0.05em', padding: '4px 0 2px', fontFamily: 'monospace' }}>
-            — RIGHT-SIDED / POSTERIOR LEADS —
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: `repeat(${Math.min(extraLeads.length, 4)}, 1fr)`, gap: '2px', backgroundColor: heavyC, border: `1px solid ${heavyC}`, borderRadius: '4px', overflow: 'hidden', marginBottom: '3px' }}>
-            {extraLeads.map(lead => leadCell(lead))}
-          </div>
-        </>
+      {is15Lead && (
+        <div style={{ fontSize: '9px', color: labelC, letterSpacing: '0.04em', padding: '2px 0 3px', fontFamily: 'monospace', textAlign: 'right' }}>
+          V4R · V8 · V9 — modified 15-lead positions
+        </div>
       )}
 
       <div style={{ fontSize: '9px', color: 'var(--vn-muted-text)', textAlign: 'right', fontFamily: 'monospace', marginTop: '2px' }}>
