@@ -288,6 +288,7 @@ const REQUIRED_FIELDS = {
     twelveLeadFindings: "",
     fifteenLeadFindings: "",
     ecgClinicalNote: "",
+    patternKey: "",
   },
   caseProgression: defaultCaseProgression(),
   transportPhase: defaultTransportPhase(),
@@ -863,6 +864,7 @@ function normalizeScenario(parsed, options = {}) {
       twelveLeadFindings: source.ecgFindings.twelveLeadFindings || "",
       fifteenLeadFindings: source.ecgFindings.fifteenLeadFindings || "",
       ecgClinicalNote: source.ecgFindings.ecgClinicalNote || "",
+      patternKey: source.ecgFindings.patternKey || "",
     };
   }
 
@@ -2538,6 +2540,7 @@ Also return a top-level ecgFindings object with these fields:
 - When the scenario involves hyperkalemia, missed dialysis, or peaked T waves from electrolyte disturbance, you MUST set ecgType to "12-lead" and populate twelveLeadFindings describing peaked narrow T waves in precordial leads, any PR prolongation, QRS widening, P wave flattening, and clinical context. Do not leave ecgFindings or twelveLeadFindings blank for these presentations.
 - fifteenLeadFindings: describe right-sided or posterior lead findings when ecgType is "15-lead". Focus on RV involvement, posterior changes, or right-sided ST changes. Leave empty string if ecgType is "rhythm" or "12-lead".
 - ecgClinicalNote: one sentence connecting the ECG findings to the clinical presentation and treatment decisions.
+- patternKey: one of these exact string values matching the pattern this 12-lead represents: normal, inferiorSTEMI, anteriorSTEMI, lateralSTEMI, inferolateralSTEMI, highLateralSTEMI, lbbb, rbbb, afib12, vtach12, inferiorRV, posterior, wellens, deWinter, pericarditis, hyperkalemia, svt12, atrialFlutter12, firstDegreeAVBlock, secondDegreeTypeI, secondDegreeTypeII, thirdDegreeAVBlock. This must match the actual ECG pattern described in twelveLeadFindings. Leave as empty string only if ecgType is rhythm.
 - Do not leave rhythmInterpretation blank on any call that has an ECG value in vitalSigns.
 - Do not generate 12-lead or 15-lead findings for isolated trauma without medical concern.
 - When ECG or rhythm findings are clinically relevant to the case, teachersPoints or instructorGuidance must reference them explicitly. If the rhythm supports the diagnosis, say so. If the rhythm is a red flag that could be missed, name it. If the rhythm is secondary and not the teaching focus, one sentence is enough.

@@ -434,7 +434,9 @@ function RhythmStripSVG({ rhythm, hr, isNightShift }) {
     </div>
   );
 }
-function pickTwelveLeadPattern(ecgType, rhythmInterp, twelveLeadFindings, fifteenLeadFindings) {
+function pickTwelveLeadPattern(ecgType, rhythmInterp, twelveLeadFindings, fifteenLeadFindings, patternKey) {
+  const VALID_PATTERNS = ['normal','inferiorSTEMI','anteriorSTEMI','lateralSTEMI','lbbb','rbbb','afib12','vtach12','inferiorRV','posterior','wellens','deWinter','inferolateralSTEMI','highLateralSTEMI','pericarditis','hyperkalemia','svt12','atrialFlutter12','firstDegreeAVBlock','secondDegreeTypeI','secondDegreeTypeII','thirdDegreeAVBlock'];
+  if (patternKey && VALID_PATTERNS.includes(patternKey)) return patternKey;
   const txt = ((twelveLeadFindings || '') + ' ' + (rhythmInterp || '')).toLowerCase().replace(/\s*-\s*/g, ' ');
   if (ecgType === '15-lead' || (fifteenLeadFindings && fifteenLeadFindings.trim().length > 10 && (fifteenLeadFindings.toLowerCase().includes('elevation') || fifteenLeadFindings.toLowerCase().includes('involvement') || fifteenLeadFindings.toLowerCase().includes('stemi') || fifteenLeadFindings.toLowerCase().includes('posterior')))) {
     if (txt.includes('posterior')) return 'posterior';
@@ -1122,8 +1124,8 @@ const _TL_PATTERNS = {
   },
 };
 
-function TwelveLeadSVG({ ecgType, rhythmInterp, twelveLeadFindings, fifteenLeadFindings, hr, isNightShift }) {
-  const pattern = pickTwelveLeadPattern(ecgType, rhythmInterp, twelveLeadFindings, fifteenLeadFindings);
+function TwelveLeadSVG({ ecgType, rhythmInterp, twelveLeadFindings, fifteenLeadFindings, hr, isNightShift, patternKey }) {
+  const pattern = pickTwelveLeadPattern(ecgType, rhythmInterp, twelveLeadFindings, fifteenLeadFindings, patternKey);
   const p = _TL_PATTERNS[pattern] || _TL_PATTERNS.normal;
   const rr = Math.round(60000 / Math.max(30, Math.min(280, hr || 75)));
   const bgC = isNightShift ? '#1a0a0a' : '#fff8f8';
@@ -2694,6 +2696,7 @@ const ScenarioForm = () => {
                         twelveLeadFindings: scenario.ecgFindings.twelveLeadFindings,
                         fifteenLeadFindings: scenario.ecgFindings.fifteenLeadFindings || '',
                         hr: parseECGHR(scenario.vitalSigns?.firstSet?.hr),
+                        patternKey: scenario.ecgFindings.patternKey || '',
                       })}
                     >
                       View Strip
@@ -2730,6 +2733,7 @@ const ScenarioForm = () => {
                         twelveLeadFindings: scenario.ecgFindings.twelveLeadFindings || '',
                         fifteenLeadFindings: scenario.ecgFindings.fifteenLeadFindings,
                         hr: parseECGHR(scenario.vitalSigns?.firstSet?.hr),
+                        patternKey: scenario.ecgFindings.patternKey || '',
                       })}
                     >
                       View Strip
@@ -3107,6 +3111,7 @@ const ScenarioForm = () => {
                 fifteenLeadFindings={selectedECGImage.fifteenLeadFindings}
                 hr={selectedECGImage.hr}
                 isNightShift={isNightShift}
+                patternKey={selectedECGImage.patternKey || ''}
               />
             ) : null}
             <button
