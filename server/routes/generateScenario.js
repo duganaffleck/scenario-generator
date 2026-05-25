@@ -858,7 +858,7 @@ function normalizeScenario(parsed, options = {}) {
 
   if (source.ecgFindings && typeof source.ecgFindings === "object") {
     normalized.ecgFindings = {
-      ecgType: source.ecgFindings.ecgType || "",
+      ecgType: (source.ecgFindings.ecgType || "").toLowerCase().replace(/\s*-\s*/g, '-').trim(),
       rhythmInterpretation: source.ecgFindings.rhythmInterpretation || "",
       twelveLeadFindings: source.ecgFindings.twelveLeadFindings || "",
       fifteenLeadFindings: source.ecgFindings.fifteenLeadFindings || "",
