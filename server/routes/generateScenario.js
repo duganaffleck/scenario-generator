@@ -1697,8 +1697,8 @@ function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
     return {
       style: 'cardiac arrest resuscitation scenario',
       likelyMedicationOpportunities: [
-        'Epinephrine 1mg IV/IO every 3-5 minutes for shockable and non-shockable rhythms per medical cardiac arrest directive',
-        'Single dose IM epinephrine 1:1000 (1mg) only if arrest is directly attributable to anaphylaxis',
+        'Single dose IM epinephrine 1:1000 (1mg) ONLY if arrest is directly attributable to anaphylaxis — this is the only epinephrine indication within PCP scope for cardiac arrest',
+        'Epinephrine IV/IO in cardiac arrest is ACP only — do NOT include this as a PCP treatment in expectedTreatment or protocolNotes',
         'Post-ROSC: fluid bolus 10ml/kg to max 1000ml if SBP below 90 and lungs clear',
         'Do not give naloxone in confirmed cardiac arrest — it has no routine role here'
       ],
