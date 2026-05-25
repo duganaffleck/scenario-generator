@@ -1200,10 +1200,20 @@ export function buildForbiddenTreatmentTerms({
       // strip any item that names dexamethasone as an action
       forbidden.add('dexamethasone');
     }
-    // forbiddenCombination — strip the second drug when the first is also present
-    // (handled at call site; here just collect individual entries)
+    // doNotCombine pairs — nausea directive and others
+    for (const combo of tr.doNotCombine || []) {
+      // dimenhydrinate+diphenhydramine: diphenhydramine is forbidden as a standalone replacement
+      // but only outside anaphylaxis context where diphenhydramine is a valid secondary treatment
+      const comboLower = combo.map(c => c.toLowerCase());
+      if (comboLower.includes('dimenhydrinate') && comboLower.includes('diphenhydramine')) {
+        const isAnaphylaxisContext = selected.some(({ ruleSet }) => ruleSet.tags?.includes('anaphylaxis'));
+        if (!isAnaphylaxisContext) {
+          forbidden.add('diphenhydramine');
+        }
+      }
+    }
+    // forbiddenCombinations (plural) — catch any directives using that field name
     for (const combo of tr.forbiddenCombinations || []) {
-      // single-item forbidden lists (not pairs) get added directly
       if (combo.length === 1) forbidden.add(combo[0].toLowerCase());
     }
   }
