@@ -1558,7 +1558,6 @@ function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
   const promptLower = String(customPrompt || '').toLowerCase();
   const callFamily = String(scenarioCore?.callFamily || '').toLowerCase();
 
-  // Semester 2 – no meds by design
   if (String(semester) === '2') {
     return {
       style: 'non-medication scenario by design',
@@ -1569,11 +1568,11 @@ function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
         'scene management',
         'oxygen decision if clinically indicated',
         'serial reassessment',
-        'positioning/packaging',
+        'positioning and packaging',
         'transport decision-making',
         'communication'
       ],
-      oxygenGuidance: 'Use oxygen only if clinically indicated under current standards.',
+      oxygenGuidance: 'Use oxygen only if clinically indicated under current Ontario BLS PCS standards. Titrate to SpO2 92-96% for most patients.',
       instructionText: [
         'This is a non-medication scenario by design for Semester 2.',
         'Do not require medication administration to solve the case.',
@@ -1582,10 +1581,8 @@ function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
     };
   }
 
-  // Medication involvement probability
-  let medicationChance = 0.7;
-  if (String(semester) === '4') medicationChance = 0.8;
-
+  let medicationChance = 0.75;
+  if (String(semester) === '4') medicationChance = 0.85;
   const includeMedication = Math.random() < medicationChance;
 
   if (!includeMedication) {
@@ -1600,161 +1597,693 @@ function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
         'scene management',
         'oxygen decision based on clinical presentation'
       ],
-      oxygenGuidance: 'Use oxygen only when clinically indicated.',
+      oxygenGuidance: 'Use oxygen only when clinically indicated. Titrate to SpO2 92-96% for most patients.',
       instructionText: [
-        'This scenario should focus more on assessment, decision making, reassessment, and transport planning rather than medications.',
+        'This scenario should focus on assessment, decision making, reassessment, and transport planning rather than medications.',
         'It is acceptable and realistic that no medications are required in this case.'
       ].join(' ')
     };
   }
 
-  // Cardiac scenarios
-  if (typeLower === 'cardiac' || callFamily.includes('cardiac') || promptLower.includes('chest pain')) {
+  // ── CARDIAC: ACS / STEMI ─────────────────────────────────────────────────
+  if (callFamily.includes('acs_or_stemi') || promptLower.includes('chest pain') || promptLower.includes('stemi') || promptLower.includes('acs')) {
     return {
-      style: 'cardiac medication decision scenario',
+      style: 'cardiac ischemia medication decision scenario',
       likelyMedicationOpportunities: [
-        'ASA if clinically indicated',
-        'Nitroglycerin if clinically indicated and no contraindications',
-        'Repeat nitroglycerin dosing if still symptomatic and BP allows'
+        'ASA 160-325mg when clinically indicated — apply directive as if no prior care rendered',
+        'Nitroglycerin 0.4mg SL when BP supports it and conditions are met: prior history OR IV established',
+        'Repeat nitroglycerin every 5 minutes if still symptomatic and BP allows, to a max of 3 doses',
+        'Morphine only after 3rd nitroglycerin dose when pain is severe — ACP only in most cases; confirm scope'
       ],
       contraindicationChecks: [
-        'ASA allergy or inability to take it safely',
-        'Nitroglycerin blood pressure check',
-        'Nitroglycerin PDE5 inhibitor history',
-        'Consider reasons to withhold nitroglycerin',
-        'Reassess pain and BP before repeat nitroglycerin'
+        '12-lead ECG before nitroglycerin consideration — goal within first 10 minutes',
+        'V4R if inferior STEMI identified — nitroglycerin contraindicated in RV STEMI',
+        'Nitroglycerin contraindicated if SBP near 100 mmHg or tachycardia present',
+        'Nitroglycerin contraindicated with PDE5 inhibitor use in past 48 hours (sildenafil, tadalafil, vardenafil, etc.)',
+        'Do not resume nitroglycerin if vitals fall outside parameters even if they normalize',
+        'ASA allergy or active GI bleed'
       ],
       supportiveCareOpportunities: [
-        '12-lead ECG acquisition',
-        'serial reassessment',
-        'transport destination or STEMI bypass consideration',
-        'pain assessment and reassessment',
-        'early transport vs on-scene treatment decision'
+        '12-lead and 15-lead ECG acquisition and interpretation',
+        'serial reassessment of pain and vitals',
+        'STEMI bypass or urgent transport destination decision',
+        'IV access when nitroglycerin is planned for first-time ischemia'
       ],
-      oxygenGuidance: 'Do not include oxygen unless hypoxia or another clear clinical indication supports it.',
+      oxygenGuidance: 'Do not apply oxygen unless SpO2 falls below 94% or hypoxia is clinically evident. Cardiac ischemia alone is not an indication for oxygen.',
       instructionText: [
-        'Use meaningful decision points such as ASA, nitroglycerin, withholding nitroglycerin when contraindicated, reassessment after treatment, repeat nitroglycerin when appropriate, and destination or bypass decisions when supported.',
-        'Do not insert oxygen reflexively when SpO2 is normal.'
+        'ECG drives the medication decision. 12-lead before nitroglycerin.',
+        'For inferior STEMI, V4R is required before nitroglycerin to rule out RV involvement.',
+        'Nitroglycerin for first-time suspected ischemia requires prior history OR an established IV.',
+        'Do not give nitroglycerin in RV STEMI, with PDE5 inhibitors, or when SBP is near 100 mmHg or trending down.',
+        'Once vitals fall outside directive parameters, do not resume that medication even if vitals normalize.'
       ].join(' ')
     };
   }
 
-  // Respiratory scenarios
-  if (typeLower === 'respiratory' || callFamily.includes('respiratory') || promptLower.includes('asthma') || promptLower.includes('shortness of breath')) {
+  // ── CARDIAC: DYSRHYTHMIA / PALPITATIONS ──────────────────────────────────
+  if (callFamily.includes('dysrhythmia') || callFamily.includes('palpitation') || promptLower.includes('svt') || promptLower.includes('atrial fibrillation') || promptLower.includes('palpitation')) {
+    return {
+      style: 'tachydysrhythmia assessment and management scenario',
+      likelyMedicationOpportunities: [
+        'Modified Valsalva maneuver for stable SVT — PCP and ACP scope, requires base hospital authorization as PCP auxiliary',
+        'Identify whether tachycardia is physiologic compensation (pain, hypovolemia, fever, hypoxia) — treat cause, not rhythm',
+        '12-lead ECG to differentiate narrow vs wide complex tachycardia before any intervention'
+      ],
+      contraindicationChecks: [
+        'Do not treat compensatory tachycardia with Valsalva or any rate-controlling intervention',
+        'Wide complex tachycardia — adenosine and amiodarone are ACP only; PCP role is monitoring, 12-lead, and transport',
+        'Hemodynamically unstable tachydysrhythmia — synchronized cardioversion is ACP with base hospital authorization',
+        'SVT Treat and Discharge criteria require base hospital patch and specific eligibility — pregnant patients excluded from T&D'
+      ],
+      supportiveCareOpportunities: [
+        '12-lead ECG acquisition and interpretation',
+        'rhythm differentiation narrow vs wide complex',
+        'hemodynamic assessment and serial vitals',
+        'transport and destination decision',
+        'ALS intercept consideration if unstable'
+      ],
+      oxygenGuidance: 'Oxygen only if hypoxia or hemodynamic compromise is present. Titrate to SpO2 92-96%.',
+      instructionText: [
+        'Confirm the tachycardia is not a compensatory response before treating it as a dysrhythmia.',
+        '12-lead is essential for SVT vs other narrow complex vs wide complex differentiation.',
+        'Modified Valsalva is the PCP intervention for stable SVT — requires base hospital authorization as auxiliary.',
+        'Adenosine, amiodarone, cardioversion are ACP only. PCP role in unstable dysrhythmia is transport and ALS intercept.'
+      ].join(' ')
+    };
+  }
+
+  // ── CARDIAC: ARREST / POST-ROSC ──────────────────────────────────────────
+  if (callFamily.includes('cardiac_arrest') || promptLower.includes('cardiac arrest') || promptLower.includes('arrest') || promptLower.includes('vsa')) {
+    return {
+      style: 'cardiac arrest resuscitation scenario',
+      likelyMedicationOpportunities: [
+        'Epinephrine 1mg IV/IO every 3-5 minutes for shockable and non-shockable rhythms per medical cardiac arrest directive',
+        'Single dose IM epinephrine 1:1000 (1mg) only if arrest is directly attributable to anaphylaxis',
+        'Post-ROSC: fluid bolus 10ml/kg to max 1000ml if SBP below 90 and lungs clear',
+        'Do not give naloxone in confirmed cardiac arrest — it has no routine role here'
+      ],
+      contraindicationChecks: [
+        'Epinephrine timing: administer after first rhythm analysis and defibrillation attempt in shockable arrest',
+        'No routine naloxone in confirmed cardiac arrest regardless of suspected opioid cause',
+        'Post-ROSC oxygen: target SpO2 94-98%, avoid 100% — oxygen free radicals worsen outcome',
+        'Post-ROSC ETCO2 target 30-40 mmHg — avoid hyperventilation',
+        'Medical TOR criteria: patch after 20 minutes if considering termination',
+        'Glucometry has no value in VSA patient — do not check BGL during arrest'
+      ],
+      supportiveCareOpportunities: [
+        'high quality CPR with minimal interruptions',
+        'early defibrillation for shockable rhythms',
+        'rhythm interpretation every 2 minutes',
+        'reversible cause identification using 4Hs and 4Ts',
+        'supraglottic airway when indicated',
+        'post-ROSC monitoring and transport'
+      ],
+      oxygenGuidance: 'During arrest: high concentration oxygen. Post-ROSC: titrate to SpO2 94-98%, avoid 100%.',
+      instructionText: [
+        'High quality CPR with minimal interruption is the priority.',
+        'Epinephrine dose and timing must follow the medical cardiac arrest directive.',
+        'No naloxone in confirmed arrest even if opioid cause is suspected.',
+        'Post-ROSC targets: SpO2 94-98%, ETCO2 30-40 mmHg, SBP at or above 90 mmHg.',
+        'Avoid hyperventilation post-ROSC.'
+      ].join(' ')
+    };
+  }
+
+  // ── CARDIAC: HEART FAILURE / PULMONARY EDEMA ─────────────────────────────
+  if (callFamily.includes('heart_failure') || callFamily.includes('pulmonary_edema') || promptLower.includes('pulmonary edema') || promptLower.includes('heart failure')) {
+    return {
+      style: 'acute cardiogenic pulmonary edema scenario',
+      likelyMedicationOpportunities: [
+        'CPAP for severe respiratory distress with acute pulmonary edema — PCP auxiliary requires base hospital authorization',
+        'Nitroglycerin under Acute Cardiogenic Pulmonary Edema directive — ECG not required before first dose in this directive',
+        'ASA if concurrent cardiac ischemia is suspected — patient may receive nitroglycerin from ACPE directive and ASA from cardiac ischemia directive',
+        'Patient cannot receive nitroglycerin from both ACPE and cardiac ischemia directives — one directive only'
+      ],
+      contraindicationChecks: [
+        'Confirm cardiogenic versus non-cardiogenic pulmonary edema — nitroglycerin only for cardiogenic',
+        'CPAP is appropriate for non-cardiogenic pulmonary edema as well as cardiogenic',
+        'If STEMI identified on ECG, follow cardiac ischemia directive nitroglycerin schedule (max 3 doses)',
+        'If nitroglycerin causes hypotension, withhold further doses — fluid bolus permitted despite crackles in this situation',
+        'Salbutamol may be considered if wheezing is present — wheezing in early pulmonary edema may be from airway edema not bronchospasm'
+      ],
+      supportiveCareOpportunities: [
+        '12-lead ECG acquisition as soon as possible',
+        'positioning upright or semi-recumbent',
+        'oxygen titration',
+        'serial reassessment of respiratory status',
+        'CPAP initiation and titration when authorized'
+      ],
+      oxygenGuidance: 'High concentration oxygen appropriate given hypoxia typically present. Titrate once stable.',
+      instructionText: [
+        'CPAP is a key intervention for acute cardiogenic pulmonary edema at PCP auxiliary level with base hospital authorization.',
+        'Nitroglycerin does not require ECG before first dose under the ACPE directive — acquire ECG as soon as possible.',
+        'Do not double-count nitroglycerin across two directives.',
+        'If nitroglycerin causes hypotension, stop further doses and consider fluid bolus even with crackles present.'
+      ].join(' ')
+    };
+  }
+
+  // ── CARDIAC: SYNCOPE ─────────────────────────────────────────────────────
+  if (callFamily.includes('syncope') || promptLower.includes('syncope') || promptLower.includes('faint')) {
+    return {
+      style: 'syncope assessment scenario',
+      likelyMedicationOpportunities: [
+        '12-lead ECG to evaluate for dysrhythmia or ischemic cause',
+        'Oral glucose or glucagon if hypoglycemia identified as contributing cause',
+        'No routine medication for vasovagal syncope — focus is on cause identification'
+      ],
+      contraindicationChecks: [
+        'Rule out cardiac, hypoglycemic, and neurologic causes before accepting vasovagal diagnosis',
+        'Check BGL in any altered or post-syncopal patient with diabetes history',
+        '12-lead ECG before any cardiac medication decision'
+      ],
+      supportiveCareOpportunities: [
+        'structured cause differentiation',
+        'BGL check',
+        '12-lead ECG',
+        'serial reassessment and vital trend monitoring',
+        'transport decision based on etiology'
+      ],
+      oxygenGuidance: 'Oxygen only if hypoxia or hemodynamic compromise present.',
+      instructionText: [
+        'Syncope requires active cause identification not passive reassurance.',
+        'BGL and 12-lead ECG are the two most important investigations before a disposition decision.'
+      ].join(' ')
+    };
+  }
+
+  // ── RESPIRATORY ──────────────────────────────────────────────────────────
+  if (typeLower === 'respiratory' || callFamily.includes('respiratory') || promptLower.includes('asthma') || promptLower.includes('shortness of breath') || promptLower.includes('breathing')) {
+
+    if (callFamily.includes('asthma') || callFamily.includes('bronchospasm')) {
+      return {
+        style: 'asthma bronchospasm medication scenario',
+        likelyMedicationOpportunities: [
+          'Epinephrine IM (asthmatics only) for severe bronchoconstriction when life threat is present',
+          'Salbutamol immediately following epinephrine for asthmatics',
+          'Salbutamol MDI or nebulized for moderate bronchospasm',
+          'Dexamethasone to reduce morbidity — not immediate rescue, does not have fast onset'
+        ],
+        contraindicationChecks: [
+          'Epinephrine is for asthmatics only — not for COPD',
+          'CPAP is for COPD only — not for asthma',
+          'Dexamethasone has no immediate life-saving effect — do not frame it as primary rescue',
+          'Watch for air trapping and fatigue — allow adequate expiratory phase if ventilating',
+          'For COPD or asthma patients in respiratory failure with initial ETCO2 above 50 mmHg, maintain ETCO2 50-60 mmHg'
+        ],
+        supportiveCareOpportunities: [
+          'positioning',
+          'oxygen titration to SpO2 92-96%',
+          'serial reassessment after bronchodilator',
+          'work of breathing trend monitoring',
+          'fatigue recognition and transport escalation'
+        ],
+        oxygenGuidance: 'Titrate oxygen to SpO2 92-96%. Avoid unnecessary high-flow oxygen.',
+        instructionText: [
+          'Epinephrine is for asthmatics only — never for COPD.',
+          'CPAP is for COPD only — never for asthma.',
+          'Salbutamol should follow epinephrine immediately in asthmatic patients.',
+          'Dexamethasone reduces morbidity but is not a rescue medication.',
+          'Watch for fatigue and silent chest — these are late findings requiring immediate escalation.'
+        ].join(' ')
+      };
+    }
+
+    if (callFamily.includes('copd')) {
+      return {
+        style: 'COPD exacerbation medication scenario',
+        likelyMedicationOpportunities: [
+          'Salbutamol MDI or nebulized as first-line bronchodilator',
+          'Ipratropium may be added per local service protocol',
+          'Dexamethasone to reduce morbidity',
+          'CPAP for severe COPD respiratory distress — PCP auxiliary requires base hospital authorization'
+        ],
+        contraindicationChecks: [
+          'CPAP is appropriate for COPD — not for asthma',
+          'Epinephrine is not for COPD — asthmatics only',
+          'For initial ETCO2 above 50 mmHg in respiratory failure, target ETCO2 50-60 mmHg to prevent worsening hypercapnia',
+          'Oxygen titration to SpO2 88-92% for known COPD patients to avoid CO2 retention'
+        ],
+        supportiveCareOpportunities: [
+          'positioning upright or tripod',
+          'oxygen titration to SpO2 88-92%',
+          'ETCO2 monitoring and trending',
+          'serial reassessment after bronchodilator',
+          'CPAP consideration when authorized'
+        ],
+        oxygenGuidance: 'Titrate oxygen to SpO2 88-92% for known COPD. Avoid high-concentration oxygen unless no reliable SpO2.',
+        instructionText: [
+          'Oxygen target for COPD is 88-92% not the general 92-96% target.',
+          'CPAP is appropriate for COPD and requires base hospital authorization at PCP auxiliary level.',
+          'Epinephrine has no role in COPD.'
+        ].join(' ')
+      };
+    }
+
+    if (callFamily.includes('pulmonary_embolism')) {
+      return {
+        style: 'suspected pulmonary embolism scenario',
+        likelyMedicationOpportunities: [
+          'Oxygen for hypoxia — titrate to SpO2 92-96%',
+          'Analgesia if pleuritic chest pain is significant and patient meets directive conditions',
+          'No specific PE reversal medication at PCP scope — supportive care and transport priority'
+        ],
+        contraindicationChecks: [
+          'Do not give nitroglycerin for PE-related chest pain — not cardiac ischemia',
+          'Consider right heart strain on ECG before any cardiac medication',
+          '12-lead ECG to support clinical picture'
+        ],
+        supportiveCareOpportunities: [
+          'oxygen titration',
+          'positioning upright',
+          '12-lead ECG',
+          'serial vital sign monitoring',
+          'urgent transport to capable facility'
+        ],
+        oxygenGuidance: 'Oxygen for hypoxia, titrate to SpO2 92-96%.',
+        instructionText: [
+          'PE is primarily a transport and supportive care call at PCP scope.',
+          'Do not treat PE chest pain with nitroglycerin.',
+          'ECG may show right heart strain pattern — this supports clinical reasoning but does not change PCP treatment.'
+        ].join(' ')
+      };
+    }
+
     return {
       style: 'respiratory medication decision scenario',
       likelyMedicationOpportunities: [
-        'Salbutamol if clinically indicated',
-        'Repeat salbutamol after reassessment if still symptomatic',
-        'Dexamethasone if clinically indicated'
+        'Salbutamol if bronchospasm is present and clinically supported',
+        'Dexamethasone if inflammatory component is present',
+        'Epinephrine for asthmatics only if severe bronchospasm',
+        'CPAP for COPD or pulmonary edema if authorized'
       ],
       contraindicationChecks: [
-        'Confirm the presentation supports bronchodilator use',
-        'Reassess response after treatment',
-        'Consider fatigue or worsening respiratory status',
-        'Consider reasons to escalate care or rapid transport'
+        'Confirm asthma versus COPD — treatment logic differs',
+        'Epinephrine for asthma only',
+        'CPAP for COPD and pulmonary edema only — not asthma',
+        'Reassess after each treatment'
       ],
-      supportiveCareOpportunities: [
-        'positioning',
-        'oxygen titration',
-        'serial reassessment',
-        'work of breathing assessment',
-        'consider CPAP if appropriate'
-      ],
-      oxygenGuidance: 'Use oxygen only when clinically indicated, not automatically.',
-      instructionText: [
-        'Respiratory treatment decisions should feel earned by the presentation.',
-        'Let reassessment matter after initial treatment.',
-        'Consider repeat bronchodilator decisions and escalation decisions.'
-      ].join(' ')
+      supportiveCareOpportunities: ['positioning', 'oxygen titration', 'serial reassessment', 'transport escalation'],
+      oxygenGuidance: 'Titrate oxygen to SpO2 92-96% general, 88-92% for known COPD.',
+      instructionText: ['Respiratory treatment decisions should be earned by the presentation. Reassessment after treatment matters.'].join(' ')
     };
   }
 
-  // Diabetic scenarios
-  if (promptLower.includes('hypogly') || promptLower.includes('glucagon') || promptLower.includes('low blood sugar') || callFamily.includes('diabetic')) {
+  // ── DIABETIC / METABOLIC ─────────────────────────────────────────────────
+  if (callFamily.includes('diabetic') || promptLower.includes('hypogly') || promptLower.includes('glucagon') || promptLower.includes('blood sugar')) {
     return {
-      style: 'diabetic medication decision scenario',
+      style: 'hypoglycemia medication decision scenario',
       likelyMedicationOpportunities: [
-        'Oral glucose when clinically appropriate',
-        'Glucagon when clinically appropriate'
+        'Oral glucose when patient is alert enough to swallow safely — use 15g simple carbohydrates, 15-15 rule',
+        'Glucagon IM or intranasal (Baqsimi 3mg) when patient cannot safely swallow',
+        'Dextrose IV (D10W or D50W) if IV is established and patient cannot take oral or glucagon has failed',
+        'Reassess BGL after treatment before determining further care'
       ],
       contraindicationChecks: [
-        'Ability to safely take oral glucose',
-        'Level of consciousness and swallowing safety',
-        'Need for reassessment after treatment',
-        'Consider transport even after improvement'
+        'Oral glucose requires intact swallowing and alertness — do not give if unsafe to swallow',
+        'If glucagon was given with no improvement and IV subsequently established, administer dextrose regardless of time elapsed since glucagon',
+        'Do not give multiple doses of same medication — transport if two doses of glucagon or dextrose required',
+        'Treat and discharge criteria require confirmed improvement, safe to care for self, follow up plan, and base hospital patch'
       ],
       supportiveCareOpportunities: [
-        'BGL confirmation',
-        'serial reassessment',
-        'transport decision-making',
-        'history gathering around diabetic management'
+        'BGL confirmation before and after treatment',
+        'swallowing safety assessment',
+        'serial reassessment of mental status',
+        'transport decision even after improvement if insulin-dependent or cause unclear'
       ],
-      oxygenGuidance: 'Use oxygen only when clinically indicated.',
+      oxygenGuidance: 'Oxygen only if hypoxia or altered consciousness with airway concern.',
       instructionText: [
-        'Create a real choice between oral glucose, glucagon, or supportive care rather than automatically giving a medication.',
-        'Reassessment and transport decisions should matter.'
+        'The real decision is oral glucose versus glucagon versus dextrose — it depends on level of consciousness and swallowing safety.',
+        'Reassess BGL after treatment.',
+        'Transport even after improvement if the cause is unclear or the patient is insulin-dependent.',
+        'Treat and discharge requires specific criteria and a base hospital patch.'
       ].join(' ')
     };
   }
 
-  // Trauma / Pain scenarios
+  // ── ALLERGIC / ANAPHYLAXIS ───────────────────────────────────────────────
+  if (callFamily.includes('allergic') || callFamily.includes('anaphylaxis') || promptLower.includes('anaphylaxis') || promptLower.includes('allergic reaction') || promptLower.includes('epinephrine')) {
+    return {
+      style: 'anaphylaxis or allergic reaction medication scenario',
+      likelyMedicationOpportunities: [
+        'Epinephrine 1:1000 IM 0.01mg/kg to max 0.5mg — anterolateral mid-thigh preferred site',
+        'Diphenhydramine IV or IM as secondary treatment — does not prevent upper airway edema or shock',
+        'Salbutamol for bronchospasm not responsive to epinephrine — adjunctive only',
+        'IV fluid bolus if severe hypotension persists after epinephrine',
+        'Repeat epinephrine if symptoms return or fail to respond — patients with diaphoresis, flushing, or dyspnea may need multiple doses'
+      ],
+      contraindicationChecks: [
+        'Diphenhydramine is not a substitute for epinephrine — do not delay epinephrine to give diphenhydramine',
+        'Dexamethasone has no role in prehospital anaphylaxis — little evidence of benefit',
+        'Watch for biphasic reaction — symptoms can return 1 to 48 hours after initial resolution without re-exposure',
+        'Salbutamol is adjunctive to epinephrine — does not address upper airway edema',
+        'Epinephrine via auto-injector is valid — consider additional doses if patient already used theirs'
+      ],
+      supportiveCareOpportunities: [
+        'airway assessment and monitoring',
+        'positioning',
+        'oxygen for hypoxia',
+        'serial reassessment for biphasic reaction',
+        'transport even after improvement — biphasic risk'
+      ],
+      oxygenGuidance: 'Oxygen for hypoxia and respiratory compromise. Titrate to SpO2 92-96%.',
+      instructionText: [
+        'Epinephrine is the primary treatment — administer as soon as anaphylaxis is recognized.',
+        'Diphenhydramine is secondary and does not replace epinephrine.',
+        'Dexamethasone is not part of prehospital anaphylaxis management.',
+        'Biphasic reactions can occur up to 48 hours after resolution — transport and monitoring are essential.',
+        'Salbutamol for bronchospasm not responding to epinephrine — adjunctive only.'
+      ].join(' ')
+    };
+  }
+
+  // ── OPIOID TOXICITY ──────────────────────────────────────────────────────
+  if (callFamily.includes('toxicology') || callFamily.includes('overdose') || promptLower.includes('overdose') || promptLower.includes('naloxone') || promptLower.includes('opioid')) {
+    return {
+      style: 'opioid toxicity medication scenario',
+      likelyMedicationOpportunities: [
+        'Naloxone intranasal or IM — titrate to adequate respirations not full reversal',
+        'Ventilation support is the priority before medication administration',
+        'Buprenorphine/naloxone (Suboxone) for opioid withdrawal if COWS score criteria met'
+      ],
+      contraindicationChecks: [
+        'Do not give naloxone in confirmed cardiac arrest — no routine role',
+        'Titrate naloxone to restore breathing — avoid precipitating acute withdrawal from full reversal',
+        'Watch for re-sedation — long-acting opioids outlast naloxone duration',
+        'Mixed overdose: naloxone may unmask stimulant toxidrome — watch for seizures, agitation, hypertensive crisis after reversal',
+        'Methadone patients — naloxone can precipitate severe withdrawal',
+        'Naloxone age condition: patient must be 24 hours or older'
+      ],
+      supportiveCareOpportunities: [
+        'airway management and ventilation support',
+        'oxygen titration',
+        'serial reassessment for re-sedation',
+        'transport even after apparent reversal',
+        'harm reduction communication'
+      ],
+      oxygenGuidance: 'Ventilation support is the priority. Oxygen titrated to maintain adequate SpO2.',
+      instructionText: [
+        'Ventilation before medication — airway management is the priority.',
+        'Titrate naloxone to restore breathing, not to full reversal — avoid precipitating withdrawal.',
+        'Re-sedation risk is real — transport even after apparent improvement.',
+        'Naloxone has no role in confirmed cardiac arrest.'
+      ].join(' ')
+    };
+  }
+
+  // ── RENAL / ELECTROLYTE ──────────────────────────────────────────────────
+  if (callFamily.includes('renal') || callFamily.includes('electrolyte') || promptLower.includes('dialysis') || promptLower.includes('hyperkalemia') || promptLower.includes('potassium')) {
+    return {
+      style: 'renal or electrolyte emergency scenario',
+      likelyMedicationOpportunities: [
+        'Calcium gluconate IV 1g over 3 minutes for severe hyperkalemia with ECG changes — ACP only; PCP role is recognition and transport',
+        'Salbutamol in large doses may temporarily shift potassium intracellularly — ACP context',
+        'Home dialysis emergency disconnect per directive if applicable',
+        'PCP role: recognize ECG changes, manage symptoms, urgent transport with pre-alert'
+      ],
+      contraindicationChecks: [
+        'Calcium gluconate is ACP only — do not include as PCP treatment',
+        'Sodium bicarbonate is not effective for hyperkalemia and should not be routinely given — patch point for BHP if considered',
+        'Ensure IV line is patent — calcium gluconate causes necrosis if it extravasates',
+        'Serial 12-lead ECG before and after treatment to measure ECG changes'
+      ],
+      supportiveCareOpportunities: [
+        '12-lead ECG for hyperkalemia recognition',
+        'serial vital sign monitoring',
+        'IV access for transport preparation',
+        'urgent transport with pre-alert to receiving facility',
+        'home dialysis disconnect if indicated'
+      ],
+      oxygenGuidance: 'Oxygen for hypoxia or hemodynamic instability.',
+      instructionText: [
+        'Hyperkalemia recognition from ECG changes is the key PCP skill — peaked T waves, widening QRS, loss of P waves.',
+        'Calcium gluconate is ACP only — PCP role is recognition, IV access, and urgent transport.',
+        'Serial 12-lead ECG changes guide urgency and pre-alert framing.'
+      ].join(' ')
+    };
+  }
+
+  // ── NEUROLOGIC / SYNCOPE / STROKE ────────────────────────────────────────
+  if (callFamily.includes('neurologic') || callFamily.includes('syncope') || promptLower.includes('stroke') || promptLower.includes('seizure') || promptLower.includes('syncope')) {
+    return {
+      style: 'neurologic assessment and medication scenario',
+      likelyMedicationOpportunities: [
+        'Oral glucose or glucagon if hypoglycemia is confirmed or strongly suspected — always check BGL in altered consciousness',
+        'Oxygen if hypoxic — not routine for suspected stroke without hypoxia',
+        'Seizure: no PCP medication at core level — protect from injury, position, oxygen, reassess',
+        'Seizure treat and discharge: specific BHP-authorized criteria for confirmed epilepsy with single seizure and meets all conditions'
+      ],
+      contraindicationChecks: [
+        'Confirm BGL before attributing altered consciousness to neurologic cause',
+        'Do not give nitroglycerin for suspected stroke — not cardiac ischemia',
+        'Stroke bypass decision: FAST positive with last known well time within window',
+        'Seizure medication (midazolam) is ACP only — do not include at PCP core level',
+        'Seizure treat and discharge requires confirmed epilepsy diagnosis, single seizure, full recovery, specific eligibility, and BHP patch'
+      ],
+      supportiveCareOpportunities: [
+        'BGL check',
+        'FAST and CPSS neurologic screening',
+        '12-lead ECG if cardiac cause suspected',
+        'stroke bypass decision and destination',
+        'airway positioning and protection',
+        'serial reassessment of LOC'
+      ],
+      oxygenGuidance: 'Oxygen for hypoxia only. Avoid routine oxygen in suspected stroke without documented hypoxia.',
+      instructionText: [
+        'BGL must be checked before attributing altered consciousness to stroke or seizure.',
+        'Stroke requires FAST screening and bypass destination decision.',
+        'Seizure medication is ACP only at PCP core level.',
+        'Seizure treat and discharge requires confirmed epilepsy, specific criteria, full recovery, and BHP patch.'
+      ].join(' ')
+    };
+  }
+
+  // ── TRAUMA ────────────────────────────────────────────────────────────────
   if (typeLower === 'trauma' || callFamily.includes('trauma')) {
     return {
-      style: 'trauma pain management scenario',
+      style: 'trauma pain and hemorrhage management scenario',
       likelyMedicationOpportunities: [
-        'Ketorolac if clinically indicated',
-        'TXA (IM or IV) when criteria and timing are met per protocol'
+        'Acetaminophen or ibuprofen oral first-line if patient can tolerate oral medication',
+        'Ketorolac IM or IV for moderate to severe pain — do not combine with ibuprofen',
+        'Morphine IV or IM for significant pain — aliquots every 3 minutes to max single dose, may repeat after 15 minutes',
+        'FentaNYL IV or IM for severe trauma pain — preferred when hemodynamic stability is a concern, aliquots every 5 minutes',
+        'Ketamine IV or IM for hypotensive patients or when opioids are contraindicated — administer over 2-3 minutes',
+        'TXA 1g IV over 5 minutes (or IM if IV not available) for suspected significant traumatic hemorrhage — PCP auxiliary, base hospital authorization required, do not delay transport'
       ],
       contraindicationChecks: [
-        'Consider bleeding risk before analgesia',
-        'Consider hypotension',
-        'Consider allergy or contraindications to analgesia',
-        'Consider reasons to withhold analgesia',
-        'TXA eligibility: suspected significant traumatic hemorrhage within protocol timing window'
+        'Do not combine ketorolac and ibuprofen — both NSAIDs, increased adverse effects',
+        'Consider active uncontrolled hemorrhage before analgesia — control bleeding first',
+        'Hypotension: ketamine preferred over opioids — opioids can worsen hypotension',
+        'TXA eligibility: suspected significant hemorrhage, protocol timing window, within PCP auxiliary authorization',
+        'TXA should not delay transport and not prioritized over management of reversible causes',
+        'Ontario SMR criteria: age over 65 with fall mechanism requires SMR regardless of apparent injury severity'
       ],
       supportiveCareOpportunities: [
-        'SMR decision making',
+        'hemorrhage control — direct pressure, wound packing, tourniquet',
+        'SMR decision-making',
         'splinting',
-        'bleeding control',
-        'shock recognition',
-        'rapid transport decision'
+        'shock recognition and transport priority',
+        'destination decision'
       ],
-      oxygenGuidance: 'Use oxygen only when clinically indicated.',
+      oxygenGuidance: 'Oxygen for hypoxia, respiratory compromise, or hemorrhagic shock. Titrate to SpO2 92-96%.',
       instructionText: [
-        'Pain management should be a decision, not automatic.',
-        'TXA is an established and increasingly common Ontario PCP intervention for suspected significant traumatic hemorrhage; it can be given IM or IV and should be included when mechanism, presentation, and timing make it clinically appropriate.',
-        'Scene management, packaging, and transport decisions should be important parts of the call.'
+        'Oral analgesia first if tolerated — acetaminophen and ibuprofen together approximate low-dose opioid effect.',
+        'Do not combine ketorolac and ibuprofen.',
+        'Ketamine is preferred when opioids are contraindicated — hypotension or hemorrhagic shock risk.',
+        'TXA is an established PCP auxiliary intervention for suspected significant traumatic hemorrhage — IM or IV, do not delay transport for it.',
+        'Renal colic patients should routinely be considered for NSAID in addition to opioid.'
       ].join(' ')
     };
   }
 
-  // Nausea / vomiting scenarios
-  if (promptLower.includes('nausea') || promptLower.includes('vomit') || callFamily.includes('nausea')) {
+  // ── NAUSEA / VOMITING ────────────────────────────────────────────────────
+  if (callFamily.includes('nausea') || promptLower.includes('nausea') || promptLower.includes('vomit')) {
     return {
-      style: 'antiemetic decision scenario',
+      style: 'nausea and vomiting antiemetic scenario',
       likelyMedicationOpportunities: [
-        'Ondansetron if clinically indicated'
+        'Dimenhydrinate (Gravol) IV or IM — first-line antiemetic per directive',
+        'Ondansetron if dimenhydrinate given with no relief after 30 minutes and patient still meets conditions',
+        'Not every patient with nausea requires medication — presentation must support it'
       ],
       contraindicationChecks: [
-        'Consider underlying cause of nausea',
-        'Reassess after treatment',
-        'Consider hydration and transport decisions'
+        'Do not combine dimenhydrinate with diphenhydramine — combined anticholinergic effect and over-sedation risk',
+        'Do not combine ondansetron with apomorphine — risk of profound hypotension',
+        'Dimenhydrinate: caution in elderly — somnolence and confusion risk',
+        'Dimenhydrinate contraindicated with antihistamine overdose, anticholinergic overdose, or TCA overdose',
+        'Dimenhydrinate: avoid with head injuries — increased ICP risk',
+        'Ondansetron better choice when patient is on SSRIs, or head trauma is present, or elderly'
       ],
       supportiveCareOpportunities: [
-        'hydration considerations',
-        'positioning',
+        'identify underlying cause of nausea before treating symptom',
+        'BGL check in diabetic patients before antiemetic',
+        'hydration assessment',
         'transport decision',
-        'history gathering'
+        'reassessment after treatment'
       ],
-      oxygenGuidance: 'Use oxygen only when clinically indicated.',
+      oxygenGuidance: 'Oxygen only if clinically indicated.',
       instructionText: [
-        'Antiemetic use should be tied to patient comfort and transport considerations, not automatically given.'
+        'Not every nausea patient needs medication — presentation and cause must support it.',
+        'Dimenhydrinate first, ondansetron after 30 minutes without relief if still eligible.',
+        'Never combine dimenhydrinate with diphenhydramine.',
+        'Ondansetron preferred in elderly, head trauma, SSRI patients.',
+        'Check glucose in any diabetic patient before giving antiemetic.'
       ].join(' ')
     };
   }
 
-  // Default medication logic
+  // ── OB/PEDS ──────────────────────────────────────────────────────────────
+  if (typeLower === 'ob/peds' || typeLower === 'ob' || typeLower === 'peds' || callFamily.includes('obstetric') || callFamily.includes('pediatric') || callFamily.includes('neonatal')) {
+
+    if (callFamily.includes('obstetric_labour') || callFamily.includes('obstetric_complication')) {
+      return {
+        style: 'obstetric medication and procedural scenario',
+        likelyMedicationOpportunities: [
+          'Oxytocin IM or IV immediately after delivery of all fetuses and/or placenta and up to 4 hours post-placenta — for post-partum hemorrhage prevention and management',
+          'External uterine massage after placenta delivery if fundus is soft or boggy',
+          'External bimanual compression if uterine massage is unsuccessful',
+          'Oxygen for maternal hypoxia or fetal distress concern'
+        ],
+        contraindicationChecks: [
+          'Oxytocin can induce vasoconstriction — use caution in hypertensive patients',
+          'Do not perform internal vaginal exam to determine cervical dilation',
+          'Perineal inspection is appropriate in specific clinical situations per directive criteria',
+          'Prolapsed cord: knee-chest or exaggerated Sims position, manual elevation of presenting part, maintain until transfer of care',
+          'Breach delivery: hands off until delivered to umbilicus, maximum 4 minutes from umbilicus to head delivery'
+        ],
+        supportiveCareOpportunities: [
+          'delivery preparation and positioning',
+          'fetal and maternal monitoring',
+          'APGAR assessment',
+          'newborn resuscitation readiness',
+          'hemorrhage control',
+          'transport with pre-alert'
+        ],
+        oxygenGuidance: 'Oxygen for maternal hypoxia. During delivery, oxygen readiness for neonate.',
+        instructionText: [
+          'Oxytocin is now a standard part of the emergency childbirth directive for post-partum hemorrhage.',
+          'Prolapsed cord and breech delivery have specific procedural directives with detailed steps.',
+          'Newborn resuscitation preparedness is essential for any delivery scenario.'
+        ].join(' ')
+      };
+    }
+
+    if (callFamily.includes('pediatric_respiratory') || callFamily.includes('pediatric_medical') || callFamily.includes('pediatric_seizure')) {
+      return {
+        style: 'pediatric medication scenario',
+        likelyMedicationOpportunities: [
+          'Epinephrine nebulized for croup — racemic or 1:1000 — severe presentations only, dexamethasone for mild to moderate',
+          'Dexamethasone for mild to moderate croup',
+          'Epinephrine IM for pediatric anaphylaxis — 0.01mg/kg to max 0.5mg',
+          'Oral glucose or glucagon for pediatric hypoglycemia',
+          'Naloxone for suspected opioid toxicity — age 24 hours or older',
+          'Salbutamol for pediatric asthma or bronchoconstriction'
+        ],
+        contraindicationChecks: [
+          'Weight-based dosing is critical — estimate weight carefully for all pediatric medications',
+          'Epinephrine for croup: severe presentations only — prior moist or cold air attempt if mild to moderate',
+          'Seizure medication (midazolam) is ACP only at PCP core level',
+          'Croup increasingly occurring in older patients including adults — if indications met, patch to BHP required',
+          'If patient has received systemic steroids in past 48 hours, additional dexamethasone unlikely to help'
+        ],
+        supportiveCareOpportunities: [
+          'weight estimation for dosing',
+          'positioning for respiratory distress',
+          'oxygen titration',
+          'temperature management',
+          'caregiver communication and reassurance',
+          'transport priority assessment'
+        ],
+        oxygenGuidance: 'Pediatric oxygen targets same as adults: 92-96% general. Neonates: titrate based on SpO2 chart in directive.',
+        instructionText: [
+          'Weight-based dosing is the central challenge in pediatric medication scenarios.',
+          'Croup: epinephrine for severe, dexamethasone for mild to moderate.',
+          'Seizure medication is ACP — PCP core role is protection, positioning, oxygen, glucose check.',
+          'Caregiver communication is a major teaching point in pediatric scenarios.'
+        ].join(' ')
+      };
+    }
+
+    if (callFamily.includes('neonatal')) {
+      return {
+        style: 'neonatal resuscitation scenario',
+        likelyMedicationOpportunities: [
+          'Ventilation with BVM and room air or 100% oxygen based on SpO2 chart in directive',
+          'Epinephrine 1:10000 (0.1mg/ml) via IV, IO, or ETT for neonatal cardiac arrest — dose and concentration specific to this directive only',
+          'Stimulation and drying as primary interventions'
+        ],
+        contraindicationChecks: [
+          'Neonatal epinephrine concentration is 1:10000 only — NOT the adult 1:1000 concentration',
+          'ETT epinephrine dose in neonates is 10 times the IV/IO dose — this is specific to neonatal directive',
+          'Routine suctioning not required even with meconium present if newborn is breathing effectively',
+          'Directive applies to patients under 24 hours of age only'
+        ],
+        supportiveCareOpportunities: [
+          'drying and stimulation',
+          'temperature management',
+          'APGAR scoring at 1 and 5 minutes',
+          'cardiac monitoring for accurate heart rate',
+          'airway management with MR SOPA sequence if ventilation ineffective'
+        ],
+        oxygenGuidance: 'Neonatal SpO2 targets follow the directive chart — values take more than 10 minutes to normalize after birth.',
+        instructionText: [
+          'Neonatal epinephrine is 1:10000 only — never use the adult 1:1000 concentration.',
+          'ETT route neonatal epinephrine dose is 10 times the IV/IO dose.',
+          'Stimulation and ventilation are the priority interventions before medication.',
+          'Directive applies to patients under 24 hours of age only.'
+        ].join(' ')
+      };
+    }
+
+    return {
+      style: 'ob/peds clinical scenario',
+      likelyMedicationOpportunities: [
+        'Weight-based pediatric medications when clinically indicated',
+        'Obstetric medications per emergency childbirth directive when applicable'
+      ],
+      contraindicationChecks: [
+        'Weight-based dosing required for all pediatric medications',
+        'Follow age-specific directive conditions carefully'
+      ],
+      supportiveCareOpportunities: ['assessment', 'positioning', 'oxygen', 'reassessment', 'transport'],
+      oxygenGuidance: 'Age-appropriate oxygen targets. Neonates follow directive SpO2 chart.',
+      instructionText: ['OB/Peds scenarios require careful attention to weight-based dosing and age-specific directive conditions.'].join(' ')
+    };
+  }
+
+  // ── GI / ABDOMINAL ───────────────────────────────────────────────────────
+  if (callFamily.includes('gi') || callFamily.includes('abdominal') || promptLower.includes('abdominal') || promptLower.includes('renal colic') || promptLower.includes('flank pain')) {
+    return {
+      style: 'abdominal or GI medication scenario',
+      likelyMedicationOpportunities: [
+        'Acetaminophen or ibuprofen oral first-line if tolerated',
+        'Ketorolac IM or IV for renal colic — NSAID is specifically recommended for renal colic alongside opioid',
+        'Morphine IV or IM for significant abdominal pain if oral not tolerated',
+        'Dimenhydrinate for nausea associated with abdominal pain if indicated',
+        'Do not combine ketorolac and ibuprofen'
+      ],
+      contraindicationChecks: [
+        'Active uncontrolled hemorrhage — analgesia only after hemorrhage control',
+        'Do not combine ketorolac and ibuprofen',
+        'Suspected active GI bleed — ketorolac and ibuprofen contraindicated',
+        'Ensure nausea cause is investigated before giving antiemetic'
+      ],
+      supportiveCareOpportunities: [
+        'pain assessment and scoring',
+        'serial reassessment',
+        'IV access for fluid and medication',
+        'transport destination decision',
+        'positioning for comfort'
+      ],
+      oxygenGuidance: 'Oxygen only if hypoxia is present.',
+      instructionText: [
+        'Renal colic patients should routinely receive an NSAID in addition to an opioid.',
+        'Do not combine ketorolac and ibuprofen.',
+        'Active uncontrolled GI hemorrhage is a contraindication to NSAIDs.'
+      ].join(' ')
+    };
+  }
+
+  // ── DEFAULT ───────────────────────────────────────────────────────────────
   return {
     style: 'clinically appropriate medication use only',
     likelyMedicationOpportunities: [],
@@ -1765,7 +2294,7 @@ function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
       'communication',
       'scene management'
     ],
-    oxygenGuidance: 'Use oxygen only when clinically indicated.',
+    oxygenGuidance: 'Use oxygen only when clinically indicated. Titrate to SpO2 92-96% for most patients.',
     instructionText: [
       'Medications are allowed for Semester 3 and 4 when clinically justified, but should not be forced into the case.',
       'A strong scenario may still be medication-light if that is more realistic.'
