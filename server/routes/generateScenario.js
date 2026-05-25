@@ -2356,7 +2356,10 @@ function buildGenerationPrompt({
 Generate exactly one paramedic training scenario as valid JSON only.
 No markdown. No commentary. No code fences.
 
-Return these top-level fields:
+${directiveAddendum.length > 0 ? `MANDATORY CLINICAL RULES — these override all other instructions and must be followed exactly in expectedTreatment, protocolNotes, and all clinical fields:
+${directiveAddendum.map((line) => `- ${line}`).join('\n')}
+
+` : ''}Return these top-level fields:
 - scenarioIntro
 - title
 - callInformation
@@ -2639,7 +2642,9 @@ Scenario shaping rules:
 - Case progression must clearly separate what happens with proper treatment, without/delayed treatment, and with incorrect treatment.
 - Case progression must include movementOrTransportChanges when movement, packaging, stair-chair use, extrication, loading, or transport plausibly changes symptoms, assessment findings, vital signs, patient tolerance, or management priorities.
 - Vital sign changes must reflect treatment response, missed care, incorrect care, exertion, movement, fatigue, clinical deterioration, or transport-phase reassessment when appropriate.
-- expectedTreatment must be a structured multi-item list of practical paramedic actions, not a paragraph.
+${directiveAddendum.length > 0 ? `DIRECTIVE RULES REMINDER — apply to expectedTreatment and protocolNotes:
+${directiveAddendum.map((line) => `- ${line}`).join('\n')}
+` : ''}- expectedTreatment must be a structured multi-item list of practical paramedic actions, not a paragraph.
 - protocolNotes must be a structured multi-item list, not a paragraph.
 - Do not include URLs, web links, or external references in any field.
 - teachersPoints must be one compact instructor-voice paragraph, maximum 4 sentences. Name the trap or the easy miss in this specific case. Name the pivot point or the finding that should change the call. End with one concrete next-call adjustment. Do not restate the expected management. Do not restate the learning objectives. Sound like a senior paramedic debriefing after the call, not a textbook summary.
@@ -2677,9 +2682,6 @@ When a patient deteriorates beyond PCP scope, the correct response is rapid tran
 
 PCP Auxiliary Directives (base hospital authorization required; Semester 3 and 4 when clinically relevant):
 CPAP, Cardiogenic Shock, Traumatic Hemorrhage (includes TXA IM or IV), IV and Fluid Therapy, Seizure, Tachydysrhythmia (ALS PCS v5.4, PCP level). Always label these as base-hospital-authorized when referenced.
-
-Ontario directive accuracy rules:
-${directiveAddendum.map((line) => `- ${line}`).join('\n')}
 
 BLS PCS reference:
 ${blsStandards}
