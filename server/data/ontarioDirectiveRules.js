@@ -189,7 +189,7 @@ export const ONTARIO_DIRECTIVE_RULES = {
     },
     promptBlock: [
       "Cardiac ischemia scenarios must reflect current Ontario cardiac ischemia clarifications.",
-      "12-lead acquisition and interpretation should precede nitroglycerin consideration.",
+      "12-lead acquisition and interpretation should precede nitroglycerin consideration. The phrase '12-lead' must appear in expectedTreatment for any cardiac ischemia scenario — do not omit it.",
       "A 12-lead within the first 10 minutes is a goal, not an absolute requirement in every setting.",
       "If inferior STEMI is identified and nitroglycerin is being considered, a minimum V4R should be obtained to assess right ventricular involvement.",
       "If STEMI is identified, repeating the 12-lead is not necessary; if no STEMI is identified, serial 12-leads are recommended.",
@@ -459,6 +459,7 @@ export const ONTARIO_DIRECTIVE_RULES = {
     },
     promptBlock: [
       "Not every patient with nausea or vomiting requires medication treatment.",
+      "When antiemetic treatment is indicated, name dimenhydrinate explicitly in expectedTreatment — do not use generic terms like 'antiemetic' without naming the medication.",
       "If dimenhydrinate is given and there is no relief after 30 minutes, ondansetron may be considered if the patient still meets conditions and has no contraindications.",
       "Avoid generating dimenhydrinate with diphenhydramine co-administration.",
       "Avoid generating ondansetron with apomorphine.",
@@ -595,7 +596,7 @@ export const ONTARIO_DIRECTIVE_RULES = {
       "The anterolateral mid-thigh is the preferred IM site for epinephrine due to improved absorption.",
       "Diphenhydramine is a secondary treatment — it does not prevent or relieve upper airway edema, hypotension, or shock. It must not replace or delay epinephrine.",
       "Salbutamol is adjunctive treatment for bronchospasm not responsive to epinephrine — it does not address upper airway edema.",
-      "Dexamethasone is not part of prehospital anaphylaxis management — there is little evidence of benefit.",
+      "Dexamethasone must NOT appear in expectedTreatment or protocolNotes for anaphylaxis scenarios — it is not part of prehospital anaphylaxis management and must be explicitly excluded.",
       "Biphasic reactions can occur 1 to 48 hours after initial symptom resolution without re-exposure — transport is mandatory even after apparent recovery.",
       "Patients with diaphoresis, flushing, or dyspnea are more likely to require multiple epinephrine doses.",
       "If hypotension persists after epinephrine, treat with IV fluid bolus per the IV and Fluid Therapy directive."
@@ -738,6 +739,7 @@ export const ONTARIO_DIRECTIVE_RULES = {
       "Tranexamic acid (TXA) 1g IV over 5 minutes or IM as alternate route is available to PCP as an auxiliary directive with base hospital authorization.",
       "TXA preferred route is IV — add 1g TXA to a 50ml bag of normal saline or D5W and administer over 5 minutes. IM is the alternate if IV is not available.",
       "TXA must not delay transport and must not be prioritized over management of other reversible causes.",
+      "When the scenario involves significant traumatic hemorrhage, TXA must appear in expectedTreatment by name — use 'tranexamic acid' or 'TXA' explicitly so it is not omitted from the treatment plan.",
       "Research supporting TXA efficacy is in adult populations only.",
       "Ontario SMR criteria require application when age over 65 and fall mechanism is present regardless of apparent severity.",
       "Do not use spinal board for transport — use stretcher-based SMR."
@@ -780,7 +782,7 @@ export const ONTARIO_DIRECTIVE_RULES = {
       "Sodium bicarbonate is not effective for hyperkalemia and should not be routinely administered — patch point for BHP if considered.",
       "PCP role in hyperkalemia: recognition from ECG and clinical picture, serial 12-lead ECG, IV access, urgent transport with cardiac monitoring and pre-alert.",
       "Serial 12-lead ECG before and after ACP treatment is intentional — used to measure ECG change response.",
-      "Ensure IV line is patent if calcium gluconate is being given — extravasation causes tissue necrosis."
+      "NEVER include calcium gluconate in expectedTreatment or protocolNotes for PCP scenarios — calcium gluconate is ACP only and must not appear as a PCP treatment under any circumstances."
     ],
     treatmentRules: {
       calciumGluconateACPOnly: true,
@@ -813,8 +815,8 @@ export const ONTARIO_DIRECTIVE_RULES = {
     meta: { source: ["als", "companion"], confidence: "high" },
     promptBlock: [
       "Effective ventilation is the priority in opioid overdose — airway management before naloxone.",
-      "Naloxone is available intranasal or IM — titrate to adequate respirations, not full reversal.",
-      "Titrating to restore breathing rather than full reversal prevents precipitated withdrawal and agitation.",
+      "Naloxone is available intranasal or IM — titrate to adequate respirations, not full reversal. Do not use the phrase 'full reversal' in expectedTreatment.",
+      "Titrating to restore breathing prevents precipitated withdrawal and agitation. The goal is adequate ventilation, not full opioid antagonism.",
       "Naloxone has no routine role in confirmed cardiac arrest — do not include it as a routine arrest medication.",
       "Re-sedation risk is real with long-acting opioids such as methadone — transport is mandatory even after apparent reversal.",
       "Mixed overdose: naloxone may unmask stimulant toxidrome — be prepared for seizures, agitation, or hypertensive crisis after reversal.",
