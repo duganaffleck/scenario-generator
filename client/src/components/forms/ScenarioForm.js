@@ -441,16 +441,16 @@ function pickTwelveLeadPattern(ecgType, rhythmInterp, twelveLeadFindings, fiftee
     return 'inferiorRV';
   }
   if (txt.includes('wellens') || txt.includes('lad warning') || txt.includes('biphasic t') || (txt.includes('t wave inversion') && (txt.includes('v2') || txt.includes('v3')))) return 'wellens';
-  if (txt.includes('de winter') || txt.includes('winter t') || txt.includes('upsloping st depression')) return 'deWinter';
+  if (txt.includes('de winter') || txt.includes('winter t') || txt.includes('upsloping st depression') || txt.includes('upward sloping st depression')) return 'deWinter';
   if (txt.includes('pericarditis') || txt.includes('saddle') || txt.includes('pr depression')) return 'pericarditis';
   if (txt.includes('hyperkal') || (txt.includes('peaked t') && txt.includes('potassium'))) return 'hyperkalemia';
   if (txt.includes('inferolateral') || (txt.includes('inferior') && txt.includes('lateral') && txt.includes('stemi'))) return 'inferolateralSTEMI';
-  if (txt.includes('high lateral') || (txt.includes('diagonal') && txt.includes('stemi'))) return 'highLateralSTEMI';
+  if (txt.includes('high lateral') || (txt.includes('diagonal') && txt.includes('stemi')) || (txt.includes('avl') && (txt.includes('elevation in i') || txt.includes('in i and avl') || txt.includes('leads i and avl') || txt.includes('i, avl')))) return 'highLateralSTEMI';
+  if (txt.includes('left bundle') || txt.includes('lbbb')) return 'lbbb';
+  if (txt.includes('right bundle') || txt.includes('rbbb')) return 'rbbb';
   if (txt.includes('anterior') && (txt.includes('stemi') || txt.includes('elevation') || txt.includes('v1') || txt.includes('v2') || txt.includes('v3') || txt.includes('v4'))) return 'anteriorSTEMI';
   if (txt.includes('lateral') && (txt.includes('stemi') || txt.includes('elevation'))) return 'lateralSTEMI';
   if (txt.includes('inferior') && (txt.includes('stemi') || txt.includes('elevation'))) return 'inferiorSTEMI';
-  if (txt.includes('left bundle') || txt.includes('lbbb')) return 'lbbb';
-  if (txt.includes('right bundle') || txt.includes('rbbb')) return 'rbbb';
   if (txt.includes('flutter')) return 'atrialFlutter12';
   if (txt.includes('fibrillation') || txt.includes('afib') || txt.includes('a-fib')) return 'afib12';
   if (txt.includes('supraventricular') || txt.includes('svt')) return 'svt12';
