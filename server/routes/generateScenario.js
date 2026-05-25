@@ -5,7 +5,7 @@ import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { jsonrepair } from 'jsonrepair';
-import { buildDirectivePromptAddendum } from '../data/ontarioDirectiveRules.js';
+import { buildDirectivePromptAddendum, buildForbiddenTreatmentTerms } from '../data/ontarioDirectiveRules.js';
 
 const router = express.Router();
 const __filename = fileURLToPath(import.meta.url);
@@ -842,6 +842,24 @@ function normalizeScenario(parsed, options = {}) {
   normalized.additionalAssessments = coerceArray(source.additionalAssessments);
   normalized.expectedTreatment = coerceArray(source.expectedTreatment);
   normalized.protocolNotes = coerceArray(source.protocolNotes);
+
+  // Post-generation scrub: remove items containing directive-forbidden terms
+  const { semester: optSemester, type: optType, customPrompt: optCustomPrompt } = options;
+  if (optSemester || optType) {
+    const forbidden = buildForbiddenTreatmentTerms({
+      semester: optSemester,
+      type: optType,
+      customPrompt: optCustomPrompt || '',
+      title: normalized.title || '',
+    });
+    if (forbidden.length > 0) {
+      const hasForbidden = (item) =>
+        typeof item === 'string' && forbidden.some((f) => item.toLowerCase().includes(f));
+      normalized.expectedTreatment = normalized.expectedTreatment.filter((item) => !hasForbidden(item));
+      normalized.protocolNotes = normalized.protocolNotes.filter((item) => !hasForbidden(item));
+    }
+  }
+
   normalized.medications = coerceArray(source.medications);
   normalized.allergies = coerceArray(source.allergies);
   normalized.pastMedicalHistory = coerceArray(source.pastMedicalHistory);
@@ -2825,6 +2843,7 @@ router.post('/', async (req, res) => {
     const normalized = normalizeScenario(parsed, {
       customPrompt,
       type,
+      semester,
       shiftMode
     });
 

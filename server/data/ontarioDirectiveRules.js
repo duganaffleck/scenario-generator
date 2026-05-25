@@ -1170,3 +1170,43 @@ export function getDirectiveValidationRules({
   const selected = selectDirectiveRuleSets({ semester, type, customPrompt, title });
   return selected.flatMap(({ ruleSet }) => ruleSet.validationChecks || []);
 }
+
+/**
+ * Returns lowercase substrings that must NOT appear in any expectedTreatment
+ * or protocolNotes item for this specific case context. Used by post-generation
+ * normalization to scrub model hallucinations that survive prompt instructions.
+ */
+export function buildForbiddenTreatmentTerms({
+  semester,
+  type,
+  customPrompt = "",
+  title = ""
+} = {}) {
+  const selected = selectDirectiveRuleSets({ semester, type, customPrompt, title });
+  const forbidden = new Set();
+
+  for (const { ruleSet } of selected) {
+    // validationChecks with shouldAvoidAny
+    for (const check of ruleSet.validationChecks || []) {
+      for (const term of check.shouldAvoidAny || []) {
+        forbidden.add(term.toLowerCase());
+      }
+    }
+    // treatmentRules flags
+    const tr = ruleSet.treatmentRules || {};
+    if (tr.cpapForCopdOnly) forbidden.add('cpap');
+    if (tr.calciumGluconateACPOnly) forbidden.add('calcium gluconate');
+    if (tr.dexamethasoneNotIndicated || tr.dexamethasoneNotForImmediateRescue) {
+      // strip any item that names dexamethasone as an action
+      forbidden.add('dexamethasone');
+    }
+    // forbiddenCombination — strip the second drug when the first is also present
+    // (handled at call site; here just collect individual entries)
+    for (const combo of tr.forbiddenCombinations || []) {
+      // single-item forbidden lists (not pairs) get added directly
+      if (combo.length === 1) forbidden.add(combo[0].toLowerCase());
+    }
+  }
+
+  return [...forbidden];
+}
