@@ -2105,6 +2105,33 @@ const ScenarioForm = () => {
       return parts.filter(Boolean).join("\n");
     };
 
+    // Build ECG summary text for PDF
+    const buildECGSummaryText = () => {
+      const lines = [];
+      const vs = scenario.vitalSigns || {};
+      const ecg = scenario.ecgFindings || {};
+      const sets = [
+        { label: 'First Set', data: vs.firstSet },
+        { label: 'Second Set', data: vs.secondSet },
+        ...(Array.isArray(vs.additionalSets) ? vs.additionalSets.map((s, i) => ({ label: `Additional Set ${i + 1}`, data: s })) : []),
+      ];
+      sets.forEach(({ label, data }) => {
+        if (data && data.ecgInterpretation) {
+          const hr = data.hr ? ` — HR ${String(data.hr).split(',')[0].trim()}` : '';
+          lines.push(`${label}: ${data.ecgInterpretation}${hr}`);
+        }
+      });
+      if (ecg.ecgType) lines.push(`ECG Type: ${ecg.ecgType}`);
+      if (ecg.patternKey && ecg.patternKey !== 'normal') lines.push(`12-Lead Pattern: ${ecg.patternKey}`);
+      if (ecg.rhythmInterpretation) lines.push(`Rhythm: ${ecg.rhythmInterpretation}`);
+      if (ecg.twelveLeadFindings) lines.push(`12-Lead Findings: ${ecg.twelveLeadFindings}`);
+      if (ecg.fifteenLeadFindings) lines.push(`15-Lead Findings: ${ecg.fifteenLeadFindings}`);
+      if (ecg.ecgClinicalNote) lines.push(`Clinical Note: ${ecg.ecgClinicalNote}`);
+      return lines.join('\n');
+    };
+
+    const ecgSummaryText = buildECGSummaryText();
+
     // Build ordered section entries
     const orderedKeys = [...new Set([...phaseOrder, ...Object.keys(scenario)])];
     const sectionEntries = orderedKeys
@@ -2126,6 +2153,22 @@ const ScenarioForm = () => {
         };
       })
       .filter(Boolean);
+
+    // Inject ECG summary after vitalSigns
+    if (ecgSummaryText) {
+      const vsIndex = sectionEntries.findIndex(e => e.key === 'vitalSigns');
+      const ecgEntry = {
+        key: 'ecgSummary',
+        label: 'ECG / Rhythm',
+        formattedValue: ecgSummaryText,
+        phase: 'The Call',
+      };
+      if (vsIndex >= 0) {
+        sectionEntries.splice(vsIndex + 1, 0, ecgEntry);
+      } else {
+        sectionEntries.push(ecgEntry);
+      }
+    }
 
     const needsNewPage = (h) => {
       if (y + h > footerY - 4) {
