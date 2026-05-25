@@ -435,7 +435,7 @@ function RhythmStripSVG({ rhythm, hr, isNightShift }) {
   );
 }
 function pickTwelveLeadPattern(ecgType, rhythmInterp, twelveLeadFindings, fifteenLeadFindings) {
-  const txt = ((twelveLeadFindings || '') + ' ' + (rhythmInterp || '')).toLowerCase();
+  const txt = ((twelveLeadFindings || '') + ' ' + (rhythmInterp || '')).toLowerCase().replace(/\s*-\s*/g, ' ');
   if (ecgType === '15-lead' || fifteenLeadFindings) {
     if (txt.includes('posterior')) return 'posterior';
     return 'inferiorRV';
@@ -444,7 +444,7 @@ function pickTwelveLeadPattern(ecgType, rhythmInterp, twelveLeadFindings, fiftee
   if (txt.includes('de winter') || txt.includes('winter t') || txt.includes('upsloping st depression') || txt.includes('upward sloping st depression')) return 'deWinter';
   if (txt.includes('pericarditis') || txt.includes('saddle') || txt.includes('pr depression')) return 'pericarditis';
   if (txt.includes('hyperkal') || (txt.includes('peaked t') && txt.includes('potassium'))) return 'hyperkalemia';
-  if (txt.includes('inferolateral') || (txt.includes('inferior') && txt.includes('lateral') && txt.includes('stemi'))) return 'inferolateralSTEMI';
+  if (txt.includes('inferolateral')) return 'inferolateralSTEMI';
   if (txt.includes('high lateral') || (txt.includes('diagonal') && txt.includes('stemi')) || (txt.includes('avl') && (txt.includes('elevation in i') || txt.includes('in i and avl') || txt.includes('leads i and avl') || txt.includes('i, avl')))) return 'highLateralSTEMI';
   if (txt.includes('left bundle') || txt.includes('lbbb')) return 'lbbb';
   if (txt.includes('right bundle') || txt.includes('rbbb')) return 'rbbb';
