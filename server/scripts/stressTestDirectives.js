@@ -88,6 +88,11 @@ async function runCase(testCase, index) {
     const allText = [...treatmentArr, ...protocolArr, data?.teachersPoints || '', data?.clinicalReasoning?.summary || ''].join(' ').toLowerCase();
     const treatmentOnlyText = [...treatmentArr, ...protocolArr].join(' ').toLowerCase();
 
+    const generationFailed = treatmentArr.length === 0 && protocolArr.length === 0;
+    if (generationFailed) {
+      return { index, label, pass: false, missingRequired: ['GENERATION FAILED - no treatment content'], foundForbidden: [], durationMs: elapsed, error: null };
+    }
+
     const missingRequired = mustContain.filter(w => !allText.includes(w));
     const foundForbidden = mustNotContain.filter(w => treatmentOnlyText.includes(w));
     const pass = missingRequired.length === 0 && foundForbidden.length === 0;
@@ -115,8 +120,12 @@ async function main() {
     if (r.error) { console.log(`${tag} ERROR  ${r.label} — ${r.error}`); continue; }
     const flag = r.pass ? '✓ PASS' : '✗ FAIL';
     console.log(`${tag} ${flag} | ${r.label} (${r.durationMs}ms)`);
-    if (r.missingRequired.length) console.log(`       Missing: ${r.missingRequired.join(', ')}`);
-    if (r.foundForbidden.length) console.log(`       Forbidden found: ${r.foundForbidden.join(', ')}`);
+    if (r.missingRequired.length && r.missingRequired[0].startsWith('GENERATION')) {
+      console.log(`       ⚠ ${r.missingRequired[0]}`);
+    } else {
+      if (r.missingRequired.length) console.log(`       Missing: ${r.missingRequired.join(', ')}`);
+      if (r.foundForbidden.length) console.log(`       Forbidden found: ${r.foundForbidden.join(', ')}`);
+    }
   }
 
   const ok = results.filter(r => !r.error);
