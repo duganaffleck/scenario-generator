@@ -2208,14 +2208,13 @@ function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
         style: 'neonatal resuscitation scenario',
         likelyMedicationOpportunities: [
           'Ventilation with BVM and room air or 100% oxygen based on SpO2 chart in directive',
-          'Epinephrine 1:10000 (0.1mg/ml) via IV, IO, or ETT for neonatal cardiac arrest — dose and concentration specific to this directive only',
-          'Stimulation and drying as primary interventions'
+          'Stimulation and drying as primary interventions',
+          'Oxygen based on SpO2 targets in directive — titrate to pre-ductal SpO2 on right hand'
         ],
         contraindicationChecks: [
-          'Neonatal epinephrine concentration is 1:10000 only — NOT the adult 1:1000 concentration',
-          'ETT epinephrine dose in neonates is 10 times the IV/IO dose — this is specific to neonatal directive',
           'Routine suctioning not required even with meconium present if newborn is breathing effectively',
-          'Directive applies to patients under 24 hours of age only'
+          'Directive applies to patients under 24 hours of age only',
+          'If ventilations are ineffective, attempt MR SOPA sequence before escalating airway management'
         ],
         supportiveCareOpportunities: [
           'drying and stimulation',
@@ -2226,9 +2225,8 @@ function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
         ],
         oxygenGuidance: 'Neonatal SpO2 targets follow the directive chart — values take more than 10 minutes to normalize after birth.',
         instructionText: [
-          'Neonatal epinephrine is 1:10000 only — never use the adult 1:1000 concentration.',
-          'ETT route neonatal epinephrine dose is 10 times the IV/IO dose.',
-          'Stimulation and ventilation are the priority interventions before medication.',
+          'Stimulation and ventilation are the priority interventions.',
+          'SpO2 targets follow the directive chart — values take more than 10 minutes to normalize after birth.',
           'Directive applies to patients under 24 hours of age only.'
         ].join(' ')
       };
