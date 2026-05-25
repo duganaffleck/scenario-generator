@@ -523,23 +523,431 @@ export const ONTARIO_DIRECTIVE_RULES = {
     ]
   },
 
-  futureScaffold: {
-    tags: ["scaffold"],
-    directivesPlanned: [
-      "hypoglycemia",
-      "moderateToSevereAllergicReaction",
-      "minorAllergicReaction",
-      "seizure",
-      "suspectedAdrenalCrisis",
-      "tachydysrhythmia",
-      "symptomaticBradycardia",
-      "traumaticHemorrhage",
-      "headache",
-      "hyperkalemia",
-      "opioidToxicityAndWithdrawal",
-      "emergencyChildbirth",
-      "treatAndDischarge",
-      "delegatedActs"
+  hypoglycemia: {
+    tags: ["hypoglycemia", "diabetic", "bgl", "glucose"],
+    appliesTo: {
+      scenarioTypes: ["Medical"],
+      likelyChiefComplaints: ["altered level of consciousness", "weakness", "shakiness", "diabetic emergency", "low blood sugar"]
+    },
+    meta: { source: ["als", "companion"], confidence: "high" },
+    promptBlock: [
+      "Hypoglycemia treatment follows a tiered approach based on level of consciousness and swallowing safety.",
+      "Oral glucose is appropriate when the patient is alert enough to safely swallow — use 15g simple carbohydrates and reassess using the 15-15 rule.",
+      "Glucagon IM or intranasal (Baqsimi 3mg) is appropriate when the patient cannot safely swallow.",
+      "Dextrose IV (D10W or D50W) is appropriate when IV is established and the patient cannot take oral or glucagon has failed — administer gradually over 3 minutes, stop if patient can safely consume carbohydrates.",
+      "If glucagon was given with no improvement and IV is subsequently established, administer dextrose regardless of elapsed time since glucagon.",
+      "Do not administer multiple doses of the same medication — transport if two doses of glucagon or dextrose are required.",
+      "Reassess BGL after treatment before determining transport or treat-and-discharge eligibility.",
+      "Treat and discharge requires confirmed improvement, ability to self-care, responsible adult present, follow-up plan, and base hospital patch."
+    ],
+    treatmentRules: {
+      oralGlucoseRequiresSafeSwallowing: true,
+      glucagonWhenCannotSwallow: true,
+      dextroseWithIV: true,
+      dextroseIfGlucagonFailedAndIVEstablished: true,
+      doNotRepeatSameMedication: true,
+      reassessBGLAfterTreatment: true
+    },
+    commonDriftErrors: [
+      "Giving oral glucose to a patient who cannot safely swallow.",
+      "Skipping glucagon and going directly to dextrose without IV established.",
+      "Failing to reassess BGL after treatment.",
+      "Treating hypoglycemia without considering transport even after improvement."
+    ],
+    validationChecks: [
+      {
+        id: "hypoglycemia-swallowing-check",
+        description: "Oral glucose should only be given when swallowing is confirmed safe.",
+        severity: "high"
+      }
+    ]
+  },
+
+  moderateToSevereAllergicReaction: {
+    tags: ["anaphylaxis", "allergic reaction", "epinephrine", "diphenhydramine"],
+    appliesTo: {
+      scenarioTypes: ["Medical", "Respiratory", "Environmental"],
+      likelyChiefComplaints: ["allergic reaction", "anaphylaxis", "hives", "swelling", "shortness of breath after exposure"]
+    },
+    meta: { source: ["als", "companion"], confidence: "high" },
+    promptBlock: [
+      "Epinephrine 1:1000 IM is the primary treatment for anaphylaxis — administer as soon as anaphylaxis is recognized.",
+      "The anterolateral mid-thigh is the preferred IM site for epinephrine due to improved absorption.",
+      "Diphenhydramine is a secondary treatment — it does not prevent or relieve upper airway edema, hypotension, or shock. It must not replace or delay epinephrine.",
+      "Salbutamol is adjunctive treatment for bronchospasm not responsive to epinephrine — it does not address upper airway edema.",
+      "Dexamethasone is not part of prehospital anaphylaxis management — there is little evidence of benefit.",
+      "Biphasic reactions can occur 1 to 48 hours after initial symptom resolution without re-exposure — transport is mandatory even after apparent recovery.",
+      "Patients with diaphoresis, flushing, or dyspnea are more likely to require multiple epinephrine doses.",
+      "If hypotension persists after epinephrine, treat with IV fluid bolus per the IV and Fluid Therapy directive."
+    ],
+    treatmentRules: {
+      epinephrineFirst: true,
+      diphenhydramineSecondaryOnly: true,
+      dexamethasoneNotIndicated: true,
+      salbutamolAdjunctiveOnly: true,
+      transportMandatoryDueToBiphasicRisk: true
+    },
+    contraindications: {
+      avoidFramingAsGeneric: [
+        "diphenhydramine as primary treatment for anaphylaxis",
+        "dexamethasone as part of anaphylaxis management",
+        "salbutamol as substitute for epinephrine"
+      ]
+    },
+    commonDriftErrors: [
+      "Delaying epinephrine to give diphenhydramine first.",
+      "Including dexamethasone in prehospital anaphylaxis management.",
+      "Framing salbutamol as the primary airway treatment.",
+      "Not warning about biphasic reaction risk."
+    ],
+    validationChecks: [
+      {
+        id: "anaphylaxis-epi-first",
+        ifScenarioMentionsAny: ["anaphylaxis", "allergic reaction"],
+        shouldAlsoMentionOneOf: ["epinephrine", "epipen"],
+        severity: "high"
+      }
+    ]
+  },
+
+  seizure: {
+    tags: ["seizure", "epilepsy", "convulsion", "postictal"],
+    appliesTo: {
+      scenarioTypes: ["Medical", "OB/Peds"],
+      likelyChiefComplaints: ["seizure", "convulsion", "epilepsy", "shaking", "unresponsive after seizure"]
+    },
+    meta: { source: ["als", "companion"], confidence: "high" },
+    promptBlock: [
+      "PCP core seizure management involves protecting the patient from injury, safe positioning, airway management, oxygen if hypoxic, and BGL check.",
+      "Midazolam is ACP only at PCP core level — do not include midazolam as a PCP treatment in core seizure scenarios.",
+      "Always check BGL in any patient with altered consciousness or post-ictal state — hypoglycemia must be ruled out.",
+      "The seizure treat-and-discharge auxiliary directive requires: confirmed epilepsy diagnosed by a physician, single seizure episode, full recovery to baseline, no new medications or dosage changes in the past 30 days, meets all eligibility criteria, and a base hospital patch is mandatory.",
+      "A seizure cluster is multiple seizures within 24 hours — these patients do not qualify for treat and discharge.",
+      "A new medication or recent dosage change in the past 30 days can lower seizure threshold and affects treat-and-discharge eligibility.",
+      "Post-ictal confusion is expected — reassess level of consciousness serially before disposition decision."
+    ],
+    treatmentRules: {
+      midazolamIsACPOnly: true,
+      bglCheckMandatory: true,
+      treatAndDischargeRequiresBHPPatch: true,
+      treatAndDischargeRequiresConfirmedEpilepsy: true,
+      seizureClusterExcludesFromTreatAndDischarge: true
+    },
+    commonDriftErrors: [
+      "Including midazolam as a PCP core seizure treatment.",
+      "Skipping BGL check in post-ictal patients.",
+      "Applying treat and discharge without confirmed epilepsy diagnosis.",
+      "Applying treat and discharge without base hospital patch."
+    ],
+    validationChecks: [
+      {
+        id: "seizure-no-pcp-midazolam",
+        ifScenarioMentionsAny: ["seizure", "convulsion"],
+        shouldAvoidAny: ["midazolam"],
+        severity: "high"
+      },
+      {
+        id: "seizure-bgl-check",
+        ifScenarioMentionsAny: ["seizure", "postictal", "post-ictal"],
+        shouldAlsoMentionOneOf: ["glucose", "BGL", "blood sugar"],
+        severity: "medium"
+      }
+    ]
+  },
+
+  tachydysrhythmia: {
+    tags: ["tachydysrhythmia", "svt", "tachycardia", "palpitations", "rapid heart rate"],
+    appliesTo: {
+      scenarioTypes: ["Cardiac", "Medical"],
+      likelyChiefComplaints: ["palpitations", "rapid heart rate", "SVT", "tachycardia", "chest pain with rapid rate"]
+    },
+    meta: { source: ["als", "companion"], confidence: "high" },
+    promptBlock: [
+      "Tachycardia may be a physiologic compensatory response to pain, hypovolemia, fever, or hypoxia — treat the underlying cause and do not initiate tachydysrhythmia directive interventions for compensatory tachycardia.",
+      "A 12-lead ECG is strongly recommended to accurately identify narrow versus wide complex tachycardia before any intervention.",
+      "Modified Valsalva maneuver is available to both PCP and ACP for stable SVT — PCP must have base hospital authorization as an auxiliary directive.",
+      "The modified Valsalva procedure: patient performs forced expiration into a 10ml syringe for 15 seconds, then is immediately laid supine with legs elevated to 45 degrees for 15 seconds, then returned to semi-recumbent for 45 seconds.",
+      "Maximum 2 Valsalva attempts per episode — if the patient converts and then reverts, this is a new episode and additional attempts may be made, but the patient no longer qualifies for treat and discharge.",
+      "Adenosine is ACP only — do not include adenosine as a PCP treatment.",
+      "Synchronized cardioversion is ACP with base hospital authorization — for hemodynamically unstable tachydysrhythmia.",
+      "Amiodarone and lidocaine are ACP only.",
+      "Chest pain associated with tachydysrhythmia is not a contraindication to treatment — after treating the dysrhythmia, assess whether chest pain is ongoing and ischemic.",
+      "Pregnant patients are excluded from the tachydysrhythmia treat-and-discharge portion of the directive."
+    ],
+    treatmentRules: {
+      modifiedValsalvaForSVTPCPAuxiliary: true,
+      adenosineACPOnly: true,
+      cardioversionACPOnly: true,
+      amiodaroneACPOnly: true,
+      doNotTreatCompensatoryTachycardia: true,
+      twelveleadBeforeIntervention: true,
+      pregnantExcludedFromTreatAndDischarge: true
+    },
+    contraindications: {
+      avoidFramingAsGeneric: [
+        "adenosine as PCP treatment",
+        "cardioversion without ACP notation",
+        "treating compensatory tachycardia as dysrhythmia"
+      ]
+    },
+    commonDriftErrors: [
+      "Including adenosine as a PCP treatment for SVT.",
+      "Treating physiologic compensatory tachycardia as a dysrhythmia.",
+      "Not obtaining 12-lead before intervention.",
+      "Including cardioversion without noting ACP scope requirement."
+    ],
+    validationChecks: [
+      {
+        id: "tachydysrhythmia-no-adenosine-pcp",
+        ifScenarioMentionsAny: ["svt", "supraventricular tachycardia", "tachydysrhythmia"],
+        shouldAvoidAny: ["adenosine"],
+        severity: "high"
+      }
+    ]
+  },
+
+  traumaticHemorrhage: {
+    tags: ["hemorrhage", "bleeding", "txa", "tranexamic acid", "trauma", "tourniquet"],
+    appliesTo: {
+      scenarioTypes: ["Trauma", "Environmental"],
+      likelyChiefComplaints: ["significant bleeding", "traumatic hemorrhage", "penetrating trauma", "crush injury", "amputation"]
+    },
+    meta: { source: ["als", "companion"], confidence: "high" },
+    promptBlock: [
+      "External hemorrhage should be controlled first with direct pressure, wound packing, or tourniquet before other interventions.",
+      "Tranexamic acid (TXA) 1g IV over 5 minutes or IM as alternate route is available to PCP as an auxiliary directive with base hospital authorization.",
+      "TXA preferred route is IV — add 1g TXA to a 50ml bag of normal saline or D5W and administer over 5 minutes. IM is the alternate if IV is not available.",
+      "TXA must not delay transport and must not be prioritized over management of other reversible causes.",
+      "Research supporting TXA efficacy is in adult populations only.",
+      "Ontario SMR criteria require application when age over 65 and fall mechanism is present regardless of apparent severity.",
+      "Do not use spinal board for transport — use stretcher-based SMR."
+    ],
+    treatmentRules: {
+      directPressureFirst: true,
+      txaIVPreferred: true,
+      txaIMAlternate: true,
+      txaMustNotDelayTransport: true,
+      smrAgeOver65FallRequired: true,
+      noSpinalBoardForTransport: true
+    },
+    commonDriftErrors: [
+      "Prioritizing TXA over transport or hemorrhage control.",
+      "Giving TXA without noting auxiliary authorization requirement.",
+      "Using spinal board language instead of stretcher-based SMR."
+    ],
+    validationChecks: [
+      {
+        id: "txa-does-not-delay-transport",
+        ifTreatmentMentionsAny: ["tranexamic acid", "txa"],
+        shouldAlsoMentionOneOf: ["does not delay transport", "auxiliary", "base hospital"],
+        severity: "medium"
+      }
+    ]
+  },
+
+  hyperkalemia: {
+    tags: ["hyperkalemia", "potassium", "dialysis", "renal", "peaked t waves"],
+    appliesTo: {
+      scenarioTypes: ["Medical"],
+      likelyChiefComplaints: ["weakness", "missed dialysis", "renal failure", "ECG changes", "bradycardia with renal history"]
+    },
+    meta: { source: ["als", "companion"], confidence: "high" },
+    promptBlock: [
+      "Hyperkalemia recognition is the key PCP skill — consider it in any patient with renal failure, missed dialysis, crush injury, or metabolic acidosis.",
+      "ECG findings of hyperkalemia progress from peaked T-waves, to flattened P-waves, to prolonged PR, to widened QRS, to sine-wave pattern — not all findings are present in every patient.",
+      "Calcium gluconate 1g IV over 3 minutes is ACP only — do not include as PCP treatment.",
+      "Salbutamol in high doses may temporarily shift potassium into cells — this is ACP context.",
+      "Sodium bicarbonate is not effective for hyperkalemia and should not be routinely administered — patch point for BHP if considered.",
+      "PCP role in hyperkalemia: recognition from ECG and clinical picture, serial 12-lead ECG, IV access, urgent transport with cardiac monitoring and pre-alert.",
+      "Serial 12-lead ECG before and after ACP treatment is intentional — used to measure ECG change response.",
+      "Ensure IV line is patent if calcium gluconate is being given — extravasation causes tissue necrosis."
+    ],
+    treatmentRules: {
+      calciumGluconateACPOnly: true,
+      salbutamolHighDoseACPContext: true,
+      sodiumBicarbonateNotRecommended: true,
+      pcpRoleIsRecognitionAndTransport: true,
+      serial12LeadRequired: true
+    },
+    commonDriftErrors: [
+      "Including calcium gluconate as a PCP treatment.",
+      "Missing hyperkalemia as the underlying cause in a missed dialysis scenario.",
+      "Not linking ECG changes to clinical context and transport urgency."
+    ],
+    validationChecks: [
+      {
+        id: "hyperkalemia-no-calcium-gluconate-pcp",
+        ifScenarioMentionsAny: ["hyperkalemia", "missed dialysis", "peaked t waves"],
+        shouldAvoidAny: ["calcium gluconate"],
+        severity: "high"
+      }
+    ]
+  },
+
+  opioidToxicityAndWithdrawal: {
+    tags: ["opioid", "naloxone", "overdose", "fentanyl", "heroin", "withdrawal"],
+    appliesTo: {
+      scenarioTypes: ["Medical", "Environmental"],
+      likelyChiefComplaints: ["opioid overdose", "unresponsive", "slow breathing", "pinpoint pupils", "withdrawal symptoms"]
+    },
+    meta: { source: ["als", "companion"], confidence: "high" },
+    promptBlock: [
+      "Effective ventilation is the priority in opioid overdose — airway management before naloxone.",
+      "Naloxone is available intranasal or IM — titrate to adequate respirations, not full reversal.",
+      "Titrating to restore breathing rather than full reversal prevents precipitated withdrawal and agitation.",
+      "Naloxone has no routine role in confirmed cardiac arrest — do not include it as a routine arrest medication.",
+      "Re-sedation risk is real with long-acting opioids such as methadone — transport is mandatory even after apparent reversal.",
+      "Mixed overdose: naloxone may unmask stimulant toxidrome — be prepared for seizures, agitation, or hypertensive crisis after reversal.",
+      "Naloxone age condition: patient must be 24 hours or older.",
+      "Buprenorphine/naloxone (Suboxone) is for opioid withdrawal management — use COWS score to assess eligibility."
+    ],
+    treatmentRules: {
+      ventilationBeforeNaloxone: true,
+      titrateToBrathingNotFullReversal: true,
+      noNaloxoneInConfirmedArrest: true,
+      transportMandatoryDueToResedation: true,
+      ageConditionOver24Hours: true
+    },
+    commonDriftErrors: [
+      "Giving naloxone before ensuring adequate ventilation.",
+      "Giving naloxone in confirmed cardiac arrest.",
+      "Giving full reversal dose rather than titrated dose.",
+      "Not warning about re-sedation with long-acting opioids."
+    ],
+    validationChecks: [
+      {
+        id: "naloxone-not-in-arrest",
+        ifScenarioMentionsAny: ["cardiac arrest", "vsa", "pulseless"],
+        shouldAvoidAny: ["naloxone"],
+        severity: "high"
+      }
+    ]
+  },
+
+  emergencyChildbirth: {
+    tags: ["childbirth", "delivery", "labour", "oxytocin", "postpartum", "neonate"],
+    appliesTo: {
+      scenarioTypes: ["OB/Peds", "Medical"],
+      likelyChiefComplaints: ["active labour", "imminent delivery", "postpartum hemorrhage", "precipitous delivery"]
+    },
+    meta: { source: ["als", "companion"], confidence: "high" },
+    promptBlock: [
+      "Paramedics are not authorized to perform internal vaginal exams to determine cervical dilation.",
+      "Inspect the perineum when history suggests ruptured membranes, cord prolapse, urge to push, or heavy vaginal bleeding with hypotension.",
+      "Signs of imminent birth include crowning or presenting part visible, or in multips contractions 5 minutes apart or less with other second-stage signs.",
+      "Oxytocin is administered immediately after delivery of all fetuses and/or placenta and up to 4 hours post-placenta delivery — for prevention and management of post-partum hemorrhage.",
+      "Oxytocin can induce vasoconstriction — use caution in hypertensive patients.",
+      "External uterine massage is performed only after placenta delivery when fundus is soft or boggy or bleeding is excessive.",
+      "External bimanual compression if uterine massage is unsuccessful — can be performed whether or not placenta is delivered.",
+      "Prolapsed cord: knee-chest or exaggerated Sims position, manual digital elevation of presenting part, maintain until transfer of care.",
+      "Breech delivery: hands off until delivered to umbilicus, 4 minutes from umbilicus to head delivery, initiate Mauriceau-Smellie-Veit if head not delivered within 3 minutes.",
+      "Shoulder dystocia: ALARM maneuvers — McRoberts, suprapubic pressure, Gaskin, manual release of posterior arm. 8 minutes from head delivery."
+    ],
+    treatmentRules: {
+      noInternalVaginalExam: true,
+      oxytocinAfterDelivery: true,
+      externalUterineMassageAfterPlacentaOnly: true,
+      prologuedCordManualElevation: true,
+      breechHandsOffUntilUmbilicus: true
+    },
+    commonDriftErrors: [
+      "Referencing internal vaginal exam to assess dilation.",
+      "Omitting oxytocin from post-partum hemorrhage management.",
+      "Performing uterine massage before placenta is delivered.",
+      "Not specifying time limits in breech or shoulder dystocia management."
+    ],
+    validationChecks: [
+      {
+        id: "childbirth-no-internal-exam",
+        ifScenarioMentionsAny: ["labour", "delivery", "childbirth"],
+        shouldAvoidAny: ["internal exam", "vaginal exam", "cervical check"],
+        severity: "high"
+      }
+    ]
+  },
+
+  rosc: {
+    tags: ["rosc", "post-rosc", "return of spontaneous circulation", "post-cardiac arrest"],
+    appliesTo: {
+      scenarioTypes: ["Cardiac", "Medical"],
+      likelyChiefComplaints: ["post-rosc", "return of pulse", "post-cardiac arrest management"]
+    },
+    meta: { source: ["als", "companion"], confidence: "high" },
+    promptBlock: [
+      "Post-ROSC oxygen target is SpO2 94-98% — avoid 100% to minimize vasoconstriction and oxygen free radical damage.",
+      "Continue oxygen administration if patient remains unstable despite ideal SpO2 values.",
+      "Post-ROSC ventilation rate: approximately 10 breaths per minute for adults. Target ETCO2 30-40 mmHg.",
+      "Avoid hyperventilation post-ROSC — a low ETCO2 may reflect metabolic acidosis, not a reason to increase ventilation rate.",
+      "Fluid bolus 10ml/kg to maximum 1000ml if SBP below 90 mmHg and chest auscultation is clear.",
+      "Maximum fluid volume is 10ml/kg or 1000ml for post-ROSC and cardiogenic shock patients.",
+      "Dopamine is ACP only — do not include dopamine as PCP post-ROSC treatment.",
+      "If patient re-arrests en route: pull over, one immediate rhythm interpretation, treat appropriately, continue to hospital with no further stops."
+    ],
+    treatmentRules: {
+      spo2Target94to98: true,
+      avoid100PercentSpo2: true,
+      etco2Target30to40: true,
+      avoidHyperventilation: true,
+      fluidBolusMax1000ml: true,
+      dopamineACPOnly: true
+    },
+    commonDriftErrors: [
+      "Targeting SpO2 100% post-ROSC.",
+      "Hyperventilating post-ROSC patients.",
+      "Including dopamine as PCP post-ROSC treatment.",
+      "Giving fluid bolus without SBP and auscultation criteria."
+    ],
+    validationChecks: [
+      {
+        id: "rosc-spo2-target",
+        ifScenarioMentionsAny: ["rosc", "post-rosc", "return of spontaneous circulation"],
+        shouldAlsoMentionOneOf: ["94", "98", "94-98"],
+        severity: "medium"
+      }
+    ]
+  },
+
+  cpap: {
+    tags: ["cpap", "continuous positive airway pressure", "pulmonary edema", "copd", "respiratory failure"],
+    appliesTo: {
+      scenarioTypes: ["Respiratory", "Cardiac", "Medical"],
+      likelyChiefComplaints: ["severe respiratory distress", "pulmonary edema", "COPD exacerbation", "acute dyspnea"]
+    },
+    meta: { source: ["als", "companion"], confidence: "high" },
+    promptBlock: [
+      "CPAP is indicated for severe respiratory distress with acute pulmonary edema regardless of origin, or COPD exacerbation.",
+      "CPAP is a PCP auxiliary directive — requires base hospital authorization.",
+      "CPAP is additive therapy to the bronchoconstriction or ACPE directives, not a replacement.",
+      "CPAP is not indicated for asthma — epinephrine and salbutamol are the asthma interventions.",
+      "CPAP may be interrupted momentarily to administer nitroglycerin. Salbutamol can be administered via the MDI port without interrupting CPAP.",
+      "Reassess patient every 5 minutes and adjust CPAP as required.",
+      "CPAP is appropriate for non-cardiogenic pulmonary edema — nitroglycerin is not."
+    ],
+    treatmentRules: {
+      cpapForCOPDAndPulmonaryEdema: true,
+      cpapNotForAsthma: true,
+      cpapRequiresBaseHospitalAuthorization: true,
+      cpapAdditiveNotReplacement: true,
+      nitroglycenCanBeGivenWithBriefCPAPInterruption: true
+    },
+    contraindications: {
+      avoidFramingAsGeneric: [
+        "CPAP for asthma",
+        "CPAP replacing bronchodilator therapy"
+      ]
+    },
+    commonDriftErrors: [
+      "Including CPAP as an asthma treatment.",
+      "Framing CPAP as a standalone replacement for other treatments.",
+      "Not noting base hospital authorization requirement."
+    ],
+    validationChecks: [
+      {
+        id: "cpap-not-for-asthma",
+        ifScenarioMentionsAny: ["asthma"],
+        shouldAvoidAny: ["cpap"],
+        severity: "high"
+      }
     ]
   }
 };
@@ -615,6 +1023,92 @@ export function selectDirectiveRuleSets({
     text.includes("pulseless"),
     text.includes("vf"),
     text.includes("vt")
+  ]);
+
+  maybeAdd("hypoglycemia", [
+    text.includes("hypoglycemia"),
+    text.includes("low blood sugar"),
+    text.includes("glucagon"),
+    text.includes("glucose"),
+    text.includes("diabetic"),
+    text.includes("bgl")
+  ]);
+
+  maybeAdd("moderateToSevereAllergicReaction", [
+    text.includes("anaphylaxis"),
+    text.includes("allergic reaction"),
+    text.includes("epinephrine") && !text.includes("asthma"),
+    text.includes("hives"),
+    text.includes("angioedema")
+  ]);
+
+  maybeAdd("seizure", [
+    text.includes("seizure"),
+    text.includes("convulsion"),
+    text.includes("epilepsy"),
+    text.includes("postictal"),
+    text.includes("post-ictal")
+  ]);
+
+  maybeAdd("tachydysrhythmia", [
+    text.includes("svt"),
+    text.includes("supraventricular tachycardia"),
+    text.includes("tachydysrhythmia"),
+    text.includes("palpitation"),
+    text.includes("atrial flutter"),
+    text.includes("atrial fibrillation"),
+    text.includes("rapid heart")
+  ]);
+
+  maybeAdd("traumaticHemorrhage", [
+    type === "Trauma",
+    text.includes("hemorrhage"),
+    text.includes("bleeding"),
+    text.includes("txa"),
+    text.includes("tranexamic"),
+    text.includes("tourniquet"),
+    text.includes("penetrating")
+  ]);
+
+  maybeAdd("hyperkalemia", [
+    text.includes("hyperkalemia"),
+    text.includes("potassium"),
+    text.includes("missed dialysis"),
+    text.includes("peaked t"),
+    text.includes("renal failure")
+  ]);
+
+  maybeAdd("opioidToxicityAndWithdrawal", [
+    text.includes("opioid"),
+    text.includes("naloxone"),
+    text.includes("overdose"),
+    text.includes("fentanyl"),
+    text.includes("heroin"),
+    text.includes("withdrawal")
+  ]);
+
+  maybeAdd("emergencyChildbirth", [
+    text.includes("labour"),
+    text.includes("labor"),
+    text.includes("delivery"),
+    text.includes("childbirth"),
+    text.includes("postpartum"),
+    text.includes("obstetric"),
+    text.includes("oxytocin")
+  ]);
+
+  maybeAdd("rosc", [
+    text.includes("rosc"),
+    text.includes("post-rosc"),
+    text.includes("return of spontaneous circulation"),
+    text.includes("post-cardiac arrest")
+  ]);
+
+  maybeAdd("cpap", [
+    text.includes("cpap"),
+    text.includes("continuous positive airway pressure"),
+    text.includes("pulmonary edema"),
+    type === "Respiratory" && (text.includes("severe") || text.includes("distress"))
   ]);
 
   return selected.map((key) => ({
