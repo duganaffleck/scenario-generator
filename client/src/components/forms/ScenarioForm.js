@@ -436,17 +436,17 @@ function RhythmStripSVG({ rhythm, hr, isNightShift }) {
 }
 function pickTwelveLeadPattern(ecgType, rhythmInterp, twelveLeadFindings, fifteenLeadFindings) {
   const txt = ((twelveLeadFindings || '') + ' ' + (rhythmInterp || '')).toLowerCase().replace(/\s*-\s*/g, ' ');
-  if (ecgType === '15-lead' || fifteenLeadFindings) {
+  if (ecgType === '15-lead' || (fifteenLeadFindings && fifteenLeadFindings.trim().length > 10 && (fifteenLeadFindings.toLowerCase().includes('elevation') || fifteenLeadFindings.toLowerCase().includes('involvement') || fifteenLeadFindings.toLowerCase().includes('stemi') || fifteenLeadFindings.toLowerCase().includes('posterior')))) {
     if (txt.includes('posterior')) return 'posterior';
     return 'inferiorRV';
   }
-  if (txt.includes('wellens') || txt.includes('lad warning') || txt.includes('biphasic t') || (txt.includes('t wave inversion') && (txt.includes('v2') || txt.includes('v3')))) return 'wellens';
+  if (txt.includes('wellens') || txt.includes('lad warning') || txt.includes('biphasic t') || txt.includes('deep symmetric t') || txt.includes('symmetric t wave inversion') || txt.includes('deep t wave inversion') || ((txt.includes('t wave inversion') || txt.includes('t-wave inversion')) && (txt.includes('v2') || txt.includes('v3')))) return 'wellens';
   if (txt.includes('de winter') || txt.includes('winter t') || txt.includes('upsloping st depression') || txt.includes('upward sloping st depression')) return 'deWinter';
   if (txt.includes('pericarditis') || txt.includes('saddle') || txt.includes('pr depression')) return 'pericarditis';
   if (txt.includes('hyperkal') || txt.includes('peaked t') || txt.includes('tented t') || (txt.includes('widened qrs') && txt.includes('flattened p')) || (txt.includes('peaked') && txt.includes('potassium'))) return 'hyperkalemia';
   if (txt.includes('inferolateral')) return 'inferolateralSTEMI';
   if (txt.includes('high lateral') || (txt.includes('diagonal') && txt.includes('stemi')) || (txt.includes('avl') && (txt.includes('elevation in i') || txt.includes('in i and avl') || txt.includes('leads i and avl') || txt.includes('i, avl')))) return 'highLateralSTEMI';
-  if (txt.includes('left bundle') || txt.includes('lbbb') || (txt.includes('notched r') && (txt.includes('v5') || txt.includes('v6')) && txt.includes('rs pattern') && txt.includes('v1'))) return 'lbbb';
+  if (txt.includes('left bundle') || txt.includes('lbbb') || (txt.includes('bundle branch block') && !txt.includes('right bundle') && !txt.includes('rbbb')) || (txt.includes('notched r') && txt.includes('v1') && (txt.includes('v5') || txt.includes('v6')))) return 'lbbb';
   if (txt.includes('right bundle') || txt.includes('rbbb') || (txt.includes('rsr') || txt.includes('r prime') || txt.includes('rsrʼ'))) return 'rbbb';
   if (txt.includes('anterior') && (txt.includes('stemi') || txt.includes('elevation') || txt.includes('v1') || txt.includes('v2') || txt.includes('v3') || txt.includes('v4'))) return 'anteriorSTEMI';
   if (txt.includes('lateral') && (txt.includes('stemi') || txt.includes('elevation')) && !txt.includes('inferolateral')) return 'lateralSTEMI';
