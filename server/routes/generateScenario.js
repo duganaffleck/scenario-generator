@@ -2389,6 +2389,17 @@ Return these top-level fields:
 - scenarioRationale
 - clinicalReasoning
 
+Section discipline rules — apply to every section without exception:
+- Each section must add new information not already stated in a previous section. Do not restate, summarize, or paraphrase content from an earlier section.
+- scenarioIntro states the teaching purpose only. It must not describe the patient, the scene, or the clinical findings. Save all clinical detail for the appropriate sections below.
+- crewNotes in callInformation must not preview scene complexity, emotional tone, or teaching points. Those belong in scenarioIntro or instructorGuidance. crewNotes should contain only practical operational flags such as access issues, hazards, or resource considerations.
+- sceneArrival describes the physical environment, access, and bystanders. It must not describe patient appearance, clinical findings, or distress level. Those belong in firstImpression.
+- firstImpression describes what the crew observes about the patient in the first 15 seconds — appearance, position, visible distress, and immediate red flags. It must not repeat scene details already in sceneArrival, and it must not restate findings that will appear in physicalExam or vitalSigns.
+- patientPresentation describes the patient's behaviour, speech, and observable demeanour at first contact. It must not repeat the general appearance already stated in firstImpression.
+- incidentNarrative provides the timeline of events leading to this call. It must not repeat information that will appear in SAMPLE eventsLeadingUp.
+- initialRedFlags in firstImpression must list only flags not already named as visibleClues in the same section. Do not duplicate within the same section.
+- If a clinical detail has already appeared in any section, do not repeat it. Move forward.
+
 Required object structure:
 - sceneArrival must contain:
 {
