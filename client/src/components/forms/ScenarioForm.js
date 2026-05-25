@@ -2122,7 +2122,18 @@ const ScenarioForm = () => {
         }
       });
       if (ecg.ecgType) lines.push(`ECG Type: ${ecg.ecgType}`);
-      if (ecg.patternKey && ecg.patternKey !== 'normal') lines.push(`12-Lead Pattern: ${ecg.patternKey}`);
+      const patternLabels = {
+        inferiorSTEMI: 'Inferior STEMI', anteriorSTEMI: 'Anterior STEMI', lateralSTEMI: 'Lateral STEMI',
+        inferolateralSTEMI: 'Inferolateral STEMI', highLateralSTEMI: 'High Lateral STEMI',
+        lbbb: 'Left Bundle Branch Block', rbbb: 'Right Bundle Branch Block',
+        afib12: 'Atrial Fibrillation', vtach12: 'Ventricular Tachycardia', inferiorRV: 'Inferior + RV STEMI',
+        posterior: 'Posterior STEMI', wellens: 'Wellens Syndrome', deWinter: 'De Winter Pattern',
+        pericarditis: 'Pericarditis', hyperkalemia: 'Hyperkalemia', svt12: 'SVT',
+        atrialFlutter12: 'Atrial Flutter', firstDegreeAVBlock: 'First Degree AV Block',
+        secondDegreeTypeI: 'Second Degree AV Block Type I', secondDegreeTypeII: 'Second Degree AV Block Type II',
+        thirdDegreeAVBlock: 'Third Degree AV Block',
+      };
+      if (ecg.patternKey && ecg.patternKey !== 'normal') lines.push(`12-Lead Pattern: ${patternLabels[ecg.patternKey] || ecg.patternKey}`);
       if (ecg.rhythmInterpretation) lines.push(`Rhythm: ${ecg.rhythmInterpretation}`);
       if (ecg.twelveLeadFindings) lines.push(`12-Lead Findings: ${ecg.twelveLeadFindings}`);
       if (ecg.fifteenLeadFindings) lines.push(`15-Lead Findings: ${ecg.fifteenLeadFindings}`);
