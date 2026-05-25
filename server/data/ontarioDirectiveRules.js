@@ -504,14 +504,28 @@ export const ONTARIO_DIRECTIVE_RULES = {
     promptBlock: [
       "Cardiac arrest scenarios should not imply naloxone has a routine role in confirmed cardiac arrest.",
       "CPR expectations should align with Ontario standards.",
-      "Advanced arrest features such as VCD or DSED should only appear if they fit the intended learner level, setting, and available resources."
+      "Advanced arrest features such as VCD or DSED should only appear if they fit the intended learner level, setting, and available resources.",
+      "Epinephrine IV or IO in cardiac arrest is ACP only — do not include epinephrine as a PCP treatment in expectedTreatment or protocolNotes for cardiac arrest unless the arrest is directly attributable to anaphylaxis.",
+      "The single exception: if the arrest is directly caused by anaphylaxis, a single dose of epinephrine 1:1000 IM 1mg is indicated under the medical cardiac arrest directive. This is IM only, not IV or IO, and does not alter the CPR and defibrillation sequence.",
+      "PCP cardiac arrest management is: high quality CPR, early defibrillation for shockable rhythms, supraglottic airway when indicated, rhythm analysis every 2 minutes, reversible cause identification, and transport with patch consideration after 20 minutes.",
+      "Do not include atropine, amiodarone, lidocaine, dopamine, adenosine, or calcium gluconate as PCP cardiac arrest treatments — these are all ACP only.",
+      "Post-ROSC oxygen target is SpO2 94-98% — do not target 100%. ETCO2 target is 30-40 mmHg. Avoid hyperventilation. Fluid bolus 10ml/kg to max 1000ml if SBP below 90 and lungs clear. Dopamine is ACP only post-ROSC."
     ],
     treatmentRules: {
-      noRoutineNaloxoneInConfirmedCardiacArrest: true
+      noRoutineNaloxoneInConfirmedCardiacArrest: true,
+      epinephrineInArrestACPOnly: true,
+      exceptionEpinephrineIMForAnaphylaxisArrest: true,
+      atropineACPOnly: true,
+      amiodaroneACPOnly: true,
+      dopamineACPOnly: true,
+      pcpArrestManagement: ["CPR", "defibrillation", "supraglottic airway", "rhythm analysis", "reversible causes", "transport"]
     },
     commonDriftErrors: [
       "Treating confirmed arrest like opioid toxicity with routine naloxone.",
-      "Adding advanced arrest options without scenario support."
+      "Adding advanced arrest options without scenario support.",
+      "Including epinephrine IV or IO as a PCP cardiac arrest treatment.",
+      "Including atropine, amiodarone, lidocaine, dopamine, or adenosine as PCP treatments.",
+      "Targeting SpO2 100% post-ROSC instead of 94-98%."
     ],
     validationChecks: [
       {
@@ -519,6 +533,12 @@ export const ONTARIO_DIRECTIVE_RULES = {
         ifScenarioMentionsAny: ["cardiac arrest", "VSA", "pulseless"],
         shouldAvoidAny: ["naloxone"],
         severity: "medium"
+      },
+      {
+        id: "arrest-no-pcp-epi-iv",
+        ifScenarioMentionsAny: ["cardiac arrest", "VSA", "pulseless", "VF", "asystole", "PEA"],
+        shouldAvoidAny: ["epinephrine IV", "epinephrine 1mg IV", "epinephrine intravenous"],
+        severity: "high"
       }
     ]
   },
