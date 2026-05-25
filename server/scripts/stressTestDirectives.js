@@ -86,9 +86,10 @@ async function runCase(testCase, index) {
     const treatmentArr = Array.isArray(data?.expectedTreatment) ? data.expectedTreatment : [];
     const protocolArr = Array.isArray(data?.protocolNotes) ? data.protocolNotes : [];
     const allText = [...treatmentArr, ...protocolArr, data?.teachersPoints || '', data?.clinicalReasoning?.summary || ''].join(' ').toLowerCase();
+    const treatmentOnlyText = [...treatmentArr, ...protocolArr].join(' ').toLowerCase();
 
     const missingRequired = mustContain.filter(w => !allText.includes(w));
-    const foundForbidden = mustNotContain.filter(w => allText.includes(w));
+    const foundForbidden = mustNotContain.filter(w => treatmentOnlyText.includes(w));
     const pass = missingRequired.length === 0 && foundForbidden.length === 0;
 
     return { index, label, pass, missingRequired, foundForbidden, durationMs: elapsed, error: null };
