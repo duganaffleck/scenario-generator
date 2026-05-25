@@ -455,6 +455,10 @@ function pickTwelveLeadPattern(ecgType, rhythmInterp, twelveLeadFindings, fiftee
   if (txt.includes('fibrillation') || txt.includes('afib') || txt.includes('a-fib')) return 'afib12';
   if (txt.includes('supraventricular') || txt.includes('svt')) return 'svt12';
   if (txt.includes('ventricular tach') || txt.includes('vtach') || txt.includes('v-tach')) return 'vtach12';
+  if (txt.includes('third degree') || txt.includes('complete heart block') || txt.includes('complete av block') || txt.includes('atrioventricular dissociation')) return 'thirdDegreeAVBlock';
+  if (txt.includes('second degree type ii') || txt.includes('mobitz ii') || txt.includes('mobitz type ii') || txt.includes('mobitz 2') || txt.includes('type ii block')) return 'secondDegreeTypeII';
+  if (txt.includes('second degree type i') || txt.includes('mobitz i') || txt.includes('mobitz type i') || txt.includes('wenckebach') || txt.includes('mobitz 1')) return 'secondDegreeTypeI';
+  if (txt.includes('first degree') || txt.includes('prolonged pr') || txt.includes('pr prolongation') || txt.includes('pr interval prolongation')) return 'firstDegreeAVBlock';
   return 'normal';
 }
 
