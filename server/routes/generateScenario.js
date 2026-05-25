@@ -1191,109 +1191,317 @@ function buildScenarioCore({ semester, type, environment, complexity, uniqueness
   let generalSetting = pick(environmentSettings[environment] || [environment]);
   let acuity = complexity === 'Complex' ? 'high' : complexity === 'Simple' ? 'low_to_moderate' : 'moderate';
 
-  if (typeLower === 'cardiac' || promptLower.includes('chest pain') || promptLower.includes('palpitation')) {
-    callFamily = 'cardiac_presentation';
-    likelyDiagnosis = pick([
-      'acute coronary syndrome pattern',
-      'cardiac ischemia concern',
-      'symptomatic cardiac rhythm disturbance'
+  if (typeLower === 'cardiac' || promptLower.includes('chest pain') || promptLower.includes('palpitation') || promptLower.includes('cardiac arrest') || promptLower.includes('stemi') || promptLower.includes('arrhythmia')) {
+    callFamily = pick([
+      'acs_or_stemi',
+      'dysrhythmia_or_palpitations',
+      'cardiac_arrest_or_post_rosc',
+      'heart_failure_or_pulmonary_edema',
+      'hypertensive_emergency',
+      'cardiac_syncope_or_near_syncope',
     ]);
-    plausibleDifferentials = [
-      'ACS',
-      'arrhythmia',
-      'non-cardiac chest pain'
-    ];
-    symptomPattern = pick([
-      'cardiac symptoms with pressure, discomfort, autonomic features, or exertional context',
-      'cardiac complaint with believable field cues and decision points around treatment and transport',
-      'chest pain or palpitations with enough detail to support real differentiation'
+
+    const cardiacSeeds = {
+      acs_or_stemi: {
+        diagnosis: pick(['inferior STEMI pattern', 'anterior STEMI pattern', 'lateral STEMI pattern', 'NSTEMI or unstable angina pattern', 'ACS with atypical presentation', 'Wellens syndrome concern', 'De Winter pattern']),
+        differentials: ['ACS', 'pericarditis', 'pulmonary embolism'],
+        pattern: pick(['chest pressure or discomfort with autonomic features, exertional context, and ECG-driven decision points', 'atypical ACS presentation with diaphoresis, nausea, and jaw or arm radiation', 'ischemic chest pain with contraindication decision points around nitroglycerin or ASA'])
+      },
+      dysrhythmia_or_palpitations: {
+        diagnosis: pick(['SVT with rapid narrow complex tachycardia', 'atrial fibrillation with rapid ventricular response', 'atrial flutter with 2:1 block', 'symptomatic bradycardia from AV block or medication toxicity', 'ventricular tachycardia in a patient with structural heart disease']),
+        differentials: ['SVT', 'atrial fibrillation', 'sinus tachycardia'],
+        pattern: pick(['paroxysmal palpitations with abrupt onset and hemodynamic concern', 'irregular pulse with rapid rate and autonomic symptoms in a known cardiac patient', 'bradycardia with near-syncope and medication history suggesting toxicity'])
+      },
+      cardiac_arrest_or_post_rosc: {
+        diagnosis: pick(['shockable cardiac arrest (VF or pulseless VT)', 'non-shockable cardiac arrest (PEA or asystole)', 'post-ROSC with hemodynamic instability']),
+        differentials: ['VF arrest', 'PEA arrest', 'asystole'],
+        pattern: pick(['witnessed cardiac arrest with bystander CPR and shockable rhythm requiring resuscitation decisions', 'unwitnessed arrest with unknown downtime and PEA requiring cause identification', 'post-ROSC patient with unstable hemodynamics and 12-lead interpretation'])
+      },
+      heart_failure_or_pulmonary_edema: {
+        diagnosis: pick(['acute decompensated heart failure with pulmonary edema', 'cardiogenic pulmonary edema with severe respiratory distress', 'heart failure exacerbation with volume overload']),
+        differentials: ['flash pulmonary edema', 'COPD exacerbation', 'pneumonia'],
+        pattern: pick(['severe respiratory distress with frothy sputum, crackles, and a cardiac history', 'orthopnea and paroxysmal nocturnal dyspnea with bilateral crackles and elevated JVP', 'acute dyspnea in a known heart failure patient with ankle edema and medication non-compliance'])
+      },
+      hypertensive_emergency: {
+        diagnosis: pick(['hypertensive emergency with end-organ involvement', 'severely elevated BP with neurologic or cardiac symptoms', 'hypertensive urgency with headache and visual changes']),
+        differentials: ['hypertensive emergency', 'stroke', 'ACS'],
+        pattern: pick(['severely elevated blood pressure with headache, visual changes, and altered mentation', 'hypertensive crisis in a patient with known hypertension who ran out of medications', 'elevated BP with chest pain requiring differentiation between hypertensive emergency and ACS'])
+      },
+      cardiac_syncope_or_near_syncope: {
+        diagnosis: pick(['cardiac syncope from dysrhythmia', 'vasovagal syncope with cardiac risk factors requiring differentiation', 'orthostatic hypotension with near-syncope in a cardiac patient']),
+        differentials: ['cardiac syncope', 'vasovagal syncope', 'orthostatic hypotension'],
+        pattern: pick(['witnessed syncope in a patient with known cardiac history and palpitations before loss of consciousness', 'near-syncope with bradycardia in a patient on rate-controlling medications', 'syncope with prodrome of chest pain requiring ECG-driven differentiation'])
+      }
+    };
+
+    const seed = cardiacSeeds[callFamily] || cardiacSeeds.acs_or_stemi;
+    likelyDiagnosis = seed.diagnosis;
+    plausibleDifferentials = seed.differentials;
+    symptomPattern = seed.pattern;
+  }
+  else if (typeLower === 'respiratory' || promptLower.includes('shortness of breath') || promptLower.includes('asthma') || promptLower.includes('breathing')) {
+    callFamily = pick([
+      'asthma_or_bronchospasm',
+      'copd_exacerbation',
+      'pulmonary_embolism',
+      'pneumonia_or_infection',
+      'upper_airway_or_anaphylaxis',
+      'flash_pulmonary_edema',
     ]);
-  } 
-  else if (typeLower === 'respiratory' || promptLower.includes('shortness of breath') || promptLower.includes('asthma')) {
-    callFamily = 'respiratory_presentation';
-    likelyDiagnosis = pick([
-      'lower respiratory distress pattern',
-      'bronchospastic respiratory presentation',
-      'non-traumatic breathing complaint'
+
+    const respiratorySeeds = {
+      asthma_or_bronchospasm: {
+        diagnosis: pick(['acute asthma exacerbation', 'severe bronchospasm with poor air entry', 'exercise-induced bronchospasm']),
+        differentials: ['asthma', 'COPD', 'anaphylaxis'],
+        pattern: pick(['diffuse wheeze with prolonged expiration and poor air entry requiring bronchodilator decisions', 'asthma attack with accessory muscle use and SpO2 decline in a young patient', 'bronchospasm with incomplete response to first treatment requiring reassessment'])
+      },
+      copd_exacerbation: {
+        diagnosis: pick(['COPD exacerbation with hypoxia', 'severe COPD with CO2 retention risk', 'COPD with infectious trigger']),
+        differentials: ['COPD exacerbation', 'pneumonia', 'pulmonary edema'],
+        pattern: pick(['severe dyspnea in a known COPD patient with oxygen titration decisions and tripod positioning', 'COPD exacerbation with cough, sputum, and fever requiring differentiation from pneumonia', 'respiratory distress in a barrel-chested patient requiring careful oxygen decisions to avoid CO2 retention'])
+      },
+      pulmonary_embolism: {
+        diagnosis: pick(['pulmonary embolism with pleuritic chest pain', 'massive PE with hemodynamic instability', 'PE presenting as undifferentiated dyspnea']),
+        differentials: ['pulmonary embolism', 'pneumonia', 'ACS'],
+        pattern: pick(['sudden onset pleuritic chest pain and dyspnea in a post-surgical or immobile patient', 'tachycardia, hypoxia, and right heart strain on ECG with a Wells score concern', 'undifferentiated dyspnea with no wheeze and a deep vein thrombosis risk history'])
+      },
+      pneumonia_or_infection: {
+        diagnosis: pick(['community-acquired pneumonia with hypoxia', 'aspiration pneumonia in a neurologically impaired patient', 'pneumonia with sepsis features']),
+        differentials: ['pneumonia', 'pulmonary embolism', 'heart failure'],
+        pattern: pick(['fever, productive cough, and focal crackles in an elderly patient with low oxygen', 'aspiration pneumonia in a patient with dysphagia or reduced consciousness', 'productive respiratory illness with systemic infection signs requiring sepsis consideration'])
+      },
+      upper_airway_or_anaphylaxis: {
+        diagnosis: pick(['anaphylaxis with bronchospasm and airway compromise', 'croup with stridor in a pediatric patient', 'epiglottitis with drooling and high fever']),
+        differentials: ['anaphylaxis', 'croup', 'foreign body aspiration'],
+        pattern: pick(['acute bronchospasm and stridor after allergen exposure with urticaria and hypotension', 'pediatric stridor at rest with barking cough and seal-like quality requiring epinephrine consideration', 'adult with high fever, drooling, and muffled voice sitting upright who refuses to lie down'])
+      },
+      flash_pulmonary_edema: {
+        diagnosis: pick(['flash pulmonary edema from acute cardiac decompensation', 'cardiogenic pulmonary edema in a hypertensive patient', 'pulmonary edema with severe hypoxia requiring CPAP consideration']),
+        differentials: ['pulmonary edema', 'asthma', 'COPD'],
+        pattern: pick(['sudden severe dyspnea at rest with frothy pink sputum, diaphoresis, and bilateral crackles', 'respiratory distress in a hypertensive cardiac patient requiring CPAP decision at Semester 3 or 4', 'acute pulmonary edema with SpO2 in the 80s requiring rapid treatment and transport decisions'])
+      }
+    };
+
+    const seed = respiratorySeeds[callFamily] || respiratorySeeds.asthma_or_bronchospasm;
+    likelyDiagnosis = seed.diagnosis;
+    plausibleDifferentials = seed.differentials;
+    symptomPattern = seed.pattern;
+  }
+  else if (typeLower === 'trauma' || promptLower.includes('fall') || promptLower.includes('collision') || promptLower.includes('injury') || promptLower.includes('trauma')) {
+    callFamily = pick([
+      'blunt_trauma_or_moi',
+      'penetrating_trauma',
+      'head_or_spinal_trauma',
+      'chest_trauma',
+      'abdominal_trauma',
+      'burns_or_blast',
+      'pediatric_trauma',
     ]);
-    plausibleDifferentials = [
-      'asthma',
-      'COPD exacerbation',
-      'pneumonia'
-    ];
-    symptomPattern = pick([
-      'respiratory distress with visible work of breathing and believable reassessment points',
-      'breathing complaint with enough detail to support treatment decisions and differentiation',
-      'airway or breathing problem anchored in realistic prehospital findings'
-    ]);
-  } 
-  else if (typeLower === 'trauma' || promptLower.includes('fall') || promptLower.includes('collision')) {
-    callFamily = 'trauma_presentation';
-    likelyDiagnosis = pick([
-      'injury pattern matching mechanism',
-      'significant isolated trauma concern',
-      'traumatic injury with potential occult complication'
-    ]);
-    plausibleDifferentials = [
-      'injury pattern matching mechanism',
-      'occult trauma complication',
-      'medical cause preceding trauma when appropriate'
-    ];
-    symptomPattern = pick([
-      'trauma mechanism with matching findings and realistic scene priorities',
-      'injury complaint with believable pain, movement limits, and transport decisions',
-      'trauma presentation where packaging, reassessment, and mechanism matter'
-    ]);
-  } 
+
+    const traumaSeeds = {
+      blunt_trauma_or_moi: {
+        diagnosis: pick(['significant blunt trauma with multi-system injury concern', 'MVA mechanism with internal injury risk', 'fall from height with spinal and extremity concerns']),
+        differentials: ['hemorrhagic shock', 'occult internal injury', 'spinal injury'],
+        pattern: pick(['significant mechanism with vital sign instability and occult injury concern requiring transport priority decisions', 'blunt trauma with distracting injury and possible spinal concern requiring assessment discipline', 'MVA with multiple patients requiring scene management, triage, and priority decisions'])
+      },
+      penetrating_trauma: {
+        diagnosis: pick(['penetrating abdominal trauma with internal bleeding concern', 'stab wound to the chest with pneumothorax risk', 'gunshot wound with hemorrhage and shock']),
+        differentials: ['hemorrhagic shock', 'pneumothorax', 'tension pneumothorax'],
+        pattern: pick(['penetrating abdominal injury with hemodynamic instability requiring rapid transport', 'stab wound to the chest with absent breath sounds and tracheal deviation concern', 'penetrating trauma with TXA decision point and transport urgency'])
+      },
+      head_or_spinal_trauma: {
+        diagnosis: pick(['traumatic brain injury with altered GCS', 'cervical spine injury with mechanism and neurologic concern', 'intracranial bleed with Cushings triad signs']),
+        differentials: ['TBI', 'intoxication', 'hypoglycemia masking neurologic injury'],
+        pattern: pick(['head injury with declining GCS, Cushings response, and transport urgency without airway intervention at PCP scope', 'cervical spine mechanism with extremity paresthesia requiring immobilization and assessment discipline', 'altered consciousness after head trauma requiring hypoglycemia rule-out before attributing to injury'])
+      },
+      chest_trauma: {
+        diagnosis: pick(['rib fractures with breathing compromise', 'pneumothorax from chest wall trauma', 'flail chest with paradoxical movement']),
+        differentials: ['pneumothorax', 'rib fractures', 'hemothorax'],
+        pattern: pick(['chest wall trauma with splinting, decreased breath sounds, and respiratory deterioration', 'blunt chest trauma with rib fractures and SpO2 decline requiring position and oxygen decisions', 'flail segment with paradoxical movement and increasing respiratory distress'])
+      },
+      abdominal_trauma: {
+        diagnosis: pick(['blunt abdominal trauma with internal bleeding concern', 'seatbelt injury with hollow viscus risk', 'splenic injury from left-sided blunt trauma']),
+        differentials: ['internal hemorrhage', 'hollow viscus injury', 'pelvic fracture'],
+        pattern: pick(['abdominal tenderness after blunt mechanism with hemodynamic instability suggesting internal bleeding', 'lap belt mark with abdominal guarding in a restrained driver after moderate impact', 'left flank pain with hypotension after left-sided blunt trauma suggesting splenic injury'])
+      },
+      burns_or_blast: {
+        diagnosis: pick(['thermal burns with airway concern', 'chemical exposure with skin and airway injury', 'blast injury with primary and secondary effects']),
+        differentials: ['inhalation injury', 'chemical burn', 'blast lung'],
+        pattern: pick(['facial burns with singed nasal hairs and hoarse voice requiring airway priority decisions', 'chemical exposure with skin and eye involvement requiring decontamination before patient contact', 'blast mechanism with multiple injury patterns and possible pneumothorax'])
+      },
+      pediatric_trauma: {
+        diagnosis: pick(['pediatric trauma with weight-based assessment challenge', 'child fall with developmental inconsistency concern', 'pediatric MVA with occult injury risk']),
+        differentials: ['significant pediatric trauma', 'non-accidental injury', 'spinal injury'],
+        pattern: pick(['pediatric patient after significant mechanism with limited history and weight-based vital sign interpretation', 'child with injury pattern inconsistent with stated mechanism requiring careful documentation', 'pediatric MVA requiring age-appropriate assessment and communication with distressed caregivers'])
+      }
+    };
+
+    const seed = traumaSeeds[callFamily] || traumaSeeds.blunt_trauma_or_moi;
+    likelyDiagnosis = seed.diagnosis;
+    plausibleDifferentials = seed.differentials;
+    symptomPattern = seed.pattern;
+  }
   else if (typeLower === 'environmental' || promptLower.includes('heat') || promptLower.includes('cold') || promptLower.includes('exposure')) {
-    callFamily = 'environmental_presentation';
-    likelyDiagnosis = pick([
-      'environment-linked illness pattern',
-      'heat or cold related physiological stress',
-      'exposure-driven medical presentation'
+    callFamily = pick([
+      'heat_illness',
+      'cold_exposure_or_hypothermia',
+      'toxin_or_poisoning',
+      'near_drowning',
+      'altitude_or_diving',
     ]);
-    plausibleDifferentials = [
-      'heat illness',
-      'cold exposure',
-      'dehydration'
-    ];
-    symptomPattern = pick([
-      'environment-linked physiology with scene and transport implications',
-      'exposure-related complaint where setting meaningfully affects management',
-      'medical presentation that clearly depends on the environment'
+
+    const environmentalSeeds = {
+      heat_illness: {
+        diagnosis: pick(['heat stroke with altered mentation', 'heat exhaustion with dehydration', 'exertional heat illness in an athlete']),
+        differentials: ['heat stroke', 'heat exhaustion', 'hypoglycemia'],
+        pattern: pick(['hot dry skin and altered consciousness in an elderly patient found in an unventilated space', 'exertional heat illness in a summer athlete with collapse and confusion', 'heat exposure with hypotension, tachycardia, and inability to cool requiring rapid transport'])
+      },
+      cold_exposure_or_hypothermia: {
+        diagnosis: pick(['moderate hypothermia with altered consciousness', 'severe hypothermia with cardiac risk', 'frostbite with local tissue injury']),
+        differentials: ['hypothermia', 'hypoglycemia', 'CVA'],
+        pattern: pick(['altered elderly patient found in a cold home with slow pulse and shivering absence', 'outdoor exposure with core temperature concern and Osborn J-wave ECG finding', 'frostbite with rewarming decisions and transport priority based on systemic temperature'])
+      },
+      toxin_or_poisoning: {
+        diagnosis: pick(['opioid toxidrome with respiratory depression', 'stimulant toxidrome with tachycardia and agitation', 'organophosphate exposure with cholinergic features']),
+        differentials: ['opioid overdose', 'stimulant toxidrome', 'hypoglycemia'],
+        pattern: pick(['unresponsive patient with pinpoint pupils and slow respirations requiring toxidrome recognition', 'agitated tachycardic patient with stimulant toxidrome and hyperthermia', 'cholinergic toxidrome after pesticide exposure with SLUDGE features'])
+      },
+      near_drowning: {
+        diagnosis: pick(['submersion injury with respiratory compromise', 'near-drowning with aspiration and hypoxia', 'cold water submersion with hypothermia and drowning']),
+        differentials: ['submersion injury', 'hypothermia', 'cardiac arrest from drowning'],
+        pattern: pick(['pulled from water with respiratory distress, cough, and decreasing SpO2', 'cold water submersion with cardiac arrest and hypothermia requiring resuscitation decisions', 'near-drowning in warm water with pulmonary edema developing during transport'])
+      },
+      altitude_or_diving: {
+        diagnosis: pick(['decompression sickness after diving', 'altitude sickness with cerebral edema concern', 'arterial gas embolism from rapid ascent']),
+        differentials: ['decompression sickness', 'stroke', 'inner ear injury'],
+        pattern: pick(['diver with joint pain, rash, and neurologic symptoms after rapid ascent', 'hiker with severe headache and ataxia at high altitude requiring descent priority', 'post-dive altered consciousness with focal deficits requiring hyperbaric consultation transport'])
+      }
+    };
+
+    const seed = environmentalSeeds[callFamily] || environmentalSeeds.heat_illness;
+    likelyDiagnosis = seed.diagnosis;
+    plausibleDifferentials = seed.differentials;
+    symptomPattern = seed.pattern;
+  }
+  else if (typeLower === 'ob/peds' || typeLower === 'ob' || typeLower === 'peds' || promptLower.includes('obstetric') || promptLower.includes('pediatric') || promptLower.includes('pregnancy') || promptLower.includes('child') || promptLower.includes('infant') || promptLower.includes('labour') || promptLower.includes('labor')) {
+    callFamily = pick([
+      'obstetric_labour_or_delivery',
+      'obstetric_complication',
+      'pediatric_respiratory',
+      'pediatric_medical',
+      'pediatric_seizure',
+      'neonatal_resuscitation',
     ]);
-  } 
+
+    const obPedsSeeds = {
+      obstetric_labour_or_delivery: {
+        diagnosis: pick(['active labour with imminent delivery', 'precipitous delivery in an uncontrolled setting', 'normal delivery with post-partum hemorrhage concern']),
+        differentials: ['active labour', 'abruptio placentae', 'post-partum hemorrhage'],
+        pattern: pick(['patient in active labour with contractions 2 minutes apart and urge to push requiring delivery preparation', 'precipitous delivery in a home or vehicle with neonate requiring assessment and APGAR evaluation', 'post-delivery patient with significant vaginal bleeding requiring uterine assessment and transport urgency'])
+      },
+      obstetric_complication: {
+        diagnosis: pick(['pre-eclampsia with severe features', 'eclampsia with seizure activity', 'placental abruption with pain and bleeding', 'ectopic pregnancy with hemorrhagic shock']),
+        differentials: ['pre-eclampsia', 'eclampsia', 'abruption'],
+        pattern: pick(['pregnant patient with severe headache, visual changes, and elevated BP requiring eclampsia management', 'seizure in a pregnant patient requiring magnesium consideration at appropriate semester level', 'abdominal pain and vaginal bleeding in a pregnant patient with hemodynamic instability'])
+      },
+      pediatric_respiratory: {
+        diagnosis: pick(['croup with inspiratory stridor', 'bronchiolitis in an infant with wheeze and apnea risk', 'pediatric asthma with severe distress', 'epiglottitis with drooling and high fever']),
+        differentials: ['croup', 'bronchiolitis', 'foreign body aspiration'],
+        pattern: pick(['barking cough and inspiratory stridor in a toddler with low-grade fever and mild distress', 'infant with diffuse wheeze, poor feeding, and SpO2 in the low 90s requiring positioning and transport decisions', 'child with sudden choking followed by stridor and unilateral decreased breath sounds'])
+      },
+      pediatric_medical: {
+        diagnosis: pick(['febrile seizure in a toddler', 'pediatric hypoglycemia in a diabetic child', 'meningitis concern in a febrile infant', 'pediatric anaphylaxis after allergen exposure']),
+        differentials: ['febrile seizure', 'meningitis', 'hypoglycemia'],
+        pattern: pick(['brief tonic-clonic seizure in a febrile toddler with full recovery and parental anxiety requiring reassurance and transport decision', 'lethargic infant with high fever, bulging fontanelle, and rash requiring urgent transport consideration', 'pediatric anaphylaxis with epinephrine auto-injector decision and weight estimation'])
+      },
+      pediatric_seizure: {
+        diagnosis: pick(['status epilepticus in a known epileptic child', 'first seizure in a school-age child', 'febrile seizure in a toddler with prolonged activity']),
+        differentials: ['epilepsy', 'febrile seizure', 'hypoglycemia'],
+        pattern: pick(['ongoing seizure in a child lasting more than 5 minutes requiring glucose check and seizure management', 'post-ictal child with history of epilepsy requiring medication history and reassessment', 'first-ever seizure in an older child with no fever requiring differentiation and safe transport'])
+      },
+      neonatal_resuscitation: {
+        diagnosis: pick(['neonate requiring resuscitation after delivery', 'premature birth with respiratory depression', 'neonate with poor tone and apnea after delivery']),
+        differentials: ['birth asphyxia', 'meconium aspiration', 'congenital anomaly'],
+        pattern: pick(['neonate born at scene with no cry, poor tone, and apnea requiring APGAR assessment and stimulation decisions', 'premature delivery with small neonate requiring temperature management and rapid transport', 'meconium-stained fluid delivery requiring airway management decisions within PCP scope'])
+      }
+    };
+
+    const seed = obPedsSeeds[callFamily] || obPedsSeeds.obstetric_labour_or_delivery;
+    likelyDiagnosis = seed.diagnosis;
+    plausibleDifferentials = seed.differentials;
+    symptomPattern = seed.pattern;
+  }
   else if (typeLower === 'medical') {
     callFamily = pick([
-      'general_medical',
-      'diabetic_or_metabolic_presentation',
-      'infectious_or_sepsis_pattern',
-      'nausea_vomiting_or_dehydration_pattern',
-      'neurologic_or_syncope_pattern',
+      'diabetic_or_metabolic',
+      'infectious_or_sepsis',
+      'nausea_vomiting_dehydration',
+      'neurologic_or_syncope',
       'geriatric_multi_problem',
       'psych_or_behavioral',
-      'toxicology_or_overdose'
+      'toxicology_or_overdose',
+      'renal_or_electrolyte',
+      'gi_or_abdominal',
+      'allergic_or_anaphylaxis',
     ]);
 
-    likelyDiagnosis = pick([
-      'undifferentiated medical complaint',
-      'general medical working diagnosis',
-      'medical presentation requiring focused differentiation',
-      'multi-factor medical presentation with comorbidities'
-    ]);
+    const medicalSeeds = {
+      diabetic_or_metabolic: {
+        diagnosis: pick(['hypoglycemia with altered consciousness', 'hyperglycemia with DKA features', 'diabetic emergency with atypical presentation']),
+        differentials: ['hypoglycemia', 'DKA', 'stroke'],
+        pattern: pick(['altered diabetic patient with diaphoresis, shakiness, and low BGL requiring glucose decision', 'DKA presentation with Kussmaul breathing, fruity breath, and dehydration', 'diabetic patient with altered mental status where hypoglycemia and stroke overlap in presentation'])
+      },
+      infectious_or_sepsis: {
+        diagnosis: pick(['sepsis with early shock features', 'septic shock with hemodynamic instability', 'systemic infection with undifferentiated presentation']),
+        differentials: ['sepsis', 'dehydration', 'cardiac cause'],
+        pattern: pick(['fever, tachycardia, altered mentation, and hypotension in an elderly patient with suspected source', 'sepsis pattern in a patient with urinary symptoms, confusion, and poor perfusion', 'undifferentiated deterioration in a nursing home patient requiring sepsis screening'])
+      },
+      nausea_vomiting_dehydration: {
+        diagnosis: pick(['gastroenteritis with dehydration', 'nausea and vomiting with metabolic concern', 'dehydration with orthostatic hypotension']),
+        differentials: ['gastroenteritis', 'appendicitis', 'bowel obstruction'],
+        pattern: pick(['vomiting and diarrhea with significant dehydration and orthostatic vital signs', 'nausea in a diabetic patient requiring glucose check before antiemetic', 'dehydration with electrolyte concern in an elderly patient who cannot tolerate oral fluids'])
+      },
+      neurologic_or_syncope: {
+        diagnosis: pick(['stroke or TIA with focal deficit', 'syncope requiring cardiac versus neurologic differentiation', 'seizure with post-ictal confusion']),
+        differentials: ['stroke', 'hypoglycemia', 'syncope'],
+        pattern: pick(['facial droop and arm drift in a patient with speech difficulty requiring FAST screen and stroke bypass decision', 'syncope in an older patient requiring ECG and cardiac differentiation from vasovagal', 'post-seizure confusion requiring glucose check and differentiation from ongoing neurologic event'])
+      },
+      geriatric_multi_problem: {
+        diagnosis: pick(['geriatric fall with multiple comorbidities', 'undifferentiated decline in an elderly patient', 'polypharmacy complication in a geriatric patient']),
+        differentials: ['sepsis', 'cardiac cause', 'medication toxicity'],
+        pattern: pick(['elderly patient with weakness, confusion, and multiple medications requiring systematic history and sepsis screening', 'nursing home patient with undifferentiated decline and no clear chief complaint requiring structured assessment', 'geriatric patient with medication non-compliance and multiple system findings'])
+      },
+      psych_or_behavioral: {
+        diagnosis: pick(['acute psychiatric presentation requiring safety assessment', 'agitation from unknown cause requiring medical rule-out', 'suicidal ideation with medical complication concern']),
+        differentials: ['psychiatric emergency', 'hypoglycemia', 'toxicology'],
+        pattern: pick(['agitated patient with unknown cause requiring medical rule-out before psychiatric framing', 'behaviorally disturbed patient where glucose, toxicology, and head injury must be excluded', 'patient with psychiatric history and altered consciousness requiring organic cause search'])
+      },
+      toxicology_or_overdose: {
+        diagnosis: pick(['opioid overdose with respiratory depression', 'mixed drug ingestion with altered mentation', 'accidental medication overdose in an elderly patient']),
+        differentials: ['opioid toxidrome', 'sedative overdose', 'hypoglycemia'],
+        pattern: pick(['unresponsive patient with slow respirations and pinpoint pupils requiring toxidrome recognition and naloxone decision', 'altered patient with unknown ingestion requiring systematic toxidrome assessment', 'elderly patient with accidental medication overdose and bradycardia'])
+      },
+      renal_or_electrolyte: {
+        diagnosis: pick(['missed dialysis with hyperkalemia', 'renal failure with volume overload', 'electrolyte disturbance with ECG changes']),
+        differentials: ['hyperkalemia', 'uremia', 'pulmonary edema'],
+        pattern: pick(['dialysis patient who missed treatment with weakness, peaked T waves, and bradycardia', 'renal failure with fluid overload and respiratory distress requiring careful oxygen decisions', 'electrolyte disturbance with ECG findings guiding transport urgency'])
+      },
+      gi_or_abdominal: {
+        diagnosis: pick(['upper GI bleed with hemodynamic instability', 'acute abdomen requiring surgical evaluation', 'bowel obstruction with vomiting and distension']),
+        differentials: ['GI hemorrhage', 'ruptured viscus', 'mesenteric ischemia'],
+        pattern: pick(['hematemesis with tachycardia and hypotension requiring hemorrhagic shock management', 'severe abdominal pain with peritoneal signs requiring differentiation and transport priority', 'vomiting with distension and no bowel sounds in an elderly patient with prior abdominal surgery'])
+      },
+      allergic_or_anaphylaxis: {
+        diagnosis: pick(['anaphylaxis with bronchospasm and hypotension', 'severe allergic reaction requiring epinephrine', 'anaphylaxis with delayed presentation after allergen exposure']),
+        differentials: ['anaphylaxis', 'vasovagal syncope', 'asthma'],
+        pattern: pick(['urticaria, bronchospasm, and hypotension after known allergen exposure requiring epinephrine decision', 'allergic reaction with airway involvement in a patient whose auto-injector was already used', 'biphasic anaphylaxis concern requiring extended monitoring and transport decision'])
+      }
+    };
 
-    plausibleDifferentials = [
-      'medical problem suggested by presentation',
-      'reasonable alternative supported by history',
-      'one misleading but fair possibility'
-    ];
-
-    symptomPattern = pick([
-      'general medical presentation with realistic field ambiguity',
-      'medical complaint with enough clues to guide focused assessment',
-      'non-traumatic illness presentation anchored in believable prehospital findings',
-      'medical presentation with multiple contributing factors'
-    ]);
+    const seed = medicalSeeds[callFamily] || medicalSeeds.diabetic_or_metabolic;
+    likelyDiagnosis = seed.diagnosis;
+    plausibleDifferentials = seed.differentials;
+    symptomPattern = seed.pattern;
   }
 
   const complexityProgression = {
