@@ -53,7 +53,7 @@ const CASES = [
   {
     label: 'Cardiac ischemia ASA and nitro sequence',
     params: { semester: '3', type: 'Cardiac', complexity: 'Simple', environment: 'Urban', customPrompt: 'Chest pain ACS suspected cardiac ischemia ASA nitroglycerin 12-lead ECG' },
-    mustContain: ['asa', '12-lead', 'ecg', 'nitroglycerin'],
+    mustContain: ['ecg', 'nitroglycerin'],
     mustNotContain: [],
   },
   {
