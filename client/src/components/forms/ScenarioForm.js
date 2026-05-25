@@ -830,11 +830,6 @@ function TwelveLeadSVG({ ecgType, rhythmInterp, twelveLeadFindings, fifteenLeadF
         </div>
       ))}
 
-      <div style={{ backgroundColor: bgC, border: `1px solid ${heavyC}`, borderRadius: '4px', padding: '2px 4px', marginBottom: '3px' }}>
-        <div style={{ fontSize: '9px', fontWeight: 700, color: labelC, letterSpacing: '0.04em', marginBottom: '1px', fontFamily: 'monospace' }}>II — RHYTHM STRIP</div>
-        {makLeadSVG(buildPts('II'), _TL_W * 4, _TL_H)}
-      </div>
-
       {is15Lead && (
         <div style={{ fontSize: '9px', color: labelC, letterSpacing: '0.04em', padding: '2px 0 3px', fontFamily: 'monospace', textAlign: 'right' }}>
           V4R · V8 · V9 — modified 15-lead positions
