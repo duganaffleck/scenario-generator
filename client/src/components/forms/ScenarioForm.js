@@ -360,6 +360,21 @@ function _buildThirdDegree() {
 }
 
 function _buildECGStrip(rhythm, hr) {
+  const r = (rhythm || '').toLowerCase().replace(/[\s_-]+/g, ' ');
+  if (r.includes('ventricular tach') || r === 'vtach' || r === 'v tach') rhythm = 'Ventricular Tachycardia';
+  else if (r.includes('ventricular fib') || r === 'vfib' || r === 'v fib') rhythm = 'Ventricular Fibrillation';
+  else if (r.includes('atrial fib') || r === 'afib' || r === 'a fib') rhythm = 'Atrial Fibrillation';
+  else if (r.includes('atrial flutter') || r === 'flutter') rhythm = 'Atrial Flutter';
+  else if (r.includes('pulseless electrical') || r === 'pea') rhythm = 'Pulseless Electrical Activity';
+  else if (r.includes('asystole') || r === 'flatline') rhythm = 'Asystole';
+  else if (r.includes('third degree') || r.includes('complete heart block') || r.includes('3rd degree')) rhythm = 'Third Degree AV Block';
+  else if (r.includes('second degree') && (r.includes('type ii') || r.includes('mobitz ii') || r.includes('mobitz 2'))) rhythm = 'Second Degree AV Block Type II';
+  else if (r.includes('second degree') && (r.includes('type i') || r.includes('wenckebach') || r.includes('mobitz i') || r.includes('mobitz 1'))) rhythm = 'Second Degree AV Block Type I';
+  else if (r.includes('first degree') || r.includes('1st degree')) rhythm = 'First Degree AV Block';
+  else if (r.includes('supraventricular') || r === 'svt') rhythm = 'SVT';
+  else if (r.includes('sinus tach') || (r.includes('sinus') && r.includes('tach'))) rhythm = 'Sinus Tachycardia';
+  else if (r.includes('sinus brad') || (r.includes('sinus') && r.includes('brad'))) rhythm = 'Sinus Bradycardia';
+  else if (r.includes('normal sinus') || r.includes('nsr') || r === 'sinus rhythm') rhythm = 'Normal Sinus Rhythm';
   const rr = Math.round(60000 / Math.max(20, Math.min(280, hr || 75)));
   const isTach = hr > 100;
   // eslint-disable-next-line no-unused-vars
