@@ -3148,7 +3148,7 @@ const ScenarioForm = () => {
               background: "var(--vn-modal-bg)",
               padding: "1rem",
               borderRadius: "8px",
-              width: selectedECGImage?.rhythm ? "min(92vw, 860px)" : "min(90vw, 660px)",
+              width: selectedECGImage?.rhythm ? "min(92vw, 860px)" : "min(94vw, 920px)",
               maxWidth: "92vw",
               maxHeight: "90vh",
               overflow: "auto",
