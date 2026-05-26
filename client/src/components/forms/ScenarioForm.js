@@ -2665,7 +2665,7 @@ const ScenarioForm = () => {
                 </div>
                 <div style={{
                   display: 'grid',
-                  gridTemplateColumns: 'repeat(4, 1fr)',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
                   gap: '0',
                 }}>
                   {vitalFields.map((f, fi) => {
