@@ -2619,6 +2619,93 @@ const ScenarioForm = () => {
   };
 
   const renderSection = (title, content) => {
+    if (title === "vitalSigns") {
+      const vs = scenario.vitalSigns;
+      if (!vs) return null;
+      const sets = [
+        { label: vs.firstSet?.context || "Initial Assessment", data: vs.firstSet },
+        { label: vs.secondSet?.context || "Reassessment", data: vs.secondSet },
+        ...(Array.isArray(vs.additionalSets)
+          ? vs.additionalSets.map((s, i) => ({ label: s.context || `Additional Set ${i + 1}`, data: s }))
+          : []),
+      ].filter(s => s.data && Object.values(s.data).some(Boolean));
+      if (!sets.length) return null;
+      const vitalFields = [
+        { key: 'hr',   label: 'HR' },
+        { key: 'bp',   label: 'BP' },
+        { key: 'rr',   label: 'RR' },
+        { key: 'spo2', label: 'SpO₂' },
+        { key: 'etco2',label: 'EtCO₂' },
+        { key: 'gcs',  label: 'GCS' },
+        { key: 'bgl',  label: 'BGL' },
+        { key: 'temp', label: 'Temp' },
+      ];
+      return (
+        <div style={{ ...styles.card }} key="vitalSigns">
+          <h3 className="scenario-section-h2">Vital Signs</h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            {sets.map((set, si) => (
+              <div key={si} style={{
+                border: '1px solid var(--vn-border)',
+                borderRadius: '10px',
+                overflow: 'hidden',
+                backgroundColor: 'var(--vn-card-bg)',
+              }}>
+                <div style={{
+                  padding: '0.45rem 0.85rem',
+                  backgroundColor: 'var(--vn-sky)',
+                  borderBottom: '1px solid var(--vn-border)',
+                  fontSize: '0.72rem',
+                  fontWeight: 800,
+                  color: 'var(--vn-teal-deep)',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.07em',
+                }}>
+                  {set.label}
+                </div>
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(4, 1fr)',
+                  gap: '0',
+                }}>
+                  {vitalFields.map((f, fi) => {
+                    const val = set.data?.[f.key];
+                    if (!val) return null;
+                    const isLast = fi === vitalFields.filter(f => set.data?.[f.key]).length - 1;
+                    return (
+                      <div key={f.key} style={{
+                        padding: '0.55rem 0.85rem',
+                        borderRight: (fi + 1) % 4 !== 0 ? '1px solid var(--vn-border)' : 'none',
+                        borderBottom: !isLast && fi < vitalFields.filter(f => set.data?.[f.key]).length - 4 ? '1px solid var(--vn-border)' : 'none',
+                      }}>
+                        <div style={{
+                          fontSize: '0.65rem',
+                          fontWeight: 700,
+                          color: 'var(--vn-muted-text)',
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.05em',
+                          marginBottom: '0.15rem',
+                        }}>
+                          {f.label}
+                        </div>
+                        <div style={{
+                          fontSize: '0.95rem',
+                          fontWeight: 600,
+                          color: 'var(--vn-ink)',
+                          lineHeight: 1.3,
+                        }}>
+                          {val}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
     if (title === "ecgRhythm") {
       const vitalSigns = scenario.vitalSigns;
       if (!vitalSigns) return null;
