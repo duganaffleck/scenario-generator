@@ -228,6 +228,7 @@ function _buildFlutter(rr) {
 }
 
 function _buildVTach(rr) {
+  rr = Math.min(rr, 400);
   const rand = _seededRand(rr + 7);
   const pts = [_pt(0, 0)];
   let t = 20;
@@ -658,6 +659,7 @@ function _tlBuildAFib(rr, seed, opts) {
 }
 
 function _tlBuildVTach(rr, opts) {
+  rr = Math.min(rr, 400);
   const { rA = 1.1, flip = false } = opts; const s = flip ? -1 : 1;
   const pts = [_tlPt(0, 0)]; let t = 20;
   while (t < _TL_TOTAL - rr * 0.3) {
