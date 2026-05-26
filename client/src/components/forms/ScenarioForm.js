@@ -2618,6 +2618,69 @@ const ScenarioForm = () => {
     );
   };
 
+  const getVitalColor = (key, rawVal) => {
+    const str = String(rawVal || '');
+    const num = parseFloat(str.replace(/[^0-9.]/g, ''));
+    if (isNaN(num)) return 'var(--vn-ink)';
+    const red = 'var(--vn-error-text)';
+    const amber = '#c97a1a';
+    const normal = 'var(--vn-ink)';
+    switch (key) {
+      case 'hr':
+        if (num < 50 || num > 120) return red;
+        if (num < 60 || num > 100) return amber;
+        return normal;
+      case 'rr':
+        if (num < 10 || num > 29) return red;
+        if (num < 12 || num > 24) return amber;
+        return normal;
+      case 'bp': {
+        const sys = parseFloat(str.split('/')[0]);
+        if (isNaN(sys)) return normal;
+        if (sys < 90 || sys > 179) return red;
+        if (sys < 100 || sys > 139) return amber;
+        return normal;
+      }
+      case 'spo2': {
+        const pct = parseFloat(str.replace('%',''));
+        if (isNaN(pct)) return normal;
+        if (pct < 88) return red;
+        if (pct < 92) return amber;
+        return normal;
+      }
+      case 'etco2': {
+        const val = parseFloat(str);
+        if (isNaN(val)) return normal;
+        if (val < 20 || val > 55) return red;
+        if (val < 30 || val > 45) return amber;
+        return normal;
+      }
+      case 'gcs': {
+        const g = parseFloat(str);
+        if (isNaN(g)) return normal;
+        if (g < 9) return red;
+        if (g < 14) return amber;
+        return normal;
+      }
+      case 'bgl': {
+        const b = parseFloat(str);
+        if (isNaN(b)) return normal;
+        if (b < 4.0 || b > 20) return red;
+        if (b < 5.0 || b > 11) return amber;
+        return normal;
+      }
+      case 'temp': {
+        const t = parseFloat(str);
+        if (isNaN(t)) return normal;
+        if (t < 32 || t > 40) return red;
+        if (t < 35 || t > 38.5) return amber;
+        return normal;
+      }
+      default:
+        return normal;
+    }
+  };
+
   const renderSection = (title, content) => {
     if (title === "vitalSigns") {
       const vs = scenario.vitalSigns;
@@ -2692,7 +2755,7 @@ const ScenarioForm = () => {
                         <div style={{
                           fontSize: '0.95rem',
                           fontWeight: 600,
-                          color: 'var(--vn-ink)',
+                          color: getVitalColor(f.key, val),
                           lineHeight: 1.3,
                         }}>
                           {val}
