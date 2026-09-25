@@ -438,7 +438,7 @@ function RhythmStripSVG({ rhythm, hr, isNightShift }) {
   return (
     <div>
       <div style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--vn-muted-text)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '0.4rem' }}>
-        Lead II — {rhythm} — {hr} bpm
+        Lead II · {rhythm} · {hr} bpm
       </div>
       <svg viewBox={`0 0 ${_ECG_W} ${_ECG_H}`} style={{ width: '100%', display: 'block', borderRadius: '6px' }} preserveAspectRatio="none">
         <rect width={_ECG_W} height={_ECG_H} fill={bgC} />
@@ -796,7 +796,7 @@ const _TL_PATTERNS = {
     }
   },
   inferiorSTEMI: {
-    title: 'Inferior STEMI — ST Elevation II, III, aVF',
+    title: 'Inferior STEMI: ST Elevation II, III, aVF',
     leads: {
       'I':   { pr:160, pA:0.12, rA:0.60, qD:0.06, sD:0.06, tA:0.15, st:-0.10 },
       'II':  { pr:160, pA:0.15, rA:1.00, qD:0.12, sD:0.14, tA:0.40, st:0.25 },
@@ -813,7 +813,7 @@ const _TL_PATTERNS = {
     }
   },
   anteriorSTEMI: {
-    title: 'Anterior STEMI — ST Elevation V1-V4',
+    title: 'Anterior STEMI: ST Elevation V1-V4',
     leads: {
       'I':   { pr:160, pA:0.12, rA:0.65, qD:0.06, sD:0.06, tA:0.25, st:0.08 },
       'II':  { pr:160, pA:0.15, rA:1.00, qD:0.08, sD:0.14, tA:0.20, st:-0.08 },
@@ -830,7 +830,7 @@ const _TL_PATTERNS = {
     }
   },
   lateralSTEMI: {
-    title: 'Lateral STEMI — ST Elevation I, aVL, V5-V6',
+    title: 'Lateral STEMI: ST Elevation I, aVL, V5-V6',
     leads: {
       'I':   { pr:160, pA:0.12, rA:0.80, qD:0.06, sD:0.05, tA:0.38, st:0.25 },
       'II':  { pr:160, pA:0.15, rA:0.90, qD:0.08, sD:0.14, tA:0.15, st:-0.10 },
@@ -883,7 +883,7 @@ const _TL_PATTERNS = {
   },
   afib12: {
     afib: true,
-    title: 'Atrial Fibrillation — 12-Lead',
+    title: 'Atrial Fibrillation: 12-Lead',
     leads: {
       'I':   { rA:0.65, sD:0.08, tA:0.22 },
       'II':  { rA:1.00, sD:0.14, tA:0.28 },
@@ -901,7 +901,7 @@ const _TL_PATTERNS = {
   },
   vtach12: {
     vtach: true,
-    title: 'Ventricular Tachycardia — 12-Lead',
+    title: 'Ventricular Tachycardia: 12-Lead',
     leads: {
       'I':   { rA:0.90, flip:false },
       'II':  { rA:1.10, flip:false },
@@ -918,7 +918,7 @@ const _TL_PATTERNS = {
     }
   },
   inferiorRV: {
-    title: 'Inferior + RV STEMI — Modified 15-Lead',
+    title: 'Inferior + RV STEMI: Modified 15-Lead',
     leads: {
       'I':   { pr:160, pA:0.12, rA:0.60, qD:0.06, sD:0.06, tA:0.15, st:-0.10 },
       'II':  { pr:160, pA:0.15, rA:1.00, qD:0.12, sD:0.14, tA:0.40, st:0.25 },
@@ -935,7 +935,7 @@ const _TL_PATTERNS = {
     }
   },
   posterior: {
-    title: 'Posterior STEMI — Modified 15-Lead',
+    title: 'Posterior STEMI: Modified 15-Lead',
     leads: {
       'I':   { pr:160, pA:0.12, rA:0.65, qD:0.06, sD:0.06, tA:0.22, st:0 },
       'II':  { pr:160, pA:0.15, rA:1.00, qD:0.08, sD:0.14, tA:0.28, st:0 },
@@ -952,7 +952,7 @@ const _TL_PATTERNS = {
     }
   },
   wellens: {
-    title: "Wellens Syndrome — LAD T-Wave Warning",
+    title: "Wellens Syndrome: LAD T-Wave Warning",
     leads: {
       'I':   { pr:160, pA:0.12, rA:0.65, qD:0.06, sD:0.06, tA:0.18, st:0 },
       'II':  { pr:160, pA:0.15, rA:1.00, qD:0.08, sD:0.14, tA:0.22, st:0 },
@@ -969,7 +969,7 @@ const _TL_PATTERNS = {
     }
   },
   deWinter: {
-    title: "De Winter Pattern — STEMI Equivalent (LAD)",
+    title: "De Winter Pattern: STEMI Equivalent (LAD)",
     leads: {
       'I':   { pr:160, pA:0.12, rA:0.65, qD:0.06, sD:0.06, tA:0.28, st:0.08 },
       'II':  { pr:160, pA:0.15, rA:1.00, qD:0.08, sD:0.14, tA:0.25, st:0 },
@@ -986,7 +986,7 @@ const _TL_PATTERNS = {
     }
   },
   inferolateralSTEMI: {
-    title: "Inferolateral STEMI — II, III, aVF, V5, V6",
+    title: "Inferolateral STEMI: II, III, aVF, V5, V6",
     leads: {
       'I':   { pr:160, pA:0.12, rA:0.65, qD:0.06, sD:0.06, tA:0.28, st:0.18 },
       'II':  { pr:160, pA:0.15, rA:1.00, qD:0.14, sD:0.14, tA:0.42, st:0.28 },
@@ -1003,7 +1003,7 @@ const _TL_PATTERNS = {
     }
   },
   highLateralSTEMI: {
-    title: "High Lateral STEMI — I, aVL (Diagonal Branch)",
+    title: "High Lateral STEMI: I, aVL (Diagonal Branch)",
     leads: {
       'I':   { pr:160, pA:0.12, rA:0.80, qD:0.06, sD:0.05, tA:0.42, st:0.30 },
       'II':  { pr:160, pA:0.15, rA:0.90, qD:0.08, sD:0.14, tA:0.18, st:-0.12 },
@@ -1020,7 +1020,7 @@ const _TL_PATTERNS = {
     }
   },
   pericarditis: {
-    title: "Acute Pericarditis — Diffuse Saddle ST Elevation",
+    title: "Acute Pericarditis: Diffuse Saddle ST Elevation",
     leads: {
       'I':   { pr:150, pA:0.12, rA:0.65, qD:0.04, sD:0.06, tA:0.35, st:0.12 },
       'II':  { pr:150, pA:0.15, rA:1.00, qD:0.06, sD:0.14, tA:0.42, st:0.15 },
@@ -1037,7 +1037,7 @@ const _TL_PATTERNS = {
     }
   },
   hyperkalemia: {
-    title: "Hyperkalemia — Peaked T Waves",
+    title: "Hyperkalemia: Peaked T Waves",
     leads: {
       'I':   { pr:200, pA:0.06, rA:0.65, qD:0.10, sD:0.10, tA:0.52, st:0, wide:true },
       'II':  { pr:200, pA:0.06, rA:1.00, qD:0.10, sD:0.16, tA:0.68, st:0, wide:true },
@@ -1056,7 +1056,7 @@ const _TL_PATTERNS = {
   svt12: {
     afib: false,
     vtach: false,
-    title: "SVT — Narrow Complex Tachycardia",
+    title: "SVT: Narrow Complex Tachycardia",
     leads: {
       'I':   { pr:80, pA:0, noP:true, rA:0.65, qD:0.04, sD:0.06, tA:0.18 },
       'II':  { pr:80, pA:0, noP:true, rA:1.00, qD:0.05, sD:0.12, tA:0.22 },
@@ -1074,7 +1074,7 @@ const _TL_PATTERNS = {
   },
   atrialFlutter12: {
     flutter: true,
-    title: "Atrial Flutter — Sawtooth Pattern",
+    title: "Atrial Flutter: Sawtooth Pattern",
     leads: {
       'I':   { rA:0.65, sD:0.06, tA:0.18 },
       'II':  { rA:1.00, sD:0.14, tA:0.22 },
@@ -1091,7 +1091,7 @@ const _TL_PATTERNS = {
     }
   },
   firstDegreeAVBlock: {
-    title: 'First Degree AV Block — Prolonged PR',
+    title: 'First Degree AV Block: Prolonged PR',
     leads: {
       'I':   { pr:240, pA:0.12, rA:0.65, qD:0.06, sD:0.06, tA:0.22, st:0 },
       'II':  { pr:240, pA:0.15, rA:1.00, qD:0.08, sD:0.14, tA:0.30, st:0 },
@@ -1108,7 +1108,7 @@ const _TL_PATTERNS = {
     }
   },
   secondDegreeTypeI: {
-    title: 'Second Degree AV Block Type I — Wenckebach',
+    title: 'Second Degree AV Block Type I: Wenckebach',
     wenckebach: true,
     leads: {
       'I':   { pr:160, pA:0.12, rA:0.65, qD:0.06, sD:0.06, tA:0.22, st:0 },
@@ -1126,7 +1126,7 @@ const _TL_PATTERNS = {
     }
   },
   secondDegreeTypeII: {
-    title: 'Second Degree AV Block Type II — Mobitz II',
+    title: 'Second Degree AV Block Type II: Mobitz II',
     mobitzII: true,
     leads: {
       'I':   { pr:180, pA:0.12, rA:0.65, qD:0.10, sD:0.08, tA:0.22, st:0 },
@@ -1144,7 +1144,7 @@ const _TL_PATTERNS = {
     }
   },
   thirdDegreeAVBlock: {
-    title: 'Third Degree AV Block — Complete Heart Block',
+    title: 'Third Degree AV Block: Complete Heart Block',
     completeBlock: true,
     leads: {
       'I':   { pr:160, pA:0.12, rA:0.55, qD:0.10, sD:0.08, tA:0.18, st:0 },
@@ -1232,7 +1232,7 @@ function TwelveLeadSVG({ ecgType, rhythmInterp, twelveLeadFindings, fifteenLeadF
   return (
     <div>
       <div style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--vn-muted-text)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '0.5rem' }}>
-        {p.title} — {hr} bpm
+        {p.title} · {hr} bpm
       </div>
 
       {stdRows.map((row, ri) => (
@@ -1243,7 +1243,7 @@ function TwelveLeadSVG({ ecgType, rhythmInterp, twelveLeadFindings, fifteenLeadF
 
       {is15Lead && (
         <div style={{ fontSize: '9px', color: labelC, letterSpacing: '0.04em', padding: '2px 0 3px', fontFamily: 'monospace', textAlign: 'right' }}>
-          V4R · V8 · V9 — modified 15-lead positions
+          V4R · V8 · V9: modified 15-lead positions
         </div>
       )}
 
@@ -1273,11 +1273,11 @@ const USE_PILL_TOGGLES = false;
 
 // eslint-disable-next-line no-unused-vars
 const FIELD_TOOLTIPS = {
-  semester: "Training level: 2 = foundational assessment and safe basic care, 3 = directive-aware treatment with medication decisions, 4 = near-graduation complexity with prioritization under pressure",
+  semester: "Training level: 2 = assessment and safe BLS care, no medications, 3 = directive-aware treatment with medication decisions, 4 = near-graduation complexity with prioritization under pressure",
   type: "Scenario category: Medical, Trauma, Cardiac, Respiratory, or Environmental",
   environment: "Call location affects scene texture, access, collateral, and transport decisions",
   complexity: "Simple = one clear problem done well. Complex = competing cues and ambiguity requiring stronger prioritization.",
-  generationDepth: "Quick Draft = lean and fast. Detailed = fuller instructor-grade depth with richer progression, reasoning, and GRS anchors.",
+  generationDepth: "Quick Draft = lean and fast, one-line GRS anchors. Detailed = fuller progression and reasoning, GRS anchors of two or three sentences.",
   scenarioFriction: "Clean = operationally straightforward, learning comes from clinical reasoning. Pressured = layered realistic friction that meaningfully affects assessment, packaging, and transport.",
 };
 
@@ -1393,6 +1393,14 @@ const ScenarioForm = () => {
   const [loading, setLoading] = useState(false);
   // Info section visibility: show only before scenario is generated
   const showInfoSection = !scenario && !loading;
+  const infoH2 = { marginTop: 0, color: 'var(--vn-orange, #f28c28)' };
+  const infoOl = { paddingLeft: '1.4em', margin: '0 0 1.2rem 0' };
+  const infoUl = { paddingLeft: '1.2em', margin: '0 0 1.2rem 0' };
+  const infoLi = { marginBottom: '0.5rem' };
+  const infoP = { margin: '0 0 1.2rem 0' };
+  const infoLink = { color: 'var(--vn-accent-text, #0d9488)', fontWeight: 700 };
+  const infoDetails = { margin: '0 0 1rem 0' };
+  const infoSummary = { cursor: 'pointer', fontSize: '1.5em', fontWeight: 700, color: 'var(--vn-orange, #f28c28)', margin: '0 0 0.8rem 0' };
   const [formData, setFormData] = useState({
     semester: "3",
     type: "Medical",
@@ -2318,7 +2326,7 @@ const ScenarioForm = () => {
       ];
       sets.forEach(({ label, data }) => {
         if (data && data.ecgInterpretation) {
-          const hr = data.hr ? ` — HR ${String(data.hr).split(',')[0].trim()}` : '';
+          const hr = data.hr ? `, HR ${String(data.hr).split(',')[0].trim()}` : '';
           lines.push(`${label}: ${data.ecgInterpretation}${hr}`);
         }
       });
@@ -3387,32 +3395,55 @@ const ScenarioForm = () => {
               marginRight: 'auto',
               boxShadow: '0 2px 12px rgba(18,48,71,0.06)'
             }}>
-              <p style={{marginTop: 0, marginBottom: '1.2rem'}}>Ontario PCP simulation scenarios for lab and self-practice. Each one has the call, the patient, vitals, how the patient responds to care, expected management and GRS anchors.</p>
-              <h2 style={{marginTop: 0, color: 'var(--vn-orange, #f28c28)'}}>How to use it</h2>
-              <ol style={{paddingLeft: '1.4em', margin: '0 0 1.2rem 0'}}>
-                <li style={{marginBottom: '0.5rem'}}><b>Generate.</b> Set the options on the left and press Generate Scenario.</li>
-                <li style={{marginBottom: '0.5rem'}}><b>Run the call.</b> Work it through before you read Expected Management and the teaching sections.</li>
-                <li style={{marginBottom: '0.5rem'}}><b>Chart it.</b> Press Practice ACR to download an ACR with this call's dispatch details filled in. Chart the rest in Adobe Acrobat Reader and press Check my ACR inside the form.</li>
-                <li style={{marginBottom: '0.5rem'}}><b>Get feedback.</b> Upload the chart on <a href="#acr-review" style={{color: 'var(--vn-accent-text, #0d9488)', fontWeight: 700}}>ACR Review</a>. It knows which scenario the ACR came from and asks about anything that doesn't match.</li>
+              <p style={{marginTop: 0, marginBottom: '1.2rem'}}>Ontario PCP simulation scenarios for lab and self-practice. Every scenario stays inside PCP scope, has a patient who responds to what you do, and comes with GRS anchors written for that call.</p>
+
+              <h2 style={infoH2}>How to use it</h2>
+              <ol style={infoOl}>
+                <li style={infoLi}><b>Build the call.</b> Set the options and press Generate Scenario.</li>
+                <li style={infoLi}><b>Run it before you read it.</b> Student mode (the default) shows The Call and folds the answers. Make your decisions, then press <i>I've made my decisions. Show the rest.</i></li>
+                <li style={infoLi}><b>Chart it.</b> Press Practice ACR to download an ACR with this call's dispatch details filled in. Chart the rest in Adobe Acrobat Reader and press Check my ACR inside the form.</li>
+                <li style={infoLi}><b>Get feedback.</b> Upload the chart on <a href="#acr-review" style={infoLink}>ACR Review</a>. It knows which scenario the ACR came from and asks about anything that doesn't match.</li>
               </ol>
-              <h2 style={{marginTop: 0, color: 'var(--vn-orange, #f28c28)'}}>The options</h2>
-              <ul style={{paddingLeft: '1.2em', margin: '0 0 1.2rem 0'}}>
-                <li style={{marginBottom: '0.5rem'}}><b>Semester:</b> 2 is BLS care. 3 adds directive-based treatment and medication decisions. 4 expects integrated reasoning and prioritizing under pressure.</li>
-                <li style={{marginBottom: '0.5rem'}}><b>Type:</b> Medical, Trauma, Cardiac, Respiratory or Environmental.</li>
-                <li style={{marginBottom: '0.5rem'}}><b>Environment:</b> where the call happens. It changes access, scene and transport.</li>
-                <li style={{marginBottom: '0.5rem'}}><b>Complexity:</b> Simple is one clear problem. Complex adds competing findings and harder priorities.</li>
-                <li style={{marginBottom: '0.5rem'}}><b>Scenario Friction:</b> Clean keeps the scene simple so the focus stays clinical. Pressured adds scene problems that change how you assess, package and move.</li>
-                <li style={{marginBottom: '0.5rem'}}><b>Generation Depth:</b> Quick Draft is faster and shorter. Detailed gives fuller progression, reasoning and GRS anchors.</li>
-                <li style={{marginBottom: '0.5rem'}}><b>Instructor Prompt:</b> optional. Steer the call with a patient, a twist or a teaching focus. Specific works better than general.</li>
+
+              <h2 style={infoH2}>What you get</h2>
+              <ul style={infoUl}>
+                <li style={infoLi}><b>The Call:</b> dispatch with its MPDS priority colour, the scene, the patient, history, exam and vital signs. Cardiac and other ECG-relevant calls include a 12-lead you can open.</li>
+                <li style={infoLi}><b>What Was Happening:</b> the clinical reasoning, and how the patient responds to good care, delayed care and the wrong care.</li>
+                <li style={infoLi}><b>Expected Management:</b> what the crew should do, and the directive reasons behind it.</li>
+                <li style={infoLi}><b>Teaching Points:</b> a short summary of what the case teaches, the debrief points, learning objectives, and what the instructor should watch for.</li>
+                <li style={infoLi}><b>Self-Assessment:</b> reflection questions and GRS anchors for all seven domains.</li>
               </ul>
-              <h2 style={{marginTop: 0, color: 'var(--vn-orange, #f28c28)'}}>The buttons</h2>
-              <ul style={{paddingLeft: '1.2em', margin: '0 0 1.2rem 0'}}>
-                <li style={{marginBottom: '0.5rem'}}><b>Night Shift:</b> dark mode and overnight calls.</li>
-                <li style={{marginBottom: '0.5rem'}}><b>Export:</b> the scenario as a PDF.</li>
-                <li style={{marginBottom: '0.5rem'}}><b>Practice ACR:</b> an ACR for this call, ready to chart and upload to ACR Review.</li>
-                <li style={{marginBottom: '0.5rem'}}><b>Reset:</b> clears the options and the scenario.</li>
+
+              <h2 style={infoH2}>Reading the GRS</h2>
+              <p style={infoP}>Each domain has anchors at 3, 5 and 7. <b>3</b> is unsafe to borderline. <b>5</b> is competent, the expected standard for the semester. <b>7</b> is exceptional: anticipating, organized and calm. The anchors describe what that looked like on this call, so use them to place a performance between them, not as a checklist.</p>
+
+              <details style={infoDetails}>
+              <summary style={infoSummary}>The options</summary>
+              <ul style={infoUl}>
+                <li style={infoLi}><b>Semester:</b> 2 is assessment and BLS care, no medications. 3 adds directive-based treatment and medication decisions. 4 expects integrated reasoning and prioritizing under pressure.</li>
+                <li style={infoLi}><b>Type:</b> Medical, Trauma, Cardiac, Respiratory or Environmental.</li>
+                <li style={infoLi}><b>Environment:</b> where the call happens. It changes access, scene and transport.</li>
+                <li style={infoLi}><b>Complexity:</b> Simple is one clear problem done well. Complex adds competing findings, gaps in the history and harder priorities.</li>
+                <li style={infoLi}><b>Scenario Friction:</b> Clean keeps the scene simple so the focus stays clinical. Pressured adds scene problems that change how you assess, package and move.</li>
+                <li style={infoLi}><b>Generation Depth:</b> Quick Draft is faster, with one-line GRS anchors. Detailed gives fuller progression and reasoning, and GRS anchors of two or three sentences.</li>
+                <li style={infoLi}><b>Instructor Prompt:</b> optional. Steer the call with a patient, a twist or a teaching focus. Specific works better than general.</li>
               </ul>
-              <p style={{margin: 0, fontSize: '0.92rem', color: 'var(--vn-muted-text, #64707d)'}}>Scenarios are written by AI. Check doses and directive details against the current Ontario BLS and ALS PCS before you teach from them.</p>
+              </details>
+
+              <details style={infoDetails}>
+              <summary style={infoSummary}>The buttons</summary>
+              <ul style={infoUl}>
+                <li style={infoLi}><b>Night Shift:</b> dark mode, and calls set overnight.</li>
+                <li style={infoLi}><b>Student mode / Instructor mode:</b> student mode folds the answers until you have made your decisions. Instructor mode opens everything.</li>
+                <li style={infoLi}><b>Export:</b> the whole scenario as a PDF.</li>
+                <li style={infoLi}><b>Run sheet:</b> a printable page for running the call in lab: vitals by stage, how the patient responds, a treatment checklist with space for times, what to watch for, and the GRS.</li>
+                <li style={infoLi}><b>Practice ACR:</b> an ACR for this call, ready to chart and upload to ACR Review.</li>
+                <li style={infoLi}><b>Reset:</b> clears the options and the scenario.</li>
+              </ul>
+              <p style={infoP}>After you generate, the side panel has <b>Jump to</b> for moving between sections and <b>Recent scenarios</b>, your last ten, kept on this device only.</p>
+              </details>
+
+              <p style={{margin: 0, fontSize: '0.92rem', color: 'var(--vn-muted-text, #64707d)'}}>Scenarios are written by AI to the PCP directives in the Ontario ALS PCS v5.4, and auxiliary directives are labelled. Check doses and directive details against the current Ontario BLS and ALS PCS before you teach from them.</p>
             </section>
           )}
           {scenario && (
