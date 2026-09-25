@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import jsPDF from "jspdf";
-import { FaSpinner, FaFilePdf, FaMoon, FaSun, FaUndoAlt } from "react-icons/fa";
+import { FaSpinner, FaFilePdf, FaFileMedical, FaMoon, FaSun, FaUndoAlt } from "react-icons/fa";
+import { downloadScenarioAcr, errorMessage } from "../acr/acrApi";
 
 // Simple confetti effect (no external lib)
 function Confetti() {
@@ -1482,6 +1483,7 @@ const ScenarioForm = () => {
   ];
 
   const [error, setError] = useState("");
+  const [acrBusy, setAcrBusy] = useState(false);
   const [collapsedSections, setCollapsedSections] = useState({});
   const [isMobile, setIsMobile] = useState(() =>
     typeof window !== "undefined" ? window.matchMedia("(max-width: 900px)").matches : false
@@ -2037,6 +2039,21 @@ const ScenarioForm = () => {
     } finally {
       abortControllerRef.current = null;
       setLoading(false);
+    }
+  };
+
+  // Practice ACR pre-filled with this scenario's dispatch details. The scenario rides inside it (encrypted),
+  // so when a student uploads their chart to ACR Review, the review knows which call it was.
+  const downloadPracticeAcr = async () => {
+    if (!scenario || acrBusy) return;
+    setAcrBusy(true);
+    setError("");
+    try {
+      await downloadScenarioAcr(scenario);
+    } catch (err) {
+      setError(await errorMessage(err, "Couldn't build the practice ACR. Try again in a minute."));
+    } finally {
+      setAcrBusy(false);
     }
   };
 
@@ -3129,6 +3146,20 @@ const ScenarioForm = () => {
             title={scenario ? "Export current scenario to PDF" : "Generate a scenario first to enable export"}
           >
             <FaFilePdf /> Export
+          </button>
+          <button
+            type="button"
+            onClick={downloadPracticeAcr}
+            style={{
+              ...styles.toggle,
+              opacity: scenario && !acrBusy ? 1 : 0.6,
+              cursor: scenario && !acrBusy ? "pointer" : "not-allowed"
+            }}
+            className="a11y-focus"
+            disabled={!scenario || acrBusy}
+            title={scenario ? "Download a Practice ACR pre-filled with this call's dispatch details, for ACR Review" : "Generate a scenario first"}
+          >
+            {acrBusy ? <FaSpinner className="spin" /> : <FaFileMedical />} Practice ACR
           </button>
         </div>
       </div>
