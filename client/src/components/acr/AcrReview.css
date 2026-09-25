@@ -22,6 +22,8 @@
 }
 
 .acr-muted { color: var(--vn-muted-text); }
+.acr-steps { padding-left: 1.4em; margin: 8px 0 4px; }
+.acr-steps li { margin: 6px 0; line-height: 1.5; }
 .acr-small { font-size: 0.85rem; }
 
 .acr-label {

@@ -126,7 +126,7 @@ function Feedback({ data, onPrint, onRevise, onStartOver }) {
         <button type="button" className="acr-btn acr-btn-secondary" onClick={onRevise}>Upload a revised version</button>
         <button type="button" className="acr-btn acr-btn-quiet" onClick={onStartOver}>Start over with a different chart</button>
       </div>
-      <p className="acr-muted acr-small">Fix your chart in Acrobat, then upload the revised version. The review will say what changed. Nothing you upload is stored.</p>
+      <p className="acr-muted acr-small">Nothing you upload is stored.</p>
     </div>
   );
 }
@@ -212,10 +212,12 @@ export default function AcrReview() {
     <div className="acr-review">
       <form className="acr-panel acr-noprint" onSubmit={submit}>
         <h2 className="acr-h2">Get feedback on your ACR</h2>
-        <p className="acr-muted">
-          Upload your practice ACR from a lab scenario. You get feedback the way your instructor would give it after the call:
-          what to fix first, what to keep doing, and a few questions about your decisions.
-        </p>
+        <ol className="acr-steps">
+          <li><b>Get the ACR.</b> On a generated scenario, press Practice ACR. For any other lab call, use the blank ACR at the bottom of this page.</li>
+          <li><b>Chart the call</b> in Adobe Acrobat Reader. Press Check my ACR inside the form and fix what it finds.</li>
+          <li><b>Upload it here.</b> You get what to fix first, what to keep doing, and questions about your decisions.</li>
+          <li><b>Revise and upload again.</b> The review says what you fixed and what's still open.</li>
+        </ol>
         {config && config.mode === "mock" && (
           <div className="acr-banner">Practice mode: feedback comes from the rule-based checker only, without the AI reviewer.</div>
         )}
@@ -262,7 +264,7 @@ export default function AcrReview() {
 
       <div className="acr-panel acr-noprint">
         <h2 className="acr-h2">Practice ACR files</h2>
-        <p className="acr-muted">Open these in Adobe Acrobat Reader. The checker and buttons inside the form only work there.</p>
+        <p className="acr-muted">Open them in Adobe Acrobat Reader. The buttons inside the form don't work in a browser or Preview.</p>
         <ul className="acr-resources">
           {RESOURCES.map((r) => (
             <li key={r.href}><a href={r.href} download>{r.label}</a><span className="acr-muted"> {r.note}</span></li>

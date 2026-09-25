@@ -53,8 +53,8 @@ function App() {
             <h1>{isAcr ? "VitalNotes ACR Review" : "VitalNotes Scenario Generator"}</h1>
             <p>
               {isAcr
-                ? "Upload your practice ACR from a lab scenario and get feedback the way your instructor would give it."
-                : "Build realistic, protocol-aligned simulation scenarios with instructor-grade teaching cues and shift-aware call texture."}
+                ? "Upload a practice ACR from a lab scenario. Get feedback on what to fix first."
+                : "Ontario PCP scenarios. Generate a call, run it, chart it, get feedback on the chart."}
             </p>
           </div>
         </div>
