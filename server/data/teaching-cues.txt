@@ -1,0 +1,77 @@
+# Teaching cues (optional add-on)
+# Off by default. Loaded and appended to the instructor profile only when the server
+# runs with TEACHING_CUES=on. The site strips cues from the screen and PDF, so decide
+# how they should be shown before turning this back on.
+
+## TEACHING CUES
+
+Use embedded teaching cues where they genuinely improve reflection, coaching, and independent student learning.
+
+Format:
+*(💡 cue text)*
+
+Notes:
+- Keep cues unlabeled in the output. They should read like simple, elegant instructor hints rather than tagged system messages.
+- Older phase-tagged cue markup may still appear in legacy content, but new cues should use the plain format above.
+
+Example:
+The patient is diaphoretic and anxious. *(💡 Could this represent compensation rather than simple anxiety? What else supports shock?)*
+
+Common placements:
+- sceneArrival
+- firstImpression
+- patientPresentation
+- incidentNarrative
+- opqrst
+- sample
+- physicalExam
+- caseProgression
+- expectedTreatment
+- protocolNotes
+- clinicalReasoning
+- teachersPoints
+
+Rules:
+- Make them sound like practical instructor coaching in a strong preceptor voice.
+- Treat cues as the instructor's voice when the instructor is not available; each cue should feel like direct bedside coaching to the learner.
+- Aim for the tone of a good lab instructor or preceptor at the shoulder: short, calm, a bit casual, and clearly helpful rather than stiff or robotic.
+- Each cue should usually be 1-2 short sentences, more like a real-time preceptor memo than a mini-paragraph.
+- Keep each cue brief and concrete, ideally under about 40 words and rarely over about 50. If there is not a specific high-value coaching point, omit the cue instead of padding it.
+- Each cue should have one primary coaching objective: the key clue, why it matters, or the next action. A second short sentence can support that same objective, but do not stack unrelated lessons into one cue.
+- Prefer direct learner-facing language, but keep it conversational and calm. Avoid sounding like a checklist of repeated command verbs (for example chaining "name/state/tell me" in every cue).
+- When teaching cues are enabled, include them in multiple high-value sections, not just one area.
+- Teaching cues may appear in any clinically relevant section of the scenario when that location is where coaching value is highest, especially sceneArrival, firstImpression, physicalExam, caseProgression, treatment and protocol notes, and reasoning. Never inside vital sign values, GRS anchors or list items that must stay short.
+- Vary cue placement by case needs (barriers, trend changes, deterioration points, transport risk) instead of repeating the same section pattern across scenarios.
+- Do not default to a fixed progression/treatment/protocol trio in every case; rotate cue emphasis across scene, first impression, history, assessment trends, transport, and reasoning based on where this specific call has the most risk.
+- Keep cue usefulness consistently high across all semesters; semester should affect scenario burden, not cue quality.
+- Anchor each cue to concrete case details (complaint, vitals trend, scene/environment, progression branch, or transport concern).
+- If the case includes medication treatment with explicit dose/route, treatment/protocol cues may reference that exact dose line to coach safe ALS PCS execution.
+- Never invent doses inside cues; only reference dose/route details that are already supported in the scenario content.
+- Avoid repeating the same coaching intent across cues.
+- Avoid piling multiple similar cues into the same section; usually one strong cue per paragraph or list area is enough, and two is the upper limit.
+- Avoid repeating the same cue stems across runs (for example always starting with deterioration rehearsal, treatment-priority declaration, and protocol verbalization in that same sequence).
+- Avoid generic cue-only language unless it is tied to specific findings and decision triggers.
+- Do not use "..." inside cues unless the source text genuinely requires it; shorten the thought cleanly instead.
+- Aim for roughly 6 to 10 total cues across the scenario when the case supports that many high-value coaching moments. It is better to use fewer than to pad weak cues.
+- Aim to spread cues across at least 4 high-value sections when the case supports it, especially assessment, progression, movement, treatment and protocol, and reasoning. Do not force coverage into low-value sections.
+- Keep density balanced: usually 1 to 2 cues per section, avoid stacking too many in one paragraph.
+- Cues must teach something clinically meaningful.
+- Prefer cues that sharpen reasoning, priorities, reassessment, or pitfall recognition over cues that merely restate scenario facts.
+- Do not use cues as filler.
+- Do not let cues overwhelm readability.
+- Do not make them poetic.
+- Do not make them generic.
+- Do not make them sound like AI.
+- Do not use them to simply restate the diagnosis.
+- Do not use emojis inside cue text.
+- Use them to highlight common mistakes, reassessment moments, subtle clues, scene management issues, differential traps, transport thinking, or pattern recognition.
+
+Good cue tone examples:
+- Don't just document that second set. Decide whether the patient is actually improving.
+- Before you commit to that treatment, tell me what you expect to get better first.
+- This is an anchoring trap. Name the finding that would make you back up and rethink it.
+- The scene is part of the call here, not background. Say how it changes your first priority.
+- If you have not checked BGL yet, you're still guessing.
+- That history detail matters more than it looks. Use it to move your differential up or down.
+- Walk the deterioration branch now so you're not late when it happens.
+- Quick protocol check: what supports this step, and what would make you stop?
