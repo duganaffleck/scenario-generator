@@ -5,7 +5,7 @@ import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { jsonrepair } from 'jsonrepair';
-import { buildDirectivePromptAddendum, buildForbiddenTreatmentTerms } from '../data/ontarioDirectiveRules.js';
+import { buildDirectivePromptAddendum, buildForbiddenTreatmentTerms, scrubOutOfScopeText } from '../data/ontarioDirectiveRules.js';
 
 const router = express.Router();
 const __filename = fileURLToPath(import.meta.url);
@@ -832,6 +832,27 @@ function fillScenarioGaps(normalized, options = {}) {
   return normalized;
 }
 
+// Strict PCP scope in the teaching, progression and GRS text: out-of-scope sentences are removed, and a
+// list item or GRS bullet that ends up empty is dropped. History sections are left alone on purpose.
+function scrubOutOfScopeProse(scenario) {
+  const list = (arr) => (Array.isArray(arr) ? arr.map((x) => (typeof x === 'string' ? scrubOutOfScopeText(x) : x)).filter((x) => x !== '') : arr);
+  const cp = scenario.caseProgression;
+  if (cp && typeof cp === 'object') for (const k of Object.keys(cp)) cp[k] = list(cp[k]);
+  scenario.teachersPoints = scrubOutOfScopeText(scenario.teachersPoints);
+  scenario.learningObjectives = list(scenario.learningObjectives);
+  scenario.selfReflectionPrompts = list(scenario.selfReflectionPrompts);
+  const ig = scenario.instructorGuidance;
+  if (ig && typeof ig === 'object') {
+    ig.instructorPriorities = list(ig.instructorPriorities);
+    ig.psychologicalSafetyDebrief = scrubOutOfScopeText(ig.psychologicalSafetyDebrief);
+  }
+  const grs = scenario.grsAnchors;
+  if (grs && typeof grs === 'object') for (const d of Object.values(grs)) if (d && typeof d === 'object') for (const sc of Object.keys(d)) d[sc] = list(d[sc]);
+  scenario.expectedTreatment = list(scenario.expectedTreatment);
+  scenario.protocolNotes = list(scenario.protocolNotes);
+  return scenario;
+}
+
 function normalizeScenario(parsed, options = {}) {
   const source = parsed && typeof parsed === 'object' ? parsed : {};
   const normalized = mergeDeepStrict(REQUIRED_FIELDS, source);
@@ -926,7 +947,9 @@ function normalizeScenario(parsed, options = {}) {
     normalized.customPrompt = options.customPrompt;
   }
 
-  return scrubEmDashesDeep(fillScenarioGaps(normalized, options));
+  const filled = fillScenarioGaps(normalized, options);
+  if (optSemester || optType) scrubOutOfScopeProse(filled);
+  return scrubEmDashesDeep(filled);
 }
 
 function getEnvironmentInstruction(environment) {
@@ -2403,7 +2426,7 @@ GRS rules:
 - Each of the 7 domains must contain exactly these score keys: "3", "5", "7"
 - Do not include score "1" anywhere in grsAnchors
 - Each score key must contain an array
-- Each score array must contain exactly 3 short, scenario-specific behavioural bullet examples
+- Each score array must contain exactly 3 scenario-specific behavioural bullet examples, one behaviour each
 - Do not use vague traits like "good communicator"
 - Score 3 = unsafe-to-borderline, important omissions, weak prioritization, inconsistent reassessment, or poor adaptation
 - Score 5 = competent semester-appropriate performance; this is the expected standard
@@ -2441,7 +2464,8 @@ Also return a top-level ecgFindings object with these fields:
 - When the scenario involves hyperkalemia, missed dialysis, or peaked T waves from electrolyte disturbance, you MUST set ecgType to "12-lead" and populate twelveLeadFindings describing peaked narrow T waves in precordial leads, any PR prolongation, QRS widening, P wave flattening, and clinical context. Do not leave ecgFindings or twelveLeadFindings blank for these presentations.
 - fifteenLeadFindings: describe right-sided or posterior lead findings when ecgType is "15-lead". Focus on RV involvement, posterior changes, or right-sided ST changes. Leave empty string if ecgType is "rhythm" or "12-lead".
 - ecgClinicalNote: one sentence connecting the ECG findings to the clinical presentation and treatment decisions.
-- patternKey: one of these exact string values matching the pattern this 12-lead represents: normal, inferiorSTEMI, anteriorSTEMI, lateralSTEMI, inferolateralSTEMI, highLateralSTEMI, lbbb, rbbb, afib12, vtach12, inferiorRV, posterior, wellens, deWinter, pericarditis, hyperkalemia, svt12, atrialFlutter12, firstDegreeAVBlock, secondDegreeTypeI, secondDegreeTypeII, thirdDegreeAVBlock. This must match the actual ECG pattern described in twelveLeadFindings. Leave as empty string only if ecgType is rhythm.
+- patternKey: one of these exact string values matching the pattern this 12-lead represents: normal, lvhStrain, inferiorSTEMI, anteriorSTEMI, lateralSTEMI, inferolateralSTEMI, highLateralSTEMI, lbbb, rbbb, afib12, vtach12, inferiorRV, posterior, wellens, deWinter, pericarditis, hyperkalemia, svt12, atrialFlutter12, firstDegreeAVBlock, secondDegreeTypeI, secondDegreeTypeII, thirdDegreeAVBlock. This must match the actual ECG pattern described in twelveLeadFindings. Leave as empty string only if ecgType is rhythm.
+- Use patternKey lvhStrain for left ventricular hypertrophy with a strain pattern and no STEMI. Describe it as a STEMI mimic in twelveLeadFindings.
 - Do not leave rhythmInterpretation blank on any call that has an ECG value in vitalSigns.
 - Do not generate 12-lead or 15-lead findings for isolated trauma without medical concern.
 - When ECG or rhythm findings are clinically relevant to the case, teachersPoints or instructorGuidance must reference them explicitly. If the rhythm supports the diagnosis, say so. If the rhythm is a red flag that could be missed, name it. If the rhythm is secondary and not the teaching focus, one sentence is enough.
@@ -2541,10 +2565,7 @@ ${directiveAddendum.map((line) => `- ${line}`).join('\n')}
 - Do not force multiple drugs into cases where only one medication or no medication is appropriate.
 - If multiple medications are used, ensure each one is clearly supported by the presentation, semester level, and current Ontario directive logic.
 - Reference BLS PCS and ALS PCS when relevant in protocolNotes and expectedTreatment.
-- Patients should not always present with obvious textbook diagnoses; include vague, evolving, or misleading presentations when appropriate.
 - Include realistic paramedic decision points such as transport decisions, destination decisions, reassessment findings, and changes over time.
-- Many scenarios should include more than one clinical problem or complicating factor (e.g., comorbidities, medications, social factors, scene challenges).
-- Vital signs should be believable and clinically consistent with the presentation and should sometimes be borderline rather than extreme.
 - Not every abnormal vital sign needs immediate correction; some should require monitoring and reassessment.
 - Include realistic Ontario paramedic considerations such as STEMI bypass, stroke bypass, trauma bypass, sepsis considerations, and appropriate destination decisions when relevant.
 - Include contraindication decision points when appropriate (e.g., nitro and blood pressure, medication allergies, medication interactions, unclear history).
@@ -2590,7 +2611,7 @@ const FEW_SHOT_COUNT = 3;
 // Sections the examples leave out: never shown in the app, or better defined by the template than by older examples.
 const FEW_SHOT_STRIP = ['generationMetadata', 'initialAssessment', 'historyGathering', 'secondaryAssessment', 'additionalAssessments',
   'transportPhase', 'medications', 'allergies', 'pastMedicalHistory', 'vocationalLearningOutcomes', 'scenarioRationale', 'clinicalReasoning'];
-const CREW_NOTES_CLINICAL = /\b(consider|obtain|12-lead|asa|nitro|glucagon|salbutamol|epinephrine|monitor|assess|suspect|likely|rule out|treat)\b/i;
+const CREW_NOTES_CLINICAL = /\b(consider|obtain|12-lead|asa|nitro|glucagon|salbutamol|epinephrine|monitor|assess|suspect|likely|rule out|treat|prioriti[sz]e|control|trend|manage|anchor|keep this|rewarm\w*|warming|cooling|oxygen|airway|transport)\b/i;
 
 function usableFewShot(example) {
   if (!example || typeof example !== 'object') return false;
@@ -2631,15 +2652,7 @@ function selectFewShotExamples(allExamples, { type, semester }) {
     if (chosen.length >= FEW_SHOT_COUNT) break;
     if (!chosen.includes(e)) chosen.push(e);
   }
-  return chosen.map((e) => {
-    const out = Object.fromEntries(Object.entries(e).filter(([k]) => !FEW_SHOT_STRIP.includes(k)));
-    // Examples predate MPDS determinants; the dispatchCode format comes from the instructions only.
-    if (out.callInformation && typeof out.callInformation === 'object') {
-      const { dispatchCode, ...call } = out.callInformation;
-      out.callInformation = call;
-    }
-    return out;
-  });
+  return chosen.map((e) => Object.fromEntries(Object.entries(e).filter(([k]) => !FEW_SHOT_STRIP.includes(k))));
 }
 
 function buildFewShotText(examples) {
