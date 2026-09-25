@@ -18,12 +18,23 @@ function Evidence({ item }) {
   );
 }
 
-function ScenarioLine({ scenario }) {
+// "Other lab scenario": a call that wasn't generated here and isn't one of the samples, e.g. an instructor's own scenario.
+const OTHER_LAB = "other-lab";
+
+function ScenarioLine({ scenario, choice }) {
+  if (!scenario && choice === OTHER_LAB) {
+    return (
+      <p className="acr-muted">
+        Other lab scenario: reviewed for documentation only. There's no scenario here to compare your chart with, so talk the
+        call itself through with your instructor.
+      </p>
+    );
+  }
   if (!scenario) {
     return (
       <p className="acr-muted">
-        No scenario linked, so this review covers the documentation only. For questions about the call itself, chart on the
-        pre-filled ACR from the scenario page.
+        No scenario was found in this ACR, so this review covers the documentation only. If the call came from a generated
+        scenario, press Practice ACR on that scenario and chart on the ACR it gives you.
       </p>
     );
   }
@@ -39,7 +50,7 @@ function Feedback({ data, onPrint, onRevise, onStartOver }) {
       {mode === "mock" && <div className="acr-banner">Rule-based feedback only (practice mode). It catches what the rules know about.</div>}
       {mode === "fallback" && <div className="acr-banner">The AI reviewer wasn't available, so this is the rule-based review only. Try again later for the full review.</div>}
       {data.notice && <div className="acr-banner">{data.notice}</div>}
-      <ScenarioLine scenario={data.scenario} />
+      <ScenarioLine scenario={data.scenario} choice={data.choice} />
       <p className="acr-summary">{f.summary}</p>
 
       {f.improvement_since_last && f.improvement_since_last.length > 0 && (
@@ -169,13 +180,13 @@ export default function AcrReview() {
     const fd = new FormData();
     fd.append("acr", file);
     fd.append("practiceConfirm", "yes");
-    if (scenarioId) fd.append("scenarioId", scenarioId);
+    if (scenarioId && scenarioId !== OTHER_LAB) fd.append("scenarioId", scenarioId);
     if (accessCode.trim()) fd.append("accessCode", accessCode.trim());
     if (lastFeedback) fd.append("previousFeedback", JSON.stringify(lastFeedback));
     setStatus("reviewing");
     try {
       const data = await reviewAcr(fd, () => setStatus("waking"));
-      setResult(data);
+      setResult({ ...data, choice: scenarioId });
       setLastFeedback(data.feedback);
     } catch (err) {
       if (err?.response?.status === 403) setConfig((c) => ({ ...(c || {}), accessCodeRequired: true }));
@@ -226,11 +237,12 @@ export default function AcrReview() {
         <input id="acr-file" ref={fileInput} type="file" accept="application/pdf,.pdf" className="acr-input"
           onChange={(e) => setFile(e.target.files && e.target.files[0] ? e.target.files[0] : null)} />
 
-        {samples.length > 0 && !lastFeedback && (
+        {config && !lastFeedback && (
           <>
             <label className="acr-label" htmlFor="acr-scenario">Which scenario was this?</label>
             <select id="acr-scenario" className="acr-input" value={scenarioId} onChange={(e) => setScenarioId(e.target.value)}>
-              <option value="">A generated scenario (found automatically from the pre-filled ACR)</option>
+              <option value="">Generated scenario (found automatically from the Practice ACR)</option>
+              <option value={OTHER_LAB}>Other lab scenario (not generated here, not a sample)</option>
               {samples.map((s) => <option key={s.id} value={s.id} title={s.summary}>Sample: {s.title}</option>)}
             </select>
           </>
