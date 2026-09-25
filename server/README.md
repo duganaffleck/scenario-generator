@@ -1,11 +1,18 @@
 # VitalNotes Scenario Generator Server
 
-Build realistic, protocol-aligned simulation scenarios with instructor-grade teaching cues in minutes.
+Build realistic, protocol-aligned Ontario PCP simulation scenarios.
 
 ## Documentation
 
 - See [API_DOCS.md](API_DOCS.md) for API and data schema documentation.
 - Scenario data schema: [data/scenarioSchema.json](data/scenarioSchema.json)
+
+## Optional switches
+
+- `TEACHING_CUES=on`: turns inline teaching cues back on. They are parked by default: the cue
+  instructions live in `data/teaching-cues.txt` and are only added to the prompt when this is set,
+  and any cue the model writes anyway is stripped. The site currently hides cues on screen and in the
+  PDF, so decide how they should be shown before switching this on.
 
 ## Runtime Safety Note
 

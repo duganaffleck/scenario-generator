@@ -947,8 +947,9 @@ function normalizeScenario(parsed, options = {}) {
     normalized.customPrompt = options.customPrompt;
   }
 
-  const filled = fillScenarioGaps(normalized, options);
+  let filled = fillScenarioGaps(normalized, options);
   if (optSemester || optType) scrubOutOfScopeProse(filled);
+  if (!TEACHING_CUES_ON) filled = stripTeachingCuesDeep(filled);
   return scrubEmDashesDeep(filled);
 }
 
@@ -2599,8 +2600,23 @@ const dataPaths = {
   profile: path.join(__dirname, '../data/scenario-instructor-profile.txt'),
   fewShots: path.join(__dirname, '../data/few-shot-scenarios.json'),
   blsStandards: path.join(__dirname, '../data/bls-standards.txt'),
-  alsStandards: path.join(__dirname, '../data/als-standards.txt')
+  alsStandards: path.join(__dirname, '../data/als-standards.txt'),
+  teachingCues: path.join(__dirname, '../data/teaching-cues.txt')
 };
+
+// Inline teaching cues *(💡 ...)* are parked for now. TEACHING_CUES=on in the server environment brings them back:
+// the cue instructions are appended to the system prompt and the model is asked for them. Off otherwise.
+const TEACHING_CUES_ON = String(process.env.TEACHING_CUES || '').toLowerCase() === 'on';
+const CUE_PATTERN = /\s*\*\(💡[\s\S]*?\)\*/g;
+
+function stripTeachingCuesDeep(value) {
+  if (typeof value === 'string') return value.replace(CUE_PATTERN, '').trim();
+  if (Array.isArray(value)) return value.map(stripTeachingCuesDeep);
+  if (value && typeof value === 'object') {
+    return Object.fromEntries(Object.entries(value).map(([k, v]) => [k, stripTeachingCuesDeep(v)]));
+  }
+  return value;
+}
 
 let cachedDataPromise;
 
@@ -2669,9 +2685,10 @@ function loadStaticData() {
       fs.readFile(dataPaths.profile, 'utf-8'),
       fs.readFile(dataPaths.fewShots, 'utf-8'),
       fs.readFile(dataPaths.blsStandards, 'utf-8'),
-      fs.readFile(dataPaths.alsStandards, 'utf-8')
-    ]).then(([profile, fewShots, blsStandards, alsStandards]) => ({
-      profile,
+      fs.readFile(dataPaths.alsStandards, 'utf-8'),
+      TEACHING_CUES_ON ? fs.readFile(dataPaths.teachingCues, 'utf-8') : Promise.resolve('')
+    ]).then(([profile, fewShots, blsStandards, alsStandards, teachingCues]) => ({
+      profile: teachingCues ? `${profile}\n\n${teachingCues}` : profile,
       fewShotExamples: JSON.parse(fewShots),
       blsStandards,
       alsStandards
@@ -2694,7 +2711,7 @@ router.post('/', async (req, res) => {
     uniqueness = 'Common',
     generationDepth = 'Quick Draft',
     includeBystanders = true,
-    includeTeachingCues = true,
+    includeTeachingCues: requestedCues = true,
     customPrompt = ''
   } = req.body || {};
 
@@ -2703,6 +2720,9 @@ router.post('/', async (req, res) => {
     scenarioFriction === 'High' ? 'Pressured' :
     scenarioFriction === 'Moderate' ? 'Clean' :
     scenarioFriction;
+
+  // Cues only when the server has them switched on; the request can still turn them off.
+  const includeTeachingCues = TEACHING_CUES_ON && requestedCues !== false;
 
   const normalizedDepth =
     generationDepth === 'Standard' ? 'Quick Draft' :

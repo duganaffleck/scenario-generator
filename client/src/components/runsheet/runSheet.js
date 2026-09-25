@@ -19,7 +19,8 @@ const text = (v) => {
       .map(([k, x]) => `${label(k)}: ${text(x)}`)
       .join("; ");
   }
-  return String(v);
+  // Teaching cues are hidden everywhere else on the site; older saved scenarios may still carry them.
+  return String(v).replace(/\s*\*\(💡[\s\S]*?\)\*/g, "").trim();
 };
 
 const SMALL = new Set(["and", "or", "of", "to", "the", "in", "on", "with", "for"]);
