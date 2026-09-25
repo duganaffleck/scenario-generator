@@ -2,6 +2,12 @@ import React, { useEffect, useRef, useState } from "react";
 import { getAcrConfig, reviewAcr, errorMessage } from "./acrApi";
 import "./AcrReview.css";
 
+// While a review runs (an AI review can take most of a minute), say what's happening.
+const PROGRESS = ["Reading your chart...", "Running the documentation checks...", "Comparing it with the scenario...", "Writing your feedback..."];
+const CODE_KEY = "vn.acrAccessCode";
+const readSession = (k) => { try { return window.sessionStorage.getItem(k) || ""; } catch (e) { return ""; } };
+const writeSession = (k, v) => { try { window.sessionStorage.setItem(k, v); } catch (e) { /* storage blocked: fine */ } };
+
 const RESOURCES = [
   { href: "/acr/ACR_practice_v3.pdf", label: "Blank Practice ACR", note: "For a lab scenario that didn't come with a pre-filled ACR." },
   { href: "/acr/ACR_model_chest_pain.pdf", label: "Model chart: chest pain", note: "A clean chart with teaching notes in the margin." },
@@ -147,7 +153,9 @@ export default function AcrReview() {
   const [scenarioId, setScenarioId] = useState("");
   const [file, setFile] = useState(null);
   const [confirmed, setConfirmed] = useState(false);
-  const [accessCode, setAccessCode] = useState("");
+  const [accessCode, setAccessCode] = useState(() => readSession(CODE_KEY));
+  const [progress, setProgress] = useState(0);
+  const [dragging, setDragging] = useState(false);
   const [status, setStatus] = useState("idle");
   const [error, setError] = useState("");
   const [result, setResult] = useState(null);
@@ -162,6 +170,13 @@ export default function AcrReview() {
       .catch(() => { if (alive) setConfig({ mode: "unknown", accessCodeRequired: false, scenarios: [] }); });
     return () => { alive = false; };
   }, []);
+
+  useEffect(() => {
+    if (status !== "reviewing") return undefined;
+    setProgress(0);
+    const t = setInterval(() => setProgress((p) => Math.min(p + 1, PROGRESS.length - 1)), 4000);
+    return () => clearInterval(t);
+  }, [status]);
 
   useEffect(() => {
     if (result && resultRef.current) resultRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -186,6 +201,7 @@ export default function AcrReview() {
     setStatus("reviewing");
     try {
       const data = await reviewAcr(fd, () => setStatus("waking"));
+      if (accessCode.trim()) writeSession(CODE_KEY, accessCode.trim());
       setResult({ ...data, choice: scenarioId });
       setLastFeedback(data.feedback);
     } catch (err) {
@@ -234,8 +250,24 @@ export default function AcrReview() {
         )}
 
         <label className="acr-label" htmlFor="acr-file">Your ACR (the Practice ACR PDF)</label>
-        <input id="acr-file" ref={fileInput} type="file" accept="application/pdf,.pdf" className="acr-input"
-          onChange={(e) => setFile(e.target.files && e.target.files[0] ? e.target.files[0] : null)} />
+        <div
+          className={`acr-drop${dragging ? " acr-drop-over" : ""}${file ? " acr-drop-has" : ""}`}
+          onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
+          onDragLeave={() => setDragging(false)}
+          onDrop={(e) => {
+            e.preventDefault();
+            setDragging(false);
+            const f = e.dataTransfer.files && e.dataTransfer.files[0];
+            if (!f) return;
+            if (!/\.pdf$/i.test(f.name) && f.type !== "application/pdf") { setError("That isn't a PDF. Drop the Practice ACR PDF."); return; }
+            setError("");
+            setFile(f);
+          }}
+        >
+          <input id="acr-file" ref={fileInput} type="file" accept="application/pdf,.pdf" className="acr-file-input"
+            onChange={(e) => setFile(e.target.files && e.target.files[0] ? e.target.files[0] : null)} />
+          <span className="acr-drop-text">{file ? file.name : "Drop your PDF here, or click to choose it"}</span>
+        </div>
 
         {config && !lastFeedback && (
           <>
@@ -265,6 +297,7 @@ export default function AcrReview() {
           <button type="submit" className="acr-btn" disabled={busy}>{buttonLabel}</button>
         </div>
         <div aria-live="polite">
+          {status === "reviewing" && <p className="acr-muted">{PROGRESS[progress]}</p>}
           {status === "waking" && <p className="acr-muted">The server was asleep. It takes up to a minute to wake up the first time.</p>}
           {error && <div className="acr-error">{error}</div>}
         </div>

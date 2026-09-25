@@ -338,8 +338,10 @@ function stringifyValue(value) {
 }
 
 
+// Replace em and en dashes (no em dashes in the output) with a spaced hyphen. Ordinary hyphens are left alone:
+// matching "-" here turned "12-lead" into "12 - lead" and "58-year-old" into "58 - year - old" everywhere.
 function removeEmDashes(value = '') {
-  return String(value).replace(/\s*-\s*/g, ' - ').replace(/\s{2,}/g, ' ').trim();
+  return String(value).replace(/\s*[\u2013\u2014]\s*/g, ' - ').replace(/\s{2,}/g, ' ').trim();
 }
 
 function scrubEmDashesDeep(value) {
