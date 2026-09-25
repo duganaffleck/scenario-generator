@@ -710,6 +710,11 @@ Call Information:
 - Make dispatch feel real and operational
 - Include scene constraints when relevant
 - crewNotes are operational only (access, hazards, resources), never a suspected diagnosis or a treatment to consider
+- dispatchCode uses Ontario MPDS: the protocol card number and determinant level, the card name, then the response priority. Format: "10-C, Chest Pain/Chest Discomfort (Non-Traumatic), Priority Red". Leave off the numeric determinant suffix. Never use the old Code 1 to 4 dispatch priorities.
+- Pick the card and level from what the caller would report on the phone, not from the final diagnosis. A hypertensive emergency reported as chest tightness is card 10.
+- Determinant levels, least to most acute: Omega, Alpha, Bravo, Charlie, Delta, Echo. Echo only when the caller reports the patient is not breathing or breathing ineffectively.
+- Response priorities: Purple = emergent, immediately life-threatening, time critical. Red = emergent, potentially life-threatening, time sensitive. Orange = urgent, potentially serious, immediate threat to life very unlikely, time may be a factor. Yellow = non-urgent, not serious, not time sensitive. Green = non-urgent, can be deferred without harm, not time sensitive.
+- MPDS cards: 1 Abdominal Pain/Problems, 2 Allergies (Reactions)/Envenomations, 3 Animal Bites/Attacks, 4 Assault/Sexual Assault, 5 Back Pain (Non-Traumatic), 6 Breathing Problems, 7 Burns/Explosion, 8 Carbon Monoxide/Inhalation/HazMat, 9 Cardiac or Respiratory Arrest/Death, 10 Chest Pain/Chest Discomfort (Non-Traumatic), 11 Choking, 12 Convulsions/Seizures, 13 Diabetic Problems, 14 Drowning/Near Drowning, 15 Electrocution/Lightning, 16 Eye Problems/Injuries, 17 Falls, 18 Headache, 19 Heart Problems/AICD, 20 Heat/Cold Exposure, 21 Hemorrhage/Lacerations, 22 Inaccessible Incident/Entrapment, 23 Overdose/Poisoning (Ingestion), 24 Pregnancy/Childbirth/Miscarriage, 25 Psychiatric/Abnormal Behaviour/Suicide Attempt, 26 Sick Person (Specific Diagnosis), 27 Stab/Gunshot/Penetrating Trauma, 28 Stroke (CVA)/TIA, 29 Traffic/Transportation Incidents, 30 Traumatic Injuries (Specific), 31 Unconscious/Fainting (Near), 32 Unknown Problem (Person Down), 33 Inter-Facility Transfer/Palliative Care.
 
 Patient Presentation:
 - Show what the crew sees immediately

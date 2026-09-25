@@ -2631,7 +2631,15 @@ function selectFewShotExamples(allExamples, { type, semester }) {
     if (chosen.length >= FEW_SHOT_COUNT) break;
     if (!chosen.includes(e)) chosen.push(e);
   }
-  return chosen.map((e) => Object.fromEntries(Object.entries(e).filter(([k]) => !FEW_SHOT_STRIP.includes(k))));
+  return chosen.map((e) => {
+    const out = Object.fromEntries(Object.entries(e).filter(([k]) => !FEW_SHOT_STRIP.includes(k)));
+    // Examples predate MPDS determinants; the dispatchCode format comes from the instructions only.
+    if (out.callInformation && typeof out.callInformation === 'object') {
+      const { dispatchCode, ...call } = out.callInformation;
+      out.callInformation = call;
+    }
+    return out;
+  });
 }
 
 function buildFewShotText(examples) {
