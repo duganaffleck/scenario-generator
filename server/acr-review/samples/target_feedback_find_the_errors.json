@@ -1,0 +1,60 @@
+{
+  "summary": "Your chart has a penicillin allergy written under NKA and salbutamol charted as IV, and those two go first because they could hurt someone on a real call. After that, the story is missing: \"Pt better\" with no second set of vitals, and nothing about why his CTAS changed.",
+  "strengths": [
+    {
+      "point": "You got the salbutamol and the oxygen into the grid with times and a crew number, and you gave the oxygen a flow rate. That's the skeleton of a good grid.",
+      "evidence": "2 L/min"
+    }
+  ],
+  "fixes": [
+    {
+      "priority": 1,
+      "issue": "NKA is ticked, and underneath it you wrote a penicillin allergy. The chart says two opposite things about allergies.",
+      "evidence": "Penicillin (rash)",
+      "why_it_matters": "The ED nurse reads the tick box first. If they see NKA, the penicillin allergy may never make it to his chart, and COPD patients with green sputum get antibiotics.",
+      "what_to_do": "Untick NKA, tick Other, and keep the allergy with the reaction written out."
+    },
+    {
+      "priority": 2,
+      "issue": "Salbutamol is charted as route IV, with a dose of 5 and no unit. The checker caught the missing unit. It can't catch the route, because IV is a real route code, just not for this drug.",
+      "evidence": "Row 3: 650 5 IV",
+      "why_it_matters": "Anyone auditing this chart reads it as 5 of something given intravenously. That's a medication error on paper even if it didn't happen in the room.",
+      "what_to_do": "Correct the route to how you actually gave it (NB for the nebulizer), add the unit, and write across the row what you saw after it."
+    },
+    {
+      "priority": 3,
+      "issue": "Your Remarks say he got better, but nothing on the chart shows it. There's one set of vitals, taken before the salbutamol, and no breath sounds after.",
+      "evidence": "Pt SOB. Neb given. Pt better. Transported to Fleming, no issues.",
+      "why_it_matters": "\"Better\" is a conclusion. The receiving team needs the numbers that got you there: his SpO2, his rate and his work of breathing after the neb, and his chest on reassessment.",
+      "what_to_do": "Add a second set of vitals after the salbutamol, describe his breathing and breath sounds after treatment, and let those facts say he improved."
+    }
+  ],
+  "scenario_questions": [
+    {
+      "question": "The scenario had two days of green sputum and a low-grade fever yesterday. Neither is on your chart. Did he tell you?",
+      "scenario_fact": "green sputum and low-grade fever"
+    },
+    {
+      "question": "The scenario had decreased air entry to the bases. Your chest exam only says wheezes. Did you listen to the bases?",
+      "scenario_fact": "decreased air entry to the bases"
+    },
+    {
+      "question": "Your incident history says he used his puffer about 4 times, but Treatment Prior to Arrival says None. Which is it?",
+      "scenario_fact": "used his puffer about 4 times before calling"
+    }
+  ],
+  "question_to_think_about": "You moved him from CTAS 2 to CTAS 3 when you left the scene. What did you see that made you decide he was less sick, and where would a reader find it?",
+  "rubric": [
+    { "domain": "Completeness", "score": 3, "evidence": "CTAS on arrival at destination is blank and the history has no onset or pertinent negatives." },
+    { "domain": "Accuracy and consistency", "score": 1, "evidence": "NKA with a listed allergy, None for meds with meds listed, and an age that doesn't match the date of birth." },
+    { "domain": "Chronology and reassessment", "score": 1, "evidence": "Arrive Scene is before Crew Mobile, first vitals are before patient contact, and there's no reassessment after the salbutamol." },
+    { "domain": "Clinical reasoning in the narrative", "score": 2, "evidence": "Remarks is a task list with no decision explained." },
+    { "domain": "Codes, times and format", "score": 3, "evidence": "Problem code doesn't match the primary problem, designation is written as PCP, and the dose has no unit." },
+    { "domain": "Handover, disposition and refusal", "score": 3, "evidence": "TOC is timed but no one is named as receiving care." }
+  ],
+  "improvement_since_last": [],
+  "model_sentence": { "offered": false, "text": "", "note": "" },
+  "instructor_flags": [
+    "Salbutamol is charted as IV. Worth asking whether this was a charting slip or a gap in understanding the route."
+  ]
+}

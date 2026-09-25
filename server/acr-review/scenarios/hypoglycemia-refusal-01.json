@@ -1,0 +1,134 @@
+{
+  "id": "hypoglycemia-refusal-01",
+  "_note": "Sample scenario in the Scenario Generator output format, for demos and tests. acrKeyFindings is an optional extra the generator does not produce.",
+  "title": "Skipped Lunch",
+  "scenarioIntro": "58-year-old woman with type 1 diabetes, confused and diaphoretic after skipping lunch. Cannot swallow safely. Glucagon IM, recovers, then refuses transport. Tests capacity assessment and refusal documentation.",
+  "callInformation": {
+    "type": "Diabetic, confused",
+    "location": "House, 17 Birch Crescent",
+    "time": "13:05",
+    "dispatchCode": "4",
+    "dispatchNotes": [
+      "Diabetic, confused"
+    ],
+    "hazardsOrFlags": [],
+    "crewNotes": ""
+  },
+  "patientDemographics": {
+    "name": "Joanne Martel",
+    "sex": "Female",
+    "age": "58",
+    "height": "",
+    "weight": "70 kg",
+    "appearance": "Seated at the kitchen table, pale and sweaty, confused.",
+    "chiefComplaint": ""
+  },
+  "patientPresentation": "Eyes open, confused to time and place, follows simple commands slowly, diaphoretic.",
+  "incidentNarrative": "Took usual insulin at 0730, skipped lunch while gardening. Husband found her confused at 1245. Husband tried juice; she held it in her mouth and coughed.",
+  "opqrst": {},
+  "sample": {
+    "signsAndSymptoms": "",
+    "allergies": "Sulfa drugs (rash)",
+    "medications": [
+      "Insulin glargine 20 units every morning",
+      "Insulin lispro with meals",
+      "Perindopril 4 mg daily"
+    ],
+    "pastMedicalHistory": "Type 1 diabetes since age 19.",
+    "lastOralIntake": "Breakfast at 0730",
+    "eventsLeadingUp": ""
+  },
+  "medications": [
+    "Insulin glargine 20 units every morning",
+    "Insulin lispro with meals",
+    "Perindopril 4 mg daily"
+  ],
+  "allergies": [
+    "Sulfa drugs (rash)"
+  ],
+  "pastMedicalHistory": [
+    "Type 1 diabetes",
+    "Hypertension"
+  ],
+  "physicalExam": {
+    "headNeck": "No head injury, no tongue bite.",
+    "chest": "Clear.",
+    "abdomen": "Soft.",
+    "extremities": "Moves all limbs equally."
+  },
+  "vitalSigns": {
+    "firstSet": {
+      "context": "Initial",
+      "hr": "108",
+      "rr": "18",
+      "bp": "146/86",
+      "spo2": "98",
+      "gcs": "14",
+      "bgl": "2.1"
+    },
+    "secondSet": {},
+    "additionalSets": []
+  },
+  "caseProgression": {
+    "withProperTreatment": [
+      "Glucagon 1 mg IM: At 7 minutes talking more; at 13 minutes GCS 15, glucose 5.9."
+    ],
+    "withoutProperTreatment": [],
+    "withIncorrectTreatment": [
+      "Patient eats: Repeat glucose 6.8.",
+      "Transport offered: Patient refuses: skipped lunch, doesn't want to wait in emerg. Husband home all evening."
+    ],
+    "movementOrTransportChanges": []
+  },
+  "expectedTreatment": [
+    "Glucose check before treatment",
+    "Glucagon 1 mg IM (unable to swallow safely)",
+    "Repeat glucose after treatment and after eating",
+    "Aid to capacity assessment documented",
+    "Refusal documented with risks explained, patient's plan, responsible adult and callback advice"
+  ],
+  "protocolNotes": [
+    "ALS PCS Hypoglycemia Medical Directive (glucagon)",
+    "BLS PCS refusal of service and capacity"
+  ],
+  "learningObjectives": [
+    "Treat hypoglycemia by route appropriate to airway protection",
+    "Assess capacity",
+    "Document a defensible refusal"
+  ],
+  "teachersPoints": "",
+  "acrKeyFindings": [
+    {
+      "finding": "last seen normal time",
+      "keywords": [
+        "last seen",
+        "last known"
+      ]
+    },
+    {
+      "finding": "could not swallow safely (juice attempt)",
+      "keywords": [
+        "swallow",
+        "juice"
+      ]
+    },
+    {
+      "finding": "sulfa allergy",
+      "keywords": [
+        "sulfa"
+      ]
+    },
+    {
+      "finding": "patient's own words for the refusal",
+      "keywords": [
+        "\""
+      ]
+    },
+    {
+      "finding": "responsible adult staying with her",
+      "keywords": [
+        "husband"
+      ]
+    }
+  ]
+}

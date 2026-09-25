@@ -1,0 +1,56 @@
+[
+ {
+  "domain": "Completeness",
+  "anchors": {
+   "1": "Whole sections the call needed are blank: no allergies, no call times, no CTAS.",
+   "3": "Most sections are filled, but a reader has to chase gaps: allergy \"Other\" ticked with nothing listed, CTAS at one point only.",
+   "5": "Everything the call required is there. Small gaps only, like a missing crew number on one row.",
+   "7": "Complete, with pertinent negatives, and the reason is given whenever something expected wasn't done."
+  }
+ },
+ {
+  "domain": "Accuracy and consistency",
+  "anchors": {
+   "1": "The chart contradicts itself: NKA ticked with an allergy listed, or times that couldn't have happened.",
+   "3": "Mostly consistent, with slips a reader would notice: skin \"unremarkable\" while the narrative says pale and diaphoretic.",
+   "5": "Sections agree with each other. Doses, units, routes and codes are correct.",
+   "7": "Every section tells the same story, and the numbers in the grid match what the narrative describes."
+  }
+ },
+ {
+  "domain": "Chronology and reassessment",
+  "anchors": {
+   "1": "One set of vitals, or treatments with no times.",
+   "3": "Reassessment is there but not tied to treatment: nitro charted with no BP before it.",
+   "5": "Vitals before and after each medication, and rows in time order.",
+   "7": "Reassessment frequency fits how sick the patient was, and changes are charted when they happened."
+  }
+ },
+ {
+  "domain": "Clinical reasoning in the narrative",
+  "anchors": {
+   "1": "The narrative is a task list: \"vitals done, ASA given, transported.\"",
+   "3": "Findings are recorded, but not the decisions they led to.",
+   "5": "Key decisions are explained, such as why this destination or why a medication was held.",
+   "7": "A reader who wasn't there could follow the reasoning and defend it."
+  }
+ },
+ {
+  "domain": "Codes, times and format",
+  "anchors": {
+   "1": "Missing or wrong codes make the care hard to follow.",
+   "3": "Codes mostly right, with free text where a code belongs, or mixed time formats.",
+   "5": "Procedure, problem, route and CTAS codes correct. 24-hour times and YYYY/MM/DD throughout.",
+   "7": "Codes and format are clean enough to read quickly, and the narrative adds what codes can't say."
+  }
+ },
+ {
+  "domain": "Handover, disposition and refusal",
+  "anchors": {
+   "1": "No transfer of care, destination, or refusal documentation where the call needed it.",
+   "3": "Disposition recorded, but the handover or refusal is thin: refusal signed with capacity questions blank.",
+   "5": "TOC time, receiving facility and disposition complete. Refusals include capacity findings and the advice given.",
+   "7": "The next person caring for this patient would know what happened, what was done, and what to watch for."
+  }
+ }
+]

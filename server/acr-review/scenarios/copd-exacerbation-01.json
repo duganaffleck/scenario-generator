@@ -1,0 +1,129 @@
+{
+  "id": "copd-exacerbation-01",
+  "_note": "Sample scenario in the Scenario Generator output format, for demos and tests. acrKeyFindings is an optional extra the generator does not produce.",
+  "title": "Four Puffs Later",
+  "scenarioIntro": "74-year-old man with COPD, worsening shortness of breath over two days, used his salbutamol puffer four times before calling. Tests respiratory assessment, bronchodilator treatment and reassessment.",
+  "callInformation": {
+    "type": "Difficulty breathing",
+    "location": "House, 203 Lakeview Road",
+    "time": "14:20",
+    "dispatchCode": "4",
+    "dispatchNotes": [
+      "Difficulty breathing"
+    ],
+    "hazardsOrFlags": [],
+    "crewNotes": ""
+  },
+  "patientDemographics": {
+    "name": "Gerald Fortin",
+    "sex": "Male",
+    "age": "74",
+    "height": "",
+    "weight": "80 kg",
+    "appearance": "Tripod position, diaphoretic, 2-3 word sentences.",
+    "chiefComplaint": ""
+  },
+  "patientPresentation": "Tripoding, speaking 2-3 words, accessory muscle use, wheezes throughout.",
+  "incidentNarrative": "Two days of increasing shortness of breath and cough with green sputum. Used his Ventolin puffer about 4 times in the last hour with little relief. No chest pain. Low-grade fever yesterday.",
+  "opqrst": {},
+  "sample": {
+    "signsAndSymptoms": "",
+    "allergies": "Penicillin (rash)",
+    "medications": [
+      "Tiotropium (Spiriva) daily",
+      "Salbutamol (Ventolin) MDI PRN"
+    ],
+    "pastMedicalHistory": "COPD, 50 pack-year smoker.",
+    "lastOralIntake": "Toast at 0900",
+    "eventsLeadingUp": ""
+  },
+  "medications": [
+    "Tiotropium (Spiriva) daily",
+    "Salbutamol (Ventolin) MDI PRN"
+  ],
+  "allergies": [
+    "Penicillin (rash)"
+  ],
+  "pastMedicalHistory": [
+    "COPD",
+    "Smoker"
+  ],
+  "physicalExam": {
+    "chest": "Wheezes throughout, decreased air entry to bases, accessory muscle use.",
+    "extremities": "No edema."
+  },
+  "vitalSigns": {
+    "firstSet": {
+      "context": "Initial",
+      "hr": "118",
+      "rr": "32",
+      "bp": "162/94",
+      "spo2": "86",
+      "gcs": "15",
+      "temp": "37.9"
+    },
+    "secondSet": {},
+    "additionalSets": []
+  },
+  "caseProgression": {
+    "withProperTreatment": [
+      "Salbutamol 5 mg NB: After 10 minutes RR 24, SpO2 92%, speaking full sentences, expiratory wheezes only."
+    ],
+    "withoutProperTreatment": [],
+    "withIncorrectTreatment": [
+      "No reassessment: Instructor asks for a repeat set of vitals and breath sounds."
+    ],
+    "movementOrTransportChanges": []
+  },
+  "expectedTreatment": [
+    "Salbutamol nebulized per bronchoconstriction directive",
+    "Oxygen titrated to target",
+    "Repeat vitals and breath sounds after salbutamol"
+  ],
+  "protocolNotes": [
+    "ALS PCS Bronchoconstriction Medical Directive (salbutamol)"
+  ],
+  "learningObjectives": [
+    "Assess severity of respiratory distress",
+    "Treat bronchoconstriction",
+    "Reassess and document response"
+  ],
+  "teachersPoints": "",
+  "acrKeyFindings": [
+    {
+      "finding": "used his puffer about 4 times before calling",
+      "keywords": [
+        "puffer",
+        "ventolin",
+        "inhaler"
+      ]
+    },
+    {
+      "finding": "green sputum and low-grade fever",
+      "keywords": [
+        "sputum",
+        "fever"
+      ]
+    },
+    {
+      "finding": "no chest pain",
+      "keywords": [
+        "chest pain"
+      ]
+    },
+    {
+      "finding": "penicillin allergy",
+      "keywords": [
+        "penicillin"
+      ]
+    },
+    {
+      "finding": "decreased air entry to the bases",
+      "keywords": [
+        "air entry",
+        "decreased",
+        "bases"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "title": "Fair Day Reaction",
+  "scenarioIntro": "A 34-year-old woman develops hives, lip swelling and wheeze after eating at a fall fair food truck. Tests recognition of anaphylaxis and early IM epinephrine.",
+  "callInformation": {
+    "type": "Allergic reaction",
+    "location": "Parking lot beside the fairgrounds",
+    "time": "14:05",
+    "dispatchCode": "Code 4",
+    "dispatchNotes": ["34 F, allergic reaction, difficulty breathing"],
+    "hazardsOrFlags": ["Crowd"],
+    "crewNotes": ""
+  },
+  "patientDemographics": { "name": "Tessa Morrow", "sex": "Female", "age": 34, "height": "165 cm", "weight": "62 kg",
+    "appearance": "Sitting on a curb, flushed, anxious, hives on neck and arms", "chiefComplaint": "Throat feels tight" },
+  "patientPresentation": "Speaking in short sentences, audible wheeze, lips swollen.",
+  "incidentNarrative": "Ate a satay skewer 15 minutes ago. Knows she is allergic to peanuts. Left her auto-injector at home.",
+  "opqrst": { "onset": "Minutes after eating", "provocation": "", "quality": "Tightness", "radiation": "", "severity": "8/10", "time": "15 minutes" },
+  "sample": { "signsAndSymptoms": "Hives, lip swelling, wheeze", "allergies": "Peanuts (anaphylaxis)", "medications": ["Cetirizine 10 mg PRN"],
+    "pastMedicalHistory": "Asthma", "lastOralIntake": "Satay at 13:50", "eventsLeadingUp": "Ate at a food truck" },
+  "medications": ["Cetirizine 10 mg PRN", "Salbutamol MDI PRN"],
+  "allergies": ["Peanuts (anaphylaxis)"],
+  "pastMedicalHistory": ["Asthma"],
+  "physicalExam": { "airway": "Lips and tongue swollen, voice hoarse", "breathing": "Wheezes throughout", "skin": "Urticaria on neck, chest and arms" },
+  "vitalSigns": {
+    "firstSet": { "context": "Initial", "hr": "128", "rr": "28", "bp": "92/58", "spo2": "91", "etco2": "", "temp": "", "gcs": "15", "bgl": "", "ecgInterpretation": "Sinus Tachycardia" },
+    "secondSet": { "context": "After epinephrine", "hr": "118", "rr": "22", "bp": "108/66", "spo2": "95", "etco2": "", "temp": "", "gcs": "15", "bgl": "", "ecgInterpretation": "Sinus Tachycardia" },
+    "additionalSets": []
+  },
+  "caseProgression": { "withProperTreatment": ["Wheeze eases and BP recovers within 5 minutes of epinephrine"], "withoutProperTreatment": ["Stridor develops"],
+    "withIncorrectTreatment": ["Diphenhydramine alone: continues to deteriorate"], "movementOrTransportChanges": [] },
+  "expectedTreatment": [
+    "Epinephrine IM per the anaphylaxis directive, as soon as anaphylaxis is recognized",
+    "Diphenhydramine per the anaphylaxis directive after epinephrine",
+    "Oxygen titrated to the patient's saturation",
+    "Consider salbutamol if wheeze persists after epinephrine",
+    "Do not delay transport to give antihistamine"
+  ],
+  "protocolNotes": ["ALS PCS Moderate to Severe Allergic Reaction Medical Directive"],
+  "learningObjectives": ["Recognize anaphylaxis", "Give epinephrine early"],
+  "teachersPoints": "Epinephrine first.",
+  "clinicalReasoning": { "summary": "Anaphylaxis after peanut exposure.", "differentialDiagnosis": [], "conclusion": "" },
+  "grsAnchors": {}
+}

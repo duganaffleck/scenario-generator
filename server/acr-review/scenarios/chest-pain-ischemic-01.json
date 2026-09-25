@@ -1,0 +1,153 @@
+{
+  "id": "chest-pain-ischemic-01",
+  "_note": "Sample scenario in the Scenario Generator output format, for demos and tests. acrKeyFindings is an optional extra the generator does not produce.",
+  "title": "Morning Chest Pressure",
+  "scenarioIntro": "64-year-old man with known stable angina wakes with central chest pressure. 12-lead shows no STEMI. Tests ASA and nitro decision-making with reassessment, and destination reasoning.",
+  "callInformation": {
+    "type": "Chest pain, 64 M, conscious and breathing",
+    "location": "House, 48 Mill Street",
+    "time": "07:21",
+    "dispatchCode": "4",
+    "dispatchNotes": [
+      "Chest pain, 64 M, conscious and breathing"
+    ],
+    "hazardsOrFlags": [],
+    "crewNotes": ""
+  },
+  "patientDemographics": {
+    "name": "Dennis Holloway",
+    "sex": "Male",
+    "age": "64",
+    "height": "180 cm",
+    "weight": "92 kg",
+    "appearance": "Sitting on the edge of the bed, pale, diaphoretic, anxious, hand on chest.",
+    "chiefComplaint": ""
+  },
+  "patientPresentation": "Alert and oriented, speaking full sentences, pale and diaphoretic, pressure 7/10 central chest radiating to L arm.",
+  "incidentNarrative": "Woke at 0640 with central chest pressure, not relieved by rest. Wife called 911. Did not use his own nitro spray.",
+  "opqrst": {
+    "onset": "At rest, woke from sleep at 0640",
+    "provocation": "Not changed by position or breathing",
+    "quality": "Pressure",
+    "radiation": "Left arm",
+    "severity": "7/10",
+    "time": "About 50 minutes"
+  },
+  "sample": {
+    "signsAndSymptoms": "",
+    "allergies": "None known",
+    "medications": [
+      "Ramipril 10 mg daily",
+      "Atorvastatin 40 mg daily",
+      "ASA 81 mg daily (last dose last night)",
+      "Nitroglycerin spray PRN (none today)"
+    ],
+    "pastMedicalHistory": "Stable angina since 2023.",
+    "lastOralIntake": "Supper last night at 1800",
+    "eventsLeadingUp": ""
+  },
+  "medications": [
+    "Ramipril 10 mg daily",
+    "Atorvastatin 40 mg daily",
+    "ASA 81 mg daily (last dose last night)",
+    "Nitroglycerin spray PRN (none today)"
+  ],
+  "allergies": [],
+  "pastMedicalHistory": [
+    "Stable angina",
+    "Hypertension",
+    "High cholesterol"
+  ],
+  "physicalExam": {
+    "headNeck": "No JVD.",
+    "chest": "Clear to bases bilaterally, no accessory muscle use, chest wall not tender.",
+    "abdomen": "Soft, non-tender.",
+    "extremities": "No edema, pedal pulses present."
+  },
+  "vitalSigns": {
+    "firstSet": {
+      "context": "Initial",
+      "hr": "96",
+      "rr": "20",
+      "bp": "158/94",
+      "spo2": "95",
+      "gcs": "15",
+      "bgl": "6.4",
+      "pain": "7"
+    },
+    "secondSet": {},
+    "additionalSets": []
+  },
+  "caseProgression": {
+    "withProperTreatment": [
+      "ASA given: No immediate change."
+    ],
+    "withoutProperTreatment": [],
+    "withIncorrectTreatment": [
+      "First nitro with BP checked: Pain 5/10, BP 146/88.",
+      "Second nitro: Pain 3/10, BP 138/84.",
+      "Nitro given without asking about PDE5 inhibitors: Instructor asks what the patient takes for erectile dysfunction. He took sildenafil two days ago."
+    ],
+    "movementOrTransportChanges": []
+  },
+  "expectedTreatment": [
+    "12-lead ECG within 10 minutes of patient contact and interpreted",
+    "ASA 160 mg chewed after contraindication check",
+    "Nitroglycerin with BP before each dose and PDE5 inhibitor question",
+    "Repeat vitals after each medication",
+    "Transport to closest appropriate ED (no STEMI criteria)"
+  ],
+  "protocolNotes": [
+    "ALS PCS Cardiac Ischemia Medical Directive (ASA, nitroglycerin)",
+    "BLS PCS chest pain standard"
+  ],
+  "learningObjectives": [
+    "Recognize ischemic chest pain and apply the cardiac ischemia directive",
+    "Reassess after every medication",
+    "Explain destination choice"
+  ],
+  "teachersPoints": "",
+  "acrKeyFindings": [
+    {
+      "finding": "pain radiates to the left arm",
+      "keywords": [
+        "arm",
+        "radiat"
+      ]
+    },
+    {
+      "finding": "pale and diaphoretic",
+      "keywords": [
+        "diaphor",
+        "pale"
+      ]
+    },
+    {
+      "finding": "12-lead: no STEMI criteria",
+      "keywords": [
+        "stemi",
+        "st elevation",
+        "no st"
+      ]
+    },
+    {
+      "finding": "asked about PDE5 inhibitors (erectile dysfunction medication)",
+      "keywords": [
+        "pde5",
+        "viagra",
+        "sildenafil",
+        "erectile",
+        "phosphodiesterase"
+      ]
+    },
+    {
+      "finding": "daily ASA use",
+      "keywords": [
+        "asa 81",
+        "81 mg",
+        "daily asa",
+        "asa daily"
+      ]
+    }
+  ]
+}

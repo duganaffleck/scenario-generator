@@ -8,6 +8,7 @@ import rateLimit from 'express-rate-limit';
 
 
 import generateScenarioRouter from './routes/generateScenario.js';
+import acrReviewRouter from './acr-review/router.js';
 
 const app = express();
 app.set('trust proxy', 1);
@@ -46,6 +47,7 @@ app.use(express.json({ limit: '1mb' }));
 app.use('/api/', apiRateLimiter);
 
 app.use('/api/generate-scenario', generateScenarioRouter);
+app.use('/api/acr-review', acrReviewRouter);
 
 app.get('/', (req, res) => {
   res.send('Scenario Generator Backend Running');
