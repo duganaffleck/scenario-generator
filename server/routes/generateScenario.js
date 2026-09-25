@@ -26,7 +26,7 @@ const GENERATION_DEPTH_PROFILES = {
     temperature: 0.75,
     maxTokens: parsePositiveInt(process.env.OPENAI_MAX_TOKENS_QUICK, 20000),
     promptInstruction:
-      'Prioritize speed and structural completeness. Keep scenarioIntro to 2 sentences. Keep patientPresentation to 2 to 3 sentences. Keep incidentNarrative to 3 to 4 sentences. Keep physicalExam to one specific finding per field with no elaboration. Keep caseProgression to 2 points per track. Keep clinicalReasoning.summary to 2 sentences. Keep GRS anchors to one direct sentence per bullet. Keep teachersPoints to 2 to 3 sentences. Keep selfReflectionPrompts to 3 prompts. Do not omit required fields. Keep every section scenario-specific even when short.'
+      'Prioritize speed and structural completeness. Keep scenarioIntro to 1 or 2 sentences. Keep patientPresentation to 2 to 3 sentences. Keep incidentNarrative to 3 to 4 sentences. Keep physicalExam to one specific finding per field with no elaboration. Keep caseProgression to 2 points per track. Keep clinicalReasoning.summary to 2 sentences. Keep GRS anchors to one direct sentence per bullet. Keep teachersPoints to 2 to 3 sentences. Keep selfReflectionPrompts to 3 prompts. Do not omit required fields. Keep every section scenario-specific even when short.'
   },
 
   Detailed: {
@@ -35,7 +35,7 @@ const GENERATION_DEPTH_PROFILES = {
     temperature: 1,
     maxTokens: parsePositiveInt(process.env.OPENAI_MAX_TOKENS_DETAILED, 24000),
     promptInstruction:
-      'Prioritize instructor-quality depth and clinical realism throughout. Write scenarioIntro as 3 to 5 sentences that name the teaching purpose. Write patientPresentation as a full paragraph with behavioral, positional, and speech details. Write incidentNarrative as a full timeline with contextual and clinical detail. Write physicalExam with specific findings and brief clinical context per field. Write caseProgression with 3 to 4 points per track showing realistic clinical cause and effect. Write clinicalReasoning with a full argument per differential including mechanism and distinguishing features. Write GRS anchors as 2 to 3 sentences per bullet describing specific observable behaviors tied to this call. Write teachersPoints as a full 4-sentence paragraph. Write selfReflectionPrompts as 4 to 5 specific clinical reasoning questions.'
+      'Prioritize instructor-quality depth and clinical realism throughout. Write scenarioIntro as 2 or 3 sentences that name the teaching purpose. Write patientPresentation as a full paragraph with behavioral, positional, and speech details. Write incidentNarrative as a full timeline with contextual and clinical detail. Write physicalExam with specific findings and brief clinical context per field. Write caseProgression with 3 to 4 points per track showing realistic clinical cause and effect. Write clinicalReasoning with a full argument per differential including mechanism and distinguishing features. Write GRS anchors as 2 to 3 sentences per bullet describing specific observable behaviors tied to this call. Write teachersPoints as a full 4-sentence paragraph. Write selfReflectionPrompts as 4 to 5 specific clinical reasoning questions.'
   }
 };
 
@@ -1632,14 +1632,14 @@ function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
     return {
       style: 'cardiac ischemia medication decision scenario',
       likelyMedicationOpportunities: [
-        'ASA 160-325mg when clinically indicated — apply directive as if no prior care rendered',
+        'ASA 160-325mg when clinically indicated: apply directive as if no prior care rendered',
         'Nitroglycerin 0.4mg SL when BP supports it and conditions are met: prior history OR IV established',
         'Repeat nitroglycerin every 5 minutes if still symptomatic and BP allows, to a max of 3 doses',
-        'Morphine only after 3rd nitroglycerin dose when pain is severe — ACP only in most cases; confirm scope'
+        'Morphine only after 3rd nitroglycerin dose when pain is severe: ACP only in most cases; confirm scope'
       ],
       contraindicationChecks: [
-        '12-lead ECG before nitroglycerin consideration — goal within first 10 minutes',
-        'V4R if inferior STEMI identified — nitroglycerin contraindicated in RV STEMI',
+        '12-lead ECG before nitroglycerin consideration: goal within first 10 minutes',
+        'V4R if inferior STEMI identified: nitroglycerin contraindicated in RV STEMI',
         'Nitroglycerin contraindicated if SBP near 100 mmHg or tachycardia present',
         'Nitroglycerin contraindicated with PDE5 inhibitor use in past 48 hours (sildenafil, tadalafil, vardenafil, etc.)',
         'Do not resume nitroglycerin if vitals fall outside parameters even if they normalize',
@@ -1667,15 +1667,15 @@ function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
     return {
       style: 'tachydysrhythmia assessment and management scenario',
       likelyMedicationOpportunities: [
-        'Modified Valsalva maneuver for stable SVT — PCP and ACP scope, requires base hospital authorization as PCP auxiliary',
-        'Identify whether tachycardia is physiologic compensation (pain, hypovolemia, fever, hypoxia) — treat cause, not rhythm',
+        'Modified Valsalva maneuver for stable SVT: PCP and ACP scope, requires base hospital authorization as PCP auxiliary',
+        'Identify whether tachycardia is physiologic compensation (pain, hypovolemia, fever, hypoxia): treat cause, not rhythm',
         '12-lead ECG to differentiate narrow vs wide complex tachycardia before any intervention'
       ],
       contraindicationChecks: [
         'Do not treat compensatory tachycardia with Valsalva or any rate-controlling intervention',
-        'Wide complex tachycardia — adenosine and amiodarone are ACP only; PCP role is monitoring, 12-lead, and transport',
-        'Hemodynamically unstable tachydysrhythmia — synchronized cardioversion is ACP with base hospital authorization',
-        'SVT Treat and Discharge criteria require base hospital patch and specific eligibility — pregnant patients excluded from T&D'
+        'Wide complex tachycardia: adenosine and amiodarone are ACP only; PCP role is monitoring, 12-lead, and transport',
+        'Hemodynamically unstable tachydysrhythmia: synchronized cardioversion is ACP with base hospital authorization',
+        'SVT Treat and Discharge criteria require base hospital patch and specific eligibility: pregnant patients excluded from T&D'
       ],
       supportiveCareOpportunities: [
         '12-lead ECG acquisition and interpretation',
@@ -1688,7 +1688,7 @@ function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
       instructionText: [
         'Confirm the tachycardia is not a compensatory response before treating it as a dysrhythmia.',
         '12-lead is essential for SVT vs other narrow complex vs wide complex differentiation.',
-        'Modified Valsalva is the PCP intervention for stable SVT — requires base hospital authorization as auxiliary.',
+        'Modified Valsalva is the PCP intervention for stable SVT: requires base hospital authorization as auxiliary.',
         'Adenosine, amiodarone, cardioversion are ACP only. PCP role in unstable dysrhythmia is transport and ALS intercept.'
       ].join(' ')
     };
@@ -1699,18 +1699,18 @@ function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
     return {
       style: 'cardiac arrest resuscitation scenario',
       likelyMedicationOpportunities: [
-        'Single dose IM epinephrine 1:1000 (1mg) ONLY if arrest is directly attributable to anaphylaxis — this is the only epinephrine indication within PCP scope for cardiac arrest',
-        'Epinephrine IV/IO in cardiac arrest is ACP only — do NOT include this as a PCP treatment in expectedTreatment or protocolNotes',
+        'Single dose IM epinephrine 1:1000 (1mg) ONLY if arrest is directly attributable to anaphylaxis: this is the only epinephrine indication within PCP scope for cardiac arrest',
+        'Epinephrine IV/IO in cardiac arrest is ACP only: do NOT include this as a PCP treatment in expectedTreatment or protocolNotes',
         'Post-ROSC: fluid bolus 10ml/kg to max 1000ml if SBP below 90 and lungs clear',
-        'Do not give naloxone in confirmed cardiac arrest — it has no routine role here'
+        'Do not give naloxone in confirmed cardiac arrest: it has no routine role here'
       ],
       contraindicationChecks: [
         'Epinephrine timing: administer after first rhythm analysis and defibrillation attempt in shockable arrest',
         'No routine naloxone in confirmed cardiac arrest regardless of suspected opioid cause',
-        'Post-ROSC oxygen: target SpO2 94-98%, avoid 100% — oxygen free radicals worsen outcome',
-        'Post-ROSC ETCO2 target 30-40 mmHg — avoid hyperventilation',
+        'Post-ROSC oxygen: target SpO2 94-98%, avoid 100%: oxygen free radicals worsen outcome',
+        'Post-ROSC ETCO2 target 30-40 mmHg: avoid hyperventilation',
         'Medical TOR criteria: patch after 20 minutes if considering termination',
-        'Glucometry has no value in VSA patient — do not check BGL during arrest'
+        'Glucometry has no value in VSA patient: do not check BGL during arrest'
       ],
       supportiveCareOpportunities: [
         'high quality CPR with minimal interruptions',
@@ -1736,17 +1736,17 @@ function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
     return {
       style: 'acute cardiogenic pulmonary edema scenario',
       likelyMedicationOpportunities: [
-        'CPAP for severe respiratory distress with acute pulmonary edema — PCP auxiliary requires base hospital authorization',
-        'Nitroglycerin under Acute Cardiogenic Pulmonary Edema directive — ECG not required before first dose in this directive',
-        'ASA if concurrent cardiac ischemia is suspected — patient may receive nitroglycerin from ACPE directive and ASA from cardiac ischemia directive',
-        'Patient cannot receive nitroglycerin from both ACPE and cardiac ischemia directives — one directive only'
+        'CPAP for severe respiratory distress with acute pulmonary edema: PCP auxiliary requires base hospital authorization',
+        'Nitroglycerin under Acute Cardiogenic Pulmonary Edema directive: ECG not required before first dose in this directive',
+        'ASA if concurrent cardiac ischemia is suspected: patient may receive nitroglycerin from ACPE directive and ASA from cardiac ischemia directive',
+        'Patient cannot receive nitroglycerin from both ACPE and cardiac ischemia directives: one directive only'
       ],
       contraindicationChecks: [
-        'Confirm cardiogenic versus non-cardiogenic pulmonary edema — nitroglycerin only for cardiogenic',
+        'Confirm cardiogenic versus non-cardiogenic pulmonary edema: nitroglycerin only for cardiogenic',
         'CPAP is appropriate for non-cardiogenic pulmonary edema as well as cardiogenic',
         'If STEMI identified on ECG, follow cardiac ischemia directive nitroglycerin schedule (max 3 doses)',
-        'If nitroglycerin causes hypotension, withhold further doses — fluid bolus permitted despite crackles in this situation',
-        'Salbutamol may be considered if wheezing is present — wheezing in early pulmonary edema may be from airway edema not bronchospasm'
+        'If nitroglycerin causes hypotension, withhold further doses: fluid bolus permitted despite crackles in this situation',
+        'Salbutamol may be considered if wheezing is present: wheezing in early pulmonary edema may be from airway edema not bronchospasm'
       ],
       supportiveCareOpportunities: [
         '12-lead ECG acquisition as soon as possible',
@@ -1758,7 +1758,7 @@ function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
       oxygenGuidance: 'High concentration oxygen appropriate given hypoxia typically present. Titrate once stable.',
       instructionText: [
         'CPAP is a key intervention for acute cardiogenic pulmonary edema at PCP auxiliary level with base hospital authorization.',
-        'Nitroglycerin does not require ECG before first dose under the ACPE directive — acquire ECG as soon as possible.',
+        'Nitroglycerin does not require ECG before first dose under the ACPE directive: acquire ECG as soon as possible.',
         'Do not double-count nitroglycerin across two directives.',
         'If nitroglycerin causes hypotension, stop further doses and consider fluid bolus even with crackles present.'
       ].join(' ')
@@ -1772,7 +1772,7 @@ function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
       likelyMedicationOpportunities: [
         '12-lead ECG to evaluate for dysrhythmia or ischemic cause',
         'Oral glucose or glucagon if hypoglycemia identified as contributing cause',
-        'No routine medication for vasovagal syncope — focus is on cause identification'
+        'No routine medication for vasovagal syncope: focus is on cause identification'
       ],
       contraindicationChecks: [
         'Rule out cardiac, hypoglycemic, and neurologic causes before accepting vasovagal diagnosis',
@@ -1804,13 +1804,13 @@ function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
           'Epinephrine IM (asthmatics only) for severe bronchoconstriction when life threat is present',
           'Salbutamol immediately following epinephrine for asthmatics',
           'Salbutamol MDI or nebulized for moderate bronchospasm',
-          'Dexamethasone to reduce morbidity — not immediate rescue, does not have fast onset'
+          'Dexamethasone to reduce morbidity: not immediate rescue, does not have fast onset'
         ],
         contraindicationChecks: [
-          'Epinephrine is for asthmatics only — not for COPD',
-          'CPAP is for COPD only — not for asthma',
-          'Dexamethasone has no immediate life-saving effect — do not frame it as primary rescue',
-          'Watch for air trapping and fatigue — allow adequate expiratory phase if ventilating',
+          'Epinephrine is for asthmatics only: not for COPD',
+          'CPAP is for COPD only: not for asthma',
+          'Dexamethasone has no immediate life-saving effect: do not frame it as primary rescue',
+          'Watch for air trapping and fatigue: allow adequate expiratory phase if ventilating',
           'For COPD or asthma patients in respiratory failure with initial ETCO2 above 50 mmHg, maintain ETCO2 50-60 mmHg'
         ],
         supportiveCareOpportunities: [
@@ -1822,11 +1822,11 @@ function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
         ],
         oxygenGuidance: 'Titrate oxygen to SpO2 92-96%. Avoid unnecessary high-flow oxygen.',
         instructionText: [
-          'Epinephrine is for asthmatics only — never for COPD.',
-          'CPAP is for COPD only — never for asthma.',
+          'Epinephrine is for asthmatics only: never for COPD.',
+          'CPAP is for COPD only: never for asthma.',
           'Salbutamol should follow epinephrine immediately in asthmatic patients.',
           'Dexamethasone reduces morbidity but is not a rescue medication.',
-          'Watch for fatigue and silent chest — these are late findings requiring immediate escalation.'
+          'Watch for fatigue and silent chest: these are late findings requiring immediate escalation.'
         ].join(' ')
       };
     }
@@ -1838,11 +1838,11 @@ function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
           'Salbutamol MDI or nebulized as first-line bronchodilator',
           'Ipratropium may be added per local service protocol',
           'Dexamethasone to reduce morbidity',
-          'CPAP for severe COPD respiratory distress — PCP auxiliary requires base hospital authorization'
+          'CPAP for severe COPD respiratory distress: PCP auxiliary requires base hospital authorization'
         ],
         contraindicationChecks: [
-          'CPAP is appropriate for COPD — not for asthma',
-          'Epinephrine is not for COPD — asthmatics only',
+          'CPAP is appropriate for COPD: not for asthma',
+          'Epinephrine is not for COPD: asthmatics only',
           'For initial ETCO2 above 50 mmHg in respiratory failure, target ETCO2 50-60 mmHg to prevent worsening hypercapnia',
           'Oxygen titration to SpO2 88-92% for known COPD patients to avoid CO2 retention'
         ],
@@ -1866,12 +1866,12 @@ function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
       return {
         style: 'suspected pulmonary embolism scenario',
         likelyMedicationOpportunities: [
-          'Oxygen for hypoxia — titrate to SpO2 92-96%',
+          'Oxygen for hypoxia: titrate to SpO2 92-96%',
           'Analgesia if pleuritic chest pain is significant and patient meets directive conditions',
-          'No specific PE reversal medication at PCP scope — supportive care and transport priority'
+          'No specific PE reversal medication at PCP scope: supportive care and transport priority'
         ],
         contraindicationChecks: [
-          'Do not give nitroglycerin for PE-related chest pain — not cardiac ischemia',
+          'Do not give nitroglycerin for PE-related chest pain: not cardiac ischemia',
           'Consider right heart strain on ECG before any cardiac medication',
           '12-lead ECG to support clinical picture'
         ],
@@ -1886,7 +1886,7 @@ function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
         instructionText: [
           'PE is primarily a transport and supportive care call at PCP scope.',
           'Do not treat PE chest pain with nitroglycerin.',
-          'ECG may show right heart strain pattern — this supports clinical reasoning but does not change PCP treatment.'
+          'ECG may show right heart strain pattern: this supports clinical reasoning but does not change PCP treatment.'
         ].join(' ')
       };
     }
@@ -1900,9 +1900,9 @@ function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
         'CPAP for COPD or pulmonary edema if authorized'
       ],
       contraindicationChecks: [
-        'Confirm asthma versus COPD — treatment logic differs',
+        'Confirm asthma versus COPD: treatment logic differs',
         'Epinephrine for asthma only',
-        'CPAP for COPD and pulmonary edema only — not asthma',
+        'CPAP for COPD and pulmonary edema only: not asthma',
         'Reassess after each treatment'
       ],
       supportiveCareOpportunities: ['positioning', 'oxygen titration', 'serial reassessment', 'transport escalation'],
@@ -1916,15 +1916,15 @@ function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
     return {
       style: 'hypoglycemia medication decision scenario',
       likelyMedicationOpportunities: [
-        'Oral glucose when patient is alert enough to swallow safely — use 15g simple carbohydrates, 15-15 rule',
+        'Oral glucose when patient is alert enough to swallow safely: use 15g simple carbohydrates, 15-15 rule',
         'Glucagon IM or intranasal (Baqsimi 3mg) when patient cannot safely swallow',
         'Dextrose IV (D10W or D50W) if IV is established and patient cannot take oral or glucagon has failed',
         'Reassess BGL after treatment before determining further care'
       ],
       contraindicationChecks: [
-        'Oral glucose requires intact swallowing and alertness — do not give if unsafe to swallow',
+        'Oral glucose requires intact swallowing and alertness: do not give if unsafe to swallow',
         'If glucagon was given with no improvement and IV subsequently established, administer dextrose regardless of time elapsed since glucagon',
-        'Do not give multiple doses of same medication — transport if two doses of glucagon or dextrose required',
+        'Do not give multiple doses of same medication: transport if two doses of glucagon or dextrose required',
         'Treat and discharge criteria require confirmed improvement, safe to care for self, follow up plan, and base hospital patch'
       ],
       supportiveCareOpportunities: [
@@ -1935,7 +1935,7 @@ function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
       ],
       oxygenGuidance: 'Oxygen only if hypoxia or altered consciousness with airway concern.',
       instructionText: [
-        'The real decision is oral glucose versus glucagon versus dextrose — it depends on level of consciousness and swallowing safety.',
+        'The real decision is oral glucose versus glucagon versus dextrose: it depends on level of consciousness and swallowing safety.',
         'Reassess BGL after treatment.',
         'Transport even after improvement if the cause is unclear or the patient is insulin-dependent.',
         'Treat and discharge requires specific criteria and a base hospital patch.'
@@ -1948,33 +1948,33 @@ function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
     return {
       style: 'anaphylaxis or allergic reaction medication scenario',
       likelyMedicationOpportunities: [
-        'Epinephrine 1:1000 IM 0.01mg/kg to max 0.5mg — anterolateral mid-thigh preferred site',
-        'Diphenhydramine IV or IM as secondary treatment — does not prevent upper airway edema or shock',
-        'Salbutamol for bronchospasm not responsive to epinephrine — adjunctive only',
+        'Epinephrine 1:1000 IM 0.01mg/kg to max 0.5mg: anterolateral mid-thigh preferred site',
+        'Diphenhydramine IV or IM as secondary treatment: does not prevent upper airway edema or shock',
+        'Salbutamol for bronchospasm not responsive to epinephrine: adjunctive only',
         'IV fluid bolus if severe hypotension persists after epinephrine',
-        'Repeat epinephrine if symptoms return or fail to respond — patients with diaphoresis, flushing, or dyspnea may need multiple doses'
+        'Repeat epinephrine if symptoms return or fail to respond: patients with diaphoresis, flushing, or dyspnea may need multiple doses'
       ],
       contraindicationChecks: [
-        'Diphenhydramine is not a substitute for epinephrine — do not delay epinephrine to give diphenhydramine',
-        'Dexamethasone has no role in prehospital anaphylaxis — little evidence of benefit',
-        'Watch for biphasic reaction — symptoms can return 1 to 48 hours after initial resolution without re-exposure',
-        'Salbutamol is adjunctive to epinephrine — does not address upper airway edema',
-        'Epinephrine via auto-injector is valid — consider additional doses if patient already used theirs'
+        'Diphenhydramine is not a substitute for epinephrine: do not delay epinephrine to give diphenhydramine',
+        'Dexamethasone has no role in prehospital anaphylaxis: little evidence of benefit',
+        'Watch for biphasic reaction: symptoms can return 1 to 48 hours after initial resolution without re-exposure',
+        'Salbutamol is adjunctive to epinephrine: does not address upper airway edema',
+        'Epinephrine via auto-injector is valid: consider additional doses if patient already used theirs'
       ],
       supportiveCareOpportunities: [
         'airway assessment and monitoring',
         'positioning',
         'oxygen for hypoxia',
         'serial reassessment for biphasic reaction',
-        'transport even after improvement — biphasic risk'
+        'transport even after improvement: biphasic risk'
       ],
       oxygenGuidance: 'Oxygen for hypoxia and respiratory compromise. Titrate to SpO2 92-96%.',
       instructionText: [
-        'Epinephrine is the primary treatment — administer as soon as anaphylaxis is recognized.',
+        'Epinephrine is the primary treatment: administer as soon as anaphylaxis is recognized.',
         'Diphenhydramine is secondary and does not replace epinephrine.',
         'Dexamethasone is not part of prehospital anaphylaxis management.',
-        'Biphasic reactions can occur up to 48 hours after resolution — transport and monitoring are essential.',
-        'Salbutamol for bronchospasm not responding to epinephrine — adjunctive only.'
+        'Biphasic reactions can occur up to 48 hours after resolution: transport and monitoring are essential.',
+        'Salbutamol for bronchospasm not responding to epinephrine: adjunctive only.'
       ].join(' ')
     };
   }
@@ -1984,16 +1984,16 @@ function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
     return {
       style: 'opioid toxicity medication scenario',
       likelyMedicationOpportunities: [
-        'Naloxone intranasal or IM — titrate to adequate respirations not full reversal',
+        'Naloxone intranasal or IM: titrate to adequate respirations not full reversal',
         'Ventilation support is the priority before medication administration',
         'Buprenorphine/naloxone (Suboxone) for opioid withdrawal if COWS score criteria met'
       ],
       contraindicationChecks: [
-        'Do not give naloxone in confirmed cardiac arrest — no routine role',
-        'Titrate naloxone to restore breathing — avoid precipitating acute withdrawal from full reversal',
-        'Watch for re-sedation — long-acting opioids outlast naloxone duration',
-        'Mixed overdose: naloxone may unmask stimulant toxidrome — watch for seizures, agitation, hypertensive crisis after reversal',
-        'Methadone patients — naloxone can precipitate severe withdrawal',
+        'Do not give naloxone in confirmed cardiac arrest: no routine role',
+        'Titrate naloxone to restore breathing: avoid precipitating acute withdrawal from full reversal',
+        'Watch for re-sedation: long-acting opioids outlast naloxone duration',
+        'Mixed overdose: naloxone may unmask stimulant toxidrome: watch for seizures, agitation, hypertensive crisis after reversal',
+        'Methadone patients: naloxone can precipitate severe withdrawal',
         'Naloxone age condition: patient must be 24 hours or older'
       ],
       supportiveCareOpportunities: [
@@ -2005,9 +2005,9 @@ function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
       ],
       oxygenGuidance: 'Ventilation support is the priority. Oxygen titrated to maintain adequate SpO2.',
       instructionText: [
-        'Ventilation before medication — airway management is the priority.',
-        'Titrate naloxone to restore breathing, not to full reversal — avoid precipitating withdrawal.',
-        'Re-sedation risk is real — transport even after apparent improvement.',
+        'Ventilation before medication: airway management is the priority.',
+        'Titrate naloxone to restore breathing, not to full reversal: avoid precipitating withdrawal.',
+        'Re-sedation risk is real: transport even after apparent improvement.',
         'Naloxone has no role in confirmed cardiac arrest.'
       ].join(' ')
     };
@@ -2018,15 +2018,15 @@ function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
     return {
       style: 'renal or electrolyte emergency scenario',
       likelyMedicationOpportunities: [
-        'Calcium gluconate IV 1g over 3 minutes for severe hyperkalemia with ECG changes — ACP only; PCP role is recognition and transport',
-        'Salbutamol in large doses may temporarily shift potassium intracellularly — ACP context',
+        'Calcium gluconate IV 1g over 3 minutes for severe hyperkalemia with ECG changes: ACP only; PCP role is recognition and transport',
+        'Salbutamol in large doses may temporarily shift potassium intracellularly: ACP context',
         'Home dialysis emergency disconnect per directive if applicable',
         'PCP role: recognize ECG changes, manage symptoms, urgent transport with pre-alert'
       ],
       contraindicationChecks: [
-        'Calcium gluconate is ACP only — do not include as PCP treatment',
-        'Sodium bicarbonate is not effective for hyperkalemia and should not be routinely given — patch point for BHP if considered',
-        'Ensure IV line is patent — calcium gluconate causes necrosis if it extravasates',
+        'Calcium gluconate is ACP only: do not include as PCP treatment',
+        'Sodium bicarbonate is not effective for hyperkalemia and should not be routinely given: patch point for BHP if considered',
+        'Ensure IV line is patent: calcium gluconate causes necrosis if it extravasates',
         'Serial 12-lead ECG before and after treatment to measure ECG changes'
       ],
       supportiveCareOpportunities: [
@@ -2038,8 +2038,8 @@ function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
       ],
       oxygenGuidance: 'Oxygen for hypoxia or hemodynamic instability.',
       instructionText: [
-        'Hyperkalemia recognition from ECG changes is the key PCP skill — peaked T waves, widening QRS, loss of P waves.',
-        'Calcium gluconate is ACP only — PCP role is recognition, IV access, and urgent transport.',
+        'Hyperkalemia recognition from ECG changes is the key PCP skill: peaked T waves, widening QRS, loss of P waves.',
+        'Calcium gluconate is ACP only: PCP role is recognition, IV access, and urgent transport.',
         'Serial 12-lead ECG changes guide urgency and pre-alert framing.'
       ].join(' ')
     };
@@ -2050,16 +2050,16 @@ function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
     return {
       style: 'neurologic assessment and medication scenario',
       likelyMedicationOpportunities: [
-        'Oral glucose or glucagon if hypoglycemia is confirmed or strongly suspected — always check BGL in altered consciousness',
-        'Oxygen if hypoxic — not routine for suspected stroke without hypoxia',
-        'Seizure: no PCP medication at core level — protect from injury, position, oxygen, reassess',
+        'Oral glucose or glucagon if hypoglycemia is confirmed or strongly suspected: always check BGL in altered consciousness',
+        'Oxygen if hypoxic: not routine for suspected stroke without hypoxia',
+        'Seizure: no PCP medication at core level: protect from injury, position, oxygen, reassess',
         'Seizure treat and discharge: specific BHP-authorized criteria for confirmed epilepsy with single seizure and meets all conditions'
       ],
       contraindicationChecks: [
         'Confirm BGL before attributing altered consciousness to neurologic cause',
-        'Do not give nitroglycerin for suspected stroke — not cardiac ischemia',
+        'Do not give nitroglycerin for suspected stroke: not cardiac ischemia',
         'Stroke bypass decision: FAST positive with last known well time within window',
-        'Seizure medication (midazolam) is ACP only — do not include at PCP core level',
+        'Seizure medication (midazolam) is ACP only: do not include at PCP core level',
         'Seizure treat and discharge requires confirmed epilepsy diagnosis, single seizure, full recovery, specific eligibility, and BHP patch'
       ],
       supportiveCareOpportunities: [
@@ -2086,22 +2086,22 @@ function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
       style: 'trauma pain and hemorrhage management scenario',
       likelyMedicationOpportunities: [
         'Acetaminophen or ibuprofen oral first-line if patient can tolerate oral medication',
-        'Ketorolac IM or IV for moderate to severe pain — do not combine with ibuprofen',
-        'Morphine IV or IM for significant pain — aliquots every 3 minutes to max single dose, may repeat after 15 minutes',
-        'FentaNYL IV or IM for severe trauma pain — preferred when hemodynamic stability is a concern, aliquots every 5 minutes',
-        'Ketamine IV or IM for hypotensive patients or when opioids are contraindicated — administer over 2-3 minutes',
-        'TXA 1g IV over 5 minutes (or IM if IV not available) for suspected significant traumatic hemorrhage — PCP auxiliary, base hospital authorization required, do not delay transport'
+        'Ketorolac IM or IV for moderate to severe pain: do not combine with ibuprofen',
+        'Morphine IV or IM for significant pain: aliquots every 3 minutes to max single dose, may repeat after 15 minutes',
+        'FentaNYL IV or IM for severe trauma pain: preferred when hemodynamic stability is a concern, aliquots every 5 minutes',
+        'Ketamine IV or IM for hypotensive patients or when opioids are contraindicated: administer over 2-3 minutes',
+        'TXA 1g IV over 5 minutes (or IM if IV not available) for suspected significant traumatic hemorrhage: PCP auxiliary, base hospital authorization required, do not delay transport'
       ],
       contraindicationChecks: [
-        'Do not combine ketorolac and ibuprofen — both NSAIDs, increased adverse effects',
-        'Consider active uncontrolled hemorrhage before analgesia — control bleeding first',
-        'Hypotension: ketamine preferred over opioids — opioids can worsen hypotension',
+        'Do not combine ketorolac and ibuprofen: both NSAIDs, increased adverse effects',
+        'Consider active uncontrolled hemorrhage before analgesia: control bleeding first',
+        'Hypotension: ketamine preferred over opioids: opioids can worsen hypotension',
         'TXA eligibility: suspected significant hemorrhage, protocol timing window, within PCP auxiliary authorization',
         'TXA should not delay transport and not prioritized over management of reversible causes',
         'Ontario SMR criteria: age over 65 with fall mechanism requires SMR regardless of apparent injury severity'
       ],
       supportiveCareOpportunities: [
-        'hemorrhage control — direct pressure, wound packing, tourniquet',
+        'hemorrhage control: direct pressure, wound packing, tourniquet',
         'SMR decision-making',
         'splinting',
         'shock recognition and transport priority',
@@ -2109,10 +2109,10 @@ function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
       ],
       oxygenGuidance: 'Oxygen for hypoxia, respiratory compromise, or hemorrhagic shock. Titrate to SpO2 92-96%.',
       instructionText: [
-        'Oral analgesia first if tolerated — acetaminophen and ibuprofen together approximate low-dose opioid effect.',
+        'Oral analgesia first if tolerated: acetaminophen and ibuprofen together approximate low-dose opioid effect.',
         'Do not combine ketorolac and ibuprofen.',
-        'Ketamine is preferred when opioids are contraindicated — hypotension or hemorrhagic shock risk.',
-        'TXA is an established PCP auxiliary intervention for suspected significant traumatic hemorrhage — IM or IV, do not delay transport for it.',
+        'Ketamine is preferred when opioids are contraindicated: hypotension or hemorrhagic shock risk.',
+        'TXA is an established PCP auxiliary intervention for suspected significant traumatic hemorrhage: IM or IV, do not delay transport for it.',
         'Renal colic patients should routinely be considered for NSAID in addition to opioid.'
       ].join(' ')
     };
@@ -2123,16 +2123,16 @@ function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
     return {
       style: 'nausea and vomiting antiemetic scenario',
       likelyMedicationOpportunities: [
-        'Dimenhydrinate (Gravol) IV or IM — first-line antiemetic per directive',
+        'Dimenhydrinate (Gravol) IV or IM: first-line antiemetic per directive',
         'Ondansetron if dimenhydrinate given with no relief after 30 minutes and patient still meets conditions',
-        'Not every patient with nausea requires medication — presentation must support it'
+        'Not every patient with nausea requires medication: presentation must support it'
       ],
       contraindicationChecks: [
-        'Do not combine dimenhydrinate with diphenhydramine — combined anticholinergic effect and over-sedation risk',
-        'Do not combine ondansetron with apomorphine — risk of profound hypotension',
-        'Dimenhydrinate: caution in elderly — somnolence and confusion risk',
+        'Do not combine dimenhydrinate with diphenhydramine: combined anticholinergic effect and over-sedation risk',
+        'Do not combine ondansetron with apomorphine: risk of profound hypotension',
+        'Dimenhydrinate: caution in elderly: somnolence and confusion risk',
         'Dimenhydrinate contraindicated with antihistamine overdose, anticholinergic overdose, or TCA overdose',
-        'Dimenhydrinate: avoid with head injuries — increased ICP risk',
+        'Dimenhydrinate: avoid with head injuries: increased ICP risk',
         'Ondansetron better choice when patient is on SSRIs, or head trauma is present, or elderly'
       ],
       supportiveCareOpportunities: [
@@ -2144,7 +2144,7 @@ function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
       ],
       oxygenGuidance: 'Oxygen only if clinically indicated.',
       instructionText: [
-        'Not every nausea patient needs medication — presentation and cause must support it.',
+        'Not every nausea patient needs medication: presentation and cause must support it.',
         'Dimenhydrinate first, ondansetron after 30 minutes without relief if still eligible.',
         'Never combine dimenhydrinate with diphenhydramine.',
         'Ondansetron preferred in elderly, head trauma, SSRI patients.',
@@ -2160,13 +2160,13 @@ function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
       return {
         style: 'obstetric medication and procedural scenario',
         likelyMedicationOpportunities: [
-          'Oxytocin IM or IV immediately after delivery of all fetuses and/or placenta and up to 4 hours post-placenta — for post-partum hemorrhage prevention and management',
+          'Oxytocin IM or IV immediately after delivery of all fetuses and/or placenta and up to 4 hours post-placenta: for post-partum hemorrhage prevention and management',
           'External uterine massage after placenta delivery if fundus is soft or boggy',
           'External bimanual compression if uterine massage is unsuccessful',
           'Oxygen for maternal hypoxia or fetal distress concern'
         ],
         contraindicationChecks: [
-          'Oxytocin can induce vasoconstriction — use caution in hypertensive patients',
+          'Oxytocin can induce vasoconstriction: use caution in hypertensive patients',
           'Do not perform internal vaginal exam to determine cervical dilation',
           'Perineal inspection is appropriate in specific clinical situations per directive criteria',
           'Prolapsed cord: knee-chest or exaggerated Sims position, manual elevation of presenting part, maintain until transfer of care',
@@ -2193,18 +2193,18 @@ function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
       return {
         style: 'pediatric medication scenario',
         likelyMedicationOpportunities: [
-          'Epinephrine nebulized for croup — racemic or 1:1000 — severe presentations only, dexamethasone for mild to moderate',
+          'Epinephrine nebulized for croup: racemic or 1:1000: severe presentations only, dexamethasone for mild to moderate',
           'Dexamethasone for mild to moderate croup',
-          'Epinephrine IM for pediatric anaphylaxis — 0.01mg/kg to max 0.5mg',
+          'Epinephrine IM for pediatric anaphylaxis: 0.01mg/kg to max 0.5mg',
           'Oral glucose or glucagon for pediatric hypoglycemia',
-          'Naloxone for suspected opioid toxicity — age 24 hours or older',
+          'Naloxone for suspected opioid toxicity: age 24 hours or older',
           'Salbutamol for pediatric asthma or bronchoconstriction'
         ],
         contraindicationChecks: [
-          'Weight-based dosing is critical — estimate weight carefully for all pediatric medications',
-          'Epinephrine for croup: severe presentations only — prior moist or cold air attempt if mild to moderate',
+          'Weight-based dosing is critical: estimate weight carefully for all pediatric medications',
+          'Epinephrine for croup: severe presentations only: prior moist or cold air attempt if mild to moderate',
           'Seizure medication (midazolam) is ACP only at PCP core level',
-          'Croup increasingly occurring in older patients including adults — if indications met, patch to BHP required',
+          'Croup increasingly occurring in older patients including adults: if indications met, patch to BHP required',
           'If patient has received systemic steroids in past 48 hours, additional dexamethasone unlikely to help'
         ],
         supportiveCareOpportunities: [
@@ -2219,7 +2219,7 @@ function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
         instructionText: [
           'Weight-based dosing is the central challenge in pediatric medication scenarios.',
           'Croup: epinephrine for severe, dexamethasone for mild to moderate.',
-          'Seizure medication is ACP — PCP core role is protection, positioning, oxygen, glucose check.',
+          'Seizure medication is ACP: PCP core role is protection, positioning, oxygen, glucose check.',
           'Caregiver communication is a major teaching point in pediatric scenarios.'
         ].join(' ')
       };
@@ -2231,7 +2231,7 @@ function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
         likelyMedicationOpportunities: [
           'Ventilation with BVM and room air or 100% oxygen based on SpO2 chart in directive',
           'Stimulation and drying as primary interventions',
-          'Oxygen based on SpO2 targets in directive — titrate to pre-ductal SpO2 on right hand'
+          'Oxygen based on SpO2 targets in directive: titrate to pre-ductal SpO2 on right hand'
         ],
         contraindicationChecks: [
           'Routine suctioning not required even with meconium present if newborn is breathing effectively',
@@ -2245,10 +2245,10 @@ function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
           'cardiac monitoring for accurate heart rate',
           'airway management with MR SOPA sequence if ventilation ineffective'
         ],
-        oxygenGuidance: 'Neonatal SpO2 targets follow the directive chart — values take more than 10 minutes to normalize after birth.',
+        oxygenGuidance: 'Neonatal SpO2 targets follow the directive chart: values take more than 10 minutes to normalize after birth.',
         instructionText: [
           'Stimulation and ventilation are the priority interventions.',
-          'SpO2 targets follow the directive chart — values take more than 10 minutes to normalize after birth.',
+          'SpO2 targets follow the directive chart: values take more than 10 minutes to normalize after birth.',
           'Directive applies to patients under 24 hours of age only.'
         ].join(' ')
       };
@@ -2276,15 +2276,15 @@ function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
       style: 'abdominal or GI medication scenario',
       likelyMedicationOpportunities: [
         'Acetaminophen or ibuprofen oral first-line if tolerated',
-        'Ketorolac IM or IV for renal colic — NSAID is specifically recommended for renal colic alongside opioid',
+        'Ketorolac IM or IV for renal colic: NSAID is specifically recommended for renal colic alongside opioid',
         'Morphine IV or IM for significant abdominal pain if oral not tolerated',
         'Dimenhydrinate for nausea associated with abdominal pain if indicated',
         'Do not combine ketorolac and ibuprofen'
       ],
       contraindicationChecks: [
-        'Active uncontrolled hemorrhage — analgesia only after hemorrhage control',
+        'Active uncontrolled hemorrhage: analgesia only after hemorrhage control',
         'Do not combine ketorolac and ibuprofen',
-        'Suspected active GI bleed — ketorolac and ibuprofen contraindicated',
+        'Suspected active GI bleed: ketorolac and ibuprofen contraindicated',
         'Ensure nausea cause is investigated before giving antiemetic'
       ],
       supportiveCareOpportunities: [
@@ -2377,152 +2377,31 @@ Generate exactly one paramedic training scenario as valid JSON only.
 No markdown. No commentary. No code fences.
 ABSOLUTE RULE: Do not include URLs, web links, http addresses, or external references anywhere in the output. Not in protocolNotes, not in clinicalReasoning, not in any field. Ontario standards inform the content but must never appear as printed links.
 
-${directiveAddendum.length > 0 ? `MANDATORY CLINICAL RULES — these override all other instructions and must be followed exactly in expectedTreatment, protocolNotes, and all clinical fields:
+${directiveAddendum.length > 0 ? `MANDATORY CLINICAL RULES: these override all other instructions and must be followed exactly in expectedTreatment, protocolNotes, and all clinical fields:
 ${directiveAddendum.map((line) => `- ${line}`).join('\n')}
 
-` : ''}Return these top-level fields:
-- scenarioIntro
-- title
-- callInformation
-- sceneArrival
-- firstImpression
-- patientDemographics
-- patientPresentation
-- incidentNarrative
-- opqrst
-- initialAssessment
-- historyGathering
-- secondaryAssessment
-- additionalAssessments
-- sample
-- medications
-- allergies
-- pastMedicalHistory
-- physicalExam
-- vitalSigns
-- caseProgression
-- transportPhase
-- instructorGuidance
-- expectedTreatment
-- protocolNotes
-- learningObjectives
-- vocationalLearningOutcomes
-- selfReflectionPrompts
-- grsAnchors
-- teachersPoints
-- scenarioRationale
-- clinicalReasoning
+` : ''}Return one JSON object that follows the OUTPUT FORMAT template in the system instructions exactly: every field, no extra fields.
 
-Section discipline rules — apply to every section without exception:
-- Each section must add new information not already stated in a previous section. Do not restate, summarize, or paraphrase content from an earlier section.
-- scenarioIntro states the teaching purpose only. It must not describe the patient, the scene, or the clinical findings. Save all clinical detail for the appropriate sections below.
-- crewNotes in callInformation must not preview scene complexity, emotional tone, or teaching points. Those belong in scenarioIntro or instructorGuidance. crewNotes should contain only practical operational flags such as access issues, hazards, or resource considerations.
-- sceneArrival describes the physical environment, access, and bystanders. It must not describe patient appearance, clinical findings, or distress level. Those belong in firstImpression.
-- firstImpression describes what the crew observes about the patient in the first 15 seconds — appearance, position, visible distress, and immediate red flags. It must not repeat scene details already in sceneArrival, and it must not restate findings that will appear in physicalExam or vitalSigns.
-- patientPresentation describes the patient's behaviour, speech, and observable demeanour at first contact. It must not repeat the general appearance already stated in firstImpression.
-- incidentNarrative provides the timeline of events leading to this call. It must not repeat information that will appear in SAMPLE eventsLeadingUp.
-- initialRedFlags in firstImpression must list only flags not already named as visibleClues in the same section. Do not duplicate within the same section.
-- If a clinical detail has already appeared in any section, do not repeat it. Move forward.
-
-Required object structure:
-- sceneArrival must contain:
-{
-  "sceneDescription": "",
-  "environmentDetails": [],
-  "hazards": [],
-  "accessIssues": "",
-  "bystandersPresent": "",
-  "sceneEnergy": ""
-}
-
-- firstImpression must contain:
-{
-  "generalAppearance": "",
-  "levelOfDistress": "",
-  "apparentSeverity": "",
-  "positionFound": "",
-  "visibleClues": [],
-  "initialRedFlags": []
-}
-
-- initialAssessment must contain ONLY learner-facing assessment findings:
-{
-  "airway": "",
-  "breathing": "",
-  "circulation": "",
-  "disability": "",
-  "exposure": "",
-  "generalImpression": ""
-}
-- Do not put immediatePriorities, immediateInterventions, treatment instructions, care-plan steps, or diagnostic answers inside initialAssessment.
-
-- historyGathering must contain:
-{
-  "historySource": "",
-  "additionalHistory": [],
-  "bystanderInformation": [],
-  "contradictionsOrBarriers": [],
-  "sceneContextClues": []
-}
-
-- secondaryAssessment must contain:
-{
-  "generalAppearance": "",
-  "breathing": "",
-  "circulation": "",
-  "keyFindings": [],
-  "missedIfNotAssessed": [],
-  "evolvingFindings": []
-}
-
-- additionalAssessments must be an array of reassessment, movement, transport, or focused exam findings when applicable.
-
-- vitalSigns must contain:
-{
-  "firstSet": { "context": "", "hr": "", "rr": "", "bp": "", "spo2": "", "etco2": "", "temp": "", "gcs": "", "bgl": "", "ecgInterpretation": "" },
-  "secondSet": { "context": "", "hr": "", "rr": "", "bp": "", "spo2": "", "etco2": "", "temp": "", "gcs": "", "bgl": "", "ecgInterpretation": "" },
-  "additionalSets": [
-    { "context": "", "hr": "", "rr": "", "bp": "", "spo2": "", "etco2": "", "temp": "", "gcs": "", "bgl": "", "ecgInterpretation": "" }
-  ]
-}
-
-- caseProgression must contain these exact keys, and each key must be an array of practical timeline-style points:
-{
-  "withProperTreatment": [],
-  "withoutProperTreatment": [],
-  "withIncorrectTreatment": [],
-  "movementOrTransportChanges": []
-}
-
-- transportPhase must contain:
-{
-  "transportConsiderations": [],
-  "ongoingCare": [],
-  "reassessmentFocus": [],
-  "handoffConsiderations": ""
-}
-
-- instructorGuidance must contain instructor-only coaching content:
-{
-  "instructorPriorities": [],
-  "psychologicalSafetyDebrief": ""
-}
-- instructorPriorities is where instructor-only early care priorities and management targets belong. Expected interventions belong in expectedTreatment, not in instructorGuidance. Keep all directive coaching out of learner-facing initialAssessment.
-- psychologicalSafetyDebrief must be one short paragraph that frames feedback around observable decisions, reassessment, communication, and next-call improvement. It should avoid blame, shame, or gotcha language.
-
-- clinicalReasoning must contain:
-{
-  "summary": "",
-  "differentialDiagnosis": [
-    {
-      "condition": "",
-      "supportingFeatures": "",
-      "rulingOutFeatures": ""
-    }
-  ],
-  "conclusion": ""
-}
-- differentialDiagnosis must contain a maximum of 3 conditions. Do not generate more than 3 entries.
+Section discipline rules, for every section:
+- Each section adds something new. Do not restate, summarize or paraphrase an earlier section. If a detail has already appeared, move forward.
+- One home per idea:
+  - The actions the crew should take live only in expectedTreatment.
+  - protocolNotes give the directive or standard behind those decisions (indications, contraindications, conditions to hold or withhold). Do not restate the actions.
+  - The teaching purpose lives in scenarioIntro (one short summary) and learningObjectives (the list). teachersPoints does not repeat either.
+  - The trap, the pivot finding and the next-call adjustment live in teachersPoints.
+  - How the patient responds to care lives in caseProgression and the vital sign sets, not in the teaching sections.
+  - instructorGuidance.instructorPriorities is 3 to 5 things the instructor watches for during the run (observable decisions and behaviours, e.g. whether BP is checked before each nitro). It is not the treatment list.
+- The Call is what the crew knows or sees. It must not give the answer away:
+  - scenarioIntro is an instructor-facing summary of the teaching purpose. It does not describe the patient, the scene or the findings.
+  - crewNotes are operational only: access, hazards, resources. Never a suspected diagnosis, an assessment to do, or a treatment to consider.
+  - sceneArrival describes the physical environment, access and bystanders. No patient appearance, findings or distress level.
+  - firstImpression describes what the crew sees in the first 15 seconds: appearance, position, visible distress, and observable warning signs (initialRedFlags). apparentSeverity and initialRedFlags are observations in plain words ("grey, sweaty, speaking in short phrases"), never a diagnosis or an interpretation ("classic ischemic pain", "high-risk cardiac presentation"). Do not repeat scene details, and do not restate findings that appear in physicalExam or vitalSigns. initialRedFlags lists only flags not already named in visibleClues.
+  - vitalSigns context labels describe timing only ("On arrival", "After first intervention", "En route"), never whether the crew's care was right or wrong.
+- patientPresentation describes behaviour, speech and demeanour at first contact. It does not repeat the general appearance from firstImpression.
+- physicalExam.generalAppearance adds exam-level detail only. It does not repeat firstImpression.
+- incidentNarrative gives the timeline leading to the call. It does not repeat SAMPLE eventsLeadingUp.
+- instructorGuidance.psychologicalSafetyDebrief is one short paragraph that frames feedback around observable decisions, reassessment, communication and next-call improvement. No blame, shame or gotcha language.
+- clinicalReasoning.differentialDiagnosis holds 2 or 3 conditions, never more.
 
 - grsAnchors must contain these EXACT 7 domains:
   - situationalAwareness
@@ -2569,8 +2448,8 @@ ${ECG_WHITELIST.map((item) => `- ${item}`).join('\n')}
 - Default to Normal Sinus Rhythm, Sinus Tachycardia, or Sinus Bradycardia for all other presentations where no specific dysrhythmia is clinically indicated.
 
 Also return a top-level ecgFindings object with these fields:
-- ecgType: "rhythm" for basic medical calls, "12-lead" for cardiac, respiratory with hypoxia, AMS, syncope, overdose, post-ROSC, or any call where a 12-lead would be clinically indicated. "15-lead" only when right ventricular STEMI is confirmed with ST elevation in right-sided leads (V3R, V4R), or posterior STEMI is confirmed. Do not generate 15-lead for a plain inferior STEMI, inferolateral STEMI, De Winter pattern, Wellens syndrome, or any other 12-lead pattern — use ecgType "12-lead" for those. De Winter pattern, Wellens syndrome, pericarditis, hyperkalemia, LBBB, RBBB, SVT, atrial flutter, and all STEMI variants except RV and posterior STEMI must use ecgType "12-lead".
-- rhythmInterpretation: one to two sentences describing the rhythm in plain clinical language including rate, regularity, and any notable features. Always populate this field. Do not just name the rhythm — briefly explain why that rhythm is present in the context of this specific patient and condition. For example: sinus bradycardia in a missed dialysis patient should connect to metabolic or electrolyte cause; sinus tachycardia in a febrile sepsis patient should connect to physiologic demand; a rhythm in a chest pain patient should note what it does or does not suggest about ischemia.
+- ecgType: "rhythm" for basic medical calls, "12-lead" for cardiac, respiratory with hypoxia, AMS, syncope, overdose, post-ROSC, or any call where a 12-lead would be clinically indicated. "15-lead" only when right ventricular STEMI is confirmed with ST elevation in right-sided leads (V3R, V4R), or posterior STEMI is confirmed. Do not generate 15-lead for a plain inferior STEMI, inferolateral STEMI, De Winter pattern, Wellens syndrome, or any other 12-lead pattern: use ecgType "12-lead" for those. De Winter pattern, Wellens syndrome, pericarditis, hyperkalemia, LBBB, RBBB, SVT, atrial flutter, and all STEMI variants except RV and posterior STEMI must use ecgType "12-lead".
+- rhythmInterpretation: one to two sentences describing the rhythm in plain clinical language including rate, regularity, and any notable features. Always populate this field. Do not just name the rhythm: briefly explain why that rhythm is present in the context of this specific patient and condition. For example: sinus bradycardia in a missed dialysis patient should connect to metabolic or electrolyte cause; sinus tachycardia in a febrile sepsis patient should connect to physiologic demand; a rhythm in a chest pain patient should note what it does or does not suggest about ischemia.
 - twelveLeadFindings: describe the 12-lead findings in plain clinical language when ecgType is "12-lead" or "15-lead". Include axis, ST changes, intervals, and any notable findings. Leave empty string if ecgType is "rhythm" only.
 - When the scenario involves hyperkalemia, missed dialysis, or peaked T waves from electrolyte disturbance, you MUST set ecgType to "12-lead" and populate twelveLeadFindings describing peaked narrow T waves in precordial leads, any PR prolongation, QRS widening, P wave flattening, and clinical context. Do not leave ecgFindings or twelveLeadFindings blank for these presentations.
 - fifteenLeadFindings: describe right-sided or posterior lead findings when ecgType is "15-lead". Focus on RV involvement, posterior changes, or right-sided ST changes. Leave empty string if ecgType is "rhythm" or "12-lead".
@@ -2631,8 +2510,6 @@ Scenario shaping rules:
 - ${getTypeInstruction(type)}
 - ${getEnvironmentInstruction(environment)}
 - ${getComplexityInstruction(complexity)}
-- ${getScenarioFrictionInstruction(scenarioFriction)}
-- ${getShiftModeInstruction(shiftMode)}
 - ${getUniquenessInstruction(uniqueness)}
 - ${medicationPlan.instructionText}
 - Write like an experienced Ontario paramedic instructor building a realistic teaching case for lab.
@@ -2655,24 +2532,21 @@ Scenario shaping rules:
 - SAMPLE must be fully populated with clinically useful detail, not placeholders.
 - Chief complaint must never be blank and should be concise, patient-centered, and aligned with the generated call. Do not default to chest pain unless the scenario is truly cardiac or the patient actually has chest pain/pressure.
 - Physical assessment must be populated across relevant fields.
-- initialAssessment, secondaryAssessment, and additionalAssessments must show different phases of the call rather than repeat the same assessment in different words.
-- Keep initialAssessment learner-facing: describe findings only, not what the learner should do next. Move instructor-only priorities and management targets into instructorGuidance. Move intervention expectations and contraindication reminders into expectedTreatment or protocolNotes.
 - General appearance should describe what the crew sees on arrival.
 - Airway should comment on patency or obstruction.
 - Breathing should comment on rate, effort, breath sounds, and visible respiratory distress.
 - Circulation should comment on pulse, perfusion, skin findings, and shock signs where relevant.
 - Neuro should comment on mental status, orientation, and LOC where relevant.
-- instructorGuidance must contain instructor-only priorities and a psychologically safe debrief frame. Do not include a separate instructor action list because expected actions already belong in expectedTreatment.
 - Case progression must clearly separate what happens with proper treatment, without/delayed treatment, and with incorrect treatment.
 - Case progression must include movementOrTransportChanges when movement, packaging, stair-chair use, extrication, loading, or transport plausibly changes symptoms, assessment findings, vital signs, patient tolerance, or management priorities.
 - Vital sign changes must reflect treatment response, missed care, incorrect care, exertion, movement, fatigue, clinical deterioration, or transport-phase reassessment when appropriate.
-${directiveAddendum.length > 0 ? `DIRECTIVE RULES REMINDER — apply to expectedTreatment and protocolNotes:
+${directiveAddendum.length > 0 ? `DIRECTIVE RULES REMINDER: apply to expectedTreatment and protocolNotes:
 ${directiveAddendum.map((line) => `- ${line}`).join('\n')}
 ` : ''}- expectedTreatment must be a structured multi-item list of practical paramedic actions, not a paragraph.
 - protocolNotes must be a structured multi-item list, not a paragraph.
 - Do not include URLs, web links, or external references in any field.
 - teachersPoints must be one compact instructor-voice paragraph, maximum 4 sentences. Name the trap or the easy miss in this specific case. Name the pivot point or the finding that should change the call. End with one concrete next-call adjustment. Do not restate the expected management. Do not restate the learning objectives. Sound like a senior paramedic debriefing after the call, not a textbook summary.
-- learningObjectives and vocationalLearningOutcomes must each be list items, not combined prose. selfReflectionPrompts must be scenario-specific questions that ask what the student would do differently or what changed their thinking. Each prompt must be answerable in one or two sentences. Avoid open-ended emotional questions. Focus on reasoning, prioritization, reassessment decisions, and communication choices specific to this case. Do not restate the learning objectives as questions.
+- learningObjectives must be list items, not combined prose. selfReflectionPrompts must be scenario-specific questions that ask what the student would do differently or what changed their thinking. Each prompt must be answerable in one or two sentences. Avoid open-ended emotional questions. Focus on reasoning, prioritization, reassessment decisions, and communication choices specific to this case. Do not restate the learning objectives as questions.
 - Avoid empty strings for clinically relevant fields unless truly not applicable.
 - Return all required fields every time with meaningful scenario-specific content.
 - For Semester 3 and 4, when clinically appropriate, prefer scenarios that involve multiple Ontario-appropriate PCP medication decisions rather than a single-medication pathway.
@@ -2693,7 +2567,7 @@ ${directiveAddendum.map((line) => `- ${line}`).join('\n')}
 
 - When multiple medications are appropriate, ensure they occur at different decision points (e.g., ASA early, nitro after BP check, antiemetic later, repeat medication after reassessment).
 - Medication decisions should be tied to assessment findings and reassessment findings, not given automatically.
-PCP scope — strict enforcement:
+PCP scope: strict enforcement:
 Only medications and procedures listed in the ALS PCS reference above are within PCP or PCP-IV scope. Anything not listed there is ACP-only and must not appear.
 
 Common scope violations to prevent:
@@ -2702,7 +2576,7 @@ Common scope violations to prevent:
 - Transcutaneous pacing, synchronized cardioversion, RSI, surgical airway, and endotracheal intubation are ACP-only.
 - Atropine, dopamine, amiodarone, lidocaine, magnesium, adenosine, morphine, fentanyl, midazolam, and diazepam are ACP-only. Do not reference them even as withheld options.
 
-When a patient deteriorates beyond PCP scope, the correct response is rapid transport, ALS intercept request, or base hospital contact — not an ACP intervention.
+When a patient deteriorates beyond PCP scope, the correct response is rapid transport, ALS intercept request, or base hospital contact: not an ACP intervention.
 
 PCP Auxiliary Directives (base hospital authorization required; Semester 3 and 4 when clinically relevant):
 CPAP, Cardiogenic Shock, Traumatic Hemorrhage (includes TXA IM or IV), IV and Fluid Therapy, Seizure, Tachydysrhythmia (ALS PCS v5.4, PCP level). Always label these as base-hospital-authorized when referenced.
@@ -2727,6 +2601,65 @@ const dataPaths = {
 
 let cachedDataPromise;
 
+// ---------------------------------------------------------------- few-shot examples
+// Only a few examples go into each request, chosen to match the call. Sending all of them (about 200,000 tokens)
+// made every generation slow and costly, and 56 examples outweighed the written rules they often broke.
+const FEW_SHOT_COUNT = 3;
+// Sections the examples leave out: never shown in the app, or better defined by the template than by older examples.
+const FEW_SHOT_STRIP = ['generationMetadata', 'initialAssessment', 'historyGathering', 'secondaryAssessment', 'additionalAssessments',
+  'transportPhase', 'medications', 'allergies', 'pastMedicalHistory', 'vocationalLearningOutcomes', 'scenarioRationale', 'clinicalReasoning'];
+const CREW_NOTES_CLINICAL = /\b(consider|obtain|12-lead|asa|nitro|glucagon|salbutamol|epinephrine|monitor|assess|suspect|likely|rule out|treat)\b/i;
+
+function usableFewShot(example) {
+  if (!example || typeof example !== 'object') return false;
+  const current = example.vitalSigns && typeof example.vitalSigns === 'object' && example.vitalSigns.firstSet;
+  const crewNotes = example.callInformation && typeof example.callInformation === 'object' ? example.callInformation.crewNotes : '';
+  return Boolean(current) && !CREW_NOTES_CLINICAL.test(String(crewNotes || ''));
+}
+
+function fewShotType(example) {
+  const meta = example.generationMetadata || {};
+  const call = example.callInformation && typeof example.callInformation === 'object' ? example.callInformation : {};
+  return String(meta.callType || call.type || '').toLowerCase();
+}
+
+function fewShotSemester(example) {
+  return String((example.generationMetadata || {}).targetSemester || '');
+}
+
+function shuffled(list) {
+  const out = [...list];
+  for (let i = out.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [out[i], out[j]] = [out[j], out[i]];
+  }
+  return out;
+}
+
+// Two examples of the same call type when available (same semester first), plus one of another type for range.
+function selectFewShotExamples(allExamples, { type, semester }) {
+  const pool = (Array.isArray(allExamples) ? allExamples : []).filter(usableFewShot);
+  const wantType = String(type || '').toLowerCase();
+  const wantSem = String(semester || '');
+  const rank = (e) => (fewShotSemester(e) === wantSem ? 0 : 1);
+  const sameType = shuffled(pool.filter((e) => fewShotType(e) === wantType)).sort((a, b) => rank(a) - rank(b));
+  const otherType = shuffled(pool.filter((e) => fewShotType(e) !== wantType)).sort((a, b) => rank(a) - rank(b));
+  const chosen = [...sameType.slice(0, FEW_SHOT_COUNT - 1)];
+  for (const e of [...otherType, ...sameType.slice(FEW_SHOT_COUNT - 1)]) {
+    if (chosen.length >= FEW_SHOT_COUNT) break;
+    if (!chosen.includes(e)) chosen.push(e);
+  }
+  return chosen.map((e) => Object.fromEntries(Object.entries(e).filter(([k]) => !FEW_SHOT_STRIP.includes(k))));
+}
+
+function buildFewShotText(examples) {
+  return [
+    `Reference examples (${examples.length}). Use them for depth, voice, realism and GRS quality only.`,
+    'Do not reuse their patients, titles, names, settings or wording. Some sections are left out of the examples; the template in the system instructions defines every section you return.',
+    JSON.stringify(examples)
+  ].join('\n');
+}
+
 function loadStaticData() {
   if (!cachedDataPromise) {
     cachedDataPromise = Promise.all([
@@ -2736,7 +2669,7 @@ function loadStaticData() {
       fs.readFile(dataPaths.alsStandards, 'utf-8')
     ]).then(([profile, fewShots, blsStandards, alsStandards]) => ({
       profile,
-      fewShots,
+      fewShotExamples: JSON.parse(fewShots),
       blsStandards,
       alsStandards
     }));
@@ -2779,10 +2712,11 @@ router.post('/', async (req, res) => {
   try {
     const {
       profile,
-      fewShots,
+      fewShotExamples,
       blsStandards,
       alsStandards
     } = await loadStaticData();
+    const fewShots = buildFewShotText(selectFewShotExamples(fewShotExamples, { type, semester }));
 
     const generationProfile = getGenerationDepthProfile(normalizedDepth);
     const semesterProfile = buildSemesterDifficultyProfile(semester);

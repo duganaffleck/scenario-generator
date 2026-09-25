@@ -355,13 +355,6 @@ Do not add qualifiers such as:
 
 Use the exact term only.
 
-Semester and medication rules:
-- Semester 2 scenarios are non-medication scenarios by design.
-- Semester 2 should emphasize assessment, communication, oxygen decisions when indicated, supportive care, reassessment, and transport thinking rather than medication administration.
-- Semester 3 and Semester 4 scenarios may include all clinically appropriate PCP medication options when justified by the case.
-- Do not artificially restrict Semester 3 medication access compared with Semester 4.
-- The difference between Semester 3 and Semester 4 should come mainly from ambiguity, competing problems, scene complexity, contraindication recognition, communication burden, reassessment burden, and leadership demand.
-
 Medication richness:
 - When clinically appropriate, generate scenarios that involve more than one medication decision.
 - Favour cases where learners must think through multiple medication options, sequencing, contraindications, withholding decisions, or reassessment.
@@ -574,7 +567,7 @@ Example structure:
 
 ## OUTPUT FORMAT - REQUIRED SCENARIO STRUCTURE
 
-Return a complete and well-formed JSON object with these fields:
+Return one complete, well-formed JSON object with exactly these fields, in this order:
 
 {
   "title": "",
@@ -610,7 +603,8 @@ Return a complete and well-formed JSON object with these fields:
     "age": "",
     "height": "",
     "weight": "",
-    "appearance": ""
+    "appearance": "",
+    "chiefComplaint": ""
   },
   "patientPresentation": "",
   "incidentNarrative": "",
@@ -622,32 +616,6 @@ Return a complete and well-formed JSON object with these fields:
     "severity": "",
     "time": ""
   },
-  "initialAssessment": {
-    "airway": "",
-    "breathing": "",
-    "circulation": "",
-    "disability": "",
-    "exposure": "",
-    "generalImpression": "",
-    "immediatePriorities": [],
-    "immediateInterventions": []
-  },
-  "historyGathering": {
-    "historySource": "",
-    "additionalHistory": [],
-    "bystanderInformation": [],
-    "contradictionsOrBarriers": [],
-    "sceneContextClues": []
-  },
-  "secondaryAssessment": {
-    "generalAppearance": "",
-    "breathing": "",
-    "circulation": "",
-    "keyFindings": [],
-    "missedIfNotAssessed": [],
-    "evolvingFindings": []
-  },
-  "additionalAssessments": [],
   "sample": {
     "signsAndSymptoms": "",
     "allergies": "",
@@ -656,9 +624,6 @@ Return a complete and well-formed JSON object with these fields:
     "lastOralIntake": "",
     "eventsLeadingUp": ""
   },
-  "medications": [],
-  "allergies": [],
-  "pastMedicalHistory": [],
   "physicalExam": {
     "generalAppearance": "",
     "airway": "",
@@ -673,44 +638,17 @@ Return a complete and well-formed JSON object with these fields:
     "skin": ""
   },
   "vitalSigns": {
-    "firstSet": {
-      "context": "",
-      "hr": "",
-      "rr": "",
-      "bp": "",
-      "spo2": "",
-      "etco2": "",
-      "temp": "",
-      "gcs": "",
-      "bgl": "",
-      "ecgInterpretation": ""
-    },
-    "secondSet": {
-      "context": "",
-      "hr": "",
-      "rr": "",
-      "bp": "",
-      "spo2": "",
-      "etco2": "",
-      "temp": "",
-      "gcs": "",
-      "bgl": "",
-      "ecgInterpretation": ""
-    },
-    "additionalSets": [
-      {
-        "context": "",
-        "hr": "",
-        "rr": "",
-        "bp": "",
-        "spo2": "",
-        "etco2": "",
-        "temp": "",
-        "gcs": "",
-        "bgl": "",
-        "ecgInterpretation": ""
-      }
-    ]
+    "firstSet": { "context": "", "hr": "", "rr": "", "bp": "", "spo2": "", "etco2": "", "temp": "", "gcs": "", "bgl": "", "ecgInterpretation": "" },
+    "secondSet": { "context": "", "hr": "", "rr": "", "bp": "", "spo2": "", "etco2": "", "temp": "", "gcs": "", "bgl": "", "ecgInterpretation": "" },
+    "additionalSets": [{ "context": "", "hr": "", "rr": "", "bp": "", "spo2": "", "etco2": "", "temp": "", "gcs": "", "bgl": "", "ecgInterpretation": "" }]
+  },
+  "ecgFindings": {
+    "ecgType": "",
+    "rhythmInterpretation": "",
+    "twelveLeadFindings": "",
+    "fifteenLeadFindings": "",
+    "ecgClinicalNote": "",
+    "patternKey": ""
   },
   "caseProgression": {
     "withProperTreatment": [],
@@ -718,15 +656,21 @@ Return a complete and well-formed JSON object with these fields:
     "withIncorrectTreatment": [],
     "movementOrTransportChanges": []
   },
-  "transportPhase": {
-    "transportConsiderations": [],
-    "ongoingCare": [],
-    "reassessmentFocus": [],
-    "handoffConsiderations": ""
+  "clinicalReasoning": {
+    "summary": "",
+    "differentialDiagnosis": [
+      { "condition": "", "supportingFeatures": "", "rulingOutFeatures": "" }
+    ],
+    "conclusion": ""
   },
   "expectedTreatment": [],
   "protocolNotes": [],
+  "teachersPoints": "",
   "learningObjectives": [],
+  "instructorGuidance": {
+    "instructorPriorities": [],
+    "psychologicalSafetyDebrief": ""
+  },
   "selfReflectionPrompts": [],
   "grsAnchors": {
     "situationalAwareness": { "3": [], "5": [], "7": [] },
@@ -736,38 +680,16 @@ Return a complete and well-formed JSON object with these fields:
     "proceduralSkill": { "3": [], "5": [], "7": [] },
     "resourceUtilization": { "3": [], "5": [], "7": [] },
     "communication": { "3": [], "5": [], "7": [] }
-  },
-  "teachersPoints": "",
-  "scenarioRationale": "",
-  "clinicalReasoning": ""
+  }
 }
 
 Rules for the output:
-- callInformation must be an object, not a string
-- sceneArrival must be an object; environmentDetails and hazards must be arrays
-- firstImpression must be an object; visibleClues and initialRedFlags must be arrays
-- patientDemographics must be an object
-- opqrst must be an object
-- initialAssessment must be an object with airway, breathing, circulation, disability, exposure, generalImpression, immediatePriorities, and immediateInterventions
-- historyGathering must be an object with historySource, additionalHistory, bystanderInformation, contradictionsOrBarriers, and sceneContextClues
-- secondaryAssessment must be an object with generalAppearance, breathing, circulation, keyFindings, missedIfNotAssessed, and evolvingFindings
-- sample must be an object
-- medications must be an array
-- allergies must be an array
-- pastMedicalHistory must be an array
-- physicalExam must be an object
-- vitalSigns must use firstSet and secondSet exactly; each set must include a context string plus hr and rr written as single lines that combine rate, rhythm, and volume
-- caseProgression must include withProperTreatment, withoutProperTreatment, withIncorrectTreatment, and movementOrTransportChanges as arrays
-- transportPhase must be an object with transportConsiderations, ongoingCare, and reassessmentFocus as arrays and handoffConsiderations as a string; do not include packaging or transportDecision as separate fields
-- expectedTreatment must be an array
-- protocolNotes must be an array
-- learningObjectives must be an array
-- selfReflectionPrompts must be an array
-- teachersPoints must be a string paragraph
-- clinicalReasoning must be a concise narrative string
-- Do not use alternate field names
-- Do not return string paragraphs where arrays are required
-- Do not omit required fields
+- Objects stay objects and arrays stay arrays, exactly as in the template. Never return a string paragraph where an array or object is required.
+- vitalSigns uses firstSet and secondSet exactly. Each set has a context string plus hr and rr written as single lines that combine rate, rhythm and volume.
+- caseProgression has all four arrays.
+- teachersPoints is one string paragraph.
+- clinicalReasoning is an object with summary, differentialDiagnosis and conclusion.
+- Do not use alternate field names, do not add fields, and do not omit any.
 
 Every section must be populated with rich, instructional, scenario-specific content.
 
@@ -780,15 +702,14 @@ Title:
 - Avoid generic titles like "Chest Pain Scenario"
 
 Scenario Intro:
-- Briefly explain the educational purpose of the case
-- Set the teaching tone clearly
-- Make it clear what this scenario is trying to teach
-- Keep it short: usually 1 to 2 sentences
-- Do not pre-solve the whole case or list every hidden risk up front
+- An instructor-facing summary of what this case teaches. It is shown with the teaching sections, not at the start of the call.
+- Do not describe the patient, scene or findings, and do not pre-solve the case
+- Length is set by the generation depth instruction
 
 Call Information:
 - Make dispatch feel real and operational
 - Include scene constraints when relevant
+- crewNotes are operational only (access, hazards, resources), never a suspected diagnosis or a treatment to consider
 
 Patient Presentation:
 - Show what the crew sees immediately
@@ -801,12 +722,6 @@ Incident Narrative:
 OPQRST and SAMPLE:
 - Fully populate when clinically applicable
 - Keep the content useful, not robotic
-
-Initial Assessment:
-- Keep this learner-facing and findings-based.
-- Include airway, breathing, circulation, disability, exposure, and a concise general impression.
-- Do not include immediatePriorities, immediateInterventions, treatment checklists, or management instructions here.
-- If the model wants to write those items, place them in instructorGuidance instead.
 
 Chief Complaint Safety:
 - Chief complaint must match the scenario that was generated.
@@ -823,11 +738,9 @@ Vital Signs:
 - Do not force ECG into isolated trauma if it adds nothing
 
 Instructor Guidance:
-- Return instructorGuidance as an instructor-only object with instructorPriorities and psychologicalSafetyDebrief only.
-- instructorPriorities should hold the early recognition and prioritization targets that would otherwise give the answer away too soon.
-- expectedTreatment should hold expected early care actions, contraindication reminders, treatment sequencing, and management targets.
+- instructorGuidance has instructorPriorities and psychologicalSafetyDebrief only.
+- instructorPriorities are what the instructor watches for during the run: 3 to 5 observable decisions or behaviours, such as whether BP is checked before each nitro or whether the crew reassesses after moving the patient. They are not the treatment list, which lives in expectedTreatment.
 - psychologicalSafetyDebrief should be one short paragraph that helps the instructor debrief without making the case feel like a trick. If learners anchored on the wrong thing, first name why that frame was understandable, then identify the findings that should have changed the plan.
-- Keep all of this out of initialAssessment.
 
 Case Progression:
 - Show believable improvement with proper care
@@ -846,7 +759,7 @@ Expected Treatment:
 Protocol Notes:
 - Return practical directive-linked notes as a list
 - Do not write this as a paragraph
-- Use this section to clarify reasoning and standards alignment
+- Give the directive or standard behind the decisions (indications, contraindications, conditions to hold or withhold). Do not restate the actions in expectedTreatment
 - Usually keep this to 4 to 6 concise items
 - Do not repeat the same oxygen, transport, or reassessment point in multiple phrasings
 
@@ -862,7 +775,7 @@ Teaching Points:
 - Avoid ChatGPT patterns such as: "This scenario is designed to teach," "It is important to," "Students should," "This highlights the need to," or similar hedge-heavy framing.
 - Write like you are actually debriefing this specific call with your crew, not like you are writing instructional copy for a textbook.
 - Let it sound natural and spoken, like a good instructor talking through the case after the call rather than filling a template.
-- Usually aim for a compact paragraph with several distinct teaching beats, but do not force a sentence count if the case is better served by a slightly shorter or longer debrief.
+- Length is set by the generation depth instruction. Do not restate the learning objectives or the expected treatment.
 - Include what happened in this case, why it matters clinically, and useful improvement advice for the learner's next call.
 - Keep the language case-specific, behavior-focused, and clinically grounded rather than generic
 - When it fits the case, include a common error, bias, or hesitation trap that learners are likely to fall into
@@ -874,13 +787,10 @@ Teaching Points:
 - Prefer direct openings and transitions when useful, but do not force the same setup every time
 - Do not use emojis
 
-Scenario Rationale:
-- Explain why this case exists and what it is designed to teach
-- Keep it tight: usually 2 to 3 sentences, not a second debrief
-
 Clinical Reasoning:
-- Summarize the likely problem clearly
-- Include meaningful differential diagnosis items
+- summary: the likely problem, clearly
+- differentialDiagnosis: 2 or 3 conditions, each with supporting and ruling-out features
+- conclusion: why the most likely diagnosis fits best
 - Show why the most likely conclusion fits best
 - Keep it concise and teaching-useful, not a full answer key
 - Usually aim for one compact paragraph rather than an exhaustive explanation

@@ -1,4 +1,4 @@
-ALS PCS — PCP & PCP-IV DIRECTIVES (2025)
+ALS PCS: PCP & PCP-IV DIRECTIVES (2025)
 Source: ALS PCS v5.4 (April 2025)
 Scope: Primary Care Paramedic + PCP-IV Certified
 
@@ -11,7 +11,7 @@ Indications:
 - Respiratory distress with suspected bronchoconstriction (e.g., asthma, COPD)
 
 Treatment:
-- Salbutamol MDI 800 mcg (8 puffs) q5–15 min PRN
+- Salbutamol MDI 800 mcg (8 puffs) q5-15 min PRN
   OR
 - Salbutamol Neb 5 mg if no MDI available
 - Epinephrine IM 0.01 mg/kg (max 0.5 mg) if severe + asthma
@@ -26,7 +26,7 @@ Indications:
 - Altered LOC with BGL < 4.0 mmol/L
 
 Treatment:
-- Oral glucose 25–50 g if alert and able to swallow
+- Oral glucose 25-50 g if alert and able to swallow
 - D10W IV (PCP-IV): 0.2 g/kg (2 mL/kg) up to 10 g (100 mL)
 - Glucagon IM 1 mg if no IV access
 
@@ -41,11 +41,11 @@ Indications:
 - Suspected cardiac chest pain
 
 Treatment:
-- ASA 160–162 mg PO once
-- Nitroglycerin SL (PCP-IV): 0.3–0.6 mg q5 min, max 6 doses
+- ASA 160-162 mg PO once
+- Nitroglycerin SL (PCP-IV): 0.3-0.6 mg q5 min, max 6 doses
 
 Conditions:
-- HR 60–159 bpm
+- HR 60-159 bpm
 - SBP ≥ 100 mmHg
 - No ED medications in past 48 hrs
 
@@ -69,10 +69,10 @@ Transport if:
 - No ROSC after 3 analyses
 
 ────────────────────────────────────────
-5. ROSC – Return of Spontaneous Circulation (PCP)
+5. ROSC: Return of Spontaneous Circulation (PCP)
 ────────────────────────────────────────
 Treatment:
-- Oxygen to SpO₂ 94–98%
+- Oxygen to SpO₂ 94-98%
 - Avoid hyperventilation
 - Monitor vitals closely
 - Prepare for re-arrest
@@ -97,8 +97,8 @@ Contraindications:
 7. Allergic Reaction / Anaphylaxis (PCP + PCP-IV)
 ────────────────────────────────────────
 Treatment:
-- Epinephrine IM 0.01 mg/kg (max 0.5 mg) q5–15 min ×2
-- Diphenhydramine (PCP-IV): 25–50 mg IM or IV
+- Epinephrine IM 0.01 mg/kg (max 0.5 mg) q5-15 min ×2
+- Diphenhydramine (PCP-IV): 25-50 mg IM or IV
 
 Contraindications:
 - None for epinephrine in anaphylaxis
@@ -107,7 +107,7 @@ Contraindications:
 8. Nausea / Vomiting (PCP-IV)
 ────────────────────────────────────────
 Treatment:
-- Dimenhydrinate 25–50 mg IV or IM q4h PRN
+- Dimenhydrinate 25-50 mg IV or IM q4h PRN
 
 Contraindications:
 - Allergy
@@ -120,9 +120,9 @@ Indications:
 - Moderate to severe pain
 
 Treatment:
-- Acetaminophen 960–1000 mg PO
+- Acetaminophen 960-1000 mg PO
 - Ibuprofen 400 mg PO
-- Ketorolac 10–15 mg IM/IV if NPO or cannot tolerate oral
+- Ketorolac 10-15 mg IM/IV if NPO or cannot tolerate oral
 
 Contraindications:
 - NSAID allergy, renal failure, bleeding, pregnancy
@@ -159,7 +159,7 @@ Treatment:
 - Document clearly
 
 ────────────────────────────────────────
-13. TXA – Tranexamic Acid (PCP-IV)
+13. TXA: Tranexamic Acid (PCP-IV)
 ────────────────────────────────────────
 Indications:
 - Blunt or penetrating trauma with signs of hemorrhagic shock (e.g., SBP < 90 mmHg, HR > 110 bpm)

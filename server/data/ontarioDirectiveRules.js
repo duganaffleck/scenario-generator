@@ -90,7 +90,7 @@ export const ONTARIO_DIRECTIVE_RULES = {
       {
         id: "protocol-notes-explicit",
         ifField: "protocolNotes",
-        shouldContainOneOf: ["O2 titrate 92–96%", "12-lead before nitro", "Right-sided ECG if inferior STEMI"],
+        shouldContainOneOf: ["O2 titrate 92-96%", "12-lead before nitro", "Right-sided ECG if inferior STEMI"],
         severity: "low"
       }
     ],
@@ -185,7 +185,7 @@ export const ONTARIO_DIRECTIVE_RULES = {
     },
     promptBlock: [
       "Cardiac ischemia scenarios must reflect current Ontario cardiac ischemia clarifications.",
-      "12-lead acquisition and interpretation should precede nitroglycerin consideration. The phrase '12-lead' must appear in expectedTreatment for any cardiac ischemia scenario — do not omit it.",
+      "12-lead acquisition and interpretation should precede nitroglycerin consideration. The phrase '12-lead' must appear in expectedTreatment for any cardiac ischemia scenario: do not omit it.",
       "A 12-lead within the first 10 minutes is a goal, not an absolute requirement in every setting.",
       "If inferior STEMI is identified and nitroglycerin is being considered, a minimum V4R should be obtained to assess right ventricular involvement.",
       "If STEMI is identified, repeating the 12-lead is not necessary; if no STEMI is identified, serial 12-leads are recommended.",
@@ -455,7 +455,7 @@ export const ONTARIO_DIRECTIVE_RULES = {
     },
     promptBlock: [
       "Not every patient with nausea or vomiting requires medication treatment.",
-      "When antiemetic treatment is indicated, name dimenhydrinate explicitly in expectedTreatment — do not use generic terms like 'antiemetic' without naming the medication.",
+      "When antiemetic treatment is indicated, name dimenhydrinate explicitly in expectedTreatment: do not use generic terms like 'antiemetic' without naming the medication.",
       "If dimenhydrinate is given and there is no relief after 30 minutes, ondansetron may be considered if the patient still meets conditions and has no contraindications.",
       "Avoid generating dimenhydrinate with diphenhydramine co-administration.",
       "Avoid generating ondansetron with apomorphine.",
@@ -502,11 +502,11 @@ export const ONTARIO_DIRECTIVE_RULES = {
       "Cardiac arrest scenarios should not imply naloxone has a routine role in confirmed cardiac arrest.",
       "CPR expectations should align with Ontario standards.",
       "Advanced arrest features such as VCD or DSED should only appear if they fit the intended learner level, setting, and available resources.",
-      "Epinephrine IV or IO in cardiac arrest is ACP only — do not include epinephrine as a PCP treatment in expectedTreatment or protocolNotes for cardiac arrest unless the arrest is directly attributable to anaphylaxis.",
+      "Epinephrine IV or IO in cardiac arrest is ACP only: do not include epinephrine as a PCP treatment in expectedTreatment or protocolNotes for cardiac arrest unless the arrest is directly attributable to anaphylaxis.",
       "The single exception: if the arrest is directly caused by anaphylaxis, a single dose of epinephrine 1:1000 IM 1mg is indicated under the medical cardiac arrest directive. This is IM only, not IV or IO, and does not alter the CPR and defibrillation sequence.",
       "PCP cardiac arrest management is: high quality CPR, early defibrillation for shockable rhythms, supraglottic airway when indicated, rhythm analysis every 2 minutes, reversible cause identification, and transport with patch consideration after 20 minutes.",
-      "Do not include atropine, amiodarone, lidocaine, dopamine, adenosine, or calcium gluconate as PCP cardiac arrest treatments — these are all ACP only.",
-      "Post-ROSC oxygen target is SpO2 94-98% — do not target 100%. ETCO2 target is 30-40 mmHg. Avoid hyperventilation. Fluid bolus 10ml/kg to max 1000ml if SBP below 90 and lungs clear. Dopamine is ACP only post-ROSC."
+      "Do not include atropine, amiodarone, lidocaine, dopamine, adenosine, or calcium gluconate as PCP cardiac arrest treatments: these are all ACP only.",
+      "Post-ROSC oxygen target is SpO2 94-98%: do not target 100%. ETCO2 target is 30-40 mmHg. Avoid hyperventilation. Fluid bolus 10ml/kg to max 1000ml if SBP below 90 and lungs clear. Dopamine is ACP only post-ROSC."
     ],
     treatmentRules: {
       noRoutineNaloxoneInConfirmedCardiacArrest: true,
@@ -549,11 +549,11 @@ export const ONTARIO_DIRECTIVE_RULES = {
     meta: { source: ["als", "companion"], confidence: "high" },
     promptBlock: [
       "Hypoglycemia treatment follows a tiered approach based on level of consciousness and swallowing safety.",
-      "Oral glucose is appropriate when the patient is alert enough to safely swallow — use 15g simple carbohydrates and reassess using the 15-15 rule.",
+      "Oral glucose is appropriate when the patient is alert enough to safely swallow: use 15g simple carbohydrates and reassess using the 15-15 rule.",
       "Glucagon IM or intranasal (Baqsimi 3mg) is appropriate when the patient cannot safely swallow.",
-      "Dextrose IV (D10W or D50W) is appropriate when IV is established and the patient cannot take oral or glucagon has failed — administer gradually over 3 minutes, stop if patient can safely consume carbohydrates.",
+      "Dextrose IV (D10W or D50W) is appropriate when IV is established and the patient cannot take oral or glucagon has failed: administer gradually over 3 minutes, stop if patient can safely consume carbohydrates.",
       "If glucagon was given with no improvement and IV is subsequently established, administer dextrose regardless of elapsed time since glucagon.",
-      "Do not administer multiple doses of the same medication — transport if two doses of glucagon or dextrose are required.",
+      "Do not administer multiple doses of the same medication: transport if two doses of glucagon or dextrose are required.",
       "Reassess BGL after treatment before determining transport or treat-and-discharge eligibility.",
       "Treat and discharge requires confirmed improvement, ability to self-care, responsible adult present, follow-up plan, and base hospital patch."
     ],
@@ -588,12 +588,12 @@ export const ONTARIO_DIRECTIVE_RULES = {
     },
     meta: { source: ["als", "companion"], confidence: "high" },
     promptBlock: [
-      "Epinephrine 1:1000 IM is the primary treatment for anaphylaxis — administer as soon as anaphylaxis is recognized.",
+      "Epinephrine 1:1000 IM is the primary treatment for anaphylaxis: administer as soon as anaphylaxis is recognized.",
       "The anterolateral mid-thigh is the preferred IM site for epinephrine due to improved absorption.",
-      "Diphenhydramine is a secondary treatment — it does not prevent or relieve upper airway edema, hypotension, or shock. It must not replace or delay epinephrine.",
-      "Salbutamol is adjunctive treatment for bronchospasm not responsive to epinephrine — it does not address upper airway edema.",
-      "Dexamethasone must NOT appear in expectedTreatment or protocolNotes for anaphylaxis scenarios — it is not part of prehospital anaphylaxis management and must be explicitly excluded.",
-      "Biphasic reactions can occur 1 to 48 hours after initial symptom resolution without re-exposure — transport is mandatory even after apparent recovery.",
+      "Diphenhydramine is a secondary treatment: it does not prevent or relieve upper airway edema, hypotension, or shock. It must not replace or delay epinephrine.",
+      "Salbutamol is adjunctive treatment for bronchospasm not responsive to epinephrine: it does not address upper airway edema.",
+      "Dexamethasone must NOT appear in expectedTreatment or protocolNotes for anaphylaxis scenarios: it is not part of prehospital anaphylaxis management and must be explicitly excluded.",
+      "Biphasic reactions can occur 1 to 48 hours after initial symptom resolution without re-exposure: transport is mandatory even after apparent recovery.",
       "Patients with diaphoresis, flushing, or dyspnea are more likely to require multiple epinephrine doses.",
       "If hypotension persists after epinephrine, treat with IV fluid bolus per the IV and Fluid Therapy directive."
     ],
@@ -636,12 +636,12 @@ export const ONTARIO_DIRECTIVE_RULES = {
     meta: { source: ["als", "companion"], confidence: "high" },
     promptBlock: [
       "PCP core seizure management involves protecting the patient from injury, safe positioning, airway management, oxygen if hypoxic, and BGL check.",
-      "Midazolam is ACP only at PCP core level — do not include midazolam as a PCP treatment in core seizure scenarios.",
-      "Always check BGL in any patient with altered consciousness or post-ictal state — hypoglycemia must be ruled out.",
+      "Midazolam is ACP only at PCP core level: do not include midazolam as a PCP treatment in core seizure scenarios.",
+      "Always check BGL in any patient with altered consciousness or post-ictal state: hypoglycemia must be ruled out.",
       "The seizure treat-and-discharge auxiliary directive requires: confirmed epilepsy diagnosed by a physician, single seizure episode, full recovery to baseline, no new medications or dosage changes in the past 30 days, meets all eligibility criteria, and a base hospital patch is mandatory.",
-      "A seizure cluster is multiple seizures within 24 hours — these patients do not qualify for treat and discharge.",
+      "A seizure cluster is multiple seizures within 24 hours: these patients do not qualify for treat and discharge.",
       "A new medication or recent dosage change in the past 30 days can lower seizure threshold and affects treat-and-discharge eligibility.",
-      "Post-ictal confusion is expected — reassess level of consciousness serially before disposition decision."
+      "Post-ictal confusion is expected: reassess level of consciousness serially before disposition decision."
     ],
     treatmentRules: {
       midazolamIsACPOnly: true,
@@ -680,15 +680,15 @@ export const ONTARIO_DIRECTIVE_RULES = {
     },
     meta: { source: ["als", "companion"], confidence: "high" },
     promptBlock: [
-      "Tachycardia may be a physiologic compensatory response to pain, hypovolemia, fever, or hypoxia — treat the underlying cause and do not initiate tachydysrhythmia directive interventions for compensatory tachycardia.",
+      "Tachycardia may be a physiologic compensatory response to pain, hypovolemia, fever, or hypoxia: treat the underlying cause and do not initiate tachydysrhythmia directive interventions for compensatory tachycardia.",
       "A 12-lead ECG is strongly recommended to accurately identify narrow versus wide complex tachycardia before any intervention.",
-      "Modified Valsalva maneuver is available to both PCP and ACP for stable SVT — PCP must have base hospital authorization as an auxiliary directive.",
+      "Modified Valsalva maneuver is available to both PCP and ACP for stable SVT: PCP must have base hospital authorization as an auxiliary directive.",
       "The modified Valsalva procedure: patient performs forced expiration into a 10ml syringe for 15 seconds, then is immediately laid supine with legs elevated to 45 degrees for 15 seconds, then returned to semi-recumbent for 45 seconds.",
-      "Maximum 2 Valsalva attempts per episode — if the patient converts and then reverts, this is a new episode and additional attempts may be made, but the patient no longer qualifies for treat and discharge.",
-      "Adenosine is ACP only — do not include adenosine as a PCP treatment.",
-      "Synchronized cardioversion is ACP with base hospital authorization — for hemodynamically unstable tachydysrhythmia.",
+      "Maximum 2 Valsalva attempts per episode: if the patient converts and then reverts, this is a new episode and additional attempts may be made, but the patient no longer qualifies for treat and discharge.",
+      "Adenosine is ACP only: do not include adenosine as a PCP treatment.",
+      "Synchronized cardioversion is ACP with base hospital authorization: for hemodynamically unstable tachydysrhythmia.",
       "Amiodarone and lidocaine are ACP only.",
-      "Chest pain associated with tachydysrhythmia is not a contraindication to treatment — after treating the dysrhythmia, assess whether chest pain is ongoing and ischemic.",
+      "Chest pain associated with tachydysrhythmia is not a contraindication to treatment: after treating the dysrhythmia, assess whether chest pain is ongoing and ischemic.",
       "Pregnant patients are excluded from the tachydysrhythmia treat-and-discharge portion of the directive."
     ],
     treatmentRules: {
@@ -733,12 +733,12 @@ export const ONTARIO_DIRECTIVE_RULES = {
     promptBlock: [
       "External hemorrhage should be controlled first with direct pressure, wound packing, or tourniquet before other interventions.",
       "Tranexamic acid (TXA) 1g IV over 5 minutes or IM as alternate route is available to PCP as an auxiliary directive with base hospital authorization.",
-      "TXA preferred route is IV — add 1g TXA to a 50ml bag of normal saline or D5W and administer over 5 minutes. IM is the alternate if IV is not available.",
+      "TXA preferred route is IV: add 1g TXA to a 50ml bag of normal saline or D5W and administer over 5 minutes. IM is the alternate if IV is not available.",
       "TXA must not delay transport and must not be prioritized over management of other reversible causes.",
-      "When the scenario involves significant traumatic hemorrhage, TXA must appear in expectedTreatment by name — use 'tranexamic acid' or 'TXA' explicitly so it is not omitted from the treatment plan.",
+      "When the scenario involves significant traumatic hemorrhage, TXA must appear in expectedTreatment by name: use 'tranexamic acid' or 'TXA' explicitly so it is not omitted from the treatment plan.",
       "Research supporting TXA efficacy is in adult populations only.",
       "Ontario SMR criteria require application when age over 65 and fall mechanism is present regardless of apparent severity.",
-      "Do not use spinal board for transport — use stretcher-based SMR."
+      "Do not use spinal board for transport: use stretcher-based SMR."
     ],
     treatmentRules: {
       directPressureFirst: true,
@@ -771,14 +771,14 @@ export const ONTARIO_DIRECTIVE_RULES = {
     },
     meta: { source: ["als", "companion"], confidence: "high" },
     promptBlock: [
-      "Hyperkalemia recognition is the key PCP skill — consider it in any patient with renal failure, missed dialysis, crush injury, or metabolic acidosis.",
-      "ECG findings of hyperkalemia progress from peaked T-waves, to flattened P-waves, to prolonged PR, to widened QRS, to sine-wave pattern — not all findings are present in every patient.",
-      "Calcium gluconate 1g IV over 3 minutes is ACP only — do not include as PCP treatment.",
-      "Salbutamol in high doses may temporarily shift potassium into cells — this is ACP context.",
-      "Sodium bicarbonate is not effective for hyperkalemia and should not be routinely administered — patch point for BHP if considered.",
+      "Hyperkalemia recognition is the key PCP skill: consider it in any patient with renal failure, missed dialysis, crush injury, or metabolic acidosis.",
+      "ECG findings of hyperkalemia progress from peaked T-waves, to flattened P-waves, to prolonged PR, to widened QRS, to sine-wave pattern: not all findings are present in every patient.",
+      "Calcium gluconate 1g IV over 3 minutes is ACP only: do not include as PCP treatment.",
+      "Salbutamol in high doses may temporarily shift potassium into cells: this is ACP context.",
+      "Sodium bicarbonate is not effective for hyperkalemia and should not be routinely administered: patch point for BHP if considered.",
       "PCP role in hyperkalemia: recognition from ECG and clinical picture, serial 12-lead ECG, IV access, urgent transport with cardiac monitoring and pre-alert.",
-      "Serial 12-lead ECG before and after ACP treatment is intentional — used to measure ECG change response.",
-      "NEVER include calcium gluconate in expectedTreatment or protocolNotes for PCP scenarios — calcium gluconate is ACP only and must not appear as a PCP treatment under any circumstances."
+      "Serial 12-lead ECG before and after ACP treatment is intentional: used to measure ECG change response.",
+      "NEVER include calcium gluconate in expectedTreatment or protocolNotes for PCP scenarios: calcium gluconate is ACP only and must not appear as a PCP treatment under any circumstances."
     ],
     treatmentRules: {
       calciumGluconateACPOnly: true,
@@ -810,14 +810,14 @@ export const ONTARIO_DIRECTIVE_RULES = {
     },
     meta: { source: ["als", "companion"], confidence: "high" },
     promptBlock: [
-      "Effective ventilation is the priority in opioid overdose — airway management before naloxone.",
-      "Naloxone is available intranasal or IM — titrate to adequate respirations, not full reversal. Do not use the phrase 'full reversal' in expectedTreatment.",
+      "Effective ventilation is the priority in opioid overdose: airway management before naloxone.",
+      "Naloxone is available intranasal or IM: titrate to adequate respirations, not full reversal. Do not use the phrase 'full reversal' in expectedTreatment.",
       "Titrating to restore breathing prevents precipitated withdrawal and agitation. The goal is adequate ventilation, not full opioid antagonism.",
-      "Naloxone has no routine role in confirmed cardiac arrest — do not include it as a routine arrest medication.",
-      "Re-sedation risk is real with long-acting opioids such as methadone — transport is mandatory even after apparent reversal.",
-      "Mixed overdose: naloxone may unmask stimulant toxidrome — be prepared for seizures, agitation, or hypertensive crisis after reversal.",
+      "Naloxone has no routine role in confirmed cardiac arrest: do not include it as a routine arrest medication.",
+      "Re-sedation risk is real with long-acting opioids such as methadone: transport is mandatory even after apparent reversal.",
+      "Mixed overdose: naloxone may unmask stimulant toxidrome: be prepared for seizures, agitation, or hypertensive crisis after reversal.",
       "Naloxone age condition: patient must be 24 hours or older.",
-      "Buprenorphine/naloxone (Suboxone) is for opioid withdrawal management — use COWS score to assess eligibility."
+      "Buprenorphine/naloxone (Suboxone) is for opioid withdrawal management: use COWS score to assess eligibility."
     ],
     treatmentRules: {
       ventilationBeforeNaloxone: true,
@@ -853,13 +853,13 @@ export const ONTARIO_DIRECTIVE_RULES = {
       "Paramedics are not authorized to perform internal vaginal exams to determine cervical dilation.",
       "Inspect the perineum when history suggests ruptured membranes, cord prolapse, urge to push, or heavy vaginal bleeding with hypotension.",
       "Signs of imminent birth include crowning or presenting part visible, or in multips contractions 5 minutes apart or less with other second-stage signs.",
-      "Oxytocin is administered immediately after delivery of all fetuses and/or placenta and up to 4 hours post-placenta delivery — for prevention and management of post-partum hemorrhage.",
-      "Oxytocin can induce vasoconstriction — use caution in hypertensive patients.",
+      "Oxytocin is administered immediately after delivery of all fetuses and/or placenta and up to 4 hours post-placenta delivery: for prevention and management of post-partum hemorrhage.",
+      "Oxytocin can induce vasoconstriction: use caution in hypertensive patients.",
       "External uterine massage is performed only after placenta delivery when fundus is soft or boggy or bleeding is excessive.",
-      "External bimanual compression if uterine massage is unsuccessful — can be performed whether or not placenta is delivered.",
+      "External bimanual compression if uterine massage is unsuccessful: can be performed whether or not placenta is delivered.",
       "Prolapsed cord: knee-chest or exaggerated Sims position, manual digital elevation of presenting part, maintain until transfer of care.",
       "Breech delivery: hands off until delivered to umbilicus, 4 minutes from umbilicus to head delivery, initiate Mauriceau-Smellie-Veit if head not delivered within 3 minutes.",
-      "Shoulder dystocia: ALARM maneuvers — McRoberts, suprapubic pressure, Gaskin, manual release of posterior arm. 8 minutes from head delivery."
+      "Shoulder dystocia: ALARM maneuvers: McRoberts, suprapubic pressure, Gaskin, manual release of posterior arm. 8 minutes from head delivery."
     ],
     treatmentRules: {
       noInternalVaginalExam: true,
@@ -892,13 +892,13 @@ export const ONTARIO_DIRECTIVE_RULES = {
     },
     meta: { source: ["als", "companion"], confidence: "high" },
     promptBlock: [
-      "Post-ROSC oxygen target is SpO2 94-98% — avoid 100% to minimize vasoconstriction and oxygen free radical damage.",
+      "Post-ROSC oxygen target is SpO2 94-98%: avoid 100% to minimize vasoconstriction and oxygen free radical damage.",
       "Continue oxygen administration if patient remains unstable despite ideal SpO2 values.",
       "Post-ROSC ventilation rate: approximately 10 breaths per minute for adults. Target ETCO2 30-40 mmHg.",
-      "Avoid hyperventilation post-ROSC — a low ETCO2 may reflect metabolic acidosis, not a reason to increase ventilation rate.",
+      "Avoid hyperventilation post-ROSC: a low ETCO2 may reflect metabolic acidosis, not a reason to increase ventilation rate.",
       "Fluid bolus 10ml/kg to maximum 1000ml if SBP below 90 mmHg and chest auscultation is clear.",
       "Maximum fluid volume is 10ml/kg or 1000ml for post-ROSC and cardiogenic shock patients.",
-      "Dopamine is ACP only — do not include dopamine as PCP post-ROSC treatment.",
+      "Dopamine is ACP only: do not include dopamine as PCP post-ROSC treatment.",
       "If patient re-arrests en route: pull over, one immediate rhythm interpretation, treat appropriately, continue to hospital with no further stops."
     ],
     treatmentRules: {
@@ -934,12 +934,12 @@ export const ONTARIO_DIRECTIVE_RULES = {
     meta: { source: ["als", "companion"], confidence: "high" },
     promptBlock: [
       "CPAP is indicated for severe respiratory distress with acute pulmonary edema regardless of origin, or COPD exacerbation.",
-      "CPAP is a PCP auxiliary directive — requires base hospital authorization.",
+      "CPAP is a PCP auxiliary directive: requires base hospital authorization.",
       "CPAP is additive therapy to the bronchoconstriction or ACPE directives, not a replacement.",
-      "CPAP is not indicated for asthma — epinephrine and salbutamol are the asthma interventions.",
+      "CPAP is not indicated for asthma: epinephrine and salbutamol are the asthma interventions.",
       "CPAP may be interrupted momentarily to administer nitroglycerin. Salbutamol can be administered via the MDI port without interrupting CPAP.",
       "Reassess patient every 5 minutes and adjust CPAP as required.",
-      "CPAP is appropriate for non-cardiogenic pulmonary edema — nitroglycerin is not."
+      "CPAP is appropriate for non-cardiogenic pulmonary edema: nitroglycerin is not."
     ],
     treatmentRules: {
       cpapForCOPDAndPulmonaryEdema: true,
@@ -1196,7 +1196,7 @@ export function buildForbiddenTreatmentTerms({
       // strip any item that names dexamethasone as an action
       forbidden.add('dexamethasone');
     }
-    // doNotCombine pairs — nausea directive and others
+    // doNotCombine pairs: nausea directive and others
     for (const combo of tr.doNotCombine || []) {
       // dimenhydrinate+diphenhydramine: diphenhydramine is forbidden as a standalone replacement
       // but only outside anaphylaxis context where diphenhydramine is a valid secondary treatment
@@ -1208,7 +1208,7 @@ export function buildForbiddenTreatmentTerms({
         }
       }
     }
-    // forbiddenCombinations (plural) — catch any directives using that field name
+    // forbiddenCombinations (plural): catch any directives using that field name
     for (const combo of tr.forbiddenCombinations || []) {
       if (combo.length === 1) forbidden.add(combo[0].toLowerCase());
     }
