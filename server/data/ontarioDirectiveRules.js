@@ -190,7 +190,7 @@ export const ONTARIO_DIRECTIVE_RULES = {
       "If inferior STEMI is identified and nitroglycerin is being considered, a minimum V4R should be obtained to assess right ventricular involvement.",
       "If STEMI is identified, repeating the 12-lead is not necessary; if no STEMI is identified, serial 12-leads are recommended.",
       "Nitroglycerin conditions are a prior history OR an established IV for first-time suspected cardiac ischemia.",
-      "Use caution with nitroglycerin in tachycardia or when SBP is near 100 mmHg.",
+      "Nitroglycerin needs HR 60-159 and SBP normotensive (100 or higher). Stop, and do not restart, if SBP drops by one-third or more of its initial value.",
       "Do not give nitroglycerin in right ventricular STEMI.",
       "If the patient falls outside directive parameters, do not later resume the medication simply because vitals normalize."
     ],
@@ -1172,6 +1172,34 @@ export const OUTSIDE_PCP_SCOPE_TERMS = [
   'cardioversion', 'transcutaneous pacing', 'intubat', 'intraosseous', 'io access', 'iv/io', 'iv or io', 'via io', 'io line', 'cricothyrotomy',
   'needle decompression', 'needle thoracostomy', 'procedural sedation'
 ];
+
+// Prose check for teaching, progression and GRS text. Procedures and "what ACP would do" count on sight.
+// Drugs count only as a treatment (a verb before, or a dose or route after), so "suspected fentanyl overdose"
+// and a patient's own "lorazepam at bedtime" survive. History sections are never passed in.
+const SCOPE_PROCEDURES = /\b(cardioversion|cardiovert\w*|transcutaneous pacing|pacing pads|intubat\w*|intraosseous|IO access|IV\/IO|IV or IO|via IO|cricothyrotomy|needle decompression|needle thoracostomy|procedural sedation)\b/i;
+const SCOPE_ACP_TALK = /\b(ACP|advanced care paramedics?)\s+(would|could|can|will|may|might|should|is able to|are able to)\b|\bACP[- ](only|scope|level)\b/i;
+const SCOPE_DRUGS = '(atropine|dopamine|norepinephrine|amiodarone|lidocaine|adenosine|procainamide|morphine|hydromorphone|ketamine|midazolam|diazepam|lorazepam|fentanyl|calcium gluconate|calcium chloride|sodium bicarbonate|magnesium sulfate)';
+const SCOPE_DRUG_AS_TREATMENT = new RegExp(
+  '\\b(give|gives|giving|gave|given|administer\\w*|push\\w*|draw\\w* up|prepar\\w*|consider\\w*|withh\\w*|hold\\w*|dose of|doses of|order\\w*)\\b(\\s+\\S+){0,3}\\s+' + SCOPE_DRUGS + '\\b' +
+  '|\\b' + SCOPE_DRUGS + '\\s+(\\d[\\d.]*\\s*(mg|mcg|g|mL)\\b|IV\\b|IM\\b|IN\\b|IO\\b|infusion|drip|bolus|push)', 'i');
+
+export function isOutsidePcpScopeSentence(sentence) {
+  const t = String(sentence || '');
+  return SCOPE_PROCEDURES.test(t) || SCOPE_ACP_TALK.test(t) || SCOPE_DRUG_AS_TREATMENT.test(t);
+}
+
+// Removes out-of-scope sentences from a piece of prose. Teaching cues *(💡 ...)* are kept or removed whole.
+export function scrubOutOfScopeText(text) {
+  if (typeof text !== 'string' || !text) return text;
+  const cues = [];
+  let body = text.replace(/\*\(💡[\s\S]*?\)\*/g, (cue) => {
+    cues.push(isOutsidePcpScopeSentence(cue) ? '' : cue);
+    return `\u0000${cues.length - 1}\u0000`;
+  });
+  const parts = body.split(/(?<=[.!?])\s+(?=["'(A-Z0-9\u0000])/);
+  body = parts.filter((p) => !isOutsidePcpScopeSentence(p.replace(/\u0000\d+\u0000/g, ''))).join(' ');
+  return body.replace(/\u0000(\d+)\u0000/g, (_, i) => cues[+i]).replace(/\s{2,}/g, ' ').trim();
+}
 
 export function buildForbiddenTreatmentTerms({
   semester,

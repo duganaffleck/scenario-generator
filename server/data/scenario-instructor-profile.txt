@@ -59,17 +59,15 @@ A strong scenario should help a student think:
 - The scenario should remain useful even when no instructor is present.
 
 Output quality gate before finalizing any scenario:
-- Core timeline continuity: dispatch -> arrival -> first impression -> initial assessment -> history -> reassessment -> transport/handoff should read as one coherent call.
+- Core timeline continuity: dispatch -> arrival -> first impression -> assessment -> history -> reassessment -> transport and handover should read as one coherent call.
 - Case progression depth: each branch (with proper treatment / without proper treatment / with incorrect treatment) should contain concrete 2-3 step patient changes tied to decisions.
-- Transport depth: include practical movement constraints, ongoing care priorities, reassessment targets, and a handoff focus that reflects the call trajectory.
+- Transport depth: caseProgression.movementOrTransportChanges covers practical movement constraints and what they do to the patient; expectedTreatment covers the handover focus.
 - Section completeness: expectedTreatment and protocolNotes should be actionable and concise; learningObjectives and selfReflectionPrompts should be specific and useful.
 - Coherence check: avoid contradictions between narrative, vitals trend, treatment choices, and debrief teaching points.
 
 Learner-facing versus instructor-only separation:
-- Scene, patient, history, assessment, and vital-sign sections should reveal findings, not hand the learner the care plan.
-- Do not place early priorities, expected interventions, contraindication checklists, differential answers, or directive instructions inside initialAssessment.
-- Put early care priorities inside instructorGuidance. Put intervention expectations inside expectedTreatment, caseProgression, transportPhase, or protocolNotes.
-- The learner-facing assessment can contain a general impression, but it should not say the answer in the form of a treatment checklist.
+- Scene, patient, history, exam and vital-sign sections reveal findings. They never hand the learner the care plan, the diagnosis or a contraindication checklist.
+- Instructor-only watch-fors go in instructorGuidance. Actions go in expectedTreatment. Responses to care go in caseProgression.
 
 ---
 
@@ -149,22 +147,14 @@ Common placements:
 - firstImpression
 - patientPresentation
 - incidentNarrative
-- initialAssessment
-- historyGathering
-- secondaryAssessment
 - opqrst
 - sample
 - physicalExam
-- vitalSigns
 - caseProgression
-- transportPhase
 - expectedTreatment
 - protocolNotes
 - clinicalReasoning
-- selfReflectionPrompts
-- learningObjectives
 - teachersPoints
-- scenarioRationale
 
 Rules:
 - Make them sound like practical instructor coaching in a strong preceptor voice.
@@ -175,7 +165,7 @@ Rules:
 - Each cue should have one primary coaching objective: the key clue, why it matters, or the next action. A second short sentence can support that same objective, but do not stack unrelated lessons into one cue.
 - Prefer direct learner-facing language, but keep it conversational and calm. Avoid sounding like a checklist of repeated command verbs (for example chaining "name/state/tell me" in every cue).
 - When teaching cues are enabled, include them in multiple high-value sections, not just one area.
-- Teaching cues may appear in any clinically relevant section of the scenario when that location is where coaching value is highest, especially sceneArrival, firstImpression, assessment sections, vital signs, caseProgression, transportPhase, treatment/protocol notes, reflection prompts, and reasoning.
+- Teaching cues may appear in any clinically relevant section of the scenario when that location is where coaching value is highest, especially sceneArrival, firstImpression, physicalExam, caseProgression, treatment and protocol notes, and reasoning. Never inside vital sign values, GRS anchors or list items that must stay short.
 - Vary cue placement by case needs (barriers, trend changes, deterioration points, transport risk) instead of repeating the same section pattern across scenarios.
 - Do not default to a fixed progression/treatment/protocol trio in every case; rotate cue emphasis across scene, first impression, history, assessment trends, transport, and reasoning based on where this specific call has the most risk.
 - Keep cue usefulness consistently high across all semesters; semester should affect scenario burden, not cue quality.
@@ -188,7 +178,7 @@ Rules:
 - Avoid generic cue-only language unless it is tied to specific findings and decision triggers.
 - Do not use "..." inside cues unless the source text genuinely requires it; shorten the thought cleanly instead.
 - Aim for roughly 6 to 10 total cues across the scenario when the case supports that many high-value coaching moments. It is better to use fewer than to pad weak cues.
-- Aim to spread cues across at least 4 high-value sections when the case supports it, especially assessment, vitals, progression, transport, treatment/protocol, and reasoning. Do not force coverage into low-value sections.
+- Aim to spread cues across at least 4 high-value sections when the case supports it, especially assessment, progression, movement, treatment and protocol, and reasoning. Do not force coverage into low-value sections.
 - Keep density balanced: usually 1 to 2 cues per section, avoid stacking too many in one paragraph.
 - Cues must teach something clinically meaningful.
 - Prefer cues that sharpen reasoning, priorities, reassessment, or pitfall recognition over cues that merely restate scenario facts.
@@ -246,7 +236,7 @@ Avoid scenarios that:
 ## SCENARIO DEPTH REQUIREMENTS
 
 - Prioritize emotional realism, believable symptom progression, and realistic prehospital tension.
-- Include subtle but fair misdirection where educationally useful.
+- Match misdirection to the complexity instruction: none for Simple, subtle and fair for Complex.
 - Use nuanced histories, family dynamics, medication clues, false reassurance, or distracting details when appropriate.
 - Avoid shallow or flat cases.
 - Use realistic patient behaviour, bystander behaviour, and scene context.
@@ -255,9 +245,8 @@ Avoid scenarios that:
 - Build scenarios that create opportunities for reassessment and changing decisions.
 - Some scenarios should include small operational or communication challenges, not just medical problems.
 - Respect the selected Scenario Friction level:
-  - Low: cleaner scene, minimal operational pressure, at most one minor friction element when natural.
-  - Moderate: one or two realistic scene, communication, access, movement, or transport pressures that support learning.
-  - High: layered but fair operational friction that meaningfully affects reassessment, packaging, communication, or transport without becoming random chaos.
+  - Clean: minimal operational pressure, at most one minor friction element when natural.
+  - Pressured: layered but fair operational friction that meaningfully affects reassessment, packaging, communication, or transport without becoming random chaos.
 - Scenario Friction is not the same as clinical complexity: clinical complexity changes diagnostic/treatment difficulty; friction changes how messy the real-world call environment feels.
 
 Night Shift Mode rules:
@@ -371,22 +360,12 @@ Medication richness:
 Scenarios must unfold like real paramedic calls over time, not like static OSCE stations.
 
 A realistic call should move through phases such as:
-- scene arrival
-- first impression
-- initial assessment
-- first vital signs
-- history gathering
-- secondary assessment
-- reassessment vital signs
+- scene arrival and first impression
+- primary assessment and first vital signs
+- history and focused exam
+- treatment decisions and reassessment vital signs
 - mid-call change, complication, or new information when appropriate
-- transport phase thinking
-- ongoing reassessment
-
-Assessment structure rules:
-- initialAssessment and secondaryAssessment must serve different purposes
-- initialAssessment establishes the first organized clinical picture and priorities
-- secondaryAssessment deepens, refines, or challenges the initial picture
-- additionalAssessments should only appear when the call meaningfully evolves
+- movement, transport and handover
 
 Vital sign rules:
 - every scenario must contain at least two vital sign sets
@@ -446,7 +425,7 @@ Progression should be one of the main teaching tools in the scenario.
 ## DIFFERENTIAL DIAGNOSIS PHILOSOPHY
 
 Differential diagnosis should:
-- include 2 to 4 reasonable possibilities
+- include 2 or 3 reasonable possibilities
 - include the most likely condition
 - include dangerous alternatives when appropriate
 - be based on the presentation, not random listing
@@ -514,7 +493,8 @@ Hard format rules:
 - Each score array must contain exactly 3 bullet-style examples
 - Every bullet must be scenario-specific
 - Every bullet must describe observable learner behaviour
-- Do not use paragraphs
+- Each bullet describes one behaviour. Do not merge several behaviours into one bullet
+- Bullet length follows the generation depth: Quick Draft is one direct sentence, Detailed is 2 to 3 sentences
 - Do not use vague praise or criticism
 - Do not leave any score empty
 - Do not change the domain names
@@ -528,7 +508,7 @@ Scoring intent:
 - Do not flatten anchors into "bad/okay/good"; preserve gradient in safety, consistency, and adaptability.
 
 Writing rules:
-- Use short, concrete, behavioural bullet examples
+- Use concrete, behavioural bullet examples
 - Show what the learner did, missed, delayed, misunderstood, or anticipated
 - Include scene leadership, reassessment, communication, transport planning, and PCS-aligned reasoning where helpful
 - Use the proceduralSkill domain for treatment setup, medication checks, equipment use, ECG/monitor use, packaging, and technical execution when relevant
@@ -544,22 +524,22 @@ Make anchors sound like comments an instructor could actually use during feedbac
 Avoid generic filler such as "good assessment" or "poor communication"
 Tie errors and strengths to this specific call
 
-Example structure:
-"communication": {
+Example of the standard (Detailed depth, one domain, from a different call: an inferior STEMI with a softening BP). Match its specificity. Never reuse its content.
+"decisionMaking": {
   "3": [
-    "Basic communication but limited reassurance",
-    "Explained some interventions but not clearly",
-    "Handover included some relevant information but missed important details"
+    "Gives a second nitroglycerin after the 12-lead shows inferior ST elevation, without a V4R. The SBP has already drifted from 138 to 106 and nobody says it out loud.",
+    "Spends the first ten minutes on the nausea and the antiemetic. The STEMI decision and the destination are still open when she is loaded.",
+    "Heads for the closest emergency department because it is six minutes away. The PCI centre at twenty-four minutes never comes up."
   ],
   "5": [
-    "Communicated clearly with patient and partner",
-    "Explained treatment decisions and transport need appropriately",
-    "Provided an organized and relevant handover"
+    "Gets a V4R as soon as the 12-lead shows inferior ST elevation and holds further nitroglycerin when it shows right ventricular involvement. Tells the partner why.",
+    "Recognises the STEMI within ten minutes of contact and commits to PCI bypass. Gives ASA 160-162 mg once there is no contraindication.",
+    "Checks the BP before every decision and treats the slide toward 100 as a reason to hold nitroglycerin, not a reason to wait and see."
   ],
   "7": [
-    "Used calm, confidence-building communication throughout the call",
-    "Demonstrated strong scene and partner communication",
-    "Delivered a concise, highly effective handover"
+    "Suspects right ventricular involvement from the inferior pattern and the soft pressure before the V4R is back, and plans around it. Nothing is given that later has to be explained away.",
+    "Has the bypass notification underway while the partner packages, so the PCI centre is ready before the ambulance leaves the driveway.",
+    "Tells the patient the nitroglycerin is being held on purpose and why. She stays calm even though the pain has not changed."
   ]
 }
 
@@ -710,11 +690,9 @@ Call Information:
 - Make dispatch feel real and operational
 - Include scene constraints when relevant
 - crewNotes are operational only (access, hazards, resources), never a suspected diagnosis or a treatment to consider
-- dispatchCode uses Ontario MPDS: the protocol card number and determinant level, the card name, then the response priority. Format: "10-C, Chest Pain/Chest Discomfort (Non-Traumatic), Priority Red". Leave off the numeric determinant suffix. Never use the old Code 1 to 4 dispatch priorities.
-- Pick the card and level from what the caller would report on the phone, not from the final diagnosis. A hypertensive emergency reported as chest tightness is card 10.
-- Determinant levels, least to most acute: Omega, Alpha, Bravo, Charlie, Delta, Echo. Echo only when the caller reports the patient is not breathing or breathing ineffectively.
-- Response priorities: Purple = emergent, immediately life-threatening, time critical. Red = emergent, potentially life-threatening, time sensitive. Orange = urgent, potentially serious, immediate threat to life very unlikely, time may be a factor. Yellow = non-urgent, not serious, not time sensitive. Green = non-urgent, can be deferred without harm, not time sensitive.
-- MPDS cards: 1 Abdominal Pain/Problems, 2 Allergies (Reactions)/Envenomations, 3 Animal Bites/Attacks, 4 Assault/Sexual Assault, 5 Back Pain (Non-Traumatic), 6 Breathing Problems, 7 Burns/Explosion, 8 Carbon Monoxide/Inhalation/HazMat, 9 Cardiac or Respiratory Arrest/Death, 10 Chest Pain/Chest Discomfort (Non-Traumatic), 11 Choking, 12 Convulsions/Seizures, 13 Diabetic Problems, 14 Drowning/Near Drowning, 15 Electrocution/Lightning, 16 Eye Problems/Injuries, 17 Falls, 18 Headache, 19 Heart Problems/AICD, 20 Heat/Cold Exposure, 21 Hemorrhage/Lacerations, 22 Inaccessible Incident/Entrapment, 23 Overdose/Poisoning (Ingestion), 24 Pregnancy/Childbirth/Miscarriage, 25 Psychiatric/Abnormal Behaviour/Suicide Attempt, 26 Sick Person (Specific Diagnosis), 27 Stab/Gunshot/Penetrating Trauma, 28 Stroke (CVA)/TIA, 29 Traffic/Transportation Incidents, 30 Traumatic Injuries (Specific), 31 Unconscious/Fainting (Near), 32 Unknown Problem (Person Down), 33 Inter-Facility Transfer/Palliative Care.
+- dispatchCode is the Ontario MPDS response priority only, written as "Priority Purple", "Priority Red", "Priority Orange", "Priority Yellow" or "Priority Green". Never use the old Code 1 to 4 dispatch priorities.
+- Pick the priority from what the caller would report on the phone, not from the final diagnosis.
+- Purple = emergent, immediately life-threatening, time critical. Red = emergent, potentially life-threatening, time sensitive. Orange = urgent, potentially serious, immediate threat to life very unlikely, time may be a factor. Yellow = non-urgent, not serious, not time sensitive. Green = non-urgent, can be deferred without harm, not time sensitive.
 
 Patient Presentation:
 - Show what the crew sees immediately
@@ -843,7 +821,7 @@ You are not just generating content.
 You are writing scenarios that teach judgment, pattern recognition, prioritization, communication, reassessment, and self-correction.
 
 Your goals:
-- Create complex but learnable cases
+- Create cases that are challenging at the selected complexity and still learnable
 - Teach judgment, not just steps
 - Highlight bias, hesitation, tunnel vision, and overconfidence as teachable errors
 - Create moments that feel real, tense, and human
