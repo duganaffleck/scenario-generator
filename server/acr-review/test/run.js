@@ -130,6 +130,23 @@ async function edit(file, changes) {
   ok(!/\{\{VOICE\}\}/.test(systemPrompt()) && /Em dashes/.test(systemPrompt()), 'system prompt includes the instructor voice');
   ok(size < 40000, `prompt size is reasonable (${size} chars, about ${Math.round(size / 4)} tokens)`);
 
+  // ---------------------------------------------------------------- write-across layout (v3.4) and older charts (v3.3)
+  const m1chart = chartModel((await extractAcr(fs.readFileSync(T('ACR_model_chest_pain.pdf')))).fields);
+  const asa = m1chart.treatmentGrid.find((r) => r.code === '504');
+  ok(asa && asa.procedure_line === '160 mg PO' && asa.result_line === 'Chewed and swallowed.' && !asa['Dose/Unit'], 'v3.4 chart: procedure and result lines read separately');
+  const nitro = m1chart.treatmentGrid.find((r) => r.code === '615');
+  ok(nitro && nitro['Dose/Unit'] === '0.4 mg' && nitro.Route === 'SL', 'v3.4 chart: a medication in columns still reads its columns');
+  const oldStyle = await (async () => {
+    const pdf = await PDFDocument.load(fs.readFileSync(T('ACR_find_the_errors.pdf')));
+    const form = pdf.getForm();
+    const page = pdf.getPage(1);
+    const line = form.createTextField('Treatment Row 3 - Line'); line.setText('5 mg NB, wheeze eased'); line.addToPage(page, { x: 0, y: 0, width: 1, height: 1 });
+    const box = form.createCheckBox('Treatment Row 3 - Full Line'); box.addToPage(page, { x: 2, y: 0, width: 1, height: 1 }); box.check();
+    return (await extractAcr(Buffer.from(await pdf.save()))).fields;
+  })();
+  const oldRow = chartModel(oldStyle).treatmentGrid.find((r) => r.row === 3);
+  ok(oldRow.procedure_line === '5 mg NB, wheeze eased' && !oldRow['Dose/Unit'], 'v3.3 chart with one line across: still read, as the procedure side');
+
   // ---------------------------------------------------------------- Scenario Generator integration
   const gen = JSON.parse(fs.readFileSync(T('fixtures/generated-scenario.json'), 'utf8'));
   const ns = normalizeScenario(gen);

@@ -12,7 +12,7 @@ function chartText(chart) {
     chart.physicalExam.generalAppearance, chart.physicalExam.skinColour, chart.physicalExam.skinCondition,
     ...['headNeck', 'chest', 'abdomen', 'backPelvis', 'extremities'].map((k) => `${chart.physicalExam[k].details} ${chart.physicalExam[k].ticked.join(' ')}`),
     chart.medications.ticked.join(' '), chart.allergies.ticked.join(' '), chart.treatmentPriorToArrival.ticked.join(' '),
-    ...chart.treatmentGrid.map((r) => r.narrative || '')];
+    ...chart.treatmentGrid.map((r) => `${r.procedure_line || ''} ${r.result_line || ''}`)];
   return parts.filter(Boolean).join(' \n ').toLowerCase();
 }
 
