@@ -1634,8 +1634,7 @@ function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
       likelyMedicationOpportunities: [
         'ASA 160-325mg when clinically indicated: apply directive as if no prior care rendered',
         'Nitroglycerin 0.4mg SL when BP supports it and conditions are met: prior history OR IV established',
-        'Repeat nitroglycerin every 5 minutes if still symptomatic and BP allows, to a max of 3 doses',
-        'Morphine only after 3rd nitroglycerin dose when pain is severe: ACP only in most cases; confirm scope'
+        'Repeat nitroglycerin every 5 minutes if still symptomatic and BP allows, to a max of 3 doses'
       ],
       contraindicationChecks: [
         '12-lead ECG before nitroglycerin consideration: goal within first 10 minutes',
@@ -2087,15 +2086,12 @@ function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
       likelyMedicationOpportunities: [
         'Acetaminophen or ibuprofen oral first-line if patient can tolerate oral medication',
         'Ketorolac IM or IV for moderate to severe pain: do not combine with ibuprofen',
-        'Morphine IV or IM for significant pain: aliquots every 3 minutes to max single dose, may repeat after 15 minutes',
-        'FentaNYL IV or IM for severe trauma pain: preferred when hemodynamic stability is a concern, aliquots every 5 minutes',
-        'Ketamine IV or IM for hypotensive patients or when opioids are contraindicated: administer over 2-3 minutes',
         'TXA 1g IV over 5 minutes (or IM if IV not available) for suspected significant traumatic hemorrhage: PCP auxiliary, base hospital authorization required, do not delay transport'
       ],
       contraindicationChecks: [
         'Do not combine ketorolac and ibuprofen: both NSAIDs, increased adverse effects',
         'Consider active uncontrolled hemorrhage before analgesia: control bleeding first',
-        'Hypotension: ketamine preferred over opioids: opioids can worsen hypotension',
+        'Hypotension or suspected hemorrhagic shock: NSAIDs are a poor choice; treat the shock, splint, position, and move toward ALS intercept or transport',
         'TXA eligibility: suspected significant hemorrhage, protocol timing window, within PCP auxiliary authorization',
         'TXA should not delay transport and not prioritized over management of reversible causes',
         'Ontario SMR criteria: age over 65 with fall mechanism requires SMR regardless of apparent injury severity'
@@ -2109,11 +2105,11 @@ function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
       ],
       oxygenGuidance: 'Oxygen for hypoxia, respiratory compromise, or hemorrhagic shock. Titrate to SpO2 92-96%.',
       instructionText: [
-        'Oral analgesia first if tolerated: acetaminophen and ibuprofen together approximate low-dose opioid effect.',
+        'Oral analgesia first if tolerated: acetaminophen and ibuprofen together give meaningful relief for moderate pain.',
         'Do not combine ketorolac and ibuprofen.',
-        'Ketamine is preferred when opioids are contraindicated: hypotension or hemorrhagic shock risk.',
+        'When pain outlasts what PCP analgesia can manage, the PCP answer is splinting, positioning, reassurance and ALS intercept, not an ACP drug.',
         'TXA is an established PCP auxiliary intervention for suspected significant traumatic hemorrhage: IM or IV, do not delay transport for it.',
-        'Renal colic patients should routinely be considered for NSAID in addition to opioid.'
+        'Renal colic patients should routinely be considered for an NSAID.'
       ].join(' ')
     };
   }
@@ -2276,8 +2272,7 @@ function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
       style: 'abdominal or GI medication scenario',
       likelyMedicationOpportunities: [
         'Acetaminophen or ibuprofen oral first-line if tolerated',
-        'Ketorolac IM or IV for renal colic: NSAID is specifically recommended for renal colic alongside opioid',
-        'Morphine IV or IM for significant abdominal pain if oral not tolerated',
+        'Ketorolac IM or IV for renal colic: an NSAID is specifically recommended for renal colic',
         'Dimenhydrinate for nausea associated with abdominal pain if indicated',
         'Do not combine ketorolac and ibuprofen'
       ],
@@ -2296,7 +2291,7 @@ function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
       ],
       oxygenGuidance: 'Oxygen only if hypoxia is present.',
       instructionText: [
-        'Renal colic patients should routinely receive an NSAID in addition to an opioid.',
+        'Renal colic patients should routinely be considered for an NSAID.',
         'Do not combine ketorolac and ibuprofen.',
         'Active uncontrolled GI hemorrhage is a contraindication to NSAIDs.'
       ].join(' ')

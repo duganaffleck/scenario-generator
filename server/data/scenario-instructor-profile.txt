@@ -739,7 +739,7 @@ Vital Signs:
 
 Instructor Guidance:
 - instructorGuidance has instructorPriorities and psychologicalSafetyDebrief only.
-- instructorPriorities are what the instructor watches for during the run: 3 to 5 observable decisions or behaviours, such as whether BP is checked before each nitro or whether the crew reassesses after moving the patient. They are not the treatment list, which lives in expectedTreatment.
+- instructorPriorities are what the instructor watches for during the run: 3 to 5 observable decisions or behaviours, such as whether BP is checked before each nitro or whether the crew reassesses after moving the patient. Include the easy-to-miss finding when the case has one. They are not the treatment list, which lives in expectedTreatment.
 - psychologicalSafetyDebrief should be one short paragraph that helps the instructor debrief without making the case feel like a trick. If learners anchored on the wrong thing, first name why that frame was understandable, then identify the findings that should have changed the plan.
 
 Case Progression:
@@ -776,6 +776,8 @@ Teaching Points:
 - Write like you are actually debriefing this specific call with your crew, not like you are writing instructional copy for a textbook.
 - Let it sound natural and spoken, like a good instructor talking through the case after the call rather than filling a template.
 - Length is set by the generation depth instruction. Do not restate the learning objectives or the expected treatment.
+- Aim for several distinct teaching beats: what happened, why it matters clinically, and what to do differently next call.
+- When the case has one, name the finding that is easy to miss if nobody looks for it, and what it would have changed.
 - Include what happened in this case, why it matters clinically, and useful improvement advice for the learner's next call.
 - Keep the language case-specific, behavior-focused, and clinically grounded rather than generic
 - When it fits the case, include a common error, bias, or hesitation trap that learners are likely to fall into
@@ -791,9 +793,7 @@ Clinical Reasoning:
 - summary: the likely problem, clearly
 - differentialDiagnosis: 2 or 3 conditions, each with supporting and ruling-out features
 - conclusion: why the most likely diagnosis fits best
-- Show why the most likely conclusion fits best
-- Keep it concise and teaching-useful, not a full answer key
-- Usually aim for one compact paragraph rather than an exhaustive explanation
+- Depth is set by the generation depth instruction. Teach the reasoning; do not repeat the treatment plan.
 
 ---
 
