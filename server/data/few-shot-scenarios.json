@@ -6004,7 +6004,7 @@
         "Crowded public environment",
         "Emotional bystanders"
       ],
-      "crewNotes": "AED reportedly applied before arrival; prioritize high-performance arrest management per BLS/ALS PCS."
+      "crewNotes": "Arena staff have the lobby partly cleared. Bystanders are doing CPR and an arena AED is already on the patient. His wife is on her way from the stands."
     },
     "incidentNarrative": "The patient had just finished a recreational hockey game and was walking toward the arena lobby when he suddenly collapsed. Bystanders report no warning beyond mild shortness of breath after exertion. Collapse was witnessed, CPR was started within about 1 minute, and an on-site AED delivered one shock before paramedic arrival. The wife arrives during resuscitation and provides additional medical history while the lobby remains crowded and emotionally charged.",
     "patientPresentation": "Adult male lying supine on the arena lobby floor with bystander CPR already in progress. AED pads are in place. The patient is cyanotic, unresponsive, and apneic. Multiple bystanders are watching closely, one is trying to explain the collapse, and staff confirm the AED already advised and delivered a shock.",
@@ -7114,7 +7114,7 @@
     "generationMetadata": {
       "targetSemester": "3",
       "targetComplexity": "Moderate",
-      "callType": "Environmental",
+      "callType": "Medical",
       "environment": "Public Space",
       "hasMeds": false,
       "vitalSetCount": 4,
@@ -7135,7 +7135,7 @@
         "Tight bedroom space",
         "Hot room"
       ],
-      "crewNotes": "Prioritize seizure safety, ABC reassessment after seizure stops, and pediatric fever red flags."
+      "crewNotes": "Bedroom at the end of a narrow hallway; the stretcher will not fit past the doorway. Both parents are in the room."
     },
     "incidentNarrative": "Crew is dispatched for a 3-year-old child with seizure activity. On arrival, the seizure has just stopped after approximately 2 minutes per parent report. The child is post-ictal, drowsy, and febrile. Parents report two days of upper respiratory symptoms with reduced oral intake and worsening fever this evening. No known trauma occurred during the event. The family is highly anxious and repeatedly asks if the child is dying.",
     "patientPresentation": "Child is lying on the bed, flushed, sweaty, and drowsy but breathing spontaneously with a patent airway. There is no ongoing tonic-clonic movement on crew arrival. Parents are distressed and speaking over each other.",
@@ -7920,7 +7920,7 @@
         "Wet roadway",
         "Cold morning conditions"
       ],
-      "crewNotes": "High-energy mechanism with shock concern. Use FTG criteria early, apply selective SMR thoughtfully, and prioritize rapid trauma destination planning."
+      "crewNotes": "Police are holding one lane of the off-ramp. Fire has finished extrication. Broken glass and a wet road surface around the vehicle."
     },
     "incidentNarrative": "Crew is dispatched to a high-speed single-vehicle collision where the driver struck a guardrail and required brief fire extrication. On paramedic arrival, the patient is on a longboard beside the vehicle, pale, diaphoretic, and increasingly lethargic. Bystanders report significant front-end intrusion and steering wheel deformity. The patient complains of abdominal and pelvic pain with worsening dizziness. No major external bleeding is obvious, but the mechanism and physiology suggest occult internal hemorrhage.",
     "patientPresentation": "Adult male is supine, intermittently restless, pale, and clutching lower abdomen. Speech is short and delayed. Peripheral skin is cool and clammy. He appears significantly unwell and less engaged over time.",
@@ -8317,7 +8317,7 @@
         "Direct sunlight",
         "Crowded event area"
       ],
-      "crewNotes": "Consider exertional heat stroke if hyperthermia plus altered mental status. Start aggressive cooling and expedite transport."
+      "crewNotes": "Aid station is inside the race barricades. Event volunteers have ice, water and tarps at the tent. The stretcher route runs through spectators."
     },
     "incidentNarrative": "Crew is dispatched to a summer road race where a 27-year-old runner collapsed near an aid station. Event volunteers report the patient had been stumbling and speaking incoherently before falling to one knee. On arrival, the patient is confused, agitated, and very warm to touch with flushed skin and heavy sweating. He drank minimal fluids before the race and has had no acclimatization training in recent weeks. No major trauma from the collapse is identified.",
     "patientPresentation": "Patient is seated on the ground, intermittently combative, unable to provide coherent answers, and repeatedly attempts to stand. Skin is hot and flushed. Breathing is fast but not labored. He appears significantly dehydrated and neurologically impaired.",
@@ -9877,7 +9877,7 @@
         "Low light",
         "Difficult access from trail"
       ],
-      "crewNotes": "Handle gently and prevent further heat loss. Avoid rough movement in significant hypothermia concern."
+      "crewNotes": "Patient is about 60 metres down an uneven, wet trail from the nearest parking. No shelter on scene. The jogger who found him is waiting with him."
     },
     "incidentNarrative": "Crew is dispatched for a male found sitting against a tree near a river trail in near-freezing conditions. A jogger reports the patient was shivering heavily, then became quieter and confused. On arrival, clothing is damp, speech is slurred, and the patient is slow to answer questions. He reports getting lost overnight after drinking and being outside for several hours. No major trauma is obvious. The immediate concern is moderate hypothermia with deteriorating cognition and perfusion.",
     "patientPresentation": "Patient is seated, hunched, and minimally responsive to conversation. He is pale, cold to touch, and shivering weakly. Speech is slow and confused, with delayed responses. Attempts to stand increase dizziness and instability.",
@@ -10658,7 +10658,7 @@
         "Small enclosed space",
         "Multiple occupants at risk"
       ],
-      "crewNotes": "Consider CO exposure in nonspecific symptom cluster with indoor source clues. Do not anchor on viral illness too quickly."
+      "crewNotes": "Fire is also responding to the address. Basement unit down a narrow staircase. The partner and a child are still inside."
     },
     "incidentNarrative": "Crew is dispatched for a 41-year-old male with severe morning headache, nausea, and dizziness. On arrival, patient is seated on the floor near a couch, pale and confused, reporting he felt worse indoors and slightly better while near an open door. Partner and child in the home also report headache and fatigue. A portable propane heater has been running overnight after furnace failure. There is no obvious trauma. The pattern strongly suggests carbon monoxide exposure affecting multiple occupants.",
     "patientPresentation": "Patient is awake but foggy, speaking slowly, and intermittently closing his eyes from headache. He reports chest tightness and nausea without focal chest pain. Skin appears pink-warm but not cyanotic. Partner is anxious and similarly symptomatic.",
@@ -12224,7 +12224,7 @@
         "Confined washroom space",
         "Potential bystander crowding"
       ],
-      "crewNotes": "Think opioid toxidrome. Prioritize airway, BVM support if needed, naloxone per PCP scope, and reassessment for re-sedation or agitation."
+      "crewNotes": "Transit security has opened the stall door. The stall is tight and there are needles on the floor. Two friends are waiting outside the washroom."
     },
     "incidentNarrative": "Transit staff force open a washroom stall just before crew arrival and find a 34-year-old male slumped against the toilet, minimally responsive with shallow respirations and cyanotic lips. A burnt spoon, uncapped syringe, and small wax paper packets are visible nearby. The patient has pinpoint pupils and barely responds to painful stimulus. Two friends linger near the entrance, saying he 'only did a little' and that he was fine 15 minutes ago.",
     "patientPresentation": "Patient is pale, cyanotic around the mouth, and profoundly drowsy with slow ineffective respirations. He is limp, intermittently snoring, and not protecting his airway well. The scene strongly suggests opioid toxicity with immediate ventilatory failure risk.",
@@ -12618,7 +12618,7 @@
         "Competing staff reports",
         "Infection-control precautions"
       ],
-      "crewNotes": "Look for sepsis trend rather than one isolated complaint. Baseline cognition and mobility must be clarified early from staff who know the patient well."
+      "crewNotes": "Memory-care unit on the second floor, secure door code from the front desk. Contact precautions sign on the room door. The daughter is on speakerphone with the nurse."
     },
     "incidentNarrative": "Crew is dispatched to an LTC memory-care room for an elderly resident with worsening confusion and weakness. Nursing staff report she was conversational and feeding herself yesterday evening, but this morning she is drowsier, less interactive, and unable to stand with usual assistance. She was started on oral antibiotics overnight for a suspected urinary source infection. On arrival, patient is febrile, tachypneic, and cool at the peripheries with delayed responses. Staff are worried because her blood pressure has trended down over the past hour.",
     "patientPresentation": "Patient is semi-upright in bed, eyes partly open, slow to respond, and intermittently mumbling. She appears pale and fatigued with dry mucous membranes. Breathing is faster than normal but not overtly labored. A nurse notes this is significantly below her baseline interaction level.",
@@ -13390,7 +13390,7 @@
       "hazardsOrFlags": [
         "Parent anxious but cooperative"
       ],
-      "crewNotes": "Keep this straightforward: primary survey, focused history, rhythm confirmation, and reassessment."
+      "crewNotes": "Ground-floor kitchen with a clear path to the front door. A parent is with him."
     },
     "incidentNarrative": "Crew is dispatched to a home for a 19-year-old who noticed sudden palpitations while rushing to get ready for class. Patient reports skipping breakfast and drinking two energy drinks within an hour. On arrival, patient is seated at the kitchen table, anxious, and repeatedly checking a smartwatch heart-rate alert. Symptoms include pounding heartbeat and mild dizziness without chest pain, syncope, or shortness of breath.",
     "patientPresentation": "Patient is alert, speaking full sentences, and appears anxious but not in respiratory distress. Pulse is fast and regular. Skin is warm and perfused.",
@@ -13757,7 +13757,7 @@
       "hazardsOrFlags": [
         "Wet porch surface"
       ],
-      "crewNotes": "Keep this simple: injury survey, neurovascular checks, splinting, and reassessment."
+      "crewNotes": "Three wet steps down from the porch to the driveway. A neighbour is with her."
     },
     "incidentNarrative": "Crew is called for a patient who slipped on a wet porch step while taking out garbage. Patient landed awkwardly and twisted the right ankle. No head strike, no loss of consciousness, and no other injury complaints. On arrival, patient is seated on porch chair holding the right ankle and reporting localized pain with movement.",
     "patientPresentation": "Patient is alert, uncomfortable, and guarding the right ankle. Mild swelling is visible over the lateral ankle. No gross deformity is seen.",
@@ -14120,7 +14120,7 @@
       "hazardsOrFlags": [
         "Busy lunchtime crowd"
       ],
-      "crewNotes": "Keep this straightforward and assessment-focused; no medication interventions expected."
+      "crewNotes": "Cafeteria at lunch rush, with tables close together. A friend and a staff member are with her."
     },
     "incidentNarrative": "Crew is called for a 22-year-old who became dizzy and sat down while waiting in a cafeteria line. Patient reports poor sleep, no breakfast, and minimal water intake during morning classes. Symptoms began suddenly when standing for several minutes. No chest pain, no shortness of breath, no trauma, and no loss of consciousness.",
     "patientPresentation": "Patient is seated, mildly pale, and anxious but cooperative. Speech is clear and complete. Dizziness improves when seated and worsens slightly when standing quickly.",
@@ -14855,7 +14855,7 @@
       "hazardsOrFlags": [
         "Direct sun exposure"
       ],
-      "crewNotes": "Keep this simple: remove heat source, assess, monitor, and reassess."
+      "crewNotes": "Training field sideline with no shade. Vehicle access to the field edge. The coach is with her."
     },
     "incidentNarrative": "Crew is called to a college training field for a student who felt dizzy, weak, and nauseated during a prolonged afternoon drill. Patient reports limited breakfast and minimal water intake. Symptoms improved after sitting in the shade. No collapse, trauma, chest pain, or shortness of breath.",
     "patientPresentation": "Patient is seated in shade, mildly flushed, and anxious but cooperative. Mentation is normal and speech is clear.",
@@ -16350,7 +16350,7 @@
         "Narrow stairs",
         "Cold damp weather"
       ],
-      "crewNotes": "Moderate case: serial respiratory trend checks should guide escalation and transport tempo."
+      "crewNotes": "Second-floor bedroom with a narrow, steep staircase. Cold, damp morning. Her partner is home."
     },
     "incidentNarrative": "Patient developed worsening cough and breathlessness over 24 hours, more severe this morning after poor sleep. Reports chest tightness, frequent cough, and increased effort when walking to bathroom. On arrival, patient is upright, anxious, and speaking short phrases but remains cooperative.",
     "patientPresentation": "Mild-moderate respiratory distress with diffuse wheeze and intermittent coarse breath sounds. No cyanosis, but visible effort is increased.",
@@ -16710,7 +16710,7 @@
         "Ongoing rain",
         "Wind exposure"
       ],
-      "crewNotes": "Moderate environmental call: control exposure first, then trend mentation and perfusion."
+      "crewNotes": "Patient is sheltering under an open car hatch in the trailhead lot. Rain and wind are ongoing. Her hiking companion is with her."
     },
     "incidentNarrative": "A hiker became lost during heavy rain and arrived at trailhead trembling, weak, and mildly confused. Companion reports several hours in wet clothing with limited food. On arrival, patient is shivering, slow to answer, and complains of numb fingers and fatigue.",
     "patientPresentation": "Patient is seated in vehicle hatch area, wet clothes, pale skin, and intermittent confusion. No obvious trauma.",
@@ -17069,7 +17069,7 @@
         "Noise interference",
         "Moving equipment nearby"
       ],
-      "crewNotes": "Ensure scene safety and manage communication challenges due to noise. This is a complex extremity injury requiring serial neurovascular assessment and pain management within industrial hazard constraints."
+      "crewNotes": "The line supervisor has locked out the machine. Floor noise makes radio and verbal communication hard. Coworkers are gathered at the station."
     },
     "incidentNarrative": "The patient was working on the assembly line when his right arm was caught in a machine. He managed to pull it out, but now experiences severe pain and swelling in the forearm, with numbness in the fingers. Report indicates rapid onset of deformity and compartment concern.",
     "patientPresentation": "The patient is seated on the factory floor, cradling his right arm, which appears swollen and deformed. He is pale and diaphoretic, reporting severe pain and numbness in the hand.",
