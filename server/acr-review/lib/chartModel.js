@@ -2,6 +2,7 @@
 // Only filled-in content goes to the model. Empty sections are named as empty, because "blank" is feedback too.
 
 const COLS = ['Dose/Unit', 'Route', 'Pulse', 'Resp', 'BP', 'Temp', 'Reading/Code', 'SpO2', 'EtCO2', 'GCS', 'Pupil R', 'Pupil L', 'Pain'];
+const P_COLS = ['Dose/Unit', 'Route', 'Pulse', 'Resp', 'BP', 'Temp'];
 const EVENTS = ['Call Received', 'Crew Notified', 'Crew Mobile', 'Arrive Scene', 'Patient Contact', 'Depart Scene', 'Arrive Destination', 'TOC '];
 
 function chartModel(fields) {
@@ -12,11 +13,20 @@ function chartModel(fields) {
   const rows = [];
   for (let i = 1; i <= 52; i++) {
     const r = (k) => v(`Treatment Row ${i} - ${k}`);
-    const fullLine = on(`Treatment Row ${i} - Full Line`);
+    // v3.4: P writes across the procedure side (Dose/Unit to Temp), R across the Results side (Reading/Code to Pain).
+    // v3.3 charts had one line across the whole row ("Full Line" / "Line"); that counts as both sides.
+    const legacy = on(`Treatment Row ${i} - Full Line`);
+    const pAcross = legacy || on(`Treatment Row ${i} - Procedure Across`);
+    const rAcross = legacy || on(`Treatment Row ${i} - Result Across`);
     const row = { row: i, time: r('Time'), code: r('Procedure Code'), crew: r('Crew Member Number') };
-    // Narrative rows (ACR Manual style): one line across from Dose/Unit to Pain Scale. Otherwise, the columns.
-    if (fullLine) row.narrative = r('Line');
-    else COLS.forEach((c) => { if (r(c)) row[c] = r(c); });
+    const procedure = r('Procedure Line') || (legacy ? r('Line') : '');
+    const result = r('Result Line');
+    if (procedure) row.procedure_line = procedure;
+    if (result) row.result_line = result;
+    COLS.forEach((c) => {
+      const hidden = P_COLS.includes(c) ? pAcross : rAcross;
+      if (!hidden && r(c)) row[c] = r(c);
+    });
     if (Object.keys(row).some((k) => !['row'].includes(k) && row[k])) rows.push(row);
   }
   const events = {};
