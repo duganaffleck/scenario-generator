@@ -1632,17 +1632,17 @@ function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
     return {
       style: 'cardiac ischemia medication decision scenario',
       likelyMedicationOpportunities: [
-        'ASA 160-325mg when clinically indicated: apply directive as if no prior care rendered',
-        'Nitroglycerin 0.4mg SL when BP supports it and conditions are met: prior history OR IV established',
-        'Repeat nitroglycerin every 5 minutes if still symptomatic and BP allows, to a max of 3 doses'
+        'ASA 160-162 mg PO, chewed, one dose, age 18 or older: apply the directive as if no prior care was rendered',
+        'Nitroglycerin 0.3 or 0.4 mg SL when conditions are met: prior history of nitroglycerin use OR IV access obtained, HR 60-159, SBP normotensive',
+        'Repeat nitroglycerin every 5 minutes while symptomatic and conditions still met: max 3 doses if STEMI, max 6 doses otherwise'
       ],
       contraindicationChecks: [
         '12-lead ECG before nitroglycerin consideration: goal within first 10 minutes',
         'V4R if inferior STEMI identified: nitroglycerin contraindicated in RV STEMI',
-        'Nitroglycerin contraindicated if SBP near 100 mmHg or tachycardia present',
+        'Nitroglycerin requires HR 60-159 and SBP normotensive; stop if SBP drops by one-third or more of its initial value',
         'Nitroglycerin contraindicated with PDE5 inhibitor use in past 48 hours (sildenafil, tadalafil, vardenafil, etc.)',
         'Do not resume nitroglycerin if vitals fall outside parameters even if they normalize',
-        'ASA allergy or active GI bleed'
+        'ASA contraindications: NSAID allergy or sensitivity, asthmatic with no prior ASA use, current active bleeding, CVA or TBI in the previous 24 hours'
       ],
       supportiveCareOpportunities: [
         '12-lead and 15-lead ECG acquisition and interpretation',
@@ -1655,7 +1655,7 @@ function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
         'ECG drives the medication decision. 12-lead before nitroglycerin.',
         'For inferior STEMI, V4R is required before nitroglycerin to rule out RV involvement.',
         'Nitroglycerin for first-time suspected ischemia requires prior history OR an established IV.',
-        'Do not give nitroglycerin in RV STEMI, with PDE5 inhibitors, or when SBP is near 100 mmHg or trending down.',
+        'Do not give nitroglycerin in RV MI, with PDE5 inhibitor use in the past 48 hours, or outside HR 60-159 and normotension.',
         'Once vitals fall outside directive parameters, do not resume that medication even if vitals normalize.'
       ].join(' ')
     };
@@ -1666,14 +1666,14 @@ function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
     return {
       style: 'tachydysrhythmia assessment and management scenario',
       likelyMedicationOpportunities: [
-        'Modified Valsalva maneuver for stable SVT: PCP and ACP scope, requires base hospital authorization as PCP auxiliary',
+        'Modified Valsalva for symptomatic narrow complex regular tachycardia (PCP auxiliary): age 18 or older, unaltered LOA, HR 150 or higher, normotensive, max 2 attempts',
         'Identify whether tachycardia is physiologic compensation (pain, hypovolemia, fever, hypoxia): treat cause, not rhythm',
         '12-lead ECG to differentiate narrow vs wide complex tachycardia before any intervention'
       ],
       contraindicationChecks: [
         'Do not treat compensatory tachycardia with Valsalva or any rate-controlling intervention',
-        'Wide complex tachycardia: adenosine and amiodarone are ACP only; PCP role is monitoring, 12-lead, and transport',
-        'Hemodynamically unstable tachydysrhythmia: synchronized cardioversion is ACP with base hospital authorization',
+        'Valsalva contraindications: sinus tachycardia, atrial fibrillation or atrial flutter',
+        'Wide complex, irregular, or unstable tachycardia: PCP role is monitoring, serial 12-lead, ALS intercept and rapid transport',
         'SVT Treat and Discharge criteria require base hospital patch and specific eligibility: pregnant patients excluded from T&D'
       ],
       supportiveCareOpportunities: [
@@ -1687,8 +1687,8 @@ function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
       instructionText: [
         'Confirm the tachycardia is not a compensatory response before treating it as a dysrhythmia.',
         '12-lead is essential for SVT vs other narrow complex vs wide complex differentiation.',
-        'Modified Valsalva is the PCP intervention for stable SVT: requires base hospital authorization as auxiliary.',
-        'Adenosine, amiodarone, cardioversion are ACP only. PCP role in unstable dysrhythmia is transport and ALS intercept.'
+        'Modified Valsalva is the PCP auxiliary intervention for symptomatic narrow complex regular tachycardia.',
+        'PCP role in unstable or wide complex dysrhythmia is monitoring, ALS intercept and rapid transport.'
       ].join(' ')
     };
   }
@@ -1698,17 +1698,15 @@ function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
     return {
       style: 'cardiac arrest resuscitation scenario',
       likelyMedicationOpportunities: [
-        'Single dose IM epinephrine 1:1000 (1mg) ONLY if arrest is directly attributable to anaphylaxis: this is the only epinephrine indication within PCP scope for cardiac arrest',
-        'Epinephrine IV/IO in cardiac arrest is ACP only: do NOT include this as a PCP treatment in expectedTreatment or protocolNotes',
+        'Epinephrine 1 mg/mL IM 0.01 mg/kg, max 0.5 mg, one dose, ONLY if anaphylaxis is suspected as the cause of the arrest: the only PCP medication in medical cardiac arrest',
         'Post-ROSC: fluid bolus 10ml/kg to max 1000ml if SBP below 90 and lungs clear',
         'Do not give naloxone in confirmed cardiac arrest: it has no routine role here'
       ],
       contraindicationChecks: [
-        'Epinephrine timing: administer after first rhythm analysis and defibrillation attempt in shockable arrest',
-        'No routine naloxone in confirmed cardiac arrest regardless of suspected opioid cause',
+                'No routine naloxone in confirmed cardiac arrest regardless of suspected opioid cause',
         'Post-ROSC oxygen: target SpO2 94-98%, avoid 100%: oxygen free radicals worsen outcome',
         'Post-ROSC ETCO2 target 30-40 mmHg: avoid hyperventilation',
-        'Medical TOR criteria: patch after 20 minutes if considering termination',
+        'Medical TOR applies when the arrest was not witnessed by paramedics AND there is no ROSC after 20 minutes of resuscitation AND no defibrillation was delivered',
         'Glucometry has no value in VSA patient: do not check BGL during arrest'
       ],
       supportiveCareOpportunities: [
@@ -1722,7 +1720,7 @@ function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
       oxygenGuidance: 'During arrest: high concentration oxygen. Post-ROSC: titrate to SpO2 94-98%, avoid 100%.',
       instructionText: [
         'High quality CPR with minimal interruption is the priority.',
-        'Epinephrine dose and timing must follow the medical cardiac arrest directive.',
+        'Epinephrine has no role in PCP arrest care unless anaphylaxis caused the arrest.',
         'No naloxone in confirmed arrest even if opioid cause is suspected.',
         'Post-ROSC targets: SpO2 94-98%, ETCO2 30-40 mmHg, SBP at or above 90 mmHg.',
         'Avoid hyperventilation post-ROSC.'
@@ -1983,9 +1981,9 @@ function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
     return {
       style: 'opioid toxicity medication scenario',
       likelyMedicationOpportunities: [
-        'Naloxone intranasal or IM: titrate to adequate respirations not full reversal',
+        'Naloxone 0.4 mg IV/IM, 0.8 mg SC or 2-4 mg IN every 5 minutes, max 3 doses, for altered LOA with RR under 10 or inadequate ventilation: titrate to adequate respirations, not full reversal',
         'Ventilation support is the priority before medication administration',
-        'Buprenorphine/naloxone (Suboxone) for opioid withdrawal if COWS score criteria met'
+        'Buprenorphine/naloxone BUC/SL 16 mg, then 8 mg every 10 minutes to a cumulative max of 24 mg, only if the patient received naloxone this episode, is 16 or older, has unaltered LOA and a COWS score of 8 or more; not if methadone was taken in the past 72 hours'
       ],
       contraindicationChecks: [
         'Do not give naloxone in confirmed cardiac arrest: no routine role',
@@ -2017,16 +2015,12 @@ function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
     return {
       style: 'renal or electrolyte emergency scenario',
       likelyMedicationOpportunities: [
-        'Calcium gluconate IV 1g over 3 minutes for severe hyperkalemia with ECG changes: ACP only; PCP role is recognition and transport',
-        'Salbutamol in large doses may temporarily shift potassium intracellularly: ACP context',
-        'Home dialysis emergency disconnect per directive if applicable',
+                'Home dialysis emergency disconnect per directive if applicable',
         'PCP role: recognize ECG changes, manage symptoms, urgent transport with pre-alert'
       ],
       contraindicationChecks: [
-        'Calcium gluconate is ACP only: do not include as PCP treatment',
-        'Sodium bicarbonate is not effective for hyperkalemia and should not be routinely given: patch point for BHP if considered',
-        'Ensure IV line is patent: calcium gluconate causes necrosis if it extravasates',
-        'Serial 12-lead ECG before and after treatment to measure ECG changes'
+        'There is no PCP medication for hyperkalemia: do not invent one',
+        'Serial 12-lead ECG to track ECG changes and set transport urgency'
       ],
       supportiveCareOpportunities: [
         '12-lead ECG for hyperkalemia recognition',
@@ -2038,7 +2032,7 @@ function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
       oxygenGuidance: 'Oxygen for hypoxia or hemodynamic instability.',
       instructionText: [
         'Hyperkalemia recognition from ECG changes is the key PCP skill: peaked T waves, widening QRS, loss of P waves.',
-        'Calcium gluconate is ACP only: PCP role is recognition, IV access, and urgent transport.',
+        'PCP role is recognition, serial 12-lead, ALS intercept consideration and urgent transport with pre-alert.',
         'Serial 12-lead ECG changes guide urgency and pre-alert framing.'
       ].join(' ')
     };
@@ -2051,15 +2045,14 @@ function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
       likelyMedicationOpportunities: [
         'Oral glucose or glucagon if hypoglycemia is confirmed or strongly suspected: always check BGL in altered consciousness',
         'Oxygen if hypoxic: not routine for suspected stroke without hypoxia',
-        'Seizure: no PCP medication at core level: protect from injury, position, oxygen, reassess',
+        'Seizure: no PCP medication: protect from injury, position, oxygen if hypoxic, reassess',
         'Seizure treat and discharge: specific BHP-authorized criteria for confirmed epilepsy with single seizure and meets all conditions'
       ],
       contraindicationChecks: [
         'Confirm BGL before attributing altered consciousness to neurologic cause',
         'Do not give nitroglycerin for suspected stroke: not cardiac ischemia',
         'Stroke bypass decision: FAST positive with last known well time within window',
-        'Seizure medication (midazolam) is ACP only: do not include at PCP core level',
-        'Seizure treat and discharge requires confirmed epilepsy diagnosis, single seizure, full recovery, specific eligibility, and BHP patch'
+                'Seizure treat and discharge requires confirmed epilepsy diagnosis, single seizure, full recovery, specific eligibility, and BHP patch'
       ],
       supportiveCareOpportunities: [
         'BGL check',
@@ -2073,7 +2066,7 @@ function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
       instructionText: [
         'BGL must be checked before attributing altered consciousness to stroke or seizure.',
         'Stroke requires FAST screening and bypass destination decision.',
-        'Seizure medication is ACP only at PCP core level.',
+        'There is no PCP seizure medication: protect from injury, position, oxygen if hypoxic, BGL, reassess.',
         'Seizure treat and discharge requires confirmed epilepsy, specific criteria, full recovery, and BHP patch.'
       ].join(' ')
     };
@@ -2086,13 +2079,13 @@ function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
       likelyMedicationOpportunities: [
         'Acetaminophen or ibuprofen oral first-line if patient can tolerate oral medication',
         'Ketorolac IM or IV for moderate to severe pain: do not combine with ibuprofen',
-        'TXA 1g IV over 5 minutes (or IM if IV not available) for suspected significant traumatic hemorrhage: PCP auxiliary, base hospital authorization required, do not delay transport'
+        'Tranexamic acid 1000 mg IV or IM, one dose (PCP auxiliary): age 16 or older, suspected traumatic hemorrhage with HR 110 or higher or hypotension, within 3 hours of injury, not for isolated head injury; do not delay transport'
       ],
       contraindicationChecks: [
         'Do not combine ketorolac and ibuprofen: both NSAIDs, increased adverse effects',
         'Consider active uncontrolled hemorrhage before analgesia: control bleeding first',
         'Hypotension or suspected hemorrhagic shock: NSAIDs are a poor choice; treat the shock, splint, position, and move toward ALS intercept or transport',
-        'TXA eligibility: suspected significant hemorrhage, protocol timing window, within PCP auxiliary authorization',
+        'TXA contraindications: more than 3 hours from injury, isolated head injury, allergy',
         'TXA should not delay transport and not prioritized over management of reversible causes',
         'Ontario SMR criteria: age over 65 with fall mechanism requires SMR regardless of apparent injury severity'
       ],
@@ -2107,8 +2100,8 @@ function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
       instructionText: [
         'Oral analgesia first if tolerated: acetaminophen and ibuprofen together give meaningful relief for moderate pain.',
         'Do not combine ketorolac and ibuprofen.',
-        'When pain outlasts what PCP analgesia can manage, the PCP answer is splinting, positioning, reassurance and ALS intercept, not an ACP drug.',
-        'TXA is an established PCP auxiliary intervention for suspected significant traumatic hemorrhage: IM or IV, do not delay transport for it.',
+        'When pain outlasts what PCP analgesia can manage, the PCP answer is splinting, positioning, reassurance and ALS intercept.',
+        'TXA is a PCP auxiliary intervention for traumatic hemorrhage with instability: 1000 mg IV or IM, do not delay transport for it.',
         'Renal colic patients should routinely be considered for an NSAID.'
       ].join(' ')
     };
@@ -2141,7 +2134,7 @@ function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
       oxygenGuidance: 'Oxygen only if clinically indicated.',
       instructionText: [
         'Not every nausea patient needs medication: presentation and cause must support it.',
-        'Dimenhydrinate first, ondansetron after 30 minutes without relief if still eligible.',
+        'If dimenhydrinate gave no relief after 30 minutes, ondansetron may be considered if still eligible.',
         'Never combine dimenhydrinate with diphenhydramine.',
         'Ondansetron preferred in elderly, head trauma, SSRI patients.',
         'Check glucose in any diabetic patient before giving antiemetic.'
@@ -2189,8 +2182,8 @@ function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
       return {
         style: 'pediatric medication scenario',
         likelyMedicationOpportunities: [
-          'Epinephrine nebulized for croup: racemic or 1:1000: severe presentations only, dexamethasone for mild to moderate',
-          'Dexamethasone for mild to moderate croup',
+          'Croup (age 6 months to under 8 years): epinephrine 1 mg/mL nebulized, 2.5 mg under 10 kg or 5 mg at 10 kg or more, one dose, for stridor at rest with HR under 200',
+          'Croup: dexamethasone 0.5 mg/kg PO, max 8 mg, one dose, for mild, moderate or severe croup',
           'Epinephrine IM for pediatric anaphylaxis: 0.01mg/kg to max 0.5mg',
           'Oral glucose or glucagon for pediatric hypoglycemia',
           'Naloxone for suspected opioid toxicity: age 24 hours or older',
@@ -2198,10 +2191,9 @@ function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
         ],
         contraindicationChecks: [
           'Weight-based dosing is critical: estimate weight carefully for all pediatric medications',
-          'Epinephrine for croup: severe presentations only: prior moist or cold air attempt if mild to moderate',
-          'Seizure medication (midazolam) is ACP only at PCP core level',
+          'Epinephrine for croup requires stridor at rest',
           'Croup increasingly occurring in older patients including adults: if indications met, patch to BHP required',
-          'If patient has received systemic steroids in past 48 hours, additional dexamethasone unlikely to help'
+          'Dexamethasone contraindicated if steroids were given in the past 48 hours or the child cannot tolerate oral'
         ],
         supportiveCareOpportunities: [
           'weight estimation for dosing',
@@ -2214,8 +2206,8 @@ function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
         oxygenGuidance: 'Pediatric oxygen targets same as adults: 92-96% general. Neonates: titrate based on SpO2 chart in directive.',
         instructionText: [
           'Weight-based dosing is the central challenge in pediatric medication scenarios.',
-          'Croup: epinephrine for severe, dexamethasone for mild to moderate.',
-          'Seizure medication is ACP: PCP core role is protection, positioning, oxygen, glucose check.',
+          'Croup: dexamethasone for any severity, nebulized epinephrine added for stridor at rest.',
+          'Pediatric seizure: no PCP medication; protection, positioning, oxygen, glucose check.',
           'Caregiver communication is a major teaching point in pediatric scenarios.'
         ].join(' ')
       };
@@ -2562,19 +2554,14 @@ ${directiveAddendum.map((line) => `- ${line}`).join('\n')}
 
 - When multiple medications are appropriate, ensure they occur at different decision points (e.g., ASA early, nitro after BP check, antiemetic later, repeat medication after reassessment).
 - Medication decisions should be tied to assessment findings and reassessment findings, not given automatically.
-PCP scope: strict enforcement:
-Only medications and procedures listed in the ALS PCS reference above are within PCP or PCP-IV scope. Anything not listed there is ACP-only and must not appear.
+PCP scope: strict enforcement (Ontario ALS PCS v5.4, PCP directives only):
+Only medications, doses and procedures listed in the ALS PCS reference above are within PCP scope. Anything not listed there must not appear anywhere in the scenario, including as a withheld option, a "not in scope" note, or a teaching point.
+Never mention: atropine, dopamine, amiodarone, lidocaine, adenosine, magnesium sulfate, morphine, fentanyl as a treatment, ketamine, midazolam, diazepam, calcium gluconate or chloride, sodium bicarbonate, IO access, pacing, cardioversion, intubation, surgical airway, needle decompression or procedural sedation.
+Epinephrine is PCP scope only for: anaphylaxis (IM), bronchoconstriction with a history of asthma when BVM ventilation is required (IM), croup with stridor at rest (nebulized), and medical cardiac arrest suspected to be caused by anaphylaxis (IM).
+When a patient needs more than PCP care, the answer is ALS intercept, base hospital patch, and rapid transport. Say that, and nothing about what ACP would do.
 
-Common scope violations to prevent:
-- Epinephrine is PCP scope for anaphylaxis and severe allergic reaction only. Do not use it for cardiac arrest, shockable rhythms, PEA, or asystole.
-- IO (intraosseous) access is ACP auxiliary only. Use IV only.
-- Transcutaneous pacing, synchronized cardioversion, RSI, surgical airway, and endotracheal intubation are ACP-only.
-- Atropine, dopamine, amiodarone, lidocaine, magnesium, adenosine, morphine, fentanyl, midazolam, and diazepam are ACP-only. Do not reference them even as withheld options.
-
-When a patient deteriorates beyond PCP scope, the correct response is rapid transport, ALS intercept request, or base hospital contact: not an ACP intervention.
-
-PCP Auxiliary Directives (base hospital authorization required; Semester 3 and 4 when clinically relevant):
-CPAP, Cardiogenic Shock, Traumatic Hemorrhage (includes TXA IM or IV), IV and Fluid Therapy, Seizure, Tachydysrhythmia (ALS PCS v5.4, PCP level). Always label these as base-hospital-authorized when referenced.
+PCP auxiliary directives (the paramedic must be authorized; use in Semester 3 and 4 when clinically relevant):
+CPAP, IV and Fluid Therapy, Cardiogenic Shock (fluid bolus), Traumatic Hemorrhage (TXA), Tachydysrhythmia (modified Valsalva), Lateral Patellar Dislocation, and Seizure (treat and discharge only, no medication). Label these as auxiliary when referenced.
 
 BLS PCS reference:
 ${blsStandards}
