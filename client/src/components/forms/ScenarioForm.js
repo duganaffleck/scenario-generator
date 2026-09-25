@@ -3215,20 +3215,32 @@ const ScenarioForm = () => {
               marginRight: 'auto',
               boxShadow: '0 2px 12px rgba(18,48,71,0.06)'
             }}>
-              <h2 style={{marginTop: 0, color: 'var(--vn-orange, #f28c28)'}}>Who this is for</h2>
-              <p style={{marginBottom: '1.2rem'}}>Paramedic students and instructors who want scenarios that think. Each call is built around realistic clinical reasoning, Ontario scope, and the kind of ambiguity that actually shows up on a truck.</p>
-              <h2 style={{marginTop: 0, color: 'var(--vn-orange, #f28c28)'}}>How to use</h2>
-              <p style={{marginBottom: '0.75rem'}}>Set your parameters and hit Generate. Here's what each option does:</p>
+              <p style={{marginTop: 0, marginBottom: '1.2rem'}}>Ontario PCP simulation scenarios for lab and self-practice. Each one has the call, the patient, vitals, how the patient responds to care, expected management and GRS anchors.</p>
+              <h2 style={{marginTop: 0, color: 'var(--vn-orange, #f28c28)'}}>How to use it</h2>
+              <ol style={{paddingLeft: '1.4em', margin: '0 0 1.2rem 0'}}>
+                <li style={{marginBottom: '0.5rem'}}><b>Generate.</b> Set the options on the left and press Generate Scenario.</li>
+                <li style={{marginBottom: '0.5rem'}}><b>Run the call.</b> Work it through before you read Expected Management and the teaching sections.</li>
+                <li style={{marginBottom: '0.5rem'}}><b>Chart it.</b> Press Practice ACR to download an ACR with this call's dispatch details filled in. Chart the rest in Adobe Acrobat Reader and press Check my ACR inside the form.</li>
+                <li style={{marginBottom: '0.5rem'}}><b>Get feedback.</b> Upload the chart on <a href="#acr-review" style={{color: 'var(--vn-accent-text, #0d9488)', fontWeight: 700}}>ACR Review</a>. It knows which scenario the ACR came from and asks about anything that doesn't match.</li>
+              </ol>
+              <h2 style={{marginTop: 0, color: 'var(--vn-orange, #f28c28)'}}>The options</h2>
               <ul style={{paddingLeft: '1.2em', margin: '0 0 1.2rem 0'}}>
-                <li style={{marginBottom: '0.5rem'}}><b>Semester</b> — controls clinical expectations. Semester 2 stays BLS-focused. Semester 3 opens directive-aware treatment. Semester 4 expects integrated reasoning under pressure.</li>
-                <li style={{marginBottom: '0.5rem'}}><b>Type</b> — the main call category. Medical, Trauma, Cardiac, Respiratory, or Environmental.</li>
-                <li style={{marginBottom: '0.5rem'}}><b>Environment</b> — shapes scene texture, access, and transport decisions. Urban calls feel different from rural ones.</li>
-                <li style={{marginBottom: '0.5rem'}}><b>Complexity</b> — Simple means one clear problem done well. Complex means competing cues, ambiguity, and harder prioritization.</li>
-                <li style={{marginBottom: '0.5rem'}}><b>Scenario Friction</b> — Clean keeps the scene operationally straightforward so the learning stays clinical. Pressured layers realistic scene problems that change how you assess, package, and move.</li>
-                <li style={{marginBottom: '0.5rem'}}><b>Generation Depth</b> — Quick Draft is lean and fast. Detailed adds fuller progression, richer clinical reasoning, and more specific GRS anchors.</li>
+                <li style={{marginBottom: '0.5rem'}}><b>Semester:</b> 2 is BLS care. 3 adds directive-based treatment and medication decisions. 4 expects integrated reasoning and prioritizing under pressure.</li>
+                <li style={{marginBottom: '0.5rem'}}><b>Type:</b> Medical, Trauma, Cardiac, Respiratory or Environmental.</li>
+                <li style={{marginBottom: '0.5rem'}}><b>Environment:</b> where the call happens. It changes access, scene and transport.</li>
+                <li style={{marginBottom: '0.5rem'}}><b>Complexity:</b> Simple is one clear problem. Complex adds competing findings and harder priorities.</li>
+                <li style={{marginBottom: '0.5rem'}}><b>Scenario Friction:</b> Clean keeps the scene simple so the focus stays clinical. Pressured adds scene problems that change how you assess, package and move.</li>
+                <li style={{marginBottom: '0.5rem'}}><b>Generation Depth:</b> Quick Draft is faster and shorter. Detailed gives fuller progression, reasoning and GRS anchors.</li>
+                <li style={{marginBottom: '0.5rem'}}><b>Instructor Prompt:</b> optional. Steer the call with a patient, a twist or a teaching focus. Specific works better than general.</li>
               </ul>
-              <p style={{marginBottom: '0.5rem'}}>The <b>Instructor Prompt</b> field is optional. Use it to push the scenario in a specific direction — a patient profile, a clinical twist, a teaching focus, or a setting detail. The more specific you are, the better the result.</p>
-              <p style={{margin: 0}}>Use <b>Night Shift</b> to switch to a darker reading mode with overnight call flavour. Use <b>Export</b> to download the scenario as a PDF once it's generated.</p>
+              <h2 style={{marginTop: 0, color: 'var(--vn-orange, #f28c28)'}}>The buttons</h2>
+              <ul style={{paddingLeft: '1.2em', margin: '0 0 1.2rem 0'}}>
+                <li style={{marginBottom: '0.5rem'}}><b>Night Shift:</b> dark mode and overnight calls.</li>
+                <li style={{marginBottom: '0.5rem'}}><b>Export:</b> the scenario as a PDF.</li>
+                <li style={{marginBottom: '0.5rem'}}><b>Practice ACR:</b> an ACR for this call, ready to chart and upload to ACR Review.</li>
+                <li style={{marginBottom: '0.5rem'}}><b>Reset:</b> clears the options and the scenario.</li>
+              </ul>
+              <p style={{margin: 0, fontSize: '0.92rem', color: 'var(--vn-muted-text, #64707d)'}}>Scenarios are written by AI. Check doses and directive details against the current Ontario BLS and ALS PCS before you teach from them.</p>
             </section>
           )}
           {scenario && (
