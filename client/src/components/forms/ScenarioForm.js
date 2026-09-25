@@ -1263,7 +1263,6 @@ const FIELD_TOOLTIPS = {
 
 const SECTION_GROUPS = {
   "The Call": [
-    "scenarioIntro",
     "callInformation",
     "sceneArrival",
     "patientDemographics",
@@ -1284,6 +1283,7 @@ const SECTION_GROUPS = {
     "protocolNotes",
   ],
   "Teaching Points": [
+    "scenarioIntro",
     "teachersPoints",
     "learningObjectives",
     "scenarioRationale",
@@ -1299,7 +1299,7 @@ const SECTION_GROUPS = {
 const PAUSE_AFTER_GROUP = "What Was Happening";
 
 const TITLE_MAP = {
-  scenarioIntro: "Scenario Introduction",
+  scenarioIntro: "Scenario Summary",
   title: "Scenario Title",
   callInformation: "Call Information",
   patientDemographics: "Patient Demographics",
@@ -1755,7 +1755,7 @@ const ScenarioForm = () => {
   };
 
   const formatLabel = (label) => {
-    const special = { headNeck: "Head/Neck", backPelvis: "Back/Pelvis" };
+    const special = { headNeck: "Head/Neck", backPelvis: "Back/Pelvis", instructorPriorities: "Watch For" };
     if (special[label]) return special[label];
     const normalized = String(label || "")
       .replace(/[_-]+/g, " ")
@@ -2220,7 +2220,6 @@ const ScenarioForm = () => {
     // Phase group order matching SECTION_GROUPS
     const phaseOrder = [
       // The Call
-      "scenarioIntro",
       "callInformation",
       "sceneArrival",
       "patientDemographics",
@@ -2238,6 +2237,7 @@ const ScenarioForm = () => {
       "expectedTreatment",
       "protocolNotes",
       // Teaching Points
+      "scenarioIntro",
       "teachersPoints",
       "learningObjectives",
       "instructorGuidance",
@@ -2248,7 +2248,7 @@ const ScenarioForm = () => {
 
     // Phase group labels for dividers
     const phaseGroupMap = {
-      scenarioIntro: "The Call",
+      scenarioIntro: "Teaching Points",
       callInformation: "The Call",
       sceneArrival: "The Call",
       patientDemographics: "The Call",
