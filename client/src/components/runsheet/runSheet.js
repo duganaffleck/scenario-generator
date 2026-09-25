@@ -71,7 +71,7 @@ function grs(anchors) {
     situationalAwareness: "Situation Awareness", historyGathering: "History Gathering", patientAssessment: "Patient Assessment",
     decisionMaking: "Decision Making", proceduralSkill: "Procedural Skill", resourceUtilization: "Resource Utilization", communication: "Communication",
   };
-  const scores = ["1", "3", "5", "7"].filter((sc) => Object.values(anchors).some((d) => d && !isBlank(d[sc])));
+  const scores = ["3", "5", "7"].filter((sc) => Object.values(anchors).some((d) => d && !isBlank(d[sc])));
   const rows = Object.entries(anchors)
     .filter(([, d]) => d && !isBlank(d))
     .map(([dom, d]) => `<tr><th>${esc(names[dom] || label(dom))}</th>${scores.map((sc) =>
