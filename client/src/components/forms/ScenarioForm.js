@@ -453,13 +453,16 @@ function RhythmStripSVG({ rhythm, hr, isNightShift }) {
   );
 }
 function pickTwelveLeadPattern(ecgType, rhythmInterp, twelveLeadFindings, fifteenLeadFindings, patternKey) {
-  const VALID_PATTERNS = ['normal','inferiorSTEMI','anteriorSTEMI','lateralSTEMI','lbbb','rbbb','afib12','vtach12','inferiorRV','posterior','wellens','deWinter','inferolateralSTEMI','highLateralSTEMI','pericarditis','hyperkalemia','svt12','atrialFlutter12','firstDegreeAVBlock','secondDegreeTypeI','secondDegreeTypeII','thirdDegreeAVBlock'];
+  const VALID_PATTERNS = ['normal','lvhStrain','inferiorSTEMI','anteriorSTEMI','lateralSTEMI','lbbb','rbbb','afib12','vtach12','inferiorRV','posterior','wellens','deWinter','inferolateralSTEMI','highLateralSTEMI','pericarditis','hyperkalemia','svt12','atrialFlutter12','firstDegreeAVBlock','secondDegreeTypeI','secondDegreeTypeII','thirdDegreeAVBlock'];
   if (patternKey && VALID_PATTERNS.includes(patternKey)) return patternKey;
   const txt = ((twelveLeadFindings || '') + ' ' + (rhythmInterp || '')).toLowerCase().replace(/\s*-\s*/g, ' ');
   if (ecgType === '15-lead' || (fifteenLeadFindings && fifteenLeadFindings.trim().length > 10 && (fifteenLeadFindings.toLowerCase().includes('elevation') || fifteenLeadFindings.toLowerCase().includes('involvement') || fifteenLeadFindings.toLowerCase().includes('stemi') || fifteenLeadFindings.toLowerCase().includes('posterior')))) {
     if (txt.includes('posterior')) return 'posterior';
     return 'inferiorRV';
   }
+  const lvh = txt.includes('left ventricular hypertrophy') || /\blvh\b/.test(txt);
+  const stemiClaimed = /\bstemi\b/.test(txt) && !/(no|not|without|does not meet|doesn't meet)[^.]{0,30}\bstemi\b/.test(txt);
+  if (lvh && !stemiClaimed) return 'lvhStrain';
   if (txt.includes('wellens') || txt.includes('lad warning') || txt.includes('biphasic t') || txt.includes('deep symmetric t') || txt.includes('symmetric t wave inversion') || txt.includes('deep t wave inversion') || ((txt.includes('t wave inversion') || txt.includes('t-wave inversion')) && (txt.includes('v2') || txt.includes('v3')))) return 'wellens';
   if (txt.includes('de winter') || txt.includes('winter t') || txt.includes('upsloping st depression') || txt.includes('upward sloping st depression')) return 'deWinter';
   if (txt.includes('pericarditis') || txt.includes('saddle') || txt.includes('pr depression')) return 'pericarditis';
@@ -758,6 +761,23 @@ function _tlBuildRBBBLead(rr, opts) {
 }
 
 const _TL_PATTERNS = {
+  lvhStrain: {
+    title: 'Left Ventricular Hypertrophy with Strain (not STEMI)',
+    leads: {
+      'I':   { pr:160, pA:0.12, rA:1.25, qD:0.06, sD:0.05, tA:-0.20, st:-0.08 },
+      'II':  { pr:160, pA:0.15, rA:0.85, qD:0.06, sD:0.18, tA:0.10, st:-0.03 },
+      'III': { pr:160, pA:0.08, rA:0.25, qD:0.04, sD:0.45, tA:0.10, st:0 },
+      'aVR': { pr:160, pA:0.12, rA:0.30, qD:0.08, sD:0.05, tA:0.10, st:0, flip:true, pFlip:true },
+      'aVL': { pr:160, pA:0.08, rA:1.30, qD:0.06, sD:0.05, tA:-0.22, st:-0.10 },
+      'aVF': { pr:160, pA:0.13, rA:0.45, qD:0.06, sD:0.30, tA:0.10, st:0 },
+      'V1':  { pr:160, pA:0.06, rA:0.12, qD:0.02, sD:1.10, tA:0.18, st:0.10 },
+      'V2':  { pr:160, pA:0.08, rA:0.20, qD:0.02, sD:1.15, tA:0.22, st:0.12 },
+      'V3':  { pr:160, pA:0.10, rA:0.45, qD:0.04, sD:0.80, tA:0.18, st:0.06 },
+      'V4':  { pr:160, pA:0.12, rA:1.60, qD:0.06, sD:0.25, tA:0.05, st:-0.04 },
+      'V5':  { pr:160, pA:0.12, rA:2.30, qD:0.06, sD:0.10, tA:-0.28, st:-0.14 },
+      'V6':  { pr:160, pA:0.12, rA:2.00, qD:0.06, sD:0.06, tA:-0.25, st:-0.12 },
+    }
+  },
   normal: {
     title: 'Normal 12-Lead ECG',
     leads: {
@@ -1739,11 +1759,11 @@ const ScenarioForm = () => {
 
     if (Array.isArray(fieldValue)) {
       return fieldValue
-        .map((item) => {
+        .map((item, idx) => {
           if (item === null || item === undefined || item === "") return "";
           if (typeof item === "object") {
             const nested = formatFieldValue(item, depth + 1);
-            return nested ? `${indent}-\n${nested}` : "";
+            return nested ? `${idx > 0 ? "\n" : ""}${nested}` : "";
           }
           return `${indent}- ${sanitizePdfText(item)}`;
         })
@@ -1755,7 +1775,10 @@ const ScenarioForm = () => {
   };
 
   const formatLabel = (label) => {
-    const special = { headNeck: "Head/Neck", backPelvis: "Back/Pelvis", instructorPriorities: "Watch For" };
+    const special = {
+      headNeck: "Head/Neck", backPelvis: "Back/Pelvis", instructorPriorities: "Watch For",
+      "3": "Score 3 (unsafe to borderline)", "5": "Score 5 (competent)", "7": "Score 7 (exceptional)",
+    };
     if (special[label]) return special[label];
     const normalized = String(label || "")
       .replace(/[_-]+/g, " ")
@@ -1770,6 +1793,8 @@ const ScenarioForm = () => {
       ["hr", "HR"],
       ["rr", "RR"],
       ["spo2", "SpO2"],
+      ["etco2", "EtCO2"],
+      ["bgl", "BGL"],
       ["opqrst", "OPQRST"],
       ["sample", "SAMPLE"],
       ["iv", "IV"]
@@ -2305,7 +2330,7 @@ const ScenarioForm = () => {
         afib12: 'Atrial Fibrillation', vtach12: 'Ventricular Tachycardia', inferiorRV: 'Inferior + RV STEMI',
         posterior: 'Posterior STEMI', wellens: 'Wellens Syndrome', deWinter: 'De Winter Pattern',
         pericarditis: 'Pericarditis', hyperkalemia: 'Hyperkalemia', svt12: 'SVT',
-        atrialFlutter12: 'Atrial Flutter', firstDegreeAVBlock: 'First Degree AV Block',
+        atrialFlutter12: 'Atrial Flutter', firstDegreeAVBlock: 'First Degree AV Block', lvhStrain: 'LVH with Strain',
         secondDegreeTypeI: 'Second Degree AV Block Type I', secondDegreeTypeII: 'Second Degree AV Block Type II',
         thirdDegreeAVBlock: 'Third Degree AV Block',
       };
@@ -2537,22 +2562,26 @@ const ScenarioForm = () => {
           return;
         }
 
+        // Indent comes from the nesting in formatFieldValue (two spaces per level).
+        const level = Math.min(3, Math.floor((expanded.length - expanded.trimStart().length) / 2));
         const isBullet = trimmed.startsWith("- ");
-        const isLabelLine = /^[A-Z][^:]{1,35}:\s*$/.test(trimmed);
+        const isLabelLine = !isBullet && /^[A-Z0-9][^:]{0,45}:\s*$/.test(trimmed);
         const sanitizedLine = sanitizePdfText(isBullet ? trimmed.slice(2) : trimmed);
-        const shouldBulletize = !isLabelLine;
-        const displayText = shouldBulletize ? `–  ${sanitizedLine}` : sanitizedLine;
-        const indent = shouldBulletize ? 4 : 0;
+        const displayText = isBullet ? `–  ${sanitizedLine}` : sanitizedLine;
+        const indent = level * 4 + (isBullet ? 4 : 0);
         const textX = textColumnX + indent;
         const textWidth = maxLineWidth - indent;
+        const setBodyStyle = () => {
+          doc.setFont(undefined, isLabelLine ? "bold" : "normal");
+          doc.setFontSize(bodySize);
+          doc.setTextColor(...palette.neutralText);
+        };
 
-        doc.setFont(undefined, isLabelLine ? "bold" : "normal");
-        doc.setFontSize(bodySize);
-        doc.setTextColor(...palette.neutralText);
-
+        setBodyStyle();
         const wrapped = doc.splitTextToSize(displayText, textWidth);
         wrapped.forEach((line) => {
-          needsNewPage(bodyLH);
+          // A page break draws the header in its own small, pale style; put the body style back.
+          if (needsNewPage(bodyLH)) setBodyStyle();
           doc.text(line, textX, y);
           y += bodyLH;
         });
