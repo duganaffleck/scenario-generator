@@ -23,7 +23,7 @@ const text = (v) => {
 };
 
 const SMALL = new Set(["and", "or", "of", "to", "the", "in", "on", "with", "for"]);
-const SPECIAL = { opqrst: "OPQRST", sample: "SAMPLE", headNeck: "Head/Neck", backPelvis: "Back/Pelvis", spo2: "SpO2", etco2: "EtCO2", gcs: "GCS", bgl: "BGL", hr: "HR", rr: "RR", bp: "BP" };
+const SPECIAL = { instructorPriorities: "Watch For", opqrst: "OPQRST", sample: "SAMPLE", headNeck: "Head/Neck", backPelvis: "Back/Pelvis", spo2: "SpO2", etco2: "EtCO2", gcs: "GCS", bgl: "BGL", hr: "HR", rr: "RR", bp: "BP" };
 const label = (k) => SPECIAL[k] ||
   String(k)
     .replace(/([a-z0-9])([A-Z])/g, "$1 $2")
@@ -71,7 +71,7 @@ function grs(anchors) {
     situationalAwareness: "Situation Awareness", historyGathering: "History Gathering", patientAssessment: "Patient Assessment",
     decisionMaking: "Decision Making", proceduralSkill: "Procedural Skill", resourceUtilization: "Resource Utilization", communication: "Communication",
   };
-  const scores = ["1", "3", "5", "7"].filter((sc) => Object.values(anchors).some((d) => d && !isBlank(d[sc])));
+  const scores = ["3", "5", "7"].filter((sc) => Object.values(anchors).some((d) => d && !isBlank(d[sc])));
   const rows = Object.entries(anchors)
     .filter(([, d]) => d && !isBlank(d))
     .map(([dom, d]) => `<tr><th>${esc(names[dom] || label(dom))}</th>${scores.map((sc) =>
@@ -137,7 +137,7 @@ ${section("Vitals by stage", vitalsTable(s.vitalSigns))}
 ${section("How the patient responds", progression(s.caseProgression))}
 ${section("Expected treatment (tick and time as it happens)", treatment.length
     ? `<ul class="check">${treatment.map((t) => `<li><span class="box"></span><span>${esc(t)}</span><span class="time"></span></li>`).join("")}</ul>` : "")}
-${section("Instructor priorities", priorities.length ? `<ul>${priorities.map((p) => `<li>${esc(p)}</li>`).join("")}</ul>` : "")}
+${section("Watch for", priorities.length ? `<ul>${priorities.map((p) => `<li>${esc(p)}</li>`).join("")}</ul>` : "")}
 ${section("GRS anchors", grs(s.grsAnchors))}
 ${section("Debrief", (debrief ? `<p>${esc(debrief)}</p>` : "") +
     (list(s.selfReflectionPrompts).length ? `<ul>${list(s.selfReflectionPrompts).map((q) => `<li>${esc(q)}</li>`).join("")}</ul>` : ""))}

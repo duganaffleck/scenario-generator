@@ -1263,7 +1263,6 @@ const FIELD_TOOLTIPS = {
 
 const SECTION_GROUPS = {
   "The Call": [
-    "scenarioIntro",
     "callInformation",
     "sceneArrival",
     "patientDemographics",
@@ -1284,6 +1283,7 @@ const SECTION_GROUPS = {
     "protocolNotes",
   ],
   "Teaching Points": [
+    "scenarioIntro",
     "teachersPoints",
     "learningObjectives",
     "scenarioRationale",
@@ -1299,7 +1299,7 @@ const SECTION_GROUPS = {
 const PAUSE_AFTER_GROUP = "What Was Happening";
 
 const TITLE_MAP = {
-  scenarioIntro: "Scenario Introduction",
+  scenarioIntro: "Scenario Summary",
   title: "Scenario Title",
   callInformation: "Call Information",
   patientDemographics: "Patient Demographics",
@@ -1755,7 +1755,7 @@ const ScenarioForm = () => {
   };
 
   const formatLabel = (label) => {
-    const special = { headNeck: "Head/Neck", backPelvis: "Back/Pelvis" };
+    const special = { headNeck: "Head/Neck", backPelvis: "Back/Pelvis", instructorPriorities: "Watch For" };
     if (special[label]) return special[label];
     const normalized = String(label || "")
       .replace(/[_-]+/g, " ")
@@ -2220,7 +2220,6 @@ const ScenarioForm = () => {
     // Phase group order matching SECTION_GROUPS
     const phaseOrder = [
       // The Call
-      "scenarioIntro",
       "callInformation",
       "sceneArrival",
       "patientDemographics",
@@ -2238,6 +2237,7 @@ const ScenarioForm = () => {
       "expectedTreatment",
       "protocolNotes",
       // Teaching Points
+      "scenarioIntro",
       "teachersPoints",
       "learningObjectives",
       "instructorGuidance",
@@ -2248,7 +2248,7 @@ const ScenarioForm = () => {
 
     // Phase group labels for dividers
     const phaseGroupMap = {
-      scenarioIntro: "The Call",
+      scenarioIntro: "Teaching Points",
       callInformation: "The Call",
       sceneArrival: "The Call",
       patientDemographics: "The Call",
@@ -2605,9 +2605,8 @@ const ScenarioForm = () => {
         resourceUtilization: "Resource Utilization",
         communication: "Communication",
       };
-      const scoreLabels = { "1": "Score 1: Unsafe", "3": "Score 3: Unsafe to borderline", "5": "Score 5: Competent", "7": "Score 7: Exceptional" };
+      const scoreLabels = { "3": "Score 3: Unsafe to borderline", "5": "Score 5: Competent", "7": "Score 7: Exceptional" };
       const scoreColors = {
-        "1": { bg: "transparent", border: "var(--vn-border)", label: "var(--vn-error-text)" },
         "3": { bg: "transparent", border: "var(--vn-border)", label: "var(--vn-muted-text)" },
         "5": { bg: "transparent", border: "var(--vn-border)", label: "var(--vn-muted-text)" },
         "7": { bg: "transparent", border: "var(--vn-border)", label: "var(--vn-accent-text)" },
@@ -2615,7 +2614,7 @@ const ScenarioForm = () => {
       return (
         <div>
           {Object.entries(data)
-            .filter(([, scores]) => scores && ["1", "3", "5", "7"].some((sc) => Array.isArray(scores[sc]) && scores[sc].length))
+            .filter(([, scores]) => scores && ["3", "5", "7"].some((sc) => Array.isArray(scores[sc]) && scores[sc].length))
             .map(([domain, scores]) => (
             <div key={domain} style={{ marginBottom: "1.25rem" }}>
               <div style={{
@@ -2629,7 +2628,7 @@ const ScenarioForm = () => {
               }}>
                 {domainLabels[domain] || domain}
               </div>
-              {["1", "3", "5", "7"].map((score) => {
+              {["3", "5", "7"].map((score) => {
                 const bullets = Array.isArray(scores[score]) ? scores[score] : [];
                 if (!bullets.length) return null;
                 const colors = scoreColors[score] || scoreColors["5"];

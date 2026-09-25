@@ -1,180 +1,106 @@
-ALS PCS — PCP & PCP-IV DIRECTIVES (2025)
-Source: ALS PCS v5.4 (April 2025)
-Scope: Primary Care Paramedic + PCP-IV Certified
+ALS PCS: PCP MEDICAL DIRECTIVES
+Source: Ontario ALS PCS v5.4 (April 2025), PCP Protocol Book 5.4, OBHG Companion Document (August 2026)
+Scope: Primary Care Paramedic. "IV" routes require IV access (IV and Fluid Therapy is an auxiliary directive).
 
-SCOPE BOUNDARY: This file defines the complete medication and procedure scope for PCP and PCP-IV paramedics under current Ontario BLS PCS and ALS PCS. Any medication, procedure, or intervention not explicitly listed in this file is outside PCP scope and must not appear in generated PCP scenarios. When in doubt, treat it as ACP-only.
+SCOPE BOUNDARY: This file is the complete PCP medication and procedure scope. Anything not listed here is outside PCP scope and must not appear in a generated scenario, not even as a withheld option.
 
-────────────────────────────────────────
-1. Bronchoconstriction (PCP)
-────────────────────────────────────────
-Indications:
-- Respiratory distress with suspected bronchoconstriction (e.g., asthma, COPD)
+1. Bronchoconstriction
+- Salbutamol MDI: up to 800 mcg (8 puffs) at 25 kg or more, up to 600 mcg (6 puffs) under 25 kg; every 5-15 min PRN, max 3 doses
+- Salbutamol NEB: 5 mg at 25 kg or more, 2.5 mg under 25 kg; every 5-15 min PRN, max 3 doses
+- Epinephrine 1 mg/mL IM 0.01 mg/kg, max 0.5 mg, 1 dose: only with a history of asthma AND BVM ventilation required
+- Dexamethasone 0.5 mg/kg PO/IM/IV, max 8 mg, 1 dose: history of asthma, COPD, or 20 pack-year smoking; not if already on PO or parenteral steroids
 
-Treatment:
-- Salbutamol MDI 800 mcg (8 puffs) q5–15 min PRN
-  OR
-- Salbutamol Neb 5 mg if no MDI available
-- Epinephrine IM 0.01 mg/kg (max 0.5 mg) if severe + asthma
+2. Hypoglycemia
+- Oral glucose when alert and able to swallow safely (BLS PCS)
+- Glucagon (altered LOA): 0.5 mg IM under 25 kg, 1 mg IM at 25 kg or more, or 3 mg IN at age 4 or older; every 20 min, max 2 doses; contraindicated in pheochromocytoma
+- Dextrose IV (altered LOA, age 2 or older): D10W 0.2 g/kg (2 mL/kg) or D50W 0.5 g/kg (1 mL/kg), max 25 g per dose, every 10 min, max 2 doses
 
-Contraindications:
-- Allergy to salbutamol or epinephrine
+3. Cardiac Ischemia
+- ASA 160-162 mg PO, 1 dose: age 18 or older, unaltered LOA, able to chew and swallow
+  Contraindications: NSAID allergy or sensitivity, asthmatic with no prior ASA use, current active bleeding, CVA or TBI in the previous 24 hours
+- Nitroglycerin 0.3 or 0.4 mg SL every 5 min: max 3 doses if STEMI, max 6 doses otherwise
+  Conditions: age 18 or older, unaltered LOA, HR 60-159, SBP normotensive (100 or higher), prior history of nitroglycerin use OR IV access obtained
+  Contraindications: nitrate allergy, phosphodiesterase inhibitor within 48 hours, SBP drop of one-third or more after nitroglycerin, 12-lead compatible with right ventricular MI
 
-────────────────────────────────────────
-2. Hypoglycemia (PCP + PCP-IV)
-────────────────────────────────────────
-Indications:
-- Altered LOC with BGL < 4.0 mmol/L
+4. Acute Cardiogenic Pulmonary Edema
+- Nitroglycerin SL every 5 min, max 6 doses: 0.3 or 0.4 mg if SBP 100-139, 0.6 or 0.8 mg if SBP 140 or higher
+  Conditions: age 18 or older, HR 60-159, SBP normotensive
+  Contraindications: as for cardiac ischemia (no 12-lead needed before the first dose; acquire it as soon as possible)
 
-Treatment:
-- Oral glucose 25–50 g if alert and able to swallow
-- D10W IV (PCP-IV): 0.2 g/kg (2 mL/kg) up to 10 g (100 mL)
-- Glucagon IM 1 mg if no IV access
+5. Moderate to Severe Allergic Reaction
+- Epinephrine 1 mg/mL IM 0.01 mg/kg, max 0.5 mg, minimum 5 min apart, max 2 doses: anaphylaxis only
+- Diphenhydramine IM/IV, 1 dose: 25 mg at 25 to under 50 kg, 50 mg at 50 kg or more
 
-Contraindications:
-- Allergy
-- Glucagon contraindicated in pheochromocytoma
+6. Analgesia (age 12 or older, unaltered LOA)
+- Acetaminophen PO, 1 dose: 960-1000 mg adult, 500-650 mg age 12 to under 18. Not within 4 hours of prior use, liver disease, vomiting, unable to tolerate oral, or suspected ischemic chest pain
+- Ibuprofen 400 mg PO, 1 dose
+- Ketorolac 10-15 mg IM/IV, 1 dose
+  NSAID contraindications: NSAID within 6 hours, allergy, anticoagulation, active bleeding, peptic ulcer or GI bleed, pregnancy, asthma without prior NSAID use, CVA or TBI within 24 hours, renal impairment, suspected ischemic chest pain. Never give ibuprofen and ketorolac together.
 
-────────────────────────────────────────
-3. Cardiac Ischemia (PCP + PCP-IV)
-────────────────────────────────────────
-Indications:
-- Suspected cardiac chest pain
+7. Nausea / Vomiting (25 kg or more, unaltered LOA)
+- Dimenhydrinate IV/IM: 25 mg at 25 to under 50 kg (1 dose); 25 or 50 mg at 50 kg or more, may repeat once after 30 min. Not in antihistamine, anticholinergic or tricyclic overdose, or with diphenhydramine
+- Ondansetron 4 mg PO/IV/IM, 1 dose. Not with prolonged QT or apomorphine use. May be considered if dimenhydrinate gave no relief after 30 min
 
-Treatment:
-- ASA 160–162 mg PO once
-- Nitroglycerin SL (PCP-IV): 0.3–0.6 mg q5 min, max 6 doses
+8. Opioid Toxicity and Withdrawal
+- Naloxone (age 24 hours or older, altered LOA, RR under 10 or unable to ventilate adequately): 0.4 mg IV/IM, 0.8 mg SC or 2-4 mg IN, every 5 min, max 3 doses. Titrate to adequate breathing
+- Buprenorphine/naloxone BUC/SL: 16 mg, then 8 mg every 10 min, cumulative max 24 mg. Only after naloxone this episode, age 16 or older, unaltered LOA, COWS 8 or more; not with methadone in the past 72 hours
 
-Conditions:
-- HR 60–159 bpm
-- SBP ≥ 100 mmHg
-- No ED medications in past 48 hrs
+9. Croup (age 6 months to under 8 years, URTI with barking cough)
+- Dexamethasone 0.5 mg/kg PO, max 8 mg, 1 dose, any severity. Not if steroids in the past 48 hours or unable to tolerate oral
+- Epinephrine 1 mg/mL NEB, 1 dose: 2.5 mg under 10 kg, 5 mg at 10 kg or more; stridor at rest and HR under 200
 
-Contraindications:
-- Hypotension, bradycardia, tachycardia, ED drug use
+10. Suspected Adrenal Crisis
+- Hydrocortisone 2 mg/kg IM/IV, max 100 mg, 1 dose: known primary adrenal failure, paramedics presented with the patient's vial, with hypoglycemia or GI symptoms, syncope, fever, altered LOA, tachycardia or hypotension
 
-────────────────────────────────────────
-4. Medical Cardiac Arrest (PCP)
-────────────────────────────────────────
-Indications:
-- Non-traumatic cardiac arrest
+11. Medical Cardiac Arrest
+- High-quality CPR, AED or manual defibrillation, rhythm analysis every 2 min, supraglottic airway when indicated
+- Epinephrine 1 mg/mL IM 0.01 mg/kg, max 0.5 mg, 1 dose: only if anaphylaxis is suspected as the cause
+- Medical TOR: arrest not witnessed by paramedics AND no ROSC after 20 min of resuscitation AND no defibrillation delivered. Patch early if extenuating circumstances
+- No routine naloxone in confirmed arrest
 
-Treatment:
-- High-quality CPR + Defibrillation (AED or Manual)
-- Apply Medical TOR if:
-  • Arrest not witnessed by EMS
-  • No ROSC
-  • No shocks delivered
+12. Return of Spontaneous Circulation
+- Titrate SpO2 to 94-98%, ETCO2 30-40 mmHg, avoid hyperventilation, 12-lead ECG
+- Consider 0.9% NaCl bolus 10 mL/kg, max 1000 mL, if hypotensive with a clear chest
 
-Transport if:
-- No ROSC after 3 analyses
+13. Supraglottic Airway
+- For ventilatory assistance or airway control when other airway management is ineffective, with an absent gag reflex; max 2 attempts
+- Contraindications: foreign body obstruction, known esophageal disease (varices), oropharyngeal trauma, caustic ingestion
 
-────────────────────────────────────────
-5. ROSC – Return of Spontaneous Circulation (PCP)
-────────────────────────────────────────
-Treatment:
-- Oxygen to SpO₂ 94–98%
-- Avoid hyperventilation
-- Monitor vitals closely
-- Prepare for re-arrest
-- 12-lead ECG if available
+14. Emergency Childbirth and Newborn Resuscitation
+- Delivery, shoulder dystocia, breech delivery, prolapsed cord management, cord clamping and cutting
+- Newborn: PPV if HR under 100; CPR if HR under 60 after 30 seconds of effective PPV
 
-────────────────────────────────────────
-6. CPAP (PCP-Certified)
-────────────────────────────────────────
-Indications:
-- Severe SOB (COPD, CHF, pulmonary edema)
+15. Home Dialysis Emergency Disconnect
+- Clamp both the patient side and the machine side before disconnecting and capping
 
-Treatment:
-- Start at 5 cmH₂O, titrate to max 10 cmH₂O
+PCP AUXILIARY DIRECTIVES (the paramedic must be authorized for each)
 
-Contraindications:
-- GCS < Alert
-- Vomiting
-- Facial trauma
-- Hypotension
+16. Intravenous and Fluid Therapy
+- IV access for actual or potential need for IV medication or fluid
+- 0.9% NaCl bolus for hypotension (age 2 or older): 20 mL/kg, reassess every 100 mL (age 2-12) or 250 mL (12 or older), max 2000 mL. Not with fluid overload
 
-────────────────────────────────────────
-7. Allergic Reaction / Anaphylaxis (PCP + PCP-IV)
-────────────────────────────────────────
-Treatment:
-- Epinephrine IM 0.01 mg/kg (max 0.5 mg) q5–15 min ×2
-- Diphenhydramine (PCP-IV): 25–50 mg IM or IV
+17. Cardiogenic Shock
+- STEMI-positive 12-lead with cardiogenic shock, age 18 or older, hypotension, clear chest: 0.9% NaCl 10 mL/kg IV, reassess every 250 mL, max 1000 mL
 
-Contraindications:
-- None for epinephrine in anaphylaxis
+18. CPAP
+- Age 18 or older, severe respiratory distress with signs of acute pulmonary edema or COPD, tachypnea, normotension, SpO2 under 90% or accessory muscle use
+- Start 5 cmH2O, increase by 2.5 cmH2O every 5 min as needed, max 15 cmH2O; FiO2 50-100%
+- Contraindications include asthma exacerbation, suspected pneumothorax, unprotected or unstable airway
 
-────────────────────────────────────────
-8. Nausea / Vomiting (PCP-IV)
-────────────────────────────────────────
-Treatment:
-- Dimenhydrinate 25–50 mg IV or IM q4h PRN
+19. Traumatic Hemorrhage
+- Tranexamic acid 1000 mg IV/IM, 1 dose: age 16 or older, suspected traumatic hemorrhage with HR 110 or higher or hypotension
+- Contraindications: more than 3 hours from injury, isolated head injury, allergy. Never delays transport or hemorrhage control
 
-Contraindications:
-- Allergy
-- Glaucoma
+20. Tachydysrhythmia
+- Modified Valsalva, max 2 attempts of 10-20 seconds: age 18 or older, unaltered LOA, HR 150 or higher, normotensive, narrow complex and regular
+- Contraindications: sinus tachycardia, atrial fibrillation, atrial flutter
 
-────────────────────────────────────────
-9. Pain Management (PCP-IV)
-────────────────────────────────────────
-Indications:
-- Moderate to severe pain
+21. Lateral Patellar Dislocation
+- Reduction, max 2 attempts: age 10-50, unaltered LOA; not after high velocity or direct knee trauma
 
-Treatment:
-- Acetaminophen 960–1000 mg PO
-- Ibuprofen 400 mg PO
-- Ketorolac 10–15 mg IM/IV if NPO or cannot tolerate oral
+22. Seizure
+- Treat and discharge criteria only. There is no PCP seizure medication.
 
-Contraindications:
-- NSAID allergy, renal failure, bleeding, pregnancy
-- Do not combine ibuprofen and ketorolac
-
-────────────────────────────────────────
-10. Seizures (PCP)
-────────────────────────────────────────
-Treatment:
-- Ensure scene safety
-- Airway and oxygen support
-- BGL check
-- Monitor postictal phase
-- Midazolam only with delegation or patch
-
-────────────────────────────────────────
-11. Stroke / TIA (PCP)
-────────────────────────────────────────
-Indications:
-- Acute neurologic deficits < 4.5 hours since onset
-
-Treatment:
-- FAST / BE-FAST screening
-- Apply Stroke Bypass Protocol
-- Confirm BGL > 3.0 mmol/L
-- Expedite transport, minimize scene time
-
-────────────────────────────────────────
-12. TOR & DNR (PCP)
-────────────────────────────────────────
-Treatment:
-- Apply Medical TOR as per directive
-- Confirm and honor valid DNR forms
-- Document clearly
-
-────────────────────────────────────────
-13. TXA – Tranexamic Acid (PCP-IV)
-────────────────────────────────────────
-Indications:
-- Blunt or penetrating trauma with signs of hemorrhagic shock (e.g., SBP < 90 mmHg, HR > 110 bpm)
-- Suspected significant internal or external bleeding
-- Injury occurred within the past 3 hours
-
-Treatment:
-- TXA 1 g IV over 10 minutes (infusion or slow push)
-- May dilute in 100 mL NS/D5W or administer via pump
-
-Contraindications:
-- Known allergy to TXA
-- Traumatic arrest
-- Isolated head injury
-- More than 3 hours since injury
-
-Notes:
-- Must be used in conjunction with hemorrhage control and rapid transport
+NOT DIRECTIVES BUT ALWAYS IN PLAY
+- Stroke: apply the Ontario Acute Stroke Protocol and regional bypass criteria; last known well time drives destination; confirm BGL
+- DNR: confirm and honour a valid DNR confirmation form

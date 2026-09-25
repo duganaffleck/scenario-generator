@@ -1,11 +1,11 @@
-# Ontario Basic Life Support Patient Care Standards (BLS PCS v3.4 – 2023) Key Directives and Thresholds for Paramedic Scenario Generation
+# Ontario Basic Life Support Patient Care Standards (BLS PCS v3.4-2023) Key Directives and Thresholds for Paramedic Scenario Generation
 
 ## Oxygen Administration (BLS PCS)
 - Do NOT administer oxygen if the patient has an SpO₂ of 94% or greater AND shows no signs of hypoxia.
 - Initiate oxygen therapy if:
   - SpO₂ is below 94%
   - OR signs of hypoxia or respiratory distress are present (cyanosis, altered mental status, poor perfusion, shock, or poor waveform).
-- Titrate oxygen to maintain an SpO₂ of 92–96% unless otherwise directed.
+- Titrate oxygen to maintain an SpO₂ of 92-96% unless otherwise directed.
 - Use appropriate delivery method (nasal cannula, non-rebreather, BVM) based on severity and directive.
 
 Airway Management:
@@ -95,6 +95,6 @@ Cardiac Arrest (CPR/AED):
 - Apply BLS protocols and contact police/mental health team as required.
 
 ## Additional BLS Expectations
-- Reassessment is required every 5–10 minutes or after any intervention.
+- Reassessment is required every 5-10 minutes or after any intervention.
 - Ensure ongoing documentation of patient response, vitals, and treatment.
 - Use appropriate communication protocols with allied agencies and hospitals.
