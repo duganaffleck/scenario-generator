@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import jsPDF from "jspdf";
-import { FaSpinner, FaFilePdf, FaFileMedical, FaMoon, FaSun, FaUndoAlt } from "react-icons/fa";
+import { FaSpinner, FaFilePdf, FaFileMedical, FaClipboardList, FaUserGraduate, FaMoon, FaSun, FaUndoAlt } from "react-icons/fa";
 import { downloadScenarioAcr, errorMessage } from "../acr/acrApi";
+import { openRunSheet } from "../runsheet/runSheet";
 
 // Simple confetti effect (no external lib)
 function Confetti() {
@@ -1263,7 +1264,6 @@ const FIELD_TOOLTIPS = {
 const SECTION_GROUPS = {
   "The Call": [
     "scenarioIntro",
-    "title",
     "callInformation",
     "sceneArrival",
     "patientDemographics",
@@ -1336,6 +1336,37 @@ const TITLE_MAP = {
   customPrompt: "Custom Prompt",
   scenarioRationale: "Scenario Rationale & Teaching Tips",
 };
+
+// Student mode folds everything after The Call until the student has made their decisions.
+const STUDENT_LOCKED_GROUPS = ["What Was Happening", "Expected Management", "Teaching Points", "Self-Assessment"];
+const STUDENT_MODE_KEY = "vn.studentMode";
+const RECENT_KEY = "vn.recentScenarios";
+const RECENT_MAX = 10;
+
+const isBlankValue = (v) =>
+  v === undefined || v === null || (typeof v === "string" && v.trim() === "") ||
+  (Array.isArray(v) && v.every(isBlankValue)) ||
+  (typeof v === "object" && !Array.isArray(v) && Object.values(v).every(isBlankValue));
+
+// Browser storage can be blocked (private windows, strict settings). Nothing here depends on it working.
+const readStore = (key, fallback) => {
+  try {
+    const raw = window.localStorage.getItem(key);
+    return raw === null ? fallback : JSON.parse(raw);
+  } catch (e) {
+    return fallback;
+  }
+};
+const writeStore = (key, value) => {
+  try {
+    window.localStorage.setItem(key, JSON.stringify(value));
+    return true;
+  } catch (e) {
+    return false;
+  }
+};
+
+const groupId = (name) => "group-" + name.toLowerCase().replace(/[^a-z]+/g, "-");
 
 const ScenarioForm = () => {
   const [scenario, setScenario] = useState(null);
@@ -1484,6 +1515,12 @@ const ScenarioForm = () => {
 
   const [error, setError] = useState("");
   const [acrBusy, setAcrBusy] = useState(false);
+  const [studentMode, setStudentMode] = useState(() => readStore(STUDENT_MODE_KEY, true) !== false);
+  const [recent, setRecent] = useState(() => {
+    const saved = readStore(RECENT_KEY, []);
+    return Array.isArray(saved) ? saved : [];
+  });
+  const outputRef = useRef(null);
   const [collapsedSections, setCollapsedSections] = useState({});
   const [isMobile, setIsMobile] = useState(() =>
     typeof window !== "undefined" ? window.matchMedia("(max-width: 900px)").matches : false
@@ -1718,6 +1755,8 @@ const ScenarioForm = () => {
   };
 
   const formatLabel = (label) => {
+    const special = { headNeck: "Head/Neck", backPelvis: "Back/Pelvis" };
+    if (special[label]) return special[label];
     const normalized = String(label || "")
       .replace(/[_-]+/g, " ")
       .replace(/([a-z0-9])([A-Z])/g, "$1 $2")
@@ -1736,15 +1775,76 @@ const ScenarioForm = () => {
       ["iv", "IV"]
     ]);
 
+    const small = new Set(["and", "or", "of", "to", "the", "in", "on", "with", "for"]);
     return normalized
       .split(" ")
-      .map((word) => {
+      .map((word, i) => {
         const lower = word.toLowerCase();
         if (acronyms.has(lower)) return acronyms.get(lower);
+        if (i > 0 && small.has(lower)) return lower;
         return lower.charAt(0).toUpperCase() + lower.slice(1);
       })
       .join(" ");
   };
+
+  useEffect(() => {
+    writeStore(STUDENT_MODE_KEY, studentMode);
+  }, [studentMode]);
+
+  // A new (or reopened) scenario starts folded after The Call in student mode, fully open otherwise.
+  useEffect(() => {
+    if (!scenario) return;
+    setCollapsedSections(studentMode ? Object.fromEntries(STUDENT_LOCKED_GROUPS.map((g) => [g, true])) : {});
+  }, [scenario, studentMode]);
+
+  // Bring the new scenario into view (on a phone it's below the whole form).
+  useEffect(() => {
+    if (scenario && outputRef.current) outputRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [scenario]);
+
+  const saveRecent = (generated, usedForm) => {
+    const entry = {
+      id: Date.now().toString(36),
+      savedAt: new Date().toISOString(),
+      title: generated.title || "Untitled scenario",
+      formData: usedForm,
+      scenario: generated,
+    };
+    setRecent((prev) => {
+      let next = [entry, ...prev].slice(0, RECENT_MAX);
+      while (next.length && !writeStore(RECENT_KEY, next)) next = next.slice(0, -1);
+      return next;
+    });
+  };
+
+  const restoreRecent = (entry) => {
+    if (loading || !entry || !entry.scenario) return;
+    setFormData((prev) => ({ ...prev, ...(entry.formData || {}) }));
+    setSelectedECGImage(null);
+    setError("");
+    setScenario(entry.scenario);
+  };
+
+  const clearRecent = () => {
+    setRecent([]);
+    writeStore(RECENT_KEY, []);
+  };
+
+  const showRunSheet = () => {
+    if (!scenario) return;
+    if (!openRunSheet(scenario, formData)) setError("Your browser blocked the run sheet. Allow pop-ups for this site and try again.");
+  };
+
+  const jumpTo = (groupName) => {
+    setCollapsedSections((prev) => ({ ...prev, [groupName]: false }));
+    const el = document.getElementById(groupId(groupName));
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
+  // Enabled actions stay orange; unavailable ones go quiet instead of looking broken.
+  const actionStyle = (enabled) => (enabled
+    ? { ...styles.toggle, cursor: "pointer" }
+    : { ...styles.toggle, background: "transparent", border: "1px solid var(--vn-header-pill-border)", color: "var(--vn-header-pill-text)", boxShadow: "none", opacity: 0.55, cursor: "not-allowed" });
 
   const toggleSection = (section) => {
     setCollapsedSections((prev) => ({
@@ -2025,6 +2125,7 @@ const ScenarioForm = () => {
       }
 
       setScenario(generated);
+      saveRecent(generated, { ...formData });
     } catch (err) {
       if (axios.isCancel(err) || err?.name === "CanceledError" || err?.code === "ERR_CANCELED") {
         // User cancelled - silently dismiss
@@ -2504,15 +2605,18 @@ const ScenarioForm = () => {
         resourceUtilization: "Resource Utilization",
         communication: "Communication",
       };
-      const scoreLabels = { "3": "Score 3 — Unsafe to Borderline", "5": "Score 5 — Competent", "7": "Score 7 — Exceptional" };
+      const scoreLabels = { "1": "Score 1: Unsafe", "3": "Score 3: Unsafe to borderline", "5": "Score 5: Competent", "7": "Score 7: Exceptional" };
       const scoreColors = {
+        "1": { bg: "transparent", border: "var(--vn-border)", label: "var(--vn-error-text)" },
         "3": { bg: "transparent", border: "var(--vn-border)", label: "var(--vn-muted-text)" },
         "5": { bg: "transparent", border: "var(--vn-border)", label: "var(--vn-muted-text)" },
         "7": { bg: "transparent", border: "var(--vn-border)", label: "var(--vn-accent-text)" },
       };
       return (
         <div>
-          {Object.entries(data).map(([domain, scores]) => (
+          {Object.entries(data)
+            .filter(([, scores]) => scores && ["1", "3", "5", "7"].some((sc) => Array.isArray(scores[sc]) && scores[sc].length))
+            .map(([domain, scores]) => (
             <div key={domain} style={{ marginBottom: "1.25rem" }}>
               <div style={{
                 fontSize: "0.95rem",
@@ -2525,7 +2629,7 @@ const ScenarioForm = () => {
               }}>
                 {domainLabels[domain] || domain}
               </div>
-              {["3", "5", "7"].map((score) => {
+              {["1", "3", "5", "7"].map((score) => {
                 const bullets = Array.isArray(scores[score]) ? scores[score] : [];
                 if (!bullets.length) return null;
                 const colors = scoreColors[score] || scoreColors["5"];
@@ -2571,7 +2675,7 @@ const ScenarioForm = () => {
     if (typeof data === "object" && data !== null) {
       return (
         <ul style={{ paddingLeft: "1rem", marginTop: "0.5rem" }}>
-          {Object.entries(data).map(([key, value], index) => {
+          {Object.entries(data).filter(([, value]) => !isBlankValue(value)).map(([key, value], index) => {
             const contextKey = `${parentKey}-${key}`;
 
             if (
@@ -3121,12 +3225,21 @@ const ScenarioForm = () => {
           </button>
           <button
             type="button"
+            onClick={() => setStudentMode((v) => !v)}
+            style={styles.shiftToggle}
+            className="a11y-focus"
+            aria-pressed={studentMode}
+            title={studentMode
+              ? "Student mode is on: the answers stay folded until you've made your decisions. Click for instructor mode."
+              : "Instructor mode: everything is open. Click for student mode."}
+          >
+            <FaUserGraduate aria-hidden="true" />
+            <span>{studentMode ? "Student mode" : "Instructor mode"}</span>
+          </button>
+          <button
+            type="button"
             onClick={handleReset}
-            style={{
-              ...styles.toggle,
-              opacity: canReset ? 1 : 0.6,
-              cursor: canReset ? "pointer" : "not-allowed"
-            }}
+            style={actionStyle(canReset)}
             className="a11y-focus"
             disabled={!canReset}
             title="Reset all form fields and clear the current scenario"
@@ -3136,11 +3249,7 @@ const ScenarioForm = () => {
           </button>
           <button
             onClick={exportToPDF}
-            style={{
-              ...styles.toggle,
-              opacity: scenario ? 1 : 0.6,
-              cursor: scenario ? "pointer" : "not-allowed"
-            }}
+            style={actionStyle(Boolean(scenario))}
             className="a11y-focus"
             disabled={!scenario}
             title={scenario ? "Export current scenario to PDF" : "Generate a scenario first to enable export"}
@@ -3149,12 +3258,18 @@ const ScenarioForm = () => {
           </button>
           <button
             type="button"
+            onClick={showRunSheet}
+            style={actionStyle(Boolean(scenario))}
+            className="a11y-focus"
+            disabled={!scenario}
+            title={scenario ? "Open a printable run sheet for running this call in lab" : "Generate a scenario first"}
+          >
+            <FaClipboardList /> Run sheet
+          </button>
+          <button
+            type="button"
             onClick={downloadPracticeAcr}
-            style={{
-              ...styles.toggle,
-              opacity: scenario && !acrBusy ? 1 : 0.6,
-              cursor: scenario && !acrBusy ? "pointer" : "not-allowed"
-            }}
+            style={actionStyle(Boolean(scenario) && !acrBusy)}
             className="a11y-focus"
             disabled={!scenario || acrBusy}
             title={scenario ? "Download a Practice ACR pre-filled with this call's dispatch details, for ACR Review" : "Generate a scenario first"}
@@ -3199,6 +3314,35 @@ const ScenarioForm = () => {
 
             {error && <p style={styles.error}>{error}</p>}
           </div>
+
+          {scenario && (
+            <nav className="side-card" aria-label="Scenario sections">
+              <div className="side-card-title">Jump to</div>
+              {Object.keys(SECTION_GROUPS).map((g) => (
+                <button key={g} type="button" className="side-link a11y-focus" onClick={() => jumpTo(g)}>
+                  {g}{studentMode && collapsedSections[g] ? <span className="side-note"> (folded)</span> : null}
+                </button>
+              ))}
+            </nav>
+          )}
+
+          {recent.length > 0 && (
+            <details className="side-card">
+              <summary className="side-card-title">Recent scenarios ({recent.length})</summary>
+              <p className="side-note">Kept on this device only.</p>
+              {recent.map((r) => (
+                <button key={r.id} type="button" className="side-link a11y-focus" onClick={() => restoreRecent(r)} disabled={loading}>
+                  <span className="side-link-title">{r.title}</span>
+                  <span className="side-note">
+                    {[r.formData && r.formData.semester && `Sem ${r.formData.semester}`, r.formData && r.formData.type,
+                      new Date(r.savedAt).toLocaleString([], { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })]
+                      .filter(Boolean).join(" · ")}
+                  </span>
+                </button>
+              ))}
+              <button type="button" className="side-clear a11y-focus" onClick={clearRecent}>Clear the list</button>
+            </details>
+          )}
         </div>
 
         <div style={styles.rightPanel}>
@@ -3245,7 +3389,8 @@ const ScenarioForm = () => {
           )}
           {scenario && (
             <>
-            <div style={styles.outputBox}>
+            <div ref={outputRef} style={{ ...styles.outputBox, scrollMarginTop: isMobile ? "12px" : "90px" }}>
+              {scenario.title && <h2 className="scenario-output-title">{scenario.title}</h2>}
               {scenario.customPrompt && (
                 <div
                   style={{
@@ -3262,7 +3407,7 @@ const ScenarioForm = () => {
               )}
 
               {Object.entries(SECTION_GROUPS).map(([groupName, keys]) => (
-                <div key={groupName}>
+                <div key={groupName} id={groupId(groupName)} style={{ scrollMarginTop: isMobile ? "12px" : "90px" }}>
                   {groupName === "What Was Happening" && (
                     <div className="scenario-pause-card" style={{ marginTop: "1.25rem" }}>
                       <span className="scenario-pause-label">Pause Before Reading On</span>
@@ -3271,6 +3416,11 @@ const ScenarioForm = () => {
                         What is your working impression? What would you do next and why?
                         Write it down or say it out loud before reading on.
                       </p>
+                      {studentMode && STUDENT_LOCKED_GROUPS.some((g) => collapsedSections[g]) && (
+                        <button type="button" className="scenario-reveal-btn a11y-focus" onClick={() => setCollapsedSections({})}>
+                          I've made my decisions. Show the rest.
+                        </button>
+                      )}
                     </div>
                   )}
 
@@ -3532,12 +3682,12 @@ const buildStyles = (isMobile) => ({
     zIndex: 1,
     display: "flex",
     gap: "0.6rem",
-    flexWrap: "nowrap",
-    justifyContent: "flex-end",
-    flex: "0 0 auto",
+    flexWrap: isMobile ? "wrap" : "nowrap",
+    justifyContent: isMobile ? "flex-start" : "flex-end",
+    flex: isMobile ? "1 1 auto" : "0 0 auto",
     minWidth: 0,
-    overflowX: "auto",
-    overflowY: "hidden",
+    overflowX: isMobile ? "visible" : "auto",
+    overflowY: isMobile ? "visible" : "hidden",
   },
 
   shiftToggle: {
