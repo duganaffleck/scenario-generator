@@ -1393,14 +1393,6 @@ const ScenarioForm = () => {
   const [loading, setLoading] = useState(false);
   // Info section visibility: show only before scenario is generated
   const showInfoSection = !scenario && !loading;
-  const infoH2 = { marginTop: 0, color: 'var(--vn-orange, #f28c28)' };
-  const infoOl = { paddingLeft: '1.4em', margin: '0 0 1.2rem 0' };
-  const infoUl = { paddingLeft: '1.2em', margin: '0 0 1.2rem 0' };
-  const infoLi = { marginBottom: '0.5rem' };
-  const infoP = { margin: '0 0 1.2rem 0' };
-  const infoLink = { color: 'var(--vn-accent-text, #0d9488)', fontWeight: 700 };
-  const infoDetails = { margin: '0 0 1rem 0' };
-  const infoSummary = { cursor: 'pointer', fontSize: '1.5em', fontWeight: 700, color: 'var(--vn-orange, #f28c28)', margin: '0 0 0.8rem 0' };
   const [formData, setFormData] = useState({
     semester: "3",
     type: "Medical",
@@ -3383,67 +3375,74 @@ const ScenarioForm = () => {
 
         <div style={styles.rightPanel}>
           {showInfoSection && (
-            <section className="info-section" style={{
-              background: 'var(--vn-sky, #dff0f5)',
-              border: '1px solid var(--vn-border, #c7d9df)',
-              borderRadius: '1rem',
-              padding: '1.5rem 2rem',
-              marginBottom: '2rem',
-              width: '88%',
-              maxWidth: '1800px',
-              marginLeft: 'auto',
-              marginRight: 'auto',
-              boxShadow: '0 2px 12px rgba(18,48,71,0.06)'
-            }}>
-              <p style={{marginTop: 0, marginBottom: '1.2rem'}}>Ontario PCP simulation scenarios for lab and self-practice. Every scenario stays inside PCP scope, has a patient who responds to what you do, and comes with GRS anchors written for that call.</p>
+            <section className="landing" aria-labelledby="landing-lead">
+              <div className="landing-intro">
+                <p className="landing-eyebrow">Ontario PCP · ALS PCS v5.4</p>
+                <h2 id="landing-lead" className="landing-lead">Simulation scenarios for lab and self-practice.</h2>
+                <p className="landing-sub">Every call stays inside PCP scope, the patient responds to what you do, and the GRS anchors are written for that call.</p>
+              </div>
 
-              <h2 style={infoH2}>How to use it</h2>
-              <ol style={infoOl}>
-                <li style={infoLi}><b>Build the call.</b> Set the options and press Generate Scenario.</li>
-                <li style={infoLi}><b>Run it before you read it.</b> Student mode (the default) shows The Call and folds the answers. Make your decisions, then press <i>I've made my decisions. Show the rest.</i></li>
-                <li style={infoLi}><b>Chart it.</b> Press Practice ACR to download an ACR with this call's dispatch details filled in. Chart the rest in Adobe Acrobat Reader and press Check my ACR inside the form.</li>
-                <li style={infoLi}><b>Get feedback.</b> Upload the chart on <a href="#acr-review" style={infoLink}>ACR Review</a>. It knows which scenario the ACR came from and asks about anything that doesn't match.</li>
+              <h3 className="landing-h">How it works</h3>
+              <ol className="landing-steps">
+                <li className="landing-step">
+                  <span className="landing-step-num" aria-hidden="true">1</span>
+                  <h4>Build the call</h4>
+                  <p>Pick the options and press Generate Scenario.</p>
+                </li>
+                <li className="landing-step">
+                  <span className="landing-step-num" aria-hidden="true">2</span>
+                  <h4>Run it first</h4>
+                  <p>Student mode keeps the answers folded until you press <i>I've made my decisions.</i></p>
+                </li>
+                <li className="landing-step">
+                  <span className="landing-step-num" aria-hidden="true">3</span>
+                  <h4>Chart it</h4>
+                  <p>Download a Practice ACR with the dispatch filled in. Chart in Acrobat Reader and press Check my ACR.</p>
+                </li>
+                <li className="landing-step">
+                  <span className="landing-step-num" aria-hidden="true">4</span>
+                  <h4>Get feedback</h4>
+                  <p>Upload it on <a href="#acr-review">ACR Review</a>. It knows the scenario and asks about anything that doesn't match.</p>
+                </li>
               </ol>
 
-              <h2 style={infoH2}>What you get</h2>
-              <ul style={infoUl}>
-                <li style={infoLi}><b>The Call:</b> dispatch with its MPDS priority colour, the scene, the patient, history, exam and vital signs. Cardiac and other ECG-relevant calls include a 12-lead you can open.</li>
-                <li style={infoLi}><b>What Was Happening:</b> the clinical reasoning, and how the patient responds to good care, delayed care and the wrong care.</li>
-                <li style={infoLi}><b>Expected Management:</b> what the crew should do, and the directive reasons behind it.</li>
-                <li style={infoLi}><b>Teaching Points:</b> a short summary of what the case teaches, the debrief points, learning objectives, and what the instructor should watch for.</li>
-                <li style={infoLi}><b>Self-Assessment:</b> reflection questions and GRS anchors for all seven domains.</li>
-              </ul>
+              <h3 className="landing-h">What's in a scenario</h3>
+              <dl className="landing-parts">
+                <div><dt>The Call</dt><dd>Dispatch and priority colour, the scene, the patient, history, exam and vital signs. A 12-lead when the call needs one.</dd></div>
+                <div><dt>What Was Happening</dt><dd>The clinical reasoning, and how the patient responds to good care, delayed care and the wrong care.</dd></div>
+                <div><dt>Expected Management</dt><dd>What the crew should do, and the directive reasons behind it.</dd></div>
+                <div><dt>Teaching Points</dt><dd>A summary of the case, the debrief points, learning objectives, and what the instructor should watch for.</dd></div>
+                <div><dt>Self-Assessment</dt><dd>Reflection questions and GRS anchors for all seven domains.</dd></div>
+              </dl>
 
-              <h2 style={infoH2}>Reading the GRS</h2>
-              <p style={infoP}>Each domain has anchors at 3, 5 and 7. <b>3</b> is unsafe to borderline. <b>5</b> is competent, the expected standard for the semester. <b>7</b> is exceptional: anticipating, organized and calm. The anchors describe what that looked like on this call, so use them to place a performance between them, not as a checklist.</p>
+              <div className="landing-ref">
+                <details className="landing-acc">
+                  <summary>The options</summary>
+                  <dl className="landing-parts landing-parts-compact">
+                    <div><dt>Semester</dt><dd>2 is assessment and BLS care, no medications. 3 adds directive-based treatment and medication decisions. 4 expects integrated reasoning and prioritizing under pressure.</dd></div>
+                    <div><dt>Type</dt><dd>Medical, Trauma, Cardiac, Respiratory or Environmental.</dd></div>
+                    <div><dt>Environment</dt><dd>Where the call happens. It changes access, scene and transport.</dd></div>
+                    <div><dt>Complexity</dt><dd>Simple is one clear problem done well. Complex adds competing findings, gaps in the history and harder priorities.</dd></div>
+                    <div><dt>Scenario Friction</dt><dd>Clean keeps the scene simple. Pressured adds scene problems that change how you assess, package and move.</dd></div>
+                    <div><dt>Generation Depth</dt><dd>Quick Draft is faster, with one-line GRS anchors. Detailed gives fuller progression and reasoning, and anchors of two or three sentences.</dd></div>
+                    <div><dt>Instructor Prompt</dt><dd>Optional. Steer the call with a patient, a twist or a teaching focus. Specific works better than general.</dd></div>
+                  </dl>
+                </details>
+                <details className="landing-acc">
+                  <summary>The buttons</summary>
+                  <dl className="landing-parts landing-parts-compact">
+                    <div><dt>Night Shift</dt><dd>Dark mode, and calls set overnight.</dd></div>
+                    <div><dt>Student / Instructor mode</dt><dd>Student mode folds the answers until you've made your decisions. Instructor mode opens everything.</dd></div>
+                    <div><dt>Export</dt><dd>The whole scenario as a PDF.</dd></div>
+                    <div><dt>Run sheet</dt><dd>A printable page for running the call in lab: vitals by stage, patient responses, a timed treatment checklist, what to watch for, and the GRS.</dd></div>
+                    <div><dt>Practice ACR</dt><dd>An ACR for this call, ready to chart and upload to ACR Review.</dd></div>
+                    <div><dt>Reset</dt><dd>Clears the options and the scenario.</dd></div>
+                    <div><dt>Side panel</dt><dd>After you generate: Jump to for moving between sections, and your last ten scenarios, kept on this device only.</dd></div>
+                  </dl>
+                </details>
+              </div>
 
-              <details style={infoDetails}>
-              <summary style={infoSummary}>The options</summary>
-              <ul style={infoUl}>
-                <li style={infoLi}><b>Semester:</b> 2 is assessment and BLS care, no medications. 3 adds directive-based treatment and medication decisions. 4 expects integrated reasoning and prioritizing under pressure.</li>
-                <li style={infoLi}><b>Type:</b> Medical, Trauma, Cardiac, Respiratory or Environmental.</li>
-                <li style={infoLi}><b>Environment:</b> where the call happens. It changes access, scene and transport.</li>
-                <li style={infoLi}><b>Complexity:</b> Simple is one clear problem done well. Complex adds competing findings, gaps in the history and harder priorities.</li>
-                <li style={infoLi}><b>Scenario Friction:</b> Clean keeps the scene simple so the focus stays clinical. Pressured adds scene problems that change how you assess, package and move.</li>
-                <li style={infoLi}><b>Generation Depth:</b> Quick Draft is faster, with one-line GRS anchors. Detailed gives fuller progression and reasoning, and GRS anchors of two or three sentences.</li>
-                <li style={infoLi}><b>Instructor Prompt:</b> optional. Steer the call with a patient, a twist or a teaching focus. Specific works better than general.</li>
-              </ul>
-              </details>
-
-              <details style={infoDetails}>
-              <summary style={infoSummary}>The buttons</summary>
-              <ul style={infoUl}>
-                <li style={infoLi}><b>Night Shift:</b> dark mode, and calls set overnight.</li>
-                <li style={infoLi}><b>Student mode / Instructor mode:</b> student mode folds the answers until you have made your decisions. Instructor mode opens everything.</li>
-                <li style={infoLi}><b>Export:</b> the whole scenario as a PDF.</li>
-                <li style={infoLi}><b>Run sheet:</b> a printable page for running the call in lab: vitals by stage, how the patient responds, a treatment checklist with space for times, what to watch for, and the GRS.</li>
-                <li style={infoLi}><b>Practice ACR:</b> an ACR for this call, ready to chart and upload to ACR Review.</li>
-                <li style={infoLi}><b>Reset:</b> clears the options and the scenario.</li>
-              </ul>
-              <p style={infoP}>After you generate, the side panel has <b>Jump to</b> for moving between sections and <b>Recent scenarios</b>, your last ten, kept on this device only.</p>
-              </details>
-
-              <p style={{margin: 0, fontSize: '0.92rem', color: 'var(--vn-muted-text, #64707d)'}}>Scenarios are written by AI to the PCP directives in the Ontario ALS PCS v5.4, and auxiliary directives are labelled. Check doses and directive details against the current Ontario BLS and ALS PCS before you teach from them.</p>
+              <p className="landing-note">Scenarios are written by AI to the PCP directives in the Ontario ALS PCS v5.4, and auxiliary directives are labelled. Check doses and directive details against the current Ontario BLS and ALS PCS before you teach from them.</p>
             </section>
           )}
           {scenario && (
