@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Spectral:wght@600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap");
 
 :root {
   --vn-ink: #1f2933;
@@ -71,7 +71,7 @@
   --vn-cue-popover-text: #1f2937;
   --vn-cue-popover-label: #92400e;
   --vn-modal-bg: #ffffff;
-  --vn-font-heading: "Spectral", Georgia, serif;
+  --vn-font-heading: "Manrope", "Segoe UI", sans-serif;
   --vn-font-body: "Manrope", "Segoe UI", sans-serif;
 }
 
@@ -278,7 +278,9 @@ body {
   margin: 0;
   color: var(--vn-hero-heading);
   font-family: var(--vn-font-heading);
-  font-size: clamp(1.36rem, 2vw, 2rem);
+  font-size: clamp(1.36rem, 2vw, 1.9rem);
+  font-weight: 800;
+  letter-spacing: -0.025em;
   line-height: 1.15;
 }
 
@@ -500,7 +502,7 @@ html[data-theme="night"] .scenario-pause-card p {
   outline-offset: 2px;
 }
 
-/* Spectral font for phase group titles */
+/* Phase group titles */
 .scenario-phase-title {
   font-family: var(--vn-font-body);
   font-weight: 800;
@@ -513,6 +515,8 @@ html[data-theme="night"] .scenario-pause-card p {
   margin: 0 0 0.25rem;
   font-family: var(--vn-font-heading);
   font-size: clamp(1.25rem, 2.2vw, 1.7rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
   color: var(--vn-ink);
   line-height: 1.2;
 }
@@ -615,8 +619,9 @@ html[data-theme="night"] .scenario-pause-card p {
 .landing-lead {
   margin: 0 0 0.6rem;
   font-family: var(--vn-font-heading);
-  font-size: clamp(1.55rem, 2.4vw, 2.1rem);
-  font-weight: 600;
+  font-size: clamp(1.55rem, 2.4vw, 2.05rem);
+  font-weight: 800;
+  letter-spacing: -0.025em;
   line-height: 1.2;
   color: var(--vn-ink);
 }
@@ -947,3 +952,6 @@ body.vn-sirens::before {
 @media (prefers-reduced-motion: reduce) {
   body.vn-sirens::before, .brand-logo-flatline, .vn-toast { animation: none; }
 }
+
+/* Form controls don't inherit the page font by default; without this they fall back to Arial. */
+button, input, select, textarea { font-family: inherit; }
