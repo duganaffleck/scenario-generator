@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import jsPDF from "jspdf";
 import { FaSpinner, FaFilePdf, FaFileMedical, FaClipboardList, FaUserGraduate, FaMoon, FaSun, FaUndoAlt, FaLink } from "react-icons/fa";
-import { downloadScenarioAcr, errorMessage } from "../acr/acrApi";
+import { ACR_FORM_VERSION, downloadScenarioAcr, errorMessage } from "../acr/acrApi";
 import { openRunSheet } from "../runsheet/runSheet";
 import { RhythmStripSVG, TwelveLeadSVG } from "../ecg/EcgViews";
 import { showToast } from "../toast/Toast";
@@ -1083,7 +1083,9 @@ const ScenarioForm = () => {
     setAcrBusy(true);
     setError("");
     try {
-      await downloadScenarioAcr(scenario);
+      const { formVersion } = await downloadScenarioAcr(scenario);
+      if (formVersion === ACR_FORM_VERSION) showToast(`Practice ACR v${formVersion} downloaded. Open it in Adobe Acrobat Reader.`);
+      else setError(`The server sent an older Practice ACR${formVersion ? ` (v${formVersion})` : ""}, not v${ACR_FORM_VERSION}: the backend on Render is running an older build and needs redeploying. Until then, use the blank v${ACR_FORM_VERSION} form on ACR Review.`);
     } catch (err) {
       setError(await errorMessage(err, "Couldn't build the practice ACR. Try again in a minute."));
     } finally {

@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 // End-to-end tests in mock mode. Run: node test/run.js
 // Run from the backend folder: node acr-review/test/run.js
 // ajv is only needed here. If it isn't installed, the schema check is skipped.
@@ -189,6 +190,14 @@ async function edit(file, changes) {
   const fb = await post(port, { practiceConfirm: 'yes' }, fs.readFileSync(T('ACR_find_the_errors.pdf')));
   ok(fb.status === 200 && fb.body.feedback.meta.mode === 'fallback' && fb.body.feedback.fixes.length > 0, 'AI reviewer unavailable: student still gets rule-based feedback');
   process.env.ACR_REVIEW_MODE = 'mock'; if (savedKey) process.env.OPENAI_API_KEY = savedKey;
+
+  // One form everywhere: the server's template, the site's versioned blank, and the old URL kept for existing links.
+  const root = path.join(__dirname, '..', '..', '..');
+  const siteVersion = (fs.readFileSync(path.join(root, 'client', 'src', 'components', 'acr', 'acrApi.js'), 'utf8').match(/ACR_FORM_VERSION = "([^"]+)"/) || [])[1];
+  ok(cfg.formVersion === siteVersion && /^\d+\.\d+$/.test(String(siteVersion)), `server reports the form version the site ships (server ${cfg.formVersion}, site ${siteVersion})`);
+  const copies = [path.join(root, 'server', 'acr-review', 'assets', 'ACR_practice_v3.pdf'), path.join(root, 'client', 'public', 'acr', `ACR_practice_v${siteVersion}.pdf`), path.join(root, 'client', 'public', 'acr', 'ACR_practice_v3.pdf')];
+  const hashes = copies.map((p) => (fs.existsSync(p) ? crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex') : 'missing'));
+  ok(hashes.every((h) => h !== 'missing' && h === hashes[0]), 'blank Practice ACR is identical on the server and the site');
 
   server.close();
   console.log(failed ? `\n${failed} FAILED` : '\nall passed');

@@ -12,6 +12,19 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const TEMPLATE = path.join(__dirname, '..', 'assets', 'ACR_practice_v3.pdf');
 export const LINK_FIELD = 'Scenario Link';
 
+// The version printed in the template's title ("Practice Ambulance Call Report v3.4"), read once.
+// Reported by /config and on every pre-filled ACR, so an out-of-date server shows up on screen.
+let versionPromise;
+export function templateVersion() {
+  if (!versionPromise) {
+    versionPromise = fs.promises.readFile(TEMPLATE)
+      .then((bytes) => PDFDocument.load(bytes, { updateMetadata: false }))
+      .then((pdf) => ((pdf.getTitle() || '').match(/v(\d+(?:\.\d+)*)/) || [])[1] || 'unknown')
+      .catch(() => 'unknown');
+  }
+  return versionPromise;
+}
+
 /**
  * Fill fields by their exact PDF names. Unknown names throw, so schema drift shows up at once instead of as blank boxes.
  * A value a dropdown doesn't offer is skipped (returned in `skipped`) rather than failing the whole download.
