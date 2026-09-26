@@ -89,6 +89,10 @@ const ECG_WHITELIST = [
   'Normal Sinus Rhythm',
   'Sinus Bradycardia',
   'Sinus Tachycardia',
+  'Sinus Rhythm with PVCs',
+  'Junctional Rhythm',
+  'Idioventricular Rhythm',
+  'Paced Rhythm',
   'Atrial Fibrillation',
   'Atrial Flutter',
   'SVT',
@@ -455,6 +459,31 @@ function normalizeClinicalReasoning(value) {
   };
 }
 
+// Close variants ("Paced", "NSR with PVCs", "Wenckebach") map onto the whitelist name; anything else is dropped.
+function mapRhythmVariant(label) {
+  const r = String(label || '').toLowerCase().replace(/[\s_-]+/g, ' ').trim();
+  if (!r) return '';
+  if (r.includes('pvc') || r.includes('premature ventricular')) return 'Sinus Rhythm with PVCs';
+  if (r.includes('ventricular tach') || r === 'vtach' || r === 'v tach') return 'Ventricular Tachycardia';
+  if (r.includes('ventricular fib') || r === 'vfib' || r === 'v fib') return 'Ventricular Fibrillation';
+  if (r.includes('idioventricular')) return 'Idioventricular Rhythm';
+  if (r.includes('paced') || r.includes('pacemaker')) return 'Paced Rhythm';
+  if (r.includes('junctional')) return 'Junctional Rhythm';
+  if (r.includes('atrial fib') || r === 'afib' || r === 'a fib') return 'Atrial Fibrillation';
+  if (r.includes('flutter')) return 'Atrial Flutter';
+  if (r.includes('pulseless electrical') || r === 'pea') return 'Pulseless Electrical Activity';
+  if (r.includes('asystole')) return 'Asystole';
+  if (r.includes('third degree') || r.includes('complete heart block')) return 'Third Degree AV Block';
+  if (r.includes('second degree') && (r.includes('type ii') || r.includes('mobitz ii'))) return 'Second Degree AV Block Type II';
+  if (r.includes('second degree') || r.includes('wenckebach') || r.includes('mobitz i')) return 'Second Degree AV Block Type I';
+  if (r.includes('first degree')) return 'First Degree AV Block';
+  if (r.includes('supraventricular') || r === 'svt') return 'SVT';
+  if (r.includes('sinus tach')) return 'Sinus Tachycardia';
+  if (r.includes('sinus brad')) return 'Sinus Bradycardia';
+  if (r.includes('normal sinus') || r === 'nsr' || r === 'sinus rhythm') return 'Normal Sinus Rhythm';
+  return '';
+}
+
 function sanitizeVitalSet(raw = {}, ecgInterpretation = '') {
   const set = { ...defaultVitalSet(), ...(raw && typeof raw === 'object' ? raw : {}) };
 
@@ -463,7 +492,7 @@ function sanitizeVitalSet(raw = {}, ecgInterpretation = '') {
   }
 
   if (set.ecgInterpretation && !ECG_WHITELIST.includes(set.ecgInterpretation)) {
-    set.ecgInterpretation = '';
+    set.ecgInterpretation = mapRhythmVariant(set.ecgInterpretation);
   }
 
   if (set.ecgInterpretation && set.hr) {
@@ -2456,6 +2485,10 @@ ${ECG_WHITELIST.map((item) => `- ${item}`).join('\n')}
 - Use First Degree AV Block, Second Degree AV Block Type I, Second Degree AV Block Type II, or Third Degree AV Block when the presentation involves bradycardia, syncope, near-syncope, medication toxicity such as beta blocker or calcium channel blocker overdose, or known conduction disease.
 - Use Ventricular Fibrillation or Asystole only in cardiac arrest scenarios.
 - Use Pulseless Electrical Activity only in cardiac arrest with organized rhythm but no pulse.
+- Use Paced Rhythm for a patient with a pacemaker whose rhythm is paced: pacer spikes before wide complexes, usually at the programmed rate (often 60 to 70). Put the pacemaker in pastMedicalHistory.
+- Use Sinus Rhythm with PVCs when premature ventricular beats matter to the case (ischemia, electrolytes, stimulants). The HR is the underlying sinus rate.
+- Use Junctional Rhythm for a regular narrow rhythm at 40 to 60 with absent or inverted P waves (digoxin or beta blocker excess, sick sinus, post-ischemia).
+- Use Idioventricular Rhythm for a slow wide rhythm at 20 to 40 with no P waves, most often right after ROSC. At 40 to 100 it is accelerated idioventricular.
 - Default to Normal Sinus Rhythm, Sinus Tachycardia, or Sinus Bradycardia for all other presentations where no specific dysrhythmia is clinically indicated.
 
 Also return a top-level ecgFindings object with these fields:
@@ -2465,7 +2498,8 @@ Also return a top-level ecgFindings object with these fields:
 - When the scenario involves hyperkalemia, missed dialysis, or peaked T waves from electrolyte disturbance, you MUST set ecgType to "12-lead" and populate twelveLeadFindings describing peaked narrow T waves in precordial leads, any PR prolongation, QRS widening, P wave flattening, and clinical context. Do not leave ecgFindings or twelveLeadFindings blank for these presentations.
 - fifteenLeadFindings: describe right-sided or posterior lead findings when ecgType is "15-lead". Focus on RV involvement, posterior changes, or right-sided ST changes. Leave empty string if ecgType is "rhythm" or "12-lead".
 - ecgClinicalNote: one sentence connecting the ECG findings to the clinical presentation and treatment decisions.
-- patternKey: one of these exact string values matching the pattern this 12-lead represents: normal, lvhStrain, inferiorSTEMI, anteriorSTEMI, lateralSTEMI, inferolateralSTEMI, highLateralSTEMI, lbbb, rbbb, afib12, vtach12, inferiorRV, posterior, wellens, deWinter, pericarditis, hyperkalemia, svt12, atrialFlutter12, firstDegreeAVBlock, secondDegreeTypeI, secondDegreeTypeII, thirdDegreeAVBlock. This must match the actual ECG pattern described in twelveLeadFindings. Leave as empty string only if ecgType is rhythm.
+- patternKey: one of these exact string values matching the pattern this 12-lead represents: normal, lvhStrain, stDepression, inferiorSTEMI, anteriorSTEMI, lateralSTEMI, inferolateralSTEMI, highLateralSTEMI, lbbb, rbbb, afib12, vtach12, inferiorRV, posterior, wellens, deWinter, pericarditis, hyperkalemia, svt12, atrialFlutter12, firstDegreeAVBlock, secondDegreeTypeI, secondDegreeTypeII, thirdDegreeAVBlock. This must match the actual ECG pattern described in twelveLeadFindings. Leave as empty string only if ecgType is rhythm.
+- Use patternKey stDepression for ischemic ST depression without STEMI (the NSTEMI or unstable angina picture), which may include ST elevation in aVR only. Serial 12-leads matter here.
 - Use patternKey lvhStrain for left ventricular hypertrophy with a strain pattern and no STEMI. Describe it as a STEMI mimic in twelveLeadFindings.
 - Do not leave rhythmInterpretation blank on any call that has an ECG value in vitalSigns.
 - Do not generate 12-lead or 15-lead findings for isolated trauma without medical concern.
