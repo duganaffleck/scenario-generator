@@ -1,10 +1,10 @@
 html {
+  overflow-y: auto;
   scrollbar-gutter: stable;
 }
 
 body {
   margin: 0;
-  overflow-y: scroll;
   font-family: var(--vn-font-body, "Manrope", "Segoe UI", sans-serif);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
