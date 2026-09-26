@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import jsPDF from "jspdf";
-import { FaSpinner, FaFilePdf, FaFileMedical, FaClipboardList, FaUserGraduate, FaMoon, FaSun, FaUndoAlt } from "react-icons/fa";
+import { FaSpinner, FaFilePdf, FaFileMedical, FaClipboardList, FaUserGraduate, FaMoon, FaSun, FaUndoAlt, FaLink } from "react-icons/fa";
 import { downloadScenarioAcr, errorMessage } from "../acr/acrApi";
 import { openRunSheet } from "../runsheet/runSheet";
+import { showToast } from "../toast/Toast";
+import { buildShareLink, canShareLinks, clearSharedHash, hasSharedScenario, readSharedScenario } from "../../utils/shareLink";
 
 // Simple confetti effect (no external lib)
 function Confetti() {
@@ -1388,21 +1390,40 @@ const writeStore = (key, value) => {
 
 const groupId = (name) => "group-" + name.toLowerCase().replace(/[^a-z]+/g, "-");
 
+const API_BASE = process.env.REACT_APP_API_BASE_URL || "http://localhost:10000";
+const DEFAULT_FORM = {
+  semester: "3",
+  type: "Medical",
+  environment: "Urban",
+  complexity: "Simple",
+  generationDepth: "Quick Draft",
+  scenarioFriction: "Clean",
+  shiftMode: "Day Shift",
+  customPrompt: "",
+};
+// The last-used options come back next visit (not the instructor prompt). Unknown values fall back to defaults.
+const LAST_FORM_KEY = "vn.lastForm";
+const FORM_CHOICES = {
+  semester: SEMESTERS, type: SCENARIO_TYPES, environment: ENVIRONMENTS, complexity: COMPLEXITIES,
+  generationDepth: GENERATION_DEPTHS, scenarioFriction: SCENARIO_FRICTION_LEVELS, shiftMode: ["Day Shift", "Night Shift"],
+};
+const pickChoices = (source) => Object.fromEntries(
+  Object.entries(FORM_CHOICES)
+    .filter(([k, allowed]) => source && allowed.includes(source[k]))
+    .map(([k]) => [k, source[k]])
+);
+const loadInitialForm = () => ({ ...DEFAULT_FORM, ...pickChoices(readStore(LAST_FORM_KEY, {})) });
+const formatElapsed = (sec) => `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, "0")}`;
+
 const ScenarioForm = () => {
   const [scenario, setScenario] = useState(null);
   const [loading, setLoading] = useState(false);
   // Info section visibility: show only before scenario is generated
   const showInfoSection = !scenario && !loading;
-  const [formData, setFormData] = useState({
-    semester: "3",
-    type: "Medical",
-    environment: "Urban",
-    complexity: "Simple",
-    generationDepth: "Quick Draft",
-    scenarioFriction: "Clean",
-    shiftMode: "Day Shift",
-    customPrompt: "",
-  });
+  const [formData, setFormData] = useState(loadInitialForm);
+  const [elapsed, setElapsed] = useState(0);
+  const sessionCalls = useRef(0);
+  const qWordSeen = useRef(false);
 
   const [selectedECGImage, setSelectedECGImage] = useState(null);
   const [birthdayMode, setBirthdayMode] = useState(false);
@@ -1552,15 +1573,7 @@ const ScenarioForm = () => {
   const shiftToggleTitle = isNightShift
     ? "Switch to Day Shift: brighter theme and daytime call flavor"
     : "Switch to Night Shift: dark theme and overnight call flavor";
-  const isFormModified = 
-    formData.semester !== "3" ||
-    formData.type !== "Medical" ||
-    formData.environment !== "Urban" ||
-    formData.complexity !== "Simple" ||
-    formData.scenarioFriction !== "Clean" ||
-    formData.generationDepth !== "Quick Draft" ||
-    formData.shiftMode !== "Day Shift" ||
-    formData.customPrompt !== "";
+  const isFormModified = Object.keys(DEFAULT_FORM).some((k) => formData[k] !== DEFAULT_FORM[k]);
   const canReset = scenario || isFormModified;
   const styles = buildStyles(isMobile);
 
@@ -1658,15 +1671,8 @@ const ScenarioForm = () => {
     };
   }, []);
 
-  useEffect(() => {
-    document.body.style.overflowY = "auto";
-    document.documentElement.style.overflowY = "auto";
-
-    return () => {
-      document.body.style.overflowY = "";
-      document.documentElement.style.overflowY = "";
-    };
-  }, []);
+  // Only the page root scrolls. If body also gets an overflow value it becomes its own scroll box,
+  // and nothing pinned with position: sticky (header, scenario bar, form) stays put.
 
 
   useEffect(() => {
@@ -1816,6 +1822,52 @@ const ScenarioForm = () => {
     writeStore(STUDENT_MODE_KEY, studentMode);
   }, [studentMode]);
 
+  useEffect(() => {
+    writeStore(LAST_FORM_KEY, pickChoices(formData));
+  }, [formData]);
+
+  // Elapsed time while generating, so the wait is honest.
+  useEffect(() => {
+    if (!loading) { setElapsed(0); return undefined; }
+    const started = Date.now();
+    const t = setInterval(() => setElapsed(Math.floor((Date.now() - started) / 1000)), 1000);
+    return () => clearInterval(t);
+  }, [loading]);
+
+  // Wake the server when the page opens. On Render's free plan it sleeps when idle, and waking it now
+  // means it is usually ready by the time someone presses Generate. One request per page visit, nothing scheduled.
+  useEffect(() => {
+    fetch(`${API_BASE}/`, { mode: "no-cors", cache: "no-store" }).catch(() => {});
+  }, []);
+
+  // Open a shared scenario link (#s=...), on load or when one is pasted into the address bar.
+  useEffect(() => {
+    const openShared = async () => {
+      if (!hasSharedScenario()) return;
+      try {
+        const shared = await readSharedScenario();
+        setFormData((prev) => ({ ...prev, ...pickChoices(shared.formData) }));
+        setSelectedECGImage(null);
+        setError("");
+        setScenario(shared.scenario);
+        showToast("Shared scenario opened.");
+      } catch (e) {
+        setError(e.message);
+      }
+    };
+    openShared();
+    window.addEventListener("hashchange", openShared);
+    return () => window.removeEventListener("hashchange", openShared);
+  }, []);
+
+  // Easter egg: the Q word.
+  useEffect(() => {
+    if (!qWordSeen.current && /\bquiet\b/i.test(formData.customPrompt)) {
+      qWordSeen.current = true;
+      showToast("You said the Q word. The tones are already dropping.");
+    }
+  }, [formData.customPrompt]);
+
   // A new (or reopened) scenario starts folded after The Call in student mode, fully open otherwise.
   useEffect(() => {
     if (!scenario) return;
@@ -1855,6 +1907,21 @@ const ScenarioForm = () => {
     writeStore(RECENT_KEY, []);
   };
 
+  const shareScenario = async () => {
+    if (!scenario) return;
+    if (!canShareLinks()) {
+      setError("This browser can't make scenario links. Try a current version of Chrome, Edge, Firefox or Safari, or share the PDF.");
+      return;
+    }
+    const link = await buildShareLink(scenario, formData);
+    try {
+      await navigator.clipboard.writeText(link);
+      showToast("Link copied. Anyone who opens it gets this scenario, and new visitors start in student mode.", 6000);
+    } catch (e) {
+      window.prompt("Copy this link:", link);
+    }
+  };
+
   const showRunSheet = () => {
     if (!scenario) return;
     if (!openRunSheet(scenario, formData)) setError("Your browser blocked the run sheet. Allow pop-ups for this site and try again.");
@@ -1865,11 +1932,6 @@ const ScenarioForm = () => {
     const el = document.getElementById(groupId(groupName));
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
   };
-
-  // Enabled actions stay orange; unavailable ones go quiet instead of looking broken.
-  const actionStyle = (enabled) => (enabled
-    ? { ...styles.toggle, cursor: "pointer" }
-    : { ...styles.toggle, background: "transparent", border: "1px solid var(--vn-header-pill-border)", color: "var(--vn-header-pill-text)", boxShadow: "none", opacity: 0.55, cursor: "not-allowed" });
 
   const toggleSection = (section) => {
     setCollapsedSections((prev) => ({
@@ -1885,16 +1947,8 @@ const ScenarioForm = () => {
   };
 
   const handleReset = () => {
-    setFormData({
-      semester: "3",
-      type: "Medical",
-      environment: "Urban",
-      complexity: "Simple",
-      generationDepth: "Quick Draft",
-      scenarioFriction: "Clean",
-      shiftMode: "Day Shift",
-        customPrompt: "",
-    });
+    clearSharedHash();
+    setFormData({ ...DEFAULT_FORM });
     setScenario(null);
     setSelectedECGImage(null);
     setCollapsedSections({});
@@ -2131,11 +2185,12 @@ const ScenarioForm = () => {
     setError("");
     setScenario(null);
     setSelectedECGImage(null);
+    clearSharedHash();
 
     const controller = new AbortController();
     abortControllerRef.current = controller;
 
-    const baseURL = process.env.REACT_APP_API_BASE_URL || "http://localhost:10000";
+    const baseURL = API_BASE;
     const payload = {
       ...formData,
       includeTeachingCues: false,
@@ -2151,6 +2206,9 @@ const ScenarioForm = () => {
 
       setScenario(generated);
       saveRecent(generated, { ...formData });
+      sessionCalls.current += 1;
+      if (new Date().getHours() === 3) showToast("0300. Of course it's a call.");
+      else if (sessionCalls.current === 10) showToast("Ten calls this session. Eat something. Drink some water. Then run another.", 6000);
     } catch (err) {
       if (axios.isCancel(err) || err?.name === "CanceledError" || err?.code === "ERR_CANCELED") {
         // User cancelled - silently dismiss
@@ -2788,12 +2846,35 @@ const ScenarioForm = () => {
     return <span>{String(data)}</span>;
   };
 
+  // Short option sets as a row of buttons: every choice and the current one visible at a glance.
+  const renderChoice = (label, name, options, currentValue) => (
+    <div style={styles.fieldRow}>
+      <span className="choice-label" id={`choice-${name}`}>{label}</span>
+      <div className="choice-group" role="radiogroup" aria-labelledby={`choice-${name}`}>
+        {options.map((opt) => (
+          <button
+            key={opt}
+            type="button"
+            role="radio"
+            aria-checked={currentValue === opt}
+            className="choice-btn a11y-focus"
+            onClick={() => setFormData((prev) => ({ ...prev, [name]: opt }))}
+            disabled={loading}
+          >
+            {opt}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+
   const renderPillGroup = (label, options, currentValue, onChange) => {
     if (!USE_PILL_TOGGLES) {
       return (
         <div style={styles.fieldRow}>
-          <label style={styles.pillLabel}>{label}</label>
+          <label style={styles.pillLabel} htmlFor={`select-${label.toLowerCase().replace(/\s+/g, "-")}`}>{label}</label>
           <select
+            id={`select-${label.toLowerCase().replace(/\s+/g, "-")}`}
             style={styles.select}
             value={currentValue}
             onChange={(e) => onChange(e.target.value)}
@@ -2910,69 +2991,35 @@ const ScenarioForm = () => {
         { key: 'bgl',  label: 'BGL' },
         { key: 'temp', label: 'Temp' },
       ];
+      // One table, a column per stage, so the trend reads across the row.
+      const rows = vitalFields.filter((f) => sets.some((set) => set.data?.[f.key]));
       return (
         <div style={{ ...styles.card }} key="vitalSigns">
           <h3 className="scenario-section-h2">Vital Signs</h3>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            {sets.map((set, si) => (
-              <div key={si} style={{
-                border: '1px solid var(--vn-border)',
-                borderRadius: '10px',
-                overflow: 'hidden',
-                backgroundColor: 'var(--vn-card-bg)',
-              }}>
-                <div style={{
-                  padding: '0.45rem 0.85rem',
-                  backgroundColor: 'var(--vn-sky)',
-                  borderBottom: '1px solid var(--vn-border)',
-                  fontSize: '0.72rem',
-                  fontWeight: 800,
-                  color: 'var(--vn-teal-deep)',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.07em',
-                }}>
-                  {set.label}
-                </div>
-                <div style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(4, 1fr)',
-                  gap: '0',
-                  overflowX: 'auto',
-                }}>
-                  {vitalFields.map((f, fi) => {
-                    const val = set.data?.[f.key];
-                    if (!val) return null;
-                    const isLast = fi === vitalFields.filter(f => set.data?.[f.key]).length - 1;
-                    return (
-                      <div key={f.key} style={{
-                        padding: '0.55rem 0.85rem',
-                        borderRight: (fi + 1) % 4 !== 0 ? '1px solid var(--vn-border)' : 'none',
-                        borderBottom: !isLast && fi < vitalFields.filter(f => set.data?.[f.key]).length - 4 ? '1px solid var(--vn-border)' : 'none',
-                      }}>
-                        <div style={{
-                          fontSize: '0.65rem',
-                          fontWeight: 700,
-                          color: 'var(--vn-muted-text)',
-                          textTransform: 'uppercase',
-                          letterSpacing: '0.05em',
-                          marginBottom: '0.15rem',
-                        }}>
-                          {f.label}
-                        </div>
-                        <div style={{
-                          fontSize: '0.95rem',
-                          fontWeight: 600,
-                          color: getVitalColor(f.key, val),
-                          lineHeight: 1.3,
-                        }}>
-                          {val}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            ))}
+          <div className="vitals-scroll">
+            <table className="vitals-table">
+              <thead>
+                <tr>
+                  <th scope="col"><span className="visually-hidden">Vital sign</span></th>
+                  {sets.map((set, si) => <th scope="col" key={si}>{set.label}</th>)}
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map((f) => (
+                  <tr key={f.key}>
+                    <th scope="row">{f.label}</th>
+                    {sets.map((set, si) => {
+                      const val = set.data?.[f.key];
+                      return (
+                        <td key={si} style={val ? { color: getVitalColor(f.key, val) } : undefined}>
+                          {val || <span className="vitals-empty" aria-label="not recorded">·</span>}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       );
@@ -3264,46 +3311,6 @@ const ScenarioForm = () => {
             <FaUserGraduate aria-hidden="true" />
             <span>{studentMode ? "Student mode" : "Instructor mode"}</span>
           </button>
-          <button
-            type="button"
-            onClick={handleReset}
-            style={actionStyle(canReset)}
-            className="a11y-focus"
-            disabled={!canReset}
-            title="Reset all form fields and clear the current scenario"
-            aria-label="Reset all fields"
-          >
-            <FaUndoAlt /> Reset
-          </button>
-          <button
-            onClick={exportToPDF}
-            style={actionStyle(Boolean(scenario))}
-            className="a11y-focus"
-            disabled={!scenario}
-            title={scenario ? "Export current scenario to PDF" : "Generate a scenario first to enable export"}
-          >
-            <FaFilePdf /> Export
-          </button>
-          <button
-            type="button"
-            onClick={showRunSheet}
-            style={actionStyle(Boolean(scenario))}
-            className="a11y-focus"
-            disabled={!scenario}
-            title={scenario ? "Open a printable run sheet for running this call in lab" : "Generate a scenario first"}
-          >
-            <FaClipboardList /> Run sheet
-          </button>
-          <button
-            type="button"
-            onClick={downloadPracticeAcr}
-            style={actionStyle(Boolean(scenario) && !acrBusy)}
-            className="a11y-focus"
-            disabled={!scenario || acrBusy}
-            title={scenario ? "Download a Practice ACR pre-filled with this call's dispatch details, for ACR Review" : "Generate a scenario first"}
-          >
-            {acrBusy ? <FaSpinner className="spin" /> : <FaFileMedical />} Practice ACR
-          </button>
         </div>
       </div>
 
@@ -3314,12 +3321,12 @@ const ScenarioForm = () => {
               {loading ? <FaSpinner className="spin" /> : "Generate Scenario"}
             </button>
 
-            {renderPillGroup("Semester", SEMESTERS, formData.semester, (val) => setFormData(prev => ({ ...prev, semester: val })))}
+            {renderChoice("Semester", "semester", SEMESTERS, formData.semester)}
             {renderPillGroup("Type", SCENARIO_TYPES, formData.type, (val) => setFormData(prev => ({ ...prev, type: val })))}
             {renderPillGroup("Environment", ENVIRONMENTS, formData.environment, (val) => setFormData(prev => ({ ...prev, environment: val })))}
-            {renderPillGroup("Complexity", COMPLEXITIES, formData.complexity, (val) => setFormData(prev => ({ ...prev, complexity: val })))}
-            {renderPillGroup("Scenario Friction", SCENARIO_FRICTION_LEVELS, formData.scenarioFriction, (val) => setFormData(prev => ({ ...prev, scenarioFriction: val })))}
-            {renderPillGroup("Generation Depth", GENERATION_DEPTHS, formData.generationDepth, (val) => setFormData(prev => ({ ...prev, generationDepth: val })))}
+            {renderChoice("Complexity", "complexity", COMPLEXITIES, formData.complexity)}
+            {renderChoice("Scenario Friction", "scenarioFriction", SCENARIO_FRICTION_LEVELS, formData.scenarioFriction)}
+            {renderChoice("Generation Depth", "generationDepth", GENERATION_DEPTHS, formData.generationDepth)}
 
 
             <div style={styles.fieldRow}>
@@ -3341,18 +3348,13 @@ const ScenarioForm = () => {
             </div>
 
             {error && <p style={styles.error}>{error}</p>}
+            {canReset && (
+              <button type="button" className="form-reset a11y-focus" onClick={handleReset} disabled={loading}
+                title="Put every option back to the default and clear the current scenario">
+                <FaUndoAlt aria-hidden="true" /> Start over
+              </button>
+            )}
           </div>
-
-          {scenario && (
-            <nav className="side-card" aria-label="Scenario sections">
-              <div className="side-card-title">Jump to</div>
-              {Object.keys(SECTION_GROUPS).map((g) => (
-                <button key={g} type="button" className="side-link a11y-focus" onClick={() => jumpTo(g)}>
-                  {g}{studentMode && collapsedSections[g] ? <span className="side-note"> (folded)</span> : null}
-                </button>
-              ))}
-            </nav>
-          )}
 
           {recent.length > 0 && (
             <details className="side-card">
@@ -3433,11 +3435,10 @@ const ScenarioForm = () => {
                   <dl className="landing-parts landing-parts-compact">
                     <div><dt>Night Shift</dt><dd>Dark mode, and calls set overnight.</dd></div>
                     <div><dt>Student / Instructor mode</dt><dd>Student mode folds the answers until you've made your decisions. Instructor mode opens everything.</dd></div>
-                    <div><dt>Export</dt><dd>The whole scenario as a PDF.</dd></div>
-                    <div><dt>Run sheet</dt><dd>A printable page for running the call in lab: vitals by stage, patient responses, a timed treatment checklist, what to watch for, and the GRS.</dd></div>
-                    <div><dt>Practice ACR</dt><dd>An ACR for this call, ready to chart and upload to ACR Review.</dd></div>
-                    <div><dt>Reset</dt><dd>Clears the options and the scenario.</dd></div>
-                    <div><dt>Side panel</dt><dd>After you generate: Jump to for moving between sections, and your last ten scenarios, kept on this device only.</dd></div>
+                    <div><dt>Start over</dt><dd>Under the form. Puts the options back to the defaults and clears the scenario. Your last options are otherwise remembered on this device.</dd></div>
+                    <div><dt>Scenario bar</dt><dd>Stays at the top while you read: Export (PDF), Run sheet (a printable page for lab), Practice ACR, Share link, and a tab for each section.</dd></div>
+                    <div><dt>Share link</dt><dd>Copies a link to the scenario. Anyone who opens it gets the same call; new visitors start in student mode.</dd></div>
+                    <div><dt>Recent scenarios</dt><dd>Your last ten, in the side panel, kept on this device only.</dd></div>
                   </dl>
                 </details>
               </div>
@@ -3448,7 +3449,33 @@ const ScenarioForm = () => {
           {scenario && (
             <>
             <div ref={outputRef} style={{ ...styles.outputBox, scrollMarginTop: isMobile ? "12px" : "90px" }}>
-              {scenario.title && <h2 className="scenario-output-title">{scenario.title}</h2>}
+              <div className="scenario-bar">
+                <div className="scenario-bar-top">
+                  <h2 className="scenario-output-title">{scenario.title || "Scenario"}</h2>
+                  <div className="scenario-bar-actions">
+                    <button type="button" className="sbar-btn a11y-focus" onClick={exportToPDF} title="The whole scenario as a PDF">
+                      <FaFilePdf aria-hidden="true" /> Export
+                    </button>
+                    <button type="button" className="sbar-btn a11y-focus" onClick={showRunSheet} title="A printable page for running this call in lab">
+                      <FaClipboardList aria-hidden="true" /> Run sheet
+                    </button>
+                    <button type="button" className="sbar-btn a11y-focus" onClick={downloadPracticeAcr} disabled={acrBusy}
+                      title="An ACR with this call's dispatch details filled in, for ACR Review">
+                      {acrBusy ? <FaSpinner className="spin" aria-hidden="true" /> : <FaFileMedical aria-hidden="true" />} Practice ACR
+                    </button>
+                    <button type="button" className="sbar-btn a11y-focus" onClick={shareScenario} title="Copy a link to this scenario">
+                      <FaLink aria-hidden="true" /> Share link
+                    </button>
+                  </div>
+                </div>
+                <nav className="scenario-tabs" aria-label="Scenario sections">
+                  {Object.keys(SECTION_GROUPS).map((g) => (
+                    <button key={g} type="button" className="scenario-tab a11y-focus" onClick={() => jumpTo(g)}>
+                      {g}{studentMode && collapsedSections[g] ? <span className="scenario-tab-note"> · folded</span> : null}
+                    </button>
+                  ))}
+                </nav>
+              </div>
               {scenario.customPrompt && (
                 <div
                   style={{
@@ -3465,7 +3492,7 @@ const ScenarioForm = () => {
               )}
 
               {Object.entries(SECTION_GROUPS).map(([groupName, keys]) => (
-                <div key={groupName} id={groupId(groupName)} style={{ scrollMarginTop: isMobile ? "12px" : "90px" }}>
+                <div key={groupName} id={groupId(groupName)} className="scenario-group">
                   {groupName === "What Was Happening" && (
                     <div className="scenario-pause-card" style={{ marginTop: "1.25rem" }}>
                       <span className="scenario-pause-label">Pause Before Reading On</span>
@@ -3557,10 +3584,12 @@ const ScenarioForm = () => {
             <div style={styles.loadingTitle}>
               Generating Scenario<span style={{ display: "inline-block", minWidth: "1.7rem", textAlign: "left" }}>{".".repeat(dotCount)}</span>
             </div>
-            <div style={styles.loadingSubtext}>This will take a minute...<br />Or several...</div>
-            <div style={{ ...styles.loadingSubtext, marginTop: "0.4rem", fontSize: "0.8rem", color: "var(--vn-loading-muted)", textAlign: "center" }}>
-              The AI is building your scenario, vitals, and teaching cues.<br />
-              Complex cases may take a little longer.
+            <div className="loading-elapsed" aria-live="off">{formatElapsed(elapsed)}</div>
+            <div style={{ ...styles.loadingSubtext, marginTop: "0.2rem", fontSize: "0.85rem", color: "var(--vn-loading-muted)", textAlign: "center" }}>
+              Usually 30 to 90 seconds. Detailed and Complex take the longest.
+              {elapsed >= 60 && (
+                <><br />Still going? The first scenario after a quiet spell is slower while the server wakes up.</>
+              )}
             </div>
             <div style={{
               marginTop: "1.2rem",
