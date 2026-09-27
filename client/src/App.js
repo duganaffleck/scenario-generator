@@ -32,7 +32,7 @@ function App() {
     if (logoTaps.current.length >= 5 && !flatline) {
       logoTaps.current = [];
       setFlatline(true);
-      showToast("Asystole? Check your leads, confirm it in a second lead, then start compressions.");
+      showToast("Flatline. Pads still on? Good. Back on the chest.");
       setTimeout(() => setFlatline(false), 3200);
     }
   };

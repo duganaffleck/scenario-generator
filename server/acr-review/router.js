@@ -22,7 +22,7 @@ import { chartModel } from './lib/chartModel.js';
 import { listScenarios, loadScenario, normalizeScenario } from './lib/scenarioAdapter.js';
 import { compareToScenario } from './lib/scenarioCompare.js';
 import { reviewAcr } from './lib/reviewAcr.js';
-import { acrForScenario, LINK_FIELD } from './lib/prefill.js';
+import { acrForScenario, LINK_FIELD, templateVersion } from './lib/prefill.js';
 import { open } from './lib/scenarioToken.js';
 
 const upload = multer({
@@ -52,8 +52,11 @@ function accessOk(given) {
 
 const router = express.Router();
 
-router.get('/config', (req, res) => {
-  res.json({ mode: mode(), accessCodeRequired: !!accessCode(), scenarios: listScenarios() });
+// Which build is running: Render sets RENDER_GIT_COMMIT on every deploy.
+const serverCommit = () => String(process.env.RENDER_GIT_COMMIT || '').slice(0, 7) || 'local';
+
+router.get('/config', async (req, res) => {
+  res.json({ mode: mode(), accessCodeRequired: !!accessCode(), scenarios: listScenarios(), formVersion: await templateVersion(), serverCommit: serverCommit() });
 });
 
 router.get('/scenarios', (req, res) => {
@@ -69,7 +72,8 @@ router.post('/acr-for-scenario', express.json({ limit: '2mb' }), async (req, res
     res.set('Content-Type', 'application/pdf');
     res.set('Content-Disposition', `attachment; filename="ACR_${callNumber}.pdf"`);
     res.set('X-ACR-Call-Number', callNumber);
-    res.set('Access-Control-Expose-Headers', 'X-ACR-Call-Number, Content-Disposition');
+    res.set('X-ACR-Form-Version', await templateVersion());
+    res.set('Access-Control-Expose-Headers', 'X-ACR-Call-Number, X-ACR-Form-Version, Content-Disposition');
     res.send(Buffer.from(bytes));
   } catch (e) {
     console.error('[acr-review] pre-fill failed', e);

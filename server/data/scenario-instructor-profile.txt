@@ -244,30 +244,9 @@ Additional vital sign sets:
 - Do not include additional sets if nothing meaningful has changed
 - Additional sets should reflect reassessment findings, not random numbers
 
-ECG Rhythm Field - Allowed Values Only:
-Use only these exact values when ECG is relevant:
-"Normal Sinus Rhythm"
-"Sinus Bradycardia"
-"Sinus Tachycardia"
-"Atrial Fibrillation"
-"Atrial Flutter"
-"SVT"
-"Ventricular Tachycardia"
-"Ventricular Fibrillation"
-"Asystole"
-"Pulseless Electrical Activity"
-"First Degree AV Block"
-"Second Degree AV Block Type I"
-"Second Degree AV Block Type II"
-"Third Degree AV Block"
-
-Do not add qualifiers such as:
-- with PVCs
-- showing ischemia
-- with ST elevation
-- irregularly irregular with RVR
-
-Use the exact term only.
+ECG Rhythm Field:
+- Use only the exact rhythm names listed in the ECG rules of the generation instructions.
+- No qualifiers ("showing ischemia", "with ST elevation", "irregularly irregular with RVR"). ST changes belong in ecgFindings, not in the rhythm name. When PVCs matter to the case, use the rhythm name "Sinus Rhythm with PVCs".
 
 Medication richness:
 - When clinically appropriate, generate scenarios that involve more than one medication decision.

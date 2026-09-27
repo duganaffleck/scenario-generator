@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { getAcrConfig, reviewAcr, errorMessage } from "./acrApi";
+import { ACR_FORM_VERSION, BLANK_ACR_URL, getAcrConfig, reviewAcr, errorMessage } from "./acrApi";
 import "./AcrReview.css";
 
 // While a review runs (an AI review can take most of a minute), say what's happening.
@@ -9,7 +9,7 @@ const readSession = (k) => { try { return window.sessionStorage.getItem(k) || ""
 const writeSession = (k, v) => { try { window.sessionStorage.setItem(k, v); } catch (e) { /* storage blocked: fine */ } };
 
 const RESOURCES = [
-  { href: "/acr/ACR_practice_v3.pdf", label: "Blank Practice ACR", note: "For a lab scenario that didn't come with a pre-filled ACR." },
+  { href: BLANK_ACR_URL, label: `Blank Practice ACR v${ACR_FORM_VERSION}`, note: "For a lab scenario that didn't come with a pre-filled ACR." },
   { href: "/acr/ACR_model_chest_pain.pdf", label: "Model chart: chest pain", note: "A clean chart with teaching notes in the margin." },
   { href: "/acr/ACR_model_hypoglycemia_refusal.pdf", label: "Model chart: hypoglycemia and refusal", note: "Glucagon, a capacity assessment and a refusal, charted properly." },
   { href: "/acr/ACR_find_the_errors.pdf", label: "Find the errors", note: "A COPD chart with 18 mistakes in it. Find them before you run the checker." },
@@ -315,6 +315,16 @@ export default function AcrReview() {
             <li key={r.href}><a href={r.href} download>{r.label}</a><span className="acr-muted"> {r.note}</span></li>
           ))}
         </ul>
+        {config && (
+          config.formVersion === ACR_FORM_VERSION ? (
+            <p className="acr-muted acr-small">Pre-filled ACRs from the Scenario Generator: v{config.formVersion} · server build {config.serverCommit}</p>
+          ) : (
+            <p className="acr-error">
+              The server is running an older build{config.formVersion ? ` and pre-fills Practice ACR v${config.formVersion}` : ""}, not v{ACR_FORM_VERSION}.
+              The backend on Render needs redeploying. Until then, use the blank v{ACR_FORM_VERSION} form above.
+            </p>
+          )
+        )}
       </div>
     </div>
   );
