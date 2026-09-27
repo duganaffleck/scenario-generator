@@ -186,8 +186,9 @@ Night Shift Mode rules:
 ## SEMESTER PHILOSOPHY
 
 Semester 2:
-- Semester 2 scenarios are non-medication scenarios by design.
-- Semester 2 should emphasize assessment, communication, oxygen decisions when indicated, supportive care, reassessment, and transport thinking rather than medication administration.
+- Semester 2 learners do not give medications, but their calls are real calls. Presentations that need a medication stay in the mix.
+- When correct care would include a medication, the learner recognizes the need and considers it by name and directive only. No doses, dose calculations or contraindication checklists.
+- Semester 2 should emphasize assessment, communication, oxygen and ventilation decisions, supportive care, reassessment, and transport thinking.
 - Focus on scene approach, primary survey, basic patient assessment, OPQRST, SAMPLE, vital signs, communication, packaging, and transport.
 - Cases should be clearer, less ambiguous, and have fewer competing problems.
 - The goal is safe care, structure, and recognition.
@@ -213,6 +214,18 @@ Oxygen Administration:
 - Oxygen should not be applied automatically without need.
 - When oxygen is used, it should be purposeful and clinically supported.
 - Titrate oxygen appropriately rather than defaulting to blanket high-flow wording.
+- Oxygen restraint is for a patient who is breathing adequately. When breathing is inadequate (RR under 10, too shallow to move air, poor effort with a falling level of consciousness, rising ETCO2 with fatigue, or SpO2 not holding on oxygen), the priority is ventilation: position, suction and adjuncts as needed, and BVM-assisted ventilation. Say so in expectedTreatment and caseProgression.
+- After ROSC: ventilate with BVM when breathing is absent or inadequate, titrate SpO2 to 94-98% and ETCO2 to 30-40, avoid hyperventilation.
+- Oxygen is a teaching point in some calls, not all. Across caseProgression and the GRS, use at most one "oxygen given without need" mistake, and only when the patient is breathing adequately with a reliable SpO2 of 94% or more. Spend the other mistakes on the errors that matter in this call.
+
+Medications and Directives:
+- Semester 3 and 4: when expectedTreatment gives a medication, write the drug, dose, route and directive as ALS PCS gives them (for example "Epinephrine 0.5 mg IM (0.01 mg/kg, max 0.5 mg) under the Moderate to Severe Allergic Reaction directive"). Include each medication the directive supports for this presentation, not only the first.
+- Do not suggest a fluid bolus for pulmonary edema or fluid overload. The one exception is hypotension caused by nitroglycerin in acute cardiogenic pulmonary edema, where the companion document allows a cautious, reassessed bolus even with crackles.
+- Auxiliary directives (IV and Fluid Therapy, CPAP, Traumatic Hemorrhage) require the paramedic to be authorized by their Base Hospital in advance. Write "if authorized for the auxiliary directive". Never write that the crew patches to get authorization to use one.
+- CPAP fits severe respiratory distress from acute pulmonary edema or COPD when its conditions are met. It is never for an asthma exacerbation.
+
+Trauma Destination:
+- Apply the Ontario Field Trauma Triage Standard (in the BLS standards). When a patient meets physiologic or anatomic criteria, expectedTreatment names the destination decision: the lead trauma hospital when it is within 30 minutes by land, otherwise the closest appropriate emergency department or a patch to the Base Hospital for direction.
 
 Spinal Motion Restriction:
 - Apply SMR when Ontario criteria are met, not just when the mechanism looks dramatic.
