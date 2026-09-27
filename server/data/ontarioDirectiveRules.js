@@ -331,7 +331,7 @@ export const ONTARIO_DIRECTIVE_RULES = {
       "Bronchoconstriction scenarios must distinguish asthma from COPD accurately.",
       "Initial treatment depends on the underlying cause and severity.",
       "Epinephrine is for asthmatics only.",
-      "CPAP is COPD only in this clarification set.",
+      "CPAP fits severe distress from COPD (or acute pulmonary edema), never an asthma exacerbation.",
       "Salbutamol should be considered immediately after epinephrine administration for asthmatics.",
       "Dexamethasone may be administered with other treatments but should not be framed as immediately life-saving.",
       "Avoid careless ventilation language in severe asthma; account for air trapping and the need for an adequate expiratory phase."
@@ -1170,7 +1170,8 @@ export const OUTSIDE_PCP_SCOPE_TERMS = [
   'fentanyl iv', 'fentanyl im', 'fentanyl in ', 'fentanyl intranasal', 'administer fentanyl', 'give fentanyl',
   'calcium gluconate', 'calcium chloride', 'sodium bicarbonate', 'magnesium sulfate',
   'cardioversion', 'transcutaneous pacing', 'intubat', 'intraosseous', 'io access', 'iv/io', 'iv or io', 'via io', 'io line', 'cricothyrotomy',
-  'needle decompression', 'needle thoracostomy', 'procedural sedation'
+  'needle decompression', 'needle thoracostomy', 'procedural sedation',
+  'ipratropium', 'atrovent'
 ];
 
 // Prose check for teaching, progression and GRS text. Procedures and "what ACP would do" count on sight.
@@ -1178,7 +1179,7 @@ export const OUTSIDE_PCP_SCOPE_TERMS = [
 // and a patient's own "lorazepam at bedtime" survive. History sections are never passed in.
 const SCOPE_PROCEDURES = /\b(cardioversion|cardiovert\w*|transcutaneous pacing|pacing pads|intubat\w*|intraosseous|IO access|IV\/IO|IV or IO|via IO|cricothyrotomy|needle decompression|needle thoracostomy|procedural sedation)\b/i;
 const SCOPE_ACP_TALK = /\b(ACP|advanced care paramedics?)\s+(would|could|can|will|may|might|should|is able to|are able to)\b|\bACP[- ](only|scope|level)\b/i;
-const SCOPE_DRUGS = '(atropine|dopamine|norepinephrine|amiodarone|lidocaine|adenosine|procainamide|morphine|hydromorphone|ketamine|midazolam|diazepam|lorazepam|fentanyl|calcium gluconate|calcium chloride|sodium bicarbonate|magnesium sulfate)';
+const SCOPE_DRUGS = '(ipratropium|atropine|dopamine|norepinephrine|amiodarone|lidocaine|adenosine|procainamide|morphine|hydromorphone|ketamine|midazolam|diazepam|lorazepam|fentanyl|calcium gluconate|calcium chloride|sodium bicarbonate|magnesium sulfate)';
 const SCOPE_DRUG_AS_TREATMENT = new RegExp(
   '\\b(give|gives|giving|gave|given|administer\\w*|push\\w*|draw\\w* up|prepar\\w*|consider\\w*|withh\\w*|hold\\w*|dose of|doses of|order\\w*)\\b(\\s+\\S+){0,3}\\s+' + SCOPE_DRUGS + '\\b' +
   '|\\b' + SCOPE_DRUGS + '\\s+(\\d[\\d.]*\\s*(mg|mcg|g|mL)\\b|IV\\b|IM\\b|IN\\b|IO\\b|infusion|drip|bolus|push)', 'i');
@@ -1219,7 +1220,7 @@ export function buildForbiddenTreatmentTerms({
     }
     // treatmentRules flags
     const tr = ruleSet.treatmentRules || {};
-    if (tr.cpapForCopdOnly) forbidden.add('cpap');
+    // cpapForCopdOnly means "not for asthma". It must not strip CPAP from every respiratory scenario.
     if (tr.calciumGluconateACPOnly) forbidden.add('calcium gluconate');
     if (tr.dexamethasoneNotIndicated || tr.dexamethasoneNotForImmediateRescue) {
       // strip any item that names dexamethasone as an action

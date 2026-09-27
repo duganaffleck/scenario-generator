@@ -80,6 +80,14 @@ Cardiac Arrest (CPR/AED):
   - Presents with major trauma or penetrating injuries
   - Stroke symptoms within window for thrombolysis
 
+## Field Trauma Triage Standard
+- Step 1, physiologic: GCS 13 or less; SBP under 90; RR under 10 or over 29, or needs ventilatory support.
+- Step 2, anatomic: penetrating injury to the head, neck, torso, or an extremity proximal to the elbow or knee; chest wall instability or deformity (flail chest); two or more proximal long-bone fractures; crushed, degloved, mangled or pulseless extremity; amputation proximal to the wrist or ankle; pelvic fracture; open or depressed skull fracture; paralysis.
+- Step 1 or 2 met: transport to the lead trauma hospital when it is within 30 minutes by land; otherwise the closest appropriate emergency department, with a Base Hospital patch or air ambulance considered.
+- Step 3, mechanism (falls from height, high-risk vehicle collision, pedestrian or cyclist struck with significant impact, motorcycle collision): patch to the Base Hospital for destination direction.
+- Step 4, special considerations (older adults, anticoagulant use, burns, pregnancy over 20 weeks): lower the threshold and consider patching.
+- Name the triage step and destination decision in the handoff.
+
 ## Scene Safety and PPE Requirements
 - Scene safety must be confirmed before patient contact.
 - Paramedics must:

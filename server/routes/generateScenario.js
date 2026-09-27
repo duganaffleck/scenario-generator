@@ -484,8 +484,15 @@ function mapRhythmVariant(label) {
   return '';
 }
 
+// A vital sign cell holds a reading. A sentence with no number in it ("Not assessed, no altered mental
+// status...") is dropped so the vitals table shows a gap instead of a paragraph.
+const VITAL_READING_KEYS = ['hr', 'rr', 'bp', 'spo2', 'etco2', 'temp', 'gcs', 'bgl'];
+
 function sanitizeVitalSet(raw = {}, ecgInterpretation = '') {
   const set = { ...defaultVitalSet(), ...(raw && typeof raw === 'object' ? raw : {}) };
+  VITAL_READING_KEYS.forEach((k) => {
+    if (typeof set[k] === 'string' && !/\d/.test(set[k]) && set[k].trim().length > 12) set[k] = '';
+  });
 
   if (ecgInterpretation && ECG_WHITELIST.includes(ecgInterpretation) && !set.ecgInterpretation) {
     set.ecgInterpretation = ecgInterpretation;
@@ -1035,6 +1042,7 @@ function getComplexityInstruction(complexity) {
         'Vital signs should be abnormal in a recognizable expected direction rather than borderline or ambiguous.',
         'The differential diagnosis should have one clear leading diagnosis and at most one plausible alternative.',
         'Avoid excessive branching, unusual combinations, or stacked complications.',
+        'Simple does not mean well: the patient can be sick, but with one clear problem. If the case core describes a severe or multi-problem pattern, use its single-problem form (rib fractures rather than a flail segment, a head injury with a stable neuro trend rather than a Cushing response). Do not stack a second life threat.',
         'The educational value should come from doing the basics well, choosing the right treatment, and completing a clean reassessment loop.'
       ].join(' ');
     case 'Complex':
@@ -1097,7 +1105,7 @@ function buildSemesterDifficultyProfile(semester) {
     case '2':
       return {
         learnerLevel: 'Semester 2 PCP learner',
-        medicationAccess: 'none_by_design',
+        medicationAccess: 'recognize and consider by name only, no dosing',
         presentationClarity: 'clear',
         ambiguity: 'low',
         competingProblems: 'low',
@@ -1105,13 +1113,13 @@ function buildSemesterDifficultyProfile(semester) {
         sceneComplexity: 'low',
         reassessmentBurden: 'basic',
         leadershipDemand: 'low',
-        expectedReasoning: 'foundational assessment, communication, and safe basic management only',
+        expectedReasoning: 'foundational assessment, communication, safe basic management, and recognizing when a call needs a medication',
         instructionText: 'This scenario is for a Semester 2 PCP learner. ' +
-          'No medications must appear in expectedTreatment or protocolNotes. ' +
-          'The case must be solvable through assessment, communication, ' +
-          'positioning, oxygen decisions, and safe transport only. ' +
-          'GRS anchors must not reference medication decisions, ' +
-          'contraindication checks, or advanced directive knowledge. ' +
+          'The learner does not give medications. When correct care would include one, the learner recognizes it and ' +
+          'considers it by name and directive only: no doses, dose calculations or contraindication checklists anywhere. ' +
+          'The rest of the case is carried by assessment, communication, positioning, oxygen or ventilation support, ' +
+          'reassessment and safe, timely transport. ' +
+          'GRS anchors may reward recognizing and voicing a medication need, never dosing or contraindication detail. ' +
           'Score 5 represents a learner who is organized, communicates ' +
           'clearly, and completes a structured assessment safely. ' +
           'Do not make the case feel hand-held or patronizing, ' +
@@ -1183,12 +1191,56 @@ function buildSemesterDifficultyProfile(semester) {
   }
 }
 
+// Draws without repeats: each list is shuffled and dealt out in full before any item comes round again, so
+// back-to-back generations don't land on the same presentation, setting or patient name. The bags live in
+// memory, which is enough: a restart just starts a fresh shuffle.
+const DRAW_BAGS = new Map();
+function drawFresh(items) {
+  if (!Array.isArray(items) || items.length === 0) return undefined;
+  if (items.length === 1) return items[0];
+  const key = items.join('\u0001');
+  let bag = DRAW_BAGS.get(key);
+  if (!bag || bag.queue.length === 0) {
+    const queue = [...items];
+    for (let i = queue.length - 1; i > 0; i -= 1) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [queue[i], queue[j]] = [queue[j], queue[i]];
+    }
+    if (bag && queue[0] === bag.last) queue.push(queue.shift());
+    bag = { queue, last: bag ? bag.last : undefined };
+    DRAW_BAGS.set(key, bag);
+  }
+  const item = bag.queue.shift();
+  bag.last = item;
+  return item;
+}
+
+// Names are handed to the model so it stops reaching for the same few. A mix that sounds like Ontario.
+const FEMALE_NAMES = ['Aisha', 'Priya', 'Mei', 'Sofia', 'Chantal', 'Grace', 'Fatima', 'Leanne', 'Nadia', 'Rosa', 'Deborah', 'Harpreet',
+  'Joanne', 'Amara', 'Yuki', 'Carmen', 'Teresa', 'Olivia', 'Samira', 'Linh', 'Marie-Claude', 'Tanya', 'Beatrice', 'Keisha', 'Irene',
+  'Sandra', 'Anjali', 'Wendy', 'Elena', 'Brenda', 'Chloe', 'Farah', 'Margaret', 'Lucy', 'Hannah', 'Dolores'];
+const MALE_NAMES = ['Raj', 'Omar', 'Wei', 'Luis', 'Andre', 'Kwame', 'Patrick', 'Dmitri', 'Tariq', 'Jon', 'Gurpreet', 'Hector',
+  'Samuel', 'Theo', 'Kenji', 'Marcus', 'Bill', 'Ahmed', 'Nathan', 'Minh', 'Jean-Luc', 'Curtis', 'Ravi', 'Colin', 'Emmanuel',
+  'Frank', 'Arjun', 'Doug', 'Stefan', 'Wayne', 'Tyler', 'Yusuf', 'Ernie', 'Ian', 'Victor', 'Owen'];
+const SURNAMES = ['Singh', 'Nguyen', 'MacDonald', 'Tremblay', 'Okafor', 'Chen', 'Kowalski', 'Haddad', 'Patel', 'Rossi', 'Bouchard',
+  'Ahmed', 'Campbell', 'Santos', 'Kim', 'Morrison', 'Mensah', 'Ivanova', 'Gill', 'Fraser', 'Lopez', 'Wong', 'Sutherland',
+  'Abdi', 'Leblanc', 'Petrov', 'Sharma', 'Reid', 'Osei', 'Moreau', 'Fischer', 'Baptiste', 'Kaur', 'Doyle', 'Yilmaz', 'Laporte',
+  'Nakamura', 'Hughes', 'Rahman', 'Beaulieu', 'Mahmoud', 'Stewart', 'Castillo', 'Gauthier', 'Lindqvist', 'Obi', 'Park', 'Walsh'];
+const SEX_DECK = ['Female', 'Male', 'Female', 'Male', 'Female', 'Male'];
+
+function pickPatientIdentity(scenarioCore = {}) {
+  const text = `${scenarioCore.callFamily || ''} ${scenarioCore.likelyDiagnosis || ''} ${scenarioCore.clinicalPresentation?.symptomPattern || ''}`.toLowerCase();
+  const sex = /obstetric|pregnan|eclampsia|ectopic|labour|delivery|post-partum|placent/.test(text) ? 'Female' : drawFresh(SEX_DECK);
+  const first = drawFresh(sex === 'Female' ? FEMALE_NAMES : MALE_NAMES);
+  return { sex, name: `${first} ${drawFresh(SURNAMES)}` };
+}
+
 function buildScenarioCore({ semester, type, environment, complexity, uniqueness, customPrompt }) {
   const typeLower = String(type || '').toLowerCase();
   const promptLower = String(customPrompt || '').toLowerCase();
   const semesterProfile = buildSemesterDifficultyProfile(semester);
 
-  const pick = (items) => items[Math.floor(Math.random() * items.length)];
+  const pick = (items) => drawFresh(items);
 
   const environmentSettings = {
     Urban: [
@@ -1387,7 +1439,7 @@ function buildScenarioCore({ semester, type, environment, complexity, uniqueness
       head_or_spinal_trauma: {
         diagnosis: pick(['traumatic brain injury with altered GCS', 'cervical spine injury with mechanism and neurologic concern', 'intracranial bleed with Cushings triad signs']),
         differentials: ['TBI', 'intoxication', 'hypoglycemia masking neurologic injury'],
-        pattern: pick(['head injury with declining GCS, Cushings response, and transport urgency without airway intervention at PCP scope', 'cervical spine mechanism with extremity paresthesia requiring immobilization and assessment discipline', 'altered consciousness after head trauma requiring hypoglycemia rule-out before attributing to injury'])
+        pattern: pick(['head injury with declining GCS and a Cushing response, where ventilation adequacy, BVM support if breathing falters, and transport urgency drive the call', 'cervical spine mechanism with extremity paresthesia requiring immobilization and assessment discipline', 'altered consciousness after head trauma requiring hypoglycemia rule-out before attributing to injury'])
       },
       chest_trauma: {
         diagnosis: pick(['rib fractures with breathing compromise', 'pneumothorax from chest wall trauma', 'flail chest with paradoxical movement']),
@@ -1628,57 +1680,54 @@ function buildScenarioCore({ semester, type, environment, complexity, uniqueness
     }
   };
 }
+// Medication names a Semester 2 learner may recognize and consider: [text to look for in the full plan, name to show].
+const SEMESTER_2_MEDICATION_NAMES = [
+  ['asa ', 'ASA'], ['nitroglycerin', 'nitroglycerin'], ['salbutamol', 'salbutamol'], ['epinephrine', 'epinephrine'],
+  ['dexamethasone', 'dexamethasone'], ['glucagon', 'glucagon'], ['oral glucose', 'oral glucose'], ['dextrose', 'dextrose'],
+  ['diphenhydramine', 'diphenhydramine'], ['acetaminophen', 'acetaminophen'], ['ibuprofen', 'ibuprofen'], ['ketorolac', 'ketorolac'],
+  ['dimenhydrinate', 'dimenhydrinate'], ['ondansetron', 'ondansetron'], ['naloxone', 'naloxone'], ['tranexamic acid', 'tranexamic acid'],
+  ['hydrocortisone', 'hydrocortisone'], ['cpap', 'CPAP (auxiliary)'], ['fluid bolus', 'IV fluid bolus (auxiliary)']
+];
+
 function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
   const typeLower = String(type || '').toLowerCase();
   const promptLower = String(customPrompt || '').toLowerCase();
   const callFamily = String(scenarioCore?.callFamily || '').toLowerCase();
 
   if (String(semester) === '2') {
+    // Semester 2 keeps the same presentations as everyone else. The learner recognizes and considers the
+    // medication the call would need, without dosing it, and carries the call on Semester 2 skills.
+    const full = buildMedicationPlan({ semester: '3', type, customPrompt, scenarioCore });
+    // Names only: the full plan carries doses, and Semester 2 never sees them.
+    const planText = (full.likelyMedicationOpportunities || []).join(' ').toLowerCase();
+    const meds = SEMESTER_2_MEDICATION_NAMES.filter(([needle]) => planText.includes(needle)).map(([, name]) => name);
     return {
-      style: 'non-medication scenario by design',
-      likelyMedicationOpportunities: [],
+      style: meds.length ? 'Semester 2: recognize and consider the medication, supportive care carries the call' : 'Semester 2 supportive care scenario',
+      likelyMedicationOpportunities: meds.map((name) => `${name} (recognize and consider only, no dose)`),
       contraindicationChecks: [],
       supportiveCareOpportunities: [
         'assessment',
         'scene management',
-        'oxygen decision if clinically indicated',
+        'oxygen or ventilation support as the breathing requires',
         'serial reassessment',
         'positioning and packaging',
-        'transport decision-making',
+        'early notification and transport decision-making',
         'communication'
       ],
-      oxygenGuidance: 'Use oxygen only if clinically indicated under current Ontario BLS PCS standards. Titrate to SpO2 92-96% for most patients.',
+      oxygenGuidance: full.oxygenGuidance || 'Use oxygen when clinically indicated under current Ontario BLS PCS standards. Titrate to SpO2 92-96% for most patients.',
       instructionText: [
-        'This is a non-medication scenario by design for Semester 2.',
-        'Do not require medication administration to solve the case.',
-        'Expected treatment should focus on assessment, supportive care, communication, oxygen decisions when indicated, reassessment, and transport.'
+        'Semester 2 learners do not give medications, but their calls still need them. Keep the presentation the case core gives, even when correct PCP care would include a medication.',
+        meds.length
+          ? 'Because it does here, expectedTreatment includes one line where the learner recognizes the need and considers the medication by name and directive, for example "Recognize anaphylaxis and consider epinephrine under the Moderate to Severe Allergic Reaction directive". No dose, no dose calculation, no contraindication checklist.'
+          : 'No medication is central to this case.',
+        'Everything else is solved with Semester 2 skills: assessment, positioning, oxygen or ventilation support, reassessment, communication, early notification and timely transport.',
+        'caseProgression and the GRS may reward recognizing and voicing the medication need. They never depend on the medication being given and never describe dosing. Keep progression honest: supportive care alone may only partly help, which makes recognition and transport urgency the teaching point.'
       ].join(' ')
     };
   }
 
-  let medicationChance = 0.75;
-  if (String(semester) === '4') medicationChance = 0.85;
-  const includeMedication = Math.random() < medicationChance;
-
-  if (!includeMedication) {
-    return {
-      style: 'supportive-care-dominant scenario',
-      likelyMedicationOpportunities: [],
-      contraindicationChecks: [],
-      supportiveCareOpportunities: [
-        'serial reassessment',
-        'transport decision-making',
-        'communication',
-        'scene management',
-        'oxygen decision based on clinical presentation'
-      ],
-      oxygenGuidance: 'Use oxygen only when clinically indicated. Titrate to SpO2 92-96% for most patients.',
-      instructionText: [
-        'This scenario should focus on assessment, decision making, reassessment, and transport planning rather than medications.',
-        'It is acceptable and realistic that no medications are required in this case.'
-      ].join(' ')
-    };
-  }
+  // Semester 3 and 4: when the presentation has a PCP medication pathway, the plan includes it (no random
+  // "no medication" roll). Presentations without one fall through to the supportive default at the end.
 
   // ── CARDIAC: ACS / STEMI ─────────────────────────────────────────────────
   if (callFamily.includes('acs_or_stemi') || promptLower.includes('chest pain') || promptLower.includes('stemi') || promptLower.includes('acs')) {
@@ -1845,7 +1894,8 @@ function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
   }
 
   // ── RESPIRATORY ──────────────────────────────────────────────────────────
-  if (typeLower === 'respiratory' || callFamily.includes('respiratory') || promptLower.includes('asthma') || promptLower.includes('shortness of breath') || promptLower.includes('breathing')) {
+  // Anaphylaxis picked under the Respiratory type belongs to the allergic reaction plan further down.
+  if ((typeLower === 'respiratory' || callFamily.includes('respiratory') || promptLower.includes('asthma') || promptLower.includes('shortness of breath') || promptLower.includes('breathing')) && !callFamily.includes('anaphylaxis')) {
 
     if (callFamily.includes('asthma') || callFamily.includes('bronchospasm')) {
       return {
@@ -1886,7 +1936,6 @@ function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
         style: 'COPD exacerbation medication scenario',
         likelyMedicationOpportunities: [
           'Salbutamol MDI or nebulized as first-line bronchodilator',
-          'Ipratropium may be added per local service protocol',
           'Dexamethasone to reduce morbidity',
           'CPAP for severe COPD respiratory distress: PCP auxiliary requires base hospital authorization'
         ],
@@ -1945,7 +1994,7 @@ function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
       style: 'respiratory medication decision scenario',
       likelyMedicationOpportunities: [
         'Salbutamol if bronchospasm is present and clinically supported',
-        'Dexamethasone if inflammatory component is present',
+        'Dexamethasone if the patient has asthma, COPD or a 20 pack-year smoking history and is not already on steroids',
         'Epinephrine for asthmatics only if severe bronchospasm',
         'CPAP for COPD or pulmonary edema if authorized'
       ],
@@ -2462,6 +2511,8 @@ GRS rules:
 - Score 5 = competent semester-appropriate performance; this is the expected standard
 - Score 7 = exceptional, anticipatory, organized, calm, and highly effective
 - Keep the GRS structure standardized, but tailor the actual bullets to THIS case
+- Quick Draft bullets are short, not generic: each one names something from this case (a finding, a number, a decision point, the setting). "Makes a sensible plan" or "Handles equipment well" is not an anchor
+- Oxygen given without need is at most one bullet across the whole GRS, and only when this patient is breathing adequately with a reliable SpO2 of 94% or more
 
 ECG rules:
 Use only these exact ECG values when appropriate:
@@ -2541,6 +2592,7 @@ Scenario core:
 - Clinical acuity: ${scenarioCore.clinicalPresentation.acuity}
 - Presentation clarity: ${scenarioCore.clinicalPresentation.clarity}
 - Symptom pattern: ${scenarioCore.clinicalPresentation.symptomPattern}
+- Patient: ${scenarioCore.patientIdentity?.name || 'your choice'}, ${scenarioCore.patientIdentity?.sex || 'either sex'}. Use this name and sex unless the presentation or the instructor prompt needs otherwise. Choose an age that fits the presentation.
 - Proper treatment progression: ${scenarioCore.progressionStyle.withProperTreatment}
 - Improper/no treatment progression: ${scenarioCore.progressionStyle.withoutProperTreatment}
 
@@ -2785,6 +2837,7 @@ router.post('/', async (req, res) => {
       uniqueness,
       customPrompt
     });
+    scenarioCore.patientIdentity = pickPatientIdentity(scenarioCore);
     const medicationPlan = buildMedicationPlan({
       semester,
       type,
@@ -2847,6 +2900,21 @@ router.post('/', async (req, res) => {
     return res.json(normalized);
   } catch (error) {
     console.error('Scenario generation error:', error);
+    // OpenAI trouble gets a message a student can act on instead of "Internal server error".
+    const status = Number(error?.status || error?.response?.status || 0);
+    const detail = `${error?.code || ''} ${error?.error?.code || ''} ${error?.message || ''}`;
+    if (status === 429 && /insufficient_quota|credits|quota|billing/i.test(detail)) {
+      return res.status(503).json({ error: 'The scenario generator is out of OpenAI credits right now. Let your instructor know. It will work again once credits are added.' });
+    }
+    if (status === 429) {
+      return res.status(503).json({ error: 'The scenario generator is busy. Wait a minute and try again.' });
+    }
+    if (status === 401 || status === 403) {
+      return res.status(503).json({ error: 'The scenario generator cannot reach OpenAI (the API key was refused). Let your instructor know.' });
+    }
+    if (status >= 500 || /timeout|timed out|ECONNRESET|ETIMEDOUT/i.test(detail)) {
+      return res.status(503).json({ error: 'OpenAI did not answer in time. Try again in a moment.' });
+    }
     return res.status(500).json({
       error: 'Internal server error.',
       details: error?.message || 'Unknown server error.'

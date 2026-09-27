@@ -73,7 +73,7 @@ SCOPE BOUNDARY: This file is the complete PCP medication and procedure scope. An
 15. Home Dialysis Emergency Disconnect
 - Clamp both the patient side and the machine side before disconnecting and capping
 
-PCP AUXILIARY DIRECTIVES (the paramedic must be authorized for each)
+PCP AUXILIARY DIRECTIVES (the paramedic must be authorized for each in advance by their Base Hospital. It is a standing authorization, not a patch on the call: write "if authorized for the auxiliary directive")
 
 16. Intravenous and Fluid Therapy
 - IV access for actual or potential need for IV medication or fluid
