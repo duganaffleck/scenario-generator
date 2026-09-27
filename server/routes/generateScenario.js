@@ -1120,6 +1120,7 @@ function buildSemesterDifficultyProfile(semester) {
           'The rest of the case is carried by assessment, communication, positioning, oxygen or ventilation support, ' +
           'reassessment and safe, timely transport. ' +
           'GRS anchors may reward recognizing and voicing a medication need, never dosing or contraindication detail. ' +
+          'The patient is an adult, 18 or older, even if the instructor prompt asks for a child: pediatric calls are for Semesters 3 and 4. ' +
           'Score 5 represents a learner who is organized, communicates ' +
           'clearly, and completes a structured assessment safely. ' +
           'Do not make the case feel hand-held or patronizing, ' +
@@ -1235,12 +1236,37 @@ function pickPatientIdentity(scenarioCore = {}) {
   return { sex, name: `${first} ${drawFresh(SURNAMES)}` };
 }
 
+// Obstetric presentations. OB isn't a type on the form, so these come up under Medical (and from an instructor
+// prompt about pregnancy or labour).
+function obstetricSeeds(pick) {
+  return {
+    obstetric_labour_or_delivery: {
+      diagnosis: pick(['active labour with imminent delivery', 'precipitous delivery in an uncontrolled setting', 'normal delivery with post-partum hemorrhage concern']),
+      differentials: ['active labour', 'abruptio placentae', 'post-partum hemorrhage'],
+      pattern: pick(['patient in active labour with contractions 2 minutes apart and urge to push requiring delivery preparation', 'precipitous delivery in a home or vehicle with neonate requiring assessment and APGAR evaluation', 'post-delivery patient with significant vaginal bleeding requiring uterine assessment and transport urgency'])
+    },
+    obstetric_complication: {
+      diagnosis: pick(['pre-eclampsia with severe features', 'eclampsia with seizure activity', 'placental abruption with pain and bleeding', 'ectopic pregnancy with hemorrhagic shock']),
+      differentials: ['pre-eclampsia', 'eclampsia', 'abruption'],
+      pattern: pick(['pregnant patient with severe headache, visual changes, and elevated BP requiring eclampsia management', 'seizure in a pregnant patient requiring airway protection, left lateral positioning and rapid transport (there is no PCP seizure medication)', 'abdominal pain and vaginal bleeding in a pregnant patient with hemodynamic instability'])
+    }
+  };
+}
+
+// Pediatric calls belong to Semesters 3 and 4. For Semester 2, presentations, settings and examples that point
+// at a child are left out of the draw.
+const PEDIATRIC_TEXT = /pediatric|paediatric|\bchild|toddler|infant|croup|neonat|newborn|bronchiolitis|fontanelle|febrile seizure|school/i;
+
 function buildScenarioCore({ semester, type, environment, complexity, uniqueness, customPrompt }) {
   const typeLower = String(type || '').toLowerCase();
   const promptLower = String(customPrompt || '').toLowerCase();
   const semesterProfile = buildSemesterDifficultyProfile(semester);
 
-  const pick = (items) => drawFresh(items);
+  const adultsOnly = String(semester) === '2';
+  const pick = (items) => {
+    const list = adultsOnly ? items.filter((item) => !PEDIATRIC_TEXT.test(String(item))) : items;
+    return drawFresh(list.length ? list : items);
+  };
 
   const environmentSettings = {
     Urban: [
@@ -1510,7 +1536,9 @@ function buildScenarioCore({ semester, type, environment, complexity, uniqueness
     plausibleDifferentials = seed.differentials;
     symptomPattern = seed.pattern;
   }
-  else if (typeLower === 'ob/peds' || typeLower === 'ob' || typeLower === 'peds' || promptLower.includes('obstetric') || promptLower.includes('pediatric') || promptLower.includes('pregnancy') || promptLower.includes('child') || promptLower.includes('infant') || promptLower.includes('labour') || promptLower.includes('labor')) {
+  // In Semester 2 only an obstetric request reaches this branch; a prompt about a child stays with the chosen type.
+  else if ((typeLower === 'ob/peds' || typeLower === 'ob' || typeLower === 'peds' || promptLower.includes('obstetric') || promptLower.includes('pediatric') || promptLower.includes('pregnancy') || promptLower.includes('child') || promptLower.includes('infant') || promptLower.includes('labour') || promptLower.includes('labor'))
+    && !(adultsOnly && !/obstetric|pregnan|labou?r|deliver/.test(promptLower))) {
     callFamily = pick([
       'obstetric_labour_or_delivery',
       'obstetric_complication',
@@ -1521,16 +1549,7 @@ function buildScenarioCore({ semester, type, environment, complexity, uniqueness
     ]);
 
     const obPedsSeeds = {
-      obstetric_labour_or_delivery: {
-        diagnosis: pick(['active labour with imminent delivery', 'precipitous delivery in an uncontrolled setting', 'normal delivery with post-partum hemorrhage concern']),
-        differentials: ['active labour', 'abruptio placentae', 'post-partum hemorrhage'],
-        pattern: pick(['patient in active labour with contractions 2 minutes apart and urge to push requiring delivery preparation', 'precipitous delivery in a home or vehicle with neonate requiring assessment and APGAR evaluation', 'post-delivery patient with significant vaginal bleeding requiring uterine assessment and transport urgency'])
-      },
-      obstetric_complication: {
-        diagnosis: pick(['pre-eclampsia with severe features', 'eclampsia with seizure activity', 'placental abruption with pain and bleeding', 'ectopic pregnancy with hemorrhagic shock']),
-        differentials: ['pre-eclampsia', 'eclampsia', 'abruption'],
-        pattern: pick(['pregnant patient with severe headache, visual changes, and elevated BP requiring eclampsia management', 'seizure in a pregnant patient requiring magnesium consideration at appropriate semester level', 'abdominal pain and vaginal bleeding in a pregnant patient with hemodynamic instability'])
-      },
+      ...obstetricSeeds(pick),
       pediatric_respiratory: {
         diagnosis: pick(['croup with inspiratory stridor', 'bronchiolitis in an infant with wheeze and apnea risk', 'pediatric asthma with severe distress', 'epiglottitis with drooling and high fever']),
         differentials: ['croup', 'bronchiolitis', 'foreign body aspiration'],
@@ -1570,9 +1589,12 @@ function buildScenarioCore({ semester, type, environment, complexity, uniqueness
       'renal_or_electrolyte',
       'gi_or_abdominal',
       'allergic_or_anaphylaxis',
+      'obstetric_labour_or_delivery',
+      'obstetric_complication',
     ]);
 
     const medicalSeeds = {
+      ...obstetricSeeds(pick),
       diabetic_or_metabolic: {
         diagnosis: pick(['hypoglycemia with altered consciousness', 'hyperglycemia with DKA features', 'diabetic emergency with atypical presentation']),
         differentials: ['hypoglycemia', 'DKA', 'stroke'],
@@ -1686,7 +1708,7 @@ const SEMESTER_2_MEDICATION_NAMES = [
   ['dexamethasone', 'dexamethasone'], ['glucagon', 'glucagon'], ['oral glucose', 'oral glucose'], ['dextrose', 'dextrose'],
   ['diphenhydramine', 'diphenhydramine'], ['acetaminophen', 'acetaminophen'], ['ibuprofen', 'ibuprofen'], ['ketorolac', 'ketorolac'],
   ['dimenhydrinate', 'dimenhydrinate'], ['ondansetron', 'ondansetron'], ['naloxone', 'naloxone'], ['tranexamic acid', 'tranexamic acid'],
-  ['hydrocortisone', 'hydrocortisone'], ['cpap', 'CPAP (auxiliary)'], ['fluid bolus', 'IV fluid bolus (auxiliary)']
+  ['hydrocortisone', 'hydrocortisone'], ['oxytocin', 'oxytocin'], ['cpap', 'CPAP (auxiliary)'], ['fluid bolus', 'IV fluid bolus (auxiliary)']
 ];
 
 function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
@@ -2251,7 +2273,7 @@ function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
       return {
         style: 'obstetric medication and procedural scenario',
         likelyMedicationOpportunities: [
-          'Oxytocin IM or IV immediately after delivery of all fetuses and/or placenta and up to 4 hours post-placenta: for post-partum hemorrhage prevention and management',
+          'Oxytocin 10 units IM or IV immediately after delivery of all fetuses and/or placenta and up to 4 hours post-placenta: for post-partum hemorrhage prevention and management',
           'External uterine massage after placenta delivery if fundus is soft or boggy',
           'External bimanual compression if uterine massage is unsuccessful',
           'Oxygen for maternal hypoxia or fetal distress concern'
@@ -2273,7 +2295,7 @@ function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
         ],
         oxygenGuidance: 'Oxygen for maternal hypoxia. During delivery, oxygen readiness for neonate.',
         instructionText: [
-          'Oxytocin is now a standard part of the emergency childbirth directive for post-partum hemorrhage.',
+          'Oxytocin is part of the emergency childbirth directive for post-partum hemorrhage.',
           'Prolapsed cord and breech delivery have specific procedural directives with detailed steps.',
           'Newborn resuscitation preparedness is essential for any delivery scenario.'
         ].join(' ')
@@ -2743,7 +2765,9 @@ function shuffled(list) {
 
 // Two examples of the same call type when available (same semester first), plus one of another type for range.
 function selectFewShotExamples(allExamples, { type, semester }) {
-  const pool = (Array.isArray(allExamples) ? allExamples : []).filter(usableFewShot);
+  const adultsOnly = String(semester || '') === '2';
+  const pool = (Array.isArray(allExamples) ? allExamples : []).filter(usableFewShot)
+    .filter((e) => !adultsOnly || !(parseInt((e.patientDemographics || {}).age, 10) < 18));
   const wantType = String(type || '').toLowerCase();
   const wantSem = String(semester || '');
   const rank = (e) => (fewShotSemester(e) === wantSem ? 0 : 1);
@@ -2838,6 +2862,9 @@ router.post('/', async (req, res) => {
       customPrompt
     });
     scenarioCore.patientIdentity = pickPatientIdentity(scenarioCore);
+    if (String(semester) === '2') {
+      scenarioCore.plausibleDifferentials = scenarioCore.plausibleDifferentials.filter((d) => !PEDIATRIC_TEXT.test(d));
+    }
     const medicationPlan = buildMedicationPlan({
       semester,
       type,

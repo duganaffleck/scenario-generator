@@ -68,6 +68,7 @@ SCOPE BOUNDARY: This file is the complete PCP medication and procedure scope. An
 
 14. Emergency Childbirth and Newborn Resuscitation
 - Delivery, shoulder dystocia, breech delivery, prolapsed cord management, cord clamping and cutting
+- Oxytocin 10 units IM or IV for post-partum hemorrhage prevention and management: after delivery of all fetuses and/or the placenta, up to 4 hours post-placenta. Use caution in hypertension
 - Newborn: PPV if HR under 100; CPR if HR under 60 after 30 seconds of effective PPV
 
 15. Home Dialysis Emergency Disconnect

@@ -189,6 +189,7 @@ Semester 2:
 - Semester 2 learners do not give medications, but their calls are real calls. Presentations that need a medication stay in the mix.
 - When correct care would include a medication, the learner recognizes the need and considers it by name and directive only. No doses, dose calculations or contraindication checklists.
 - Semester 2 should emphasize assessment, communication, oxygen and ventilation decisions, supportive care, reassessment, and transport thinking.
+- Semester 2 patients are adults, 18 or older. Pediatric calls are for Semesters 3 and 4.
 - Focus on scene approach, primary survey, basic patient assessment, OPQRST, SAMPLE, vital signs, communication, packaging, and transport.
 - Cases should be clearer, less ambiguous, and have fewer competing problems.
 - The goal is safe care, structure, and recognition.

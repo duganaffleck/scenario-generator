@@ -842,7 +842,7 @@ export const ONTARIO_DIRECTIVE_RULES = {
       "Paramedics are not authorized to perform internal vaginal exams to determine cervical dilation.",
       "Inspect the perineum when history suggests ruptured membranes, cord prolapse, urge to push, or heavy vaginal bleeding with hypotension.",
       "Signs of imminent birth include crowning or presenting part visible, or in multips contractions 5 minutes apart or less with other second-stage signs.",
-      "Oxytocin is administered immediately after delivery of all fetuses and/or placenta and up to 4 hours post-placenta delivery: for prevention and management of post-partum hemorrhage.",
+      "Oxytocin 10 units IM or IV is administered immediately after delivery of all fetuses and/or placenta and up to 4 hours post-placenta delivery: for prevention and management of post-partum hemorrhage.",
       "Oxytocin can induce vasoconstriction: use caution in hypertensive patients.",
       "External uterine massage is performed only after placenta delivery when fundus is soft or boggy or bleeding is excessive.",
       "External bimanual compression if uterine massage is unsuccessful: can be performed whether or not placenta is delivered.",
