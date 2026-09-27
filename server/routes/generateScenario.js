@@ -1120,6 +1120,7 @@ function buildSemesterDifficultyProfile(semester) {
           'The rest of the case is carried by assessment, communication, positioning, oxygen or ventilation support, ' +
           'reassessment and safe, timely transport. ' +
           'GRS anchors may reward recognizing and voicing a medication need, never dosing or contraindication detail. ' +
+          'The patient is an adult, 18 or older, even if the instructor prompt asks for a child: pediatric calls are for Semesters 3 and 4. ' +
           'Score 5 represents a learner who is organized, communicates ' +
           'clearly, and completes a structured assessment safely. ' +
           'Do not make the case feel hand-held or patronizing, ' +
@@ -1235,12 +1236,20 @@ function pickPatientIdentity(scenarioCore = {}) {
   return { sex, name: `${first} ${drawFresh(SURNAMES)}` };
 }
 
+// Pediatric calls belong to Semesters 3 and 4. For Semester 2, presentations, settings and examples that point
+// at a child are left out of the draw.
+const PEDIATRIC_TEXT = /pediatric|paediatric|\bchild|toddler|infant|croup|neonat|newborn|bronchiolitis|fontanelle|febrile seizure|school/i;
+
 function buildScenarioCore({ semester, type, environment, complexity, uniqueness, customPrompt }) {
   const typeLower = String(type || '').toLowerCase();
   const promptLower = String(customPrompt || '').toLowerCase();
   const semesterProfile = buildSemesterDifficultyProfile(semester);
 
-  const pick = (items) => drawFresh(items);
+  const adultsOnly = String(semester) === '2';
+  const pick = (items) => {
+    const list = adultsOnly ? items.filter((item) => !PEDIATRIC_TEXT.test(String(item))) : items;
+    return drawFresh(list.length ? list : items);
+  };
 
   const environmentSettings = {
     Urban: [
@@ -1510,7 +1519,9 @@ function buildScenarioCore({ semester, type, environment, complexity, uniqueness
     plausibleDifferentials = seed.differentials;
     symptomPattern = seed.pattern;
   }
-  else if (typeLower === 'ob/peds' || typeLower === 'ob' || typeLower === 'peds' || promptLower.includes('obstetric') || promptLower.includes('pediatric') || promptLower.includes('pregnancy') || promptLower.includes('child') || promptLower.includes('infant') || promptLower.includes('labour') || promptLower.includes('labor')) {
+  // In Semester 2 only an obstetric request reaches this branch; a prompt about a child stays with the chosen type.
+  else if ((typeLower === 'ob/peds' || typeLower === 'ob' || typeLower === 'peds' || promptLower.includes('obstetric') || promptLower.includes('pediatric') || promptLower.includes('pregnancy') || promptLower.includes('child') || promptLower.includes('infant') || promptLower.includes('labour') || promptLower.includes('labor'))
+    && !(adultsOnly && !/obstetric|pregnan|labou?r|deliver/.test(promptLower))) {
     callFamily = pick([
       'obstetric_labour_or_delivery',
       'obstetric_complication',
@@ -2251,13 +2262,11 @@ function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
       return {
         style: 'obstetric medication and procedural scenario',
         likelyMedicationOpportunities: [
-          'Oxytocin IM or IV immediately after delivery of all fetuses and/or placenta and up to 4 hours post-placenta: for post-partum hemorrhage prevention and management',
           'External uterine massage after placenta delivery if fundus is soft or boggy',
           'External bimanual compression if uterine massage is unsuccessful',
           'Oxygen for maternal hypoxia or fetal distress concern'
         ],
         contraindicationChecks: [
-          'Oxytocin can induce vasoconstriction: use caution in hypertensive patients',
           'Do not perform internal vaginal exam to determine cervical dilation',
           'Perineal inspection is appropriate in specific clinical situations per directive criteria',
           'Prolapsed cord: knee-chest or exaggerated Sims position, manual elevation of presenting part, maintain until transfer of care',
@@ -2273,7 +2282,7 @@ function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
         ],
         oxygenGuidance: 'Oxygen for maternal hypoxia. During delivery, oxygen readiness for neonate.',
         instructionText: [
-          'Oxytocin is now a standard part of the emergency childbirth directive for post-partum hemorrhage.',
+          'Oxytocin is in PCP scope under Emergency Childbirth but is left out of generated scenarios for now. Do not include it: manage post-partum hemorrhage with external uterine massage, bimanual compression, positioning and rapid transport.',
           'Prolapsed cord and breech delivery have specific procedural directives with detailed steps.',
           'Newborn resuscitation preparedness is essential for any delivery scenario.'
         ].join(' ')
@@ -2743,7 +2752,9 @@ function shuffled(list) {
 
 // Two examples of the same call type when available (same semester first), plus one of another type for range.
 function selectFewShotExamples(allExamples, { type, semester }) {
-  const pool = (Array.isArray(allExamples) ? allExamples : []).filter(usableFewShot);
+  const adultsOnly = String(semester || '') === '2';
+  const pool = (Array.isArray(allExamples) ? allExamples : []).filter(usableFewShot)
+    .filter((e) => !adultsOnly || !(parseInt((e.patientDemographics || {}).age, 10) < 18));
   const wantType = String(type || '').toLowerCase();
   const wantSem = String(semester || '');
   const rank = (e) => (fewShotSemester(e) === wantSem ? 0 : 1);
@@ -2838,6 +2849,9 @@ router.post('/', async (req, res) => {
       customPrompt
     });
     scenarioCore.patientIdentity = pickPatientIdentity(scenarioCore);
+    if (String(semester) === '2') {
+      scenarioCore.plausibleDifferentials = scenarioCore.plausibleDifferentials.filter((d) => !PEDIATRIC_TEXT.test(d));
+    }
     const medicationPlan = buildMedicationPlan({
       semester,
       type,
