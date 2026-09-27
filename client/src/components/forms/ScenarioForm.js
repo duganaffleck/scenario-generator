@@ -1252,7 +1252,7 @@ const ScenarioForm = () => {
         afib12: 'Atrial Fibrillation', vtach12: 'Ventricular Tachycardia', inferiorRV: 'Inferior + RV STEMI',
         posterior: 'Posterior STEMI', wellens: 'Wellens Syndrome', deWinter: 'De Winter Pattern',
         pericarditis: 'Pericarditis', hyperkalemia: 'Hyperkalemia', svt12: 'SVT',
-        atrialFlutter12: 'Atrial Flutter', firstDegreeAVBlock: 'First Degree AV Block', lvhStrain: 'LVH with Strain', stDepression: 'Ischemic ST Depression',
+        atrialFlutter12: 'Atrial Flutter', firstDegreeAVBlock: 'First Degree AV Block', lvhStrain: 'LVH with Strain', rightHeartStrain: 'Right Heart Strain', stDepression: 'Ischemic ST Depression',
         secondDegreeTypeI: 'Second Degree AV Block Type I', secondDegreeTypeII: 'Second Degree AV Block Type II',
         thirdDegreeAVBlock: 'Third Degree AV Block',
       };

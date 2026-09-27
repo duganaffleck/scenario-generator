@@ -921,7 +921,7 @@ export const ONTARIO_DIRECTIVE_RULES = {
     meta: { source: ["als", "companion"], confidence: "high" },
     promptBlock: [
       "CPAP is indicated for severe respiratory distress with acute pulmonary edema regardless of origin, or COPD exacerbation.",
-      "CPAP is a PCP auxiliary directive: requires base hospital authorization.",
+      "CPAP is a PCP auxiliary directive: the paramedic must be authorized for it in advance. It is not a patch on the call.",
       "CPAP is additive therapy to the bronchoconstriction or ACPE directives, not a replacement.",
       "CPAP is not indicated for asthma: epinephrine and salbutamol are the asthma interventions.",
       "CPAP may be interrupted momentarily to administer nitroglycerin. Salbutamol can be administered via the MDI port without interrupting CPAP.",
@@ -944,7 +944,7 @@ export const ONTARIO_DIRECTIVE_RULES = {
     commonDriftErrors: [
       "Including CPAP as an asthma treatment.",
       "Framing CPAP as a standalone replacement for other treatments.",
-      "Not noting base hospital authorization requirement."
+      "Writing that the crew patches the Base Hospital for permission to use CPAP."
     ],
     validationChecks: [
       {
