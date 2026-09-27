@@ -22,6 +22,24 @@ export const _TL_PATTERNS = {
       'V6':  { pr:160, pA:0.12, rA:2.00, qD:0.06, sD:0.06, tA:-0.25, st:-0.12 },
     }
   },
+  // Acute right heart strain (large PE): S1 Q3 T3, rightward axis, T wave inversion V1 to V3.
+  rightHeartStrain: {
+    title: 'Right Heart Strain (S1 Q3 T3)',
+    leads: {
+      'I':   { pr:160, pA:0.12, rA:0.35, qD:0.02, sD:0.40, tA:0.14, st:0 },
+      'II':  { pr:160, pA:0.18, rA:0.90, qD:0.04, sD:0.10, tA:0.14, st:0 },
+      'III': { pr:160, pA:0.12, rA:0.70, qD:0.22, sD:0.04, tA:-0.18, st:0 },
+      'aVR': { pr:160, pA:0.12, rA:0.30, qD:0.08, sD:0.05, tA:0.08, st:0, flip:true, pFlip:true },
+      'aVL': { pr:160, pA:0.06, rA:0.15, qD:0.02, sD:0.35, tA:0.10, st:0 },
+      'aVF': { pr:160, pA:0.15, rA:0.85, qD:0.10, sD:0.06, tA:-0.08, st:0 },
+      'V1':  { pr:160, pA:0.08, rA:0.35, qD:0.02, sD:0.30, tA:-0.25, st:0 },
+      'V2':  { pr:160, pA:0.10, rA:0.40, qD:0.02, sD:0.45, tA:-0.28, st:0 },
+      'V3':  { pr:160, pA:0.10, rA:0.60, qD:0.04, sD:0.30, tA:-0.18, st:0 },
+      'V4':  { pr:160, pA:0.12, rA:0.90, qD:0.06, sD:0.18, tA:0.08, st:0 },
+      'V5':  { pr:160, pA:0.12, rA:1.00, qD:0.06, sD:0.12, tA:0.18, st:0 },
+      'V6':  { pr:160, pA:0.12, rA:0.85, qD:0.06, sD:0.10, tA:0.18, st:0 },
+    }
+  },
   stDepression: {
     title: 'Ischemic ST Depression (no STEMI)',
     leads: {
@@ -425,7 +443,7 @@ export const _TL_PATTERNS = {
 };
 
 export function pickTwelveLeadPattern(ecgType, rhythmInterp, twelveLeadFindings, fifteenLeadFindings, patternKey) {
-  const VALID_PATTERNS = ['normal','lvhStrain','stDepression','inferiorSTEMI','anteriorSTEMI','lateralSTEMI','lbbb','rbbb','afib12','vtach12','inferiorRV','posterior','wellens','deWinter','inferolateralSTEMI','highLateralSTEMI','pericarditis','hyperkalemia','svt12','atrialFlutter12','firstDegreeAVBlock','secondDegreeTypeI','secondDegreeTypeII','thirdDegreeAVBlock'];
+  const VALID_PATTERNS = ['normal','lvhStrain','rightHeartStrain','stDepression','inferiorSTEMI','anteriorSTEMI','lateralSTEMI','lbbb','rbbb','afib12','vtach12','inferiorRV','posterior','wellens','deWinter','inferolateralSTEMI','highLateralSTEMI','pericarditis','hyperkalemia','svt12','atrialFlutter12','firstDegreeAVBlock','secondDegreeTypeI','secondDegreeTypeII','thirdDegreeAVBlock'];
   if (patternKey && VALID_PATTERNS.includes(patternKey)) return patternKey;
   const txt = ((twelveLeadFindings || '') + ' ' + (rhythmInterp || '')).toLowerCase().replace(/\s*-\s*/g, ' ');
   if (ecgType === '15-lead' || (fifteenLeadFindings && fifteenLeadFindings.trim().length > 10 && (fifteenLeadFindings.toLowerCase().includes('elevation') || fifteenLeadFindings.toLowerCase().includes('involvement') || fifteenLeadFindings.toLowerCase().includes('stemi') || fifteenLeadFindings.toLowerCase().includes('posterior')))) {
@@ -435,6 +453,8 @@ export function pickTwelveLeadPattern(ecgType, rhythmInterp, twelveLeadFindings,
   const lvh = txt.includes('left ventricular hypertrophy') || /\blvh\b/.test(txt);
   const stemiClaimed = /\bstemi\b/.test(txt) && !/(no|not|without|does not meet|doesn't meet)[^.]{0,30}\bstemi\b/.test(txt);
   if (lvh && !stemiClaimed) return 'lvhStrain';
+  // Before the Wellens check: right heart strain also inverts T waves in V1 to V3.
+  if (txt.includes('s1q3t3') || txt.includes('s1 q3 t3') || txt.includes('right heart strain') || txt.includes('right ventricular strain')) return 'rightHeartStrain';
   if (txt.includes('wellens') || txt.includes('lad warning') || txt.includes('biphasic t') || txt.includes('deep symmetric t') || txt.includes('symmetric t wave inversion') || txt.includes('deep t wave inversion') || ((txt.includes('t wave inversion') || txt.includes('t-wave inversion')) && (txt.includes('v2') || txt.includes('v3')))) return 'wellens';
   if (txt.includes('de winter') || txt.includes('winter t') || txt.includes('upsloping st depression') || txt.includes('upward sloping st depression')) return 'deWinter';
   if (txt.includes('pericarditis') || txt.includes('saddle') || txt.includes('pr depression')) return 'pericarditis';

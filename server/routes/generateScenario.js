@@ -502,19 +502,18 @@ function sanitizeVitalSet(raw = {}, ecgInterpretation = '') {
     set.ecgInterpretation = mapRhythmVariant(set.ecgInterpretation);
   }
 
-  if (set.ecgInterpretation && set.hr) {
-    const hrNum = parseInt(String(set.hr).replace(/[^0-9]/g, ''), 10);
-    if (!isNaN(hrNum)) {
-      if (set.ecgInterpretation === 'Sinus Tachycardia' && hrNum <= 100) {
-        set.ecgInterpretation = hrNum < 60 ? 'Sinus Bradycardia' : 'Normal Sinus Rhythm';
-      } else if (set.ecgInterpretation === 'Sinus Bradycardia' && hrNum >= 60) {
-        set.ecgInterpretation = hrNum > 100 ? 'Sinus Tachycardia' : 'Normal Sinus Rhythm';
-      } else if (set.ecgInterpretation === 'Normal Sinus Rhythm' && (hrNum < 60 || hrNum > 100)) {
-        set.ecgInterpretation = hrNum > 100 ? 'Sinus Tachycardia' : 'Sinus Bradycardia';
-      }
-    }
-  }
+  return alignSinusLabelWithRate(set);
+}
 
+// A sinus label has to match the heart rate in the same set (tachycardia over 100, bradycardia under 60).
+function alignSinusLabelWithRate(set) {
+  if (!set || !set.ecgInterpretation || !set.hr) return set;
+  const hrNum = parseInt(String(set.hr).match(/\d+/)?.[0] ?? '', 10);
+  if (isNaN(hrNum)) return set;
+  const sinus = hrNum > 100 ? 'Sinus Tachycardia' : hrNum < 60 ? 'Sinus Bradycardia' : 'Normal Sinus Rhythm';
+  if (['Sinus Tachycardia', 'Sinus Bradycardia', 'Normal Sinus Rhythm'].includes(set.ecgInterpretation)) {
+    set.ecgInterpretation = sinus;
+  }
   return set;
 }
 
@@ -532,7 +531,7 @@ function normalizeVitalSigns(value, ecgInterpretation) {
       const prev = i === 0 ? secondSet : additionalSets[i - 1];
       set.ecgInterpretation = prev?.ecgInterpretation || firstSet.ecgInterpretation || '';
     }
-    return set;
+    return alignSinusLabelWithRate(set);
   });
   return {
     firstSet,
@@ -1190,6 +1189,16 @@ function buildSemesterDifficultyProfile(semester) {
         instructionText: `Tailor the case and expectations to Semester ${semester} learner level in a concrete way.`
       };
   }
+}
+
+// The scenario itself, if the model wrapped it ({"scenario": {...}}, or a one-item array). Null if there is no title.
+function unwrapScenario(value) {
+  let v = Array.isArray(value) ? value[0] : value;
+  if (v && typeof v === 'object' && !v.title) {
+    const inner = Object.values(v).find((x) => x && typeof x === 'object' && !Array.isArray(x) && typeof x.title === 'string');
+    if (inner) v = inner;
+  }
+  return v && typeof v === 'object' && typeof v.title === 'string' && v.title.trim() ? v : null;
 }
 
 // Draws without repeats: each list is shuffled and dealt out in full before any item comes round again, so
@@ -1857,7 +1866,7 @@ function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
     return {
       style: 'acute cardiogenic pulmonary edema scenario',
       likelyMedicationOpportunities: [
-        'CPAP for severe respiratory distress with acute pulmonary edema: PCP auxiliary requires base hospital authorization',
+        'CPAP for severe respiratory distress with acute pulmonary edema, if authorized for the auxiliary directive: start 5 cmH2O, increase 2.5 cmH2O every 5 min to max 15 cmH2O',
         'Nitroglycerin under Acute Cardiogenic Pulmonary Edema directive: ECG not required before first dose in this directive',
         'ASA if concurrent cardiac ischemia is suspected: patient may receive nitroglycerin from ACPE directive and ASA from cardiac ischemia directive',
         'Patient cannot receive nitroglycerin from both ACPE and cardiac ischemia directives: one directive only'
@@ -1878,7 +1887,7 @@ function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
       ],
       oxygenGuidance: 'High concentration oxygen appropriate given hypoxia typically present. Titrate once stable.',
       instructionText: [
-        'CPAP is a key intervention for acute cardiogenic pulmonary edema at PCP auxiliary level with base hospital authorization.',
+        'CPAP is a key intervention for acute cardiogenic pulmonary edema for a PCP authorized for the auxiliary directive (a standing authorization, not a patch on the call).',
         'Nitroglycerin does not require ECG before first dose under the ACPE directive: acquire ECG as soon as possible.',
         'Do not double-count nitroglycerin across two directives.',
         'If nitroglycerin causes hypotension, stop further doses and consider fluid bolus even with crackles present.'
@@ -1923,14 +1932,14 @@ function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
       return {
         style: 'asthma bronchospasm medication scenario',
         likelyMedicationOpportunities: [
-          'Epinephrine IM (asthmatics only) for severe bronchoconstriction when life threat is present',
+          'Epinephrine 1 mg/mL IM 0.01 mg/kg, max 0.5 mg, 1 dose: only with a history of asthma AND BVM ventilation required',
           'Salbutamol immediately following epinephrine for asthmatics',
-          'Salbutamol MDI or nebulized for moderate bronchospasm',
-          'Dexamethasone to reduce morbidity: not immediate rescue, does not have fast onset'
+          'Salbutamol MDI up to 800 mcg (8 puffs) at 25 kg or more, or NEB 5 mg; every 5-15 min PRN, max 3 doses',
+          'Dexamethasone 0.5 mg/kg PO/IM/IV, max 8 mg, 1 dose, to reduce morbidity: not immediate rescue, does not have fast onset'
         ],
         contraindicationChecks: [
           'Epinephrine is for asthmatics only: not for COPD',
-          'CPAP is for COPD only: not for asthma',
+          'CPAP is never for an asthma exacerbation',
           'Dexamethasone has no immediate life-saving effect: do not frame it as primary rescue',
           'Watch for air trapping and fatigue: allow adequate expiratory phase if ventilating',
           'For COPD or asthma patients in respiratory failure with initial ETCO2 above 50 mmHg, maintain ETCO2 50-60 mmHg'
@@ -1945,7 +1954,7 @@ function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
         oxygenGuidance: 'Titrate oxygen to SpO2 92-96%. Avoid unnecessary high-flow oxygen.',
         instructionText: [
           'Epinephrine is for asthmatics only: never for COPD.',
-          'CPAP is for COPD only: never for asthma.',
+          'CPAP is never for an asthma exacerbation.',
           'Salbutamol should follow epinephrine immediately in asthmatic patients.',
           'Dexamethasone reduces morbidity but is not a rescue medication.',
           'Watch for fatigue and silent chest: these are late findings requiring immediate escalation.'
@@ -1957,9 +1966,9 @@ function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
       return {
         style: 'COPD exacerbation medication scenario',
         likelyMedicationOpportunities: [
-          'Salbutamol MDI or nebulized as first-line bronchodilator',
-          'Dexamethasone to reduce morbidity',
-          'CPAP for severe COPD respiratory distress: PCP auxiliary requires base hospital authorization'
+          'Salbutamol MDI up to 800 mcg (8 puffs) at 25 kg or more, or NEB 5 mg, as first-line bronchodilator; every 5-15 min PRN, max 3 doses',
+          'Dexamethasone 0.5 mg/kg PO/IM/IV, max 8 mg, 1 dose, to reduce morbidity (COPD or 20 pack-year history, not already on steroids)',
+          'CPAP for severe COPD respiratory distress, if authorized for the auxiliary directive: start 5 cmH2O, increase 2.5 cmH2O every 5 min to max 15 cmH2O'
         ],
         contraindicationChecks: [
           'CPAP is appropriate for COPD: not for asthma',
@@ -1977,7 +1986,7 @@ function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
         oxygenGuidance: 'Titrate oxygen to SpO2 88-92% for known COPD. Avoid high-concentration oxygen unless no reliable SpO2.',
         instructionText: [
           'Oxygen target for COPD is 88-92% not the general 92-96% target.',
-          'CPAP is appropriate for COPD and requires base hospital authorization at PCP auxiliary level.',
+          'CPAP is appropriate for COPD for a PCP authorized for the auxiliary directive (a standing authorization, not a patch on the call).',
           'Epinephrine has no role in COPD.'
         ].join(' ')
       };
@@ -2571,8 +2580,9 @@ Also return a top-level ecgFindings object with these fields:
 - When the scenario involves hyperkalemia, missed dialysis, or peaked T waves from electrolyte disturbance, you MUST set ecgType to "12-lead" and populate twelveLeadFindings describing peaked narrow T waves in precordial leads, any PR prolongation, QRS widening, P wave flattening, and clinical context. Do not leave ecgFindings or twelveLeadFindings blank for these presentations.
 - fifteenLeadFindings: describe right-sided or posterior lead findings when ecgType is "15-lead". Focus on RV involvement, posterior changes, or right-sided ST changes. Leave empty string if ecgType is "rhythm" or "12-lead".
 - ecgClinicalNote: one sentence connecting the ECG findings to the clinical presentation and treatment decisions.
-- patternKey: one of these exact string values matching the pattern this 12-lead represents: normal, lvhStrain, stDepression, inferiorSTEMI, anteriorSTEMI, lateralSTEMI, inferolateralSTEMI, highLateralSTEMI, lbbb, rbbb, afib12, vtach12, inferiorRV, posterior, wellens, deWinter, pericarditis, hyperkalemia, svt12, atrialFlutter12, firstDegreeAVBlock, secondDegreeTypeI, secondDegreeTypeII, thirdDegreeAVBlock. This must match the actual ECG pattern described in twelveLeadFindings. Leave as empty string only if ecgType is rhythm.
+- patternKey: one of these exact string values matching the pattern this 12-lead represents: normal, lvhStrain, rightHeartStrain, stDepression, inferiorSTEMI, anteriorSTEMI, lateralSTEMI, inferolateralSTEMI, highLateralSTEMI, lbbb, rbbb, afib12, vtach12, inferiorRV, posterior, wellens, deWinter, pericarditis, hyperkalemia, svt12, atrialFlutter12, firstDegreeAVBlock, secondDegreeTypeI, secondDegreeTypeII, thirdDegreeAVBlock. This must match the actual ECG pattern described in twelveLeadFindings. Leave as empty string only if ecgType is rhythm.
 - Use patternKey stDepression for ischemic ST depression without STEMI (the NSTEMI or unstable angina picture), which may include ST elevation in aVR only. Serial 12-leads matter here.
+- Use patternKey rightHeartStrain for acute right heart strain (suspected large PE): S1 Q3 T3, rightward axis, T wave inversion in V1 to V3. Do not use stDepression or wellens for it.
 - Use patternKey lvhStrain for left ventricular hypertrophy with a strain pattern and no STEMI. Describe it as a STEMI mimic in twelveLeadFindings.
 - Do not leave rhythmInterpretation blank on any call that has an ECG value in vitalSigns.
 - Do not generate 12-lead or 15-lead findings for isolated trauma without medical concern.
@@ -2892,29 +2902,31 @@ router.post('/', async (req, res) => {
       generationProfile
     });
 
-    const completion = await openai.chat.completions.create({
-      model: generationProfile.model,
-      temperature: generationProfile.temperature,
-      max_completion_tokens: generationProfile.maxTokens,
-      messages: [
-        { role: 'system', content: profile },
-        { role: 'user', content: `${fewShots}\n\n${prompt}` }
-      ]
-    });
-
-    const rawContent = completion?.choices?.[0]?.message?.content;
-
-    if (!rawContent) {
-      console.error('Invalid OpenAI response:', completion);
-      return res.status(500).json({ error: 'OpenAI returned malformed data.' });
+    // The model occasionally hands back an empty or wrapped object. One more try before giving up.
+    let parsed = null;
+    for (let attempt = 1; attempt <= 2 && !parsed; attempt += 1) {
+      const completion = await openai.chat.completions.create({
+        model: generationProfile.model,
+        temperature: generationProfile.temperature,
+        max_completion_tokens: generationProfile.maxTokens,
+        messages: [
+          { role: 'system', content: profile },
+          { role: 'user', content: `${fewShots}\n\n${prompt}` }
+        ]
+      });
+      const choice = completion?.choices?.[0];
+      const rawContent = choice?.message?.content;
+      let candidate = null;
+      try {
+        candidate = rawContent ? unwrapScenario(JSON.parse(jsonrepair(sanitizeOutput(rawContent)))) : null;
+      } catch (parseError) {
+        candidate = null;
+      }
+      if (candidate) parsed = candidate;
+      else console.error(`Unusable model output (attempt ${attempt}, finish_reason ${choice?.finish_reason || 'none'}):`, String(rawContent || '').slice(0, 400));
     }
-
-    let parsed;
-    try {
-      parsed = JSON.parse(jsonrepair(sanitizeOutput(rawContent)));
-    } catch (parseError) {
-      console.error('Failed to parse model JSON:', parseError, rawContent);
-      return res.status(500).json({ error: 'Scenario JSON parsing failed. Please retry.' });
+    if (!parsed) {
+      return res.status(502).json({ error: 'The generator returned an incomplete scenario. Please try again.' });
     }
 
     const normalized = normalizeScenario(parsed, {
