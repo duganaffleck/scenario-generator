@@ -842,7 +842,8 @@ export const ONTARIO_DIRECTIVE_RULES = {
       "Paramedics are not authorized to perform internal vaginal exams to determine cervical dilation.",
       "Inspect the perineum when history suggests ruptured membranes, cord prolapse, urge to push, or heavy vaginal bleeding with hypotension.",
       "Signs of imminent birth include crowning or presenting part visible, or in multips contractions 5 minutes apart or less with other second-stage signs.",
-      "Oxytocin is in PCP scope under Emergency Childbirth but is left out of generated scenarios for now. Do not include it: manage post-partum hemorrhage with external uterine massage, bimanual compression, positioning and rapid transport.",
+      "Oxytocin is administered immediately after delivery of all fetuses and/or placenta and up to 4 hours post-placenta delivery: for prevention and management of post-partum hemorrhage.",
+      "Oxytocin can induce vasoconstriction: use caution in hypertensive patients.",
       "External uterine massage is performed only after placenta delivery when fundus is soft or boggy or bleeding is excessive.",
       "External bimanual compression if uterine massage is unsuccessful: can be performed whether or not placenta is delivered.",
       "Prolapsed cord: knee-chest or exaggerated Sims position, manual digital elevation of presenting part, maintain until transfer of care.",
@@ -851,13 +852,14 @@ export const ONTARIO_DIRECTIVE_RULES = {
     ],
     treatmentRules: {
       noInternalVaginalExam: true,
-      oxytocinAfterDelivery: false, // in PCP scope, held out of generated scenarios for now
+      oxytocinAfterDelivery: true,
       externalUterineMassageAfterPlacentaOnly: true,
       prologuedCordManualElevation: true,
       breechHandsOffUntilUmbilicus: true
     },
     commonDriftErrors: [
       "Referencing internal vaginal exam to assess dilation.",
+      "Omitting oxytocin from post-partum hemorrhage management.",
       "Performing uterine massage before placenta is delivered.",
       "Not specifying time limits in breech or shoulder dystocia management."
     ],
