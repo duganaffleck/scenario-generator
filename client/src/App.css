@@ -903,11 +903,21 @@ html[data-theme="night"] .scenario-pause-card p {
   text-transform: uppercase;
   color: var(--vn-teal-deep);
   background: var(--vn-sky);
-  min-width: 9rem;
+  white-space: nowrap;
 }
-.vitals-table thead th:first-child { min-width: 4.5rem; }
-.vitals-table tbody th { font-size: 0.8rem; font-weight: 800; color: var(--vn-muted-text); white-space: nowrap; }
-.vitals-table td { font-weight: 600; line-height: 1.35; }
+/* The stage name stays in view when the table scrolls sideways on a phone. */
+.vitals-table tbody th, .vitals-table thead th:first-child {
+  position: sticky; left: 0; z-index: 1;
+  min-width: 8.5rem; max-width: 13rem;
+}
+.vitals-table tbody th {
+  font-size: 0.85rem; font-weight: 700; color: inherit; line-height: 1.3;
+  background: var(--vn-modal-bg);
+  box-shadow: 1px 0 0 var(--vn-border);
+}
+.vitals-table td { font-weight: 700; line-height: 1.35; white-space: nowrap; }
+.vitals-table th, .vitals-table td { padding: 0.5rem 0.6rem; }
+.vitals-detail { display: block; font-size: 0.74rem; font-weight: 500; color: var(--vn-muted-text); white-space: normal; min-width: 5.5rem; }
 .vitals-empty { color: var(--vn-muted-text); }
 .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
@@ -955,3 +965,7 @@ body.vn-sirens::before {
 
 /* Form controls don't inherit the page font by default; without this they fall back to Arial. */
 button, input, select, textarea { font-family: inherit; }
+@media (max-width: 600px) {
+  .vitals-table tbody th, .vitals-table thead th:first-child { min-width: 6.5rem; max-width: 8rem; }
+  .vitals-table tbody th { font-size: 0.78rem; }
+}

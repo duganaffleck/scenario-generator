@@ -46,7 +46,8 @@ function vitalsTable(v) {
   if (!v) return "";
   const sets = [v.firstSet, v.secondSet, ...(Array.isArray(v.additionalSets) ? v.additionalSets : [])].filter((s) => s && !isBlank(s));
   if (!sets.length) return "";
-  const cols = [["hr", "HR"], ["bp", "BP"], ["rr", "RR"], ["spo2", "SpO2"], ["etco2", "EtCO2"], ["gcs", "GCS"], ["bgl", "BGL"], ["temp", "Temp"], ["ecgInterpretation", "Rhythm"]]
+  // Same order as the scenario page and the Practice ACR's vitals columns.
+  const cols = [["hr", "HR"], ["rr", "RR"], ["bp", "BP"], ["temp", "Temp"], ["bgl", "BGL"], ["spo2", "SpO2"], ["etco2", "EtCO2"], ["gcs", "GCS"], ["ecgInterpretation", "Rhythm"]]
     .filter(([k]) => sets.some((s) => !isBlank(s[k])));
   const head = `<tr><th>Stage</th>${cols.map(([, h]) => `<th>${h}</th>`).join("")}</tr>`;
   const body = sets.map((s, i) =>

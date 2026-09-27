@@ -8,6 +8,18 @@ import { RhythmStripSVG, TwelveLeadSVG } from "../ecg/EcgViews";
 import { showToast } from "../toast/Toast";
 import { buildShareLink, canShareLinks, clearSharedHash, hasSharedScenario, readSharedScenario } from "../../utils/shareLink";
 
+
+// Vitals in the order the Practice ACR's vitals columns run (Pulse, Resp, BP, Temp, reading, SpO2, EtCO2, GCS).
+const VITAL_COLUMNS = [
+  { key: "hr", label: "HR", pdf: "HR" },
+  { key: "rr", label: "RR", pdf: "RR" },
+  { key: "bp", label: "BP", pdf: "BP" },
+  { key: "temp", label: "Temp", pdf: "Temp" },
+  { key: "bgl", label: "BGL", pdf: "BGL" },
+  { key: "spo2", label: "SpO₂", pdf: "SpO2" },
+  { key: "etco2", label: "EtCO₂", pdf: "EtCO2" },
+  { key: "gcs", label: "GCS", pdf: "GCS" },
+];
 // Simple confetti effect (no external lib)
 function Confetti() {
   const canvasRef = useRef(null);
@@ -1254,6 +1266,20 @@ const ScenarioForm = () => {
 
     const ecgSummaryText = buildECGSummaryText();
 
+    // Vitals as one line per set, in ACR column order, to match the page and the run sheet.
+    const buildVitalsText = () => {
+      const vs = scenario.vitalSigns || {};
+      const sets = [vs.firstSet, vs.secondSet, ...(Array.isArray(vs.additionalSets) ? vs.additionalSets : [])]
+        .filter((d) => d && VITAL_COLUMNS.some((c) => d[c.key]));
+      return sets.map((d, i) => {
+        const stage = d.context || (i === 0 ? "Initial Assessment" : i === 1 ? "Reassessment" : `Additional Set ${i - 1}`);
+        // Two short lines (HR to BGL, then SpO2 to GCS) so a value never wraps away from its label.
+        const line = (cols) => cols.filter((c) => d[c.key]).map((c) => `${c.pdf} ${sanitizePdfText(d[c.key])}`).join("  |  ");
+        const lines = [line(VITAL_COLUMNS.slice(0, 5)), line(VITAL_COLUMNS.slice(5))].filter(Boolean);
+        return [sanitizePdfText(stage), ...lines.map((l) => `  ${l}`)].join("\n");
+      }).join("\n");
+    };
+
     // Build ordered section entries
     const orderedKeys = [...new Set([...phaseOrder, ...Object.keys(scenario)])];
     const sectionEntries = orderedKeys
@@ -1265,7 +1291,9 @@ const ScenarioForm = () => {
       .map((key) => {
         const rawValue = key === "sceneArrival"
           ? buildSceneArrivalContent()
-          : formatFieldValue(scenario[key]);
+          : key === "vitalSigns"
+            ? buildVitalsText()
+            : formatFieldValue(scenario[key]);
         if (!rawValue) return null;
         return {
           key,
@@ -1833,18 +1861,9 @@ const ScenarioForm = () => {
           : []),
       ].filter(s => s.data && Object.values(s.data).some(Boolean));
       if (!sets.length) return null;
-      const vitalFields = [
-        { key: 'hr',   label: 'HR' },
-        { key: 'bp',   label: 'BP' },
-        { key: 'rr',   label: 'RR' },
-        { key: 'spo2', label: 'SpO₂' },
-        { key: 'etco2',label: 'EtCO₂' },
-        { key: 'gcs',  label: 'GCS' },
-        { key: 'bgl',  label: 'BGL' },
-        { key: 'temp', label: 'Temp' },
-      ];
-      // One table, a column per stage, so the trend reads across the row.
-      const rows = vitalFields.filter((f) => sets.some((set) => set.data?.[f.key]));
+      // A row per set and the vitals across, in the order the ACR vitals columns run, so what a student
+      // reads here is what they write on the chart. The run sheet and the PDF use the same order.
+      const cols = VITAL_COLUMNS.filter((f) => sets.some((set) => set.data?.[f.key]));
       return (
         <div style={{ ...styles.card }} key="vitalSigns">
           <h3 className="scenario-section-h2">Vital Signs</h3>
@@ -1852,19 +1871,22 @@ const ScenarioForm = () => {
             <table className="vitals-table">
               <thead>
                 <tr>
-                  <th scope="col"><span className="visually-hidden">Vital sign</span></th>
-                  {sets.map((set, si) => <th scope="col" key={si}>{set.label}</th>)}
+                  <th scope="col">Stage</th>
+                  {cols.map((f) => <th scope="col" key={f.key}>{f.label}</th>)}
                 </tr>
               </thead>
               <tbody>
-                {rows.map((f) => (
-                  <tr key={f.key}>
-                    <th scope="row">{f.label}</th>
-                    {sets.map((set, si) => {
+                {sets.map((set, si) => (
+                  <tr key={si}>
+                    <th scope="row">{set.label}</th>
+                    {cols.map((f) => {
                       const val = set.data?.[f.key];
+                      // "118, regular, strong": the number reads first, the description sits under it.
+                      const [reading, ...detail] = String(val ?? "").split(/,\s*/);
                       return (
-                        <td key={si} style={val ? { color: getVitalColor(f.key, val) } : undefined}>
-                          {val || <span className="vitals-empty" aria-label="not recorded">·</span>}
+                        <td key={f.key} style={val ? { color: getVitalColor(f.key, val) } : undefined}>
+                          {val ? reading : <span className="vitals-empty" aria-label="not recorded">·</span>}
+                          {val && detail.length > 0 && <span className="vitals-detail">{detail.join(", ")}</span>}
                         </td>
                       );
                     })}
