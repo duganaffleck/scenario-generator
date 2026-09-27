@@ -2273,7 +2273,7 @@ function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
       return {
         style: 'obstetric medication and procedural scenario',
         likelyMedicationOpportunities: [
-          'Oxytocin IM or IV immediately after delivery of all fetuses and/or placenta and up to 4 hours post-placenta: for post-partum hemorrhage prevention and management',
+          'Oxytocin 10 units IM or IV immediately after delivery of all fetuses and/or placenta and up to 4 hours post-placenta: for post-partum hemorrhage prevention and management',
           'External uterine massage after placenta delivery if fundus is soft or boggy',
           'External bimanual compression if uterine massage is unsuccessful',
           'Oxygen for maternal hypoxia or fetal distress concern'
