@@ -506,11 +506,17 @@ function sanitizeVitalSet(raw = {}, ecgInterpretation = '') {
 }
 
 // A sinus label has to match the heart rate in the same set (tachycardia over 100, bradycardia under 60).
+// A set with a regular pulse and no rhythm at all (trauma calls often come back this way) gets the sinus label
+// for its rate, so the monitor always has something to show.
 function alignSinusLabelWithRate(set) {
-  if (!set || !set.ecgInterpretation || !set.hr) return set;
+  if (!set || !set.hr) return set;
   const hrNum = parseInt(String(set.hr).match(/\d+/)?.[0] ?? '', 10);
   if (isNaN(hrNum)) return set;
   const sinus = hrNum > 100 ? 'Sinus Tachycardia' : hrNum < 60 ? 'Sinus Bradycardia' : 'Normal Sinus Rhythm';
+  if (!set.ecgInterpretation) {
+    if (hrNum >= 40 && hrNum <= 150 && !/irregular|absent|pulseless|none|no pulse/i.test(String(set.hr))) set.ecgInterpretation = sinus;
+    return set;
+  }
   if (['Sinus Tachycardia', 'Sinus Bradycardia', 'Normal Sinus Rhythm'].includes(set.ecgInterpretation)) {
     set.ecgInterpretation = sinus;
   }
@@ -538,6 +544,28 @@ function normalizeVitalSigns(value, ecgInterpretation) {
     secondSet,
     additionalSets: normalizedAdditional
   };
+}
+
+// SVT runs at 150 or faster, and the modified Valsalva threshold is HR 150. An SVT set charted slower than that
+// teaches the wrong line, so every SVT set is shifted up by the same amount (the trend between sets is kept) and
+// the ECG text is updated to the new rates.
+function liftSlowSvtRates(vitalSigns, ecgFindings) {
+  const sets = [vitalSigns.firstSet, vitalSigns.secondSet, ...(vitalSigns.additionalSets || [])].filter((set) => set && set.ecgInterpretation === 'SVT');
+  const rateOf = (set) => parseInt(String(set.hr || '').match(/\d+/)?.[0] ?? '', 10);
+  const rates = sets.map(rateOf).filter((n) => !isNaN(n));
+  if (!rates.length || Math.min(...rates) >= 150) return;
+  const lift = 156 - Math.min(...rates);
+  sets.forEach((set) => {
+    const old = rateOf(set);
+    if (isNaN(old)) return;
+    const now = old + lift;
+    set.hr = String(set.hr).replace(String(old), String(now));
+    if (ecgFindings) {
+      ['rhythmInterpretation', 'twelveLeadFindings', 'fifteenLeadFindings', 'ecgClinicalNote'].forEach((k) => {
+        if (ecgFindings[k]) ecgFindings[k] = ecgFindings[k].replace(new RegExp(`\\b${old}(\\s*(bpm|beats))`, 'g'), `${now}$1`);
+      });
+    }
+  });
 }
 
 function normalizeCaseProgression(value) {
@@ -943,6 +971,7 @@ function normalizeScenario(parsed, options = {}) {
       patternKey: source.ecgFindings.patternKey || "",
     };
   }
+  liftSlowSvtRates(normalized.vitalSigns, normalized.ecgFindings);
 
   normalized.initialAssessment = normalizeInitialAssessment(source.initialAssessment);
   normalized.caseProgression = normalizeCaseProgression(source.caseProgression);
@@ -1143,7 +1172,8 @@ function buildSemesterDifficultyProfile(semester) {
           'The learner should recognize common patterns, initiate ' +
           'appropriate treatment, check contraindications, and reassess. ' +
           'Include at least one medication decision point when the type ' +
-          'supports it. GRS score 5 represents a learner who acts ' +
+          'supports it. Every medication line in expectedTreatment carries its dose, route and directive, even in a Quick Draft ' +
+          '(for example "Salbutamol MDI 800 mcg (8 puffs) under the Bronchoconstriction directive, repeat every 5 to 15 minutes as needed, max 3 doses"). GRS score 5 represents a learner who acts ' +
           'correctly without being prompted, not one who needs coaching ' +
           'through each step. Allow realistic messiness but keep the ' +
           'case fair and teachable.'
@@ -1166,6 +1196,7 @@ function buildSemesterDifficultyProfile(semester) {
           'The case should require prioritization under pressure, ' +
           'contraindication recognition, destination thinking, and ' +
           'leadership of a messy scene. ' +
+          'Every medication line in expectedTreatment carries its dose, route and directive, even in a Quick Draft. ' +
           'GRS score 5 represents competent near-graduation performance. ' +
           'Score 7 requires anticipatory thinking, not just correct action. ' +
           'At least one decision should require withholding a treatment ' +
@@ -2560,7 +2591,7 @@ ${ECG_WHITELIST.map((item) => `- ${item}`).join('\n')}
 - Do not label a rhythm as "Sinus Bradycardia" unless the numeric HR value is strictly below 60. If HR is 60 or above, use Normal Sinus Rhythm or Sinus Tachycardia as appropriate.
 - Do not label a rhythm as "Normal Sinus Rhythm" unless the numeric HR value is between 60 and 100 inclusive.
 - The ECG label in ecgInterpretation must always be consistent with the numeric HR in the same vital sign set. Check this before returning the JSON.
-- Use SVT when the presentation involves paroxysmal palpitations, abrupt onset tachycardia at 150-220 bpm, narrow complex rhythm, absent or retrograde P waves, and no clear sinus origin. Do not use Sinus Tachycardia for SVT presentations.
+- SVT holds a fixed rate of 150 or faster until it converts; it does not drift down with rest or reassurance. If the rate is under 150 or eases gradually, it is sinus tachycardia, not SVT. Use SVT when the presentation involves paroxysmal palpitations, abrupt onset tachycardia at 150-220 bpm, narrow complex rhythm, absent or retrograde P waves, and no clear sinus origin. Do not use Sinus Tachycardia for SVT presentations.
 - Use Atrial Fibrillation when the presentation involves an irregularly irregular pulse, absent P waves, and a clinical context supporting AFib such as known AFib history, alcohol use, hyperthyroidism, heart failure, or new onset palpitations with irregular rhythm on assessment.
 - Use Atrial Flutter when the presentation involves a regular tachycardia at approximately 150 bpm with a 2:1 block pattern, or 75-100 bpm with higher degree block, and a clinical context supporting flutter.
 - Use Ventricular Tachycardia when the presentation involves a wide complex tachycardia above 100 bpm, hemodynamic compromise, known structural heart disease, or post-MI context. Do not use Sinus Tachycardia for VT presentations.
