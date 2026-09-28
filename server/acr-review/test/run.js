@@ -90,6 +90,17 @@ async function edit(file, changes) {
   ok(fl.body.feedback.fixes.every((f) => f.evidence_verified), 'flawed chart: all evidence found on the chart');
   ok(validate(stripMeta(fl.body.feedback)), 'flawed feedback matches the schema');
 
+  // A weak chart with right-ish care: the server's documentation rules have to find what the form's checker can't.
+  const md = await post(port, { practiceConfirm: 'yes' }, fs.readFileSync(T('ACR_mediocre_overdose.pdf')));
+  const mdIssues = md.body.checker.issues.join(' | ');
+  ok(md.status === 200 && /Row 8 \(19:05\): GCS fell from 15 to 13/.test(mdIssues), 'mediocre chart: re-sedation with nothing charted after it is found');
+  ok(/glucose was checked 12 minutes after/.test(mdIssues) && /CTAS Arrive Patient is 2/.test(mdIssues) && /receiving hospital was notified/.test(mdIssues), 'mediocre chart: late glucose, CTAS and missing notification found');
+  ok(/"ED staff" with no name/.test(mdIssues) && /pill bottle/.test(mdIssues), 'mediocre chart: unnamed handover and pill bottle found');
+  ok(/Nothing charted after it shows/.test(md.body.feedback.fixes[0].issue), 'mediocre chart: the unanswered deterioration is fix 1');
+  const mdTotal = Number(String(md.body.feedback.meta.rubric_total).split('/')[0]);
+  ok(mdTotal >= 18 && mdTotal <= 28, `mediocre chart: rubric reflects the gaps (${md.body.feedback.meta.rubric_total})`);
+  ok(md.body.feedback.fixes.every((f) => f.evidence_verified), 'mediocre chart: all evidence found on the chart');
+
   const revised = await edit('ACR_find_the_errors.pdf', { 'Allergy - NKA': false, 'Allergy - Other (list below)': true, 'Treatment Row 3 - Dose/Unit': '5 mg' });
   const rv = await post(port, { practiceConfirm: 'yes', scenarioId: 'copd-exacerbation-01', previousFeedback: JSON.stringify(fl.body.feedback) }, revised);
   const imp = rv.body.feedback.improvement_since_last.join(' | ');

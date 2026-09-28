@@ -55,7 +55,8 @@ async function reviewWithOpenAI(input) {
 // Rule-based stand-in so the whole app can be tested without an API key. It uses only the checker,
 // the scenario comparison and simple chart facts. The UI labels its output as rule-based.
 const SEVERITY = [
-  [/NKA is ticked|allergy/i, 1], [/no vitals charted after|response isn't shown/i, 2], [/has no unit|has no route|has no dose/i, 2],
+  [/NKA is ticked|allergy/i, 1], [/Nothing charted after it shows/i, 1], [/no blood glucose|glucose was checked/i, 2],
+  [/CTAS Arrive Patient is|receiving hospital was notified|no ventilation rate/i, 3], [/with no name|pill bottle/i, 4], [/no vitals charted after|response isn't shown/i, 2], [/has no unit|has no route|has no dose/i, 2],
   [/is earlier than|before Patient Contact/i, 3], [/doesn't match|isn't on the current/i, 3], [/Only one set of vitals|No vitals/i, 3],
   [/contradict|Unremarkable, but/i, 4], [/Refusal/i, 2], [/who took over care/i, 4], [/Blank:/i, 5],
 ];
@@ -95,13 +96,18 @@ function mockReview(input) {
   const n = checker.issues.length;
   const clamp = (x) => Math.max(1, Math.min(7, x));
   const has = (re) => checker.issues.some((m) => re.test(m));
+  // The in-form checker's findings cost 2 points in their domain; the server's documentation rules cost 1, since a
+  // chart can have the care roughly right and still miss several of them. An unanswered deterioration costs 2 more.
+  const count = (re) => checker.issues.filter((m) => re.test(m)).length;
+  const missingExpected = input.possible_mismatches.filter((m) => /expected this|isn't on your chart|Did you find it/i.test(m.lead)).length;
+  const unanswered = count(/Nothing charted after it shows/i);
   const rubric = [
-    ['Completeness', clamp(7 - 2 * checker.issues.filter((m) => /Blank|nothing ticked|no box/i.test(m)).length - (has(/CNO/) ? 1 : 0))],
-    ['Accuracy and consistency', clamp(7 - 2 * checker.issues.filter((m) => /ticked but|Unremarkable, but|doesn't match|works out to|before the call date/i.test(m)).length)],
-    ['Chronology and reassessment', clamp(7 - 2 * checker.issues.filter((m) => /earlier than|before Patient Contact|vitals/i.test(m)).length)],
-    ['Clinical reasoning in the narrative', /because|so |rather than|decid|reason/i.test(chart.remarks) ? 6 : 3],
-    ['Codes, times and format', clamp(7 - 2 * checker.issues.filter((m) => /code|unit|route|designation|Age needs/i.test(m)).length)],
-    ['Handover, disposition and refusal', chart.refusal || chart.callEvents.TOC ? clamp(7 - 2 * checker.issues.filter((m) => /refusal|took over care|CTAS/i.test(m)).length) : null],
+    ['Completeness', clamp(7 - 2 * count(/Blank|nothing ticked|no box/i) - count(/no blood glucose|was notified|no ventilation rate|pill bottle/i) - (has(/CNO/) ? 1 : 0) - Math.min(2, missingExpected))],
+    ['Accuracy and consistency', clamp(7 - 2 * count(/ticked but|Unremarkable, but|doesn't match|works out to|before the call date/i) - count(/CTAS Arrive Patient is/i))],
+    ['Chronology and reassessment', clamp(7 - 2 * count(/earlier than|before Patient Contact|vitals charted after|Only one set/i) - count(/glucose was checked/i) - 2 * unanswered)],
+    ['Clinical reasoning in the narrative', /because|so |rather than|decid|reason/i.test(chart.remarks) ? clamp(6 - unanswered) : 3],
+    ['Codes, times and format', clamp(7 - 2 * count(/has no unit|has no route|has no dose|isn't on the current|problem code|designation|Age needs|time.*(before|earlier)/i))],
+    ['Handover, disposition and refusal', chart.refusal || chart.callEvents.TOC ? clamp(7 - 2 * count(/refusal|took over care/i) - count(/CTAS Arrive Patient is|was notified|with no name/i)) : null],
   ].map(([domain, score]) => ({ domain, score, evidence: score === null ? 'Nothing on this call needed it.' : `${n} checker finding${n === 1 ? '' : 's'} bear on this domain.` }));
   const prev = input.previous_feedback;
   const plain = (m) => m.replace(/\s*\((ODS 4\.0|ACR Manual)\)$/, '');
