@@ -65,16 +65,27 @@ const O2_TRIGGERS = [
   { re: /airway burn|singed (nasal|nose|facial|eyebrow)|soot (in|around|inside) (the |his |her |their )?(mouth|nose|nares|airway|sputum)|carbonaceous sputum|stridor[^.]{0,60}burn/i,
     why: 'signs of an upper airway burn' },
 ];
+// A fire, flash or blast with smoke around it, and a patient who is coughing, hoarse or short of breath afterwards,
+// is a smoke inhalation until proven otherwise, even with no soot in the mouth.
+// An event, not a campfire: a fire pit or fireplace nearby is not smoke exposure on its own.
+const FIRE_EVENT = /\b(caught fire|on fire|(house|structure|kitchen|grease|vehicle|car|shop|flash) fire|fire (broke out|in the)|flared( up)?|flash (burn|of flame)|explosion|exploded|blast|ignited|engulfed|burning (building|house|room|car|vehicle|apartment))\b/i;
+const SMOKE_AROUND = /\bsmoke\b|fumes|enclosed|indoors|small room|hallway|kitchen|garage|basement|bakery|workshop/i;
+const AIRWAY_SYMPTOM = /\bcough\w*|hoarse\w*|raspy|voice (change|is changed|sounds)|wheez\w*|stridor|short(ness)? of breath|difficulty breathing|dyspn\w*/i;
+function smokeExposure(story) {
+  return FIRE_EVENT.test(story) && SMOKE_AROUND.test(story) && affirmed(AIRWAY_SYMPTOM, story);
+}
+
 const HIGH_CONC = /high[- ]concentration|high[- ]flow|non-?rebreather|\bNRB\b|100 ?%|15 ?L/i;
 const O2_RESTRAINT = /over-?oxygenat|oxygen (is )?not (routine|indicated|needed)|oxygen without (a clear )?need|oxygen only if|blanket oxygen|not higher than needed/i;
 
 function highConcentrationOxygen(s, notes) {
   const story = text([s.incidentNarrative, s.sample, s.physicalExam, s.callInformation, s.patientDemographics?.chiefComplaint, s.patientPresentation]);
-  const hit = O2_TRIGGERS.find((t) => affirmed(t.re, story) && !(t.not && t.not.test(story) && !/scuba|decompression|gas embol/i.test(story)));
+  const hit = O2_TRIGGERS.find((t) => affirmed(t.re, story) && !(t.not && t.not.test(story) && !/scuba|decompression|gas embol/i.test(story)))
+    || (smokeExposure(story) ? { why: 'smoke exposure from a fire or flash with cough, hoarseness or breathing symptoms afterwards; carbon monoxide and airway injury are both possible' } : null);
   if (!hit) return;
   const tx = s.expectedTreatment;
   if (HIGH_CONC.test(text(tx))) return;
-  const line = `Give high-concentration oxygen by non-rebreather whatever the SpO2 reads: ${hit.why} is one of the exceptions to oxygen titration. Titrating to 92-96% is not the plan for this patient.`;
+  const line = `Give high-concentration oxygen by non-rebreather whatever the SpO2 reads (${hit.why}). This is one of the exceptions to oxygen titration, so titrating to 92-96% is not the plan for this patient.`;
   const o2 = tx.findIndex((t) => /\boxygen\b|\bO2\b|nasal cannula|SpO2 (of )?9\d/i.test(t));
   if (o2 !== -1) tx[o2] = line;
   else insertLine(tx, line, /primary (survey|assessment)|scene safety/i);
