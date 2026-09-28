@@ -25,6 +25,7 @@ import { reviewAcr } from './lib/reviewAcr.js';
 import { acrForScenario, LINK_FIELD, templateVersion } from './lib/prefill.js';
 import { open } from './lib/scenarioToken.js';
 
+import { documentationRules } from './lib/documentationRules.js';
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: 12 * 1024 * 1024, files: 1, fieldSize: 256 * 1024 },
@@ -100,6 +101,10 @@ router.post('/', reviewLimiter, upload.single('acr'), async (req, res) => {
     checkPracticeOnly(fields);
     const chart = chartModel(fields);
     const checker = runChecker(fields);
+    // Rules the in-form checker can't run (they need the whole chart at once). They join its issues.
+    const extra = documentationRules(chart, checker.issues);
+    checker.issues.push(...extra);
+    checker.issueDetails.push(...extra.map((msg) => ({ msg, fields: [], values: [] })));
 
     let scenario = sealed ? sealed.scenario : null;
     let scenarioSource = sealed ? 'linked' : 'none';

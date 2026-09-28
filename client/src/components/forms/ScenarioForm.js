@@ -5,6 +5,7 @@ import { FaSpinner, FaFilePdf, FaFileMedical, FaClipboardList, FaUserGraduate, F
 import { ACR_FORM_VERSION, downloadScenarioAcr, errorMessage } from "../acr/acrApi";
 import { openRunSheet } from "../runsheet/runSheet";
 import { RhythmStripSVG, TwelveLeadSVG } from "../ecg/EcgViews";
+import { drawRhythmStrip, drawTwelveLead } from "../ecg/ecgPdf";
 import { showToast } from "../toast/Toast";
 import { buildShareLink, canShareLinks, clearSharedHash, hasSharedScenario, readSharedScenario } from "../../utils/shareLink";
 
@@ -1360,14 +1361,17 @@ const ScenarioForm = () => {
     };
 
     const drawPageFooter = (pageNum, total) => {
+      // Read the size per page: the 12-lead page is landscape.
+      const w = doc.internal.pageSize.getWidth();
+      const fy = doc.internal.pageSize.getHeight() - 11;
       doc.setFont(undefined, "normal");
       doc.setFontSize(7.8);
       doc.setTextColor(...palette.mutedText);
       doc.setDrawColor(...palette.line);
       doc.setLineWidth(0.18);
-      doc.line(marginX, footerY, pageWidth - marginX, footerY);
-      doc.text(documentTitle, marginX, footerY + 4.2);
-      doc.text(`Page ${pageNum} of ${total}`, pageWidth - marginX, footerY + 4.2, { align: "right" });
+      doc.line(marginX, fy, w - marginX, fy);
+      doc.text(documentTitle, marginX, fy + 4.2);
+      doc.text(`Page ${pageNum} of ${total}`, w - marginX, fy + 4.2, { align: "right" });
     };
 
     const drawPhaseDivider = (label) => {
@@ -1525,8 +1529,61 @@ const ScenarioForm = () => {
         });
       });
 
+      // The rhythm strips print right under the ECG summary, one per rhythm the call goes through.
+      if (entry.key === "ecgSummary") {
+        const vs = scenario.vitalSigns || {};
+        const sets = [vs.firstSet, vs.secondSet, ...(Array.isArray(vs.additionalSets) ? vs.additionalSets : [])].filter((s) => s && s.ecgInterpretation);
+        const seen = new Set();
+        sets.filter((s) => !seen.has(s.ecgInterpretation) && seen.add(s.ecgInterpretation)).slice(0, 3).forEach((s) => {
+          needsNewPage(42);
+          const hr = parseECGHR(s.hr);
+          const flat = /fibrillation$|asystole/i.test(s.ecgInterpretation) && !/atrial/i.test(s.ecgInterpretation);
+          const caption = ["Lead II", s.context || "", s.ecgInterpretation, flat ? "" : `${hr} bpm`].map((part) => sanitizePdfText(part).trim()).filter(Boolean).join("  ·  ");
+          y += drawRhythmStrip(doc, { x: marginX + (pageWidth - 2 * marginX - 150) / 2, y, rhythm: s.ecgInterpretation, hr, patternKey: scenario.ecgFindings?.patternKey || "", caption });
+        });
+        const type = scenario.ecgFindings?.ecgType;
+        if (type === "12-lead" || type === "15-lead") {
+          needsNewPage(6);
+          doc.setFont(undefined, "italic");
+          doc.setFontSize(8.5);
+          doc.setTextColor(...palette.mutedText);
+          doc.text(`The full ${type === "15-lead" ? "15" : "12"}-lead printout is on the last page, landscape, at true scale.`, marginX + 12, y + 3);
+          y += 6;
+        }
+      }
+
       y += 2;
     });
+
+    // -- 12-lead on its own landscape page, at true scale -----------------------
+    const ecg = scenario.ecgFindings || {};
+    if (ecg.ecgType === "12-lead" || ecg.ecgType === "15-lead") {
+      doc.addPage("a4", "landscape");
+      const lw = doc.internal.pageSize.getWidth();
+      doc.setFillColor(...palette.ink);
+      doc.rect(0, 0, lw, 15, "F");
+      doc.setFillColor(...palette.orange);
+      doc.rect(0, 0, 3.5, 15, "F");
+      doc.setFont(undefined, "bold");
+      doc.setFontSize(10);
+      doc.setTextColor(255, 255, 255);
+      doc.text(`${ecg.ecgType === "15-lead" ? "15" : "12"}-Lead ECG`, 14, 9.5);
+      doc.setFont(undefined, "normal");
+      doc.setFontSize(8.5);
+      doc.text(documentTitle, lw - 14, 9.5, { align: "right" });
+      const ly = 22 + drawTwelveLead(doc, {
+        x: (lw - 250) / 2, y: 22, ecgType: ecg.ecgType,
+        rhythmInterp: scenario.vitalSigns?.firstSet?.ecgInterpretation || "",
+        twelveLeadFindings: ecg.twelveLeadFindings || "", fifteenLeadFindings: ecg.fifteenLeadFindings || "",
+        hr: parseECGHR(scenario.vitalSigns?.firstSet?.hr), patternKey: ecg.patternKey || "",
+      });
+      if (ecg.twelveLeadFindings) {
+        doc.setFont(undefined, "normal");
+        doc.setFontSize(8.5);
+        doc.setTextColor(...palette.neutralText);
+        doc.text(doc.splitTextToSize(sanitizePdfText(ecg.twelveLeadFindings), 250).slice(0, 4), (lw - 250) / 2, ly + 5);
+      }
+    }
 
     // -- Footer on every page -------------------------------------------------
     const totalPages = doc.getNumberOfPages();
