@@ -228,6 +228,7 @@ Medications and Directives:
 
 Hypoglycemia:
 - A BGL under 4.0 mmol/L is hypoglycemia. With an altered level of awareness it is treated under the Hypoglycemia directive (Semester 2: recognized and considered by name). Never call a BGL under 4.0 "low-normal" or "borderline".
+- Oral glucose is only for a patient who is alert and able to swallow safely. A confused or drowsy patient gets glucagon IM, or dextrose IV if authorized for the IV auxiliary directive. If the BGL keeps falling or the patient does not wake up, the treatment escalates; it does not stop at oral glucose.
 
 Scene Safety:
 - When the injury came from an assault, a fight, a weapon or any violence, the call information names police and scene safety, and expectedTreatment starts with staging or confirming the scene is secure.

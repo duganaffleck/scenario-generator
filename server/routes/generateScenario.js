@@ -6,6 +6,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { jsonrepair } from 'jsonrepair';
 import { buildDirectivePromptAddendum, buildForbiddenTreatmentTerms, scrubOutOfScopeText } from '../data/ontarioDirectiveRules.js';
+import { clinicalSafetyNet } from './clinicalSafetyNet.js';
 
 const router = express.Router();
 const __filename = fileURLToPath(import.meta.url);
@@ -1013,6 +1014,8 @@ function normalizeScenario(parsed, options = {}) {
 
   let filled = fillScenarioGaps(normalized, options);
   if (optSemester || optType) scrubOutOfScopeProse(filled);
+  const caught = clinicalSafetyNet(filled, { semester: optSemester, type: optType });
+  if (caught.length) console.log(`[safety net] ${caught.join(', ')}`);
   if (!TEACHING_CUES_ON) filled = stripTeachingCuesDeep(filled);
   return scrubEmDashesDeep(filled);
 }
