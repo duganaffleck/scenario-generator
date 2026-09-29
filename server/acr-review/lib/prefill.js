@@ -12,7 +12,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const TEMPLATE = path.join(__dirname, '..', 'assets', 'ACR_practice_v3.pdf');
 export const LINK_FIELD = 'Scenario Link';
 
-// The version printed in the template's title ("Practice Ambulance Call Report v3.4"), read once.
+// The version printed in the template's title ("Practice Ambulance Call Report v3.5"), read once.
 // Reported by /config and on every pre-filled ACR, so an out-of-date server shows up on screen.
 let versionPromise;
 export function templateVersion() {
