@@ -499,7 +499,7 @@ function acrReadBack(doc) {
   var text = s.join("\n");
   if (gaps.length) text += "\n\nHard to hand over from this chart: " + gaps.join("; ") + ".";
   text += "\n\nThis is built only from what's on your chart. Anything you'd want to say that isn't here, chart it.";
-  app.alert({ cMsg: text, cTitle: "Read back (handover practice)", nIcon: 3 });
+  app.alert({ cMsg: text, cTitle: "Triage report (handover practice)", nIcon: 3 });
   return text;
 }
 
