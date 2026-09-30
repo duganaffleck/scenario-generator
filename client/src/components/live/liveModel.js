@@ -74,6 +74,17 @@ export function vitalSets(scenario) {
     });
 }
 
+// Chest compressions on the ECG: a big rolling artifact at about 110 a minute that buries the real rhythm.
+// Returns millivolts, like the ECG samples, so the monitor and the printed strip draw it the same way.
+export const CPR_RATE = 110;
+export function cprArtifact(t) {
+  const period = 60000 / CPR_RATE;
+  const phase = (((t % period) + period) % period) / period;
+  const depth = 0.9 + 0.1 * Math.sin(t / 1700);
+  const v = phase < 0.45 ? 1.6 * Math.sin((Math.PI * phase) / 0.45) : -0.35 * Math.sin((Math.PI * (phase - 0.45)) / 0.55);
+  return v * depth;
+}
+
 export const clock = (ms) => {
   const s = Math.max(0, Math.floor(ms / 1000));
   return `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;

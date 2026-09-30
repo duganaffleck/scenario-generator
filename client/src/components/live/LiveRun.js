@@ -8,6 +8,10 @@ import { clock, progressionNotes, suggestedCo2Shape, vitalSets } from "./liveMod
 import "./live.css";
 
 const MONITOR_FEATURES = "popup=yes,width=1100,height=720";
+const CYCLE_MS = 2 * 60 * 1000; // a two-minute CPR cycle, for the since-last-analysis clock
+
+// Arrest timing, all in run-clock milliseconds. Pauses are the hands-off gaps between stopping and restarting CPR.
+const NO_ARREST = { pads: false, padsAt: null, cpr: false, cprEverOn: false, pauseAt: null, pauses: [], analyses: [], shocks: [], shockId: 0 };
 
 export default function LiveRun({ scenario, studentMode, onClose }) {
   const sets = useMemo(() => vitalSets(scenario), [scenario]);
@@ -24,6 +28,7 @@ export default function LiveRun({ scenario, studentMode, onClose }) {
   const [monitorSeen, setMonitorSeen] = useState(0);
   const [popupBlocked, setPopupBlocked] = useState(false);
   const [prints, setPrints] = useState([]);
+  const [arrest, setArrest] = useState(NO_ARREST);
   const autoShape = useMemo(() => suggestedCo2Shape(scenario), [scenario]);
   const [co2Shape, setCo2Shape] = useState(autoShape);
   const startedAt = useRef(null);
@@ -46,8 +51,9 @@ export default function LiveRun({ scenario, studentMode, onClose }) {
       clock: clock(elapsed),
       set: {
         hr: set.hr, rr: set.rr, spo2: set.spo2, etco2: set.etco2, rhythm: set.rhythm, noPulse: set.noPulse,
-        sys: set.sys, dia: set.dia, bgl: set.bgl, temp: set.temp,
+        sys: set.sys, dia: set.dia, bgl: set.bgl, temp: set.temp, etco2Estimated: set.etco2Estimated,
       },
+      arrest: { pads: arrest.pads, cpr: arrest.cpr, shockId: arrest.shockId },
       attached,
       nibp,
       reveal,
@@ -60,7 +66,7 @@ export default function LiveRun({ scenario, studentMode, onClose }) {
       co2Shape,
       ended: false,
     }),
-    [running, elapsed, set, attached, nibp, reveal, scenario, prints, co2Shape]
+    [running, elapsed, set, attached, nibp, reveal, scenario, prints, co2Shape, arrest.pads, arrest.cpr, arrest.shockId]
   );
   const stateRef = useRef(monitorState);
   stateRef.current = monitorState;
@@ -121,8 +127,52 @@ export default function LiveRun({ scenario, studentMode, onClose }) {
   // A 12- or 15-lead, from this panel or from the monitor itself. It prints the patient as they are right now.
   const acquire = (leads) => {
     if (!attached.ecg) setAttached((a) => ({ ...a, ecg: true }));
-    setPrints((p) => [...p, { id: Date.now(), leads, at: clock(elapsed), hr: set.hr, rhythm: set.rhythm }].slice(-4));
+    setPrints((p) => [...p, { id: Date.now(), leads, at: clock(elapsed), hr: set.hr, rhythm: set.rhythm }].slice(-6));
     addLog(`${leads}-lead acquired`);
+  };
+
+  // Arrest marks. These record what the crew did and when; the rhythm only changes when you pick the next set.
+  const now = () => (running && startedAt.current ? Date.now() - startedAt.current : elapsed);
+  const startClock = () => {
+    if (!running) setRunning(true);
+  };
+  const togglePads = () => {
+    startClock();
+    const t = now();
+    const on = !arrest.pads;
+    setArrest((a) => ({ ...a, pads: on, padsAt: on && a.padsAt === null ? t : a.padsAt }));
+    addLog(on ? "Pads on" : "Pads off");
+  };
+  const toggleCpr = () => {
+    startClock();
+    const t = now();
+    if (!arrest.cpr) {
+      const gap = arrest.pauseAt !== null ? t - arrest.pauseAt : null;
+      setArrest((a) => ({ ...a, cpr: true, cprEverOn: true, pauseAt: null, pauses: gap !== null ? [...a.pauses, gap] : a.pauses }));
+      addLog(gap !== null ? `CPR resumed · hands off ${clock(gap)}` : "CPR started");
+    } else {
+      setArrest((a) => ({ ...a, cpr: false, pauseAt: t }));
+      addLog("CPR stopped");
+    }
+  };
+  const analyze = () => {
+    if (!arrest.pads) return;
+    startClock();
+    const t = now();
+    const prev = arrest.analyses[arrest.analyses.length - 1];
+    const when = prev === undefined ? `first, ${clock(t - arrest.padsAt)} after pads on` : `${clock(t - prev)} since the last one`;
+    setArrest((a) => ({ ...a, analyses: [...a.analyses, t] }));
+    setPrints((p) => [...p, { id: Date.now(), leads: "strip", source: attached.ecg ? "leads" : "pads", at: clock(t), hr: set.hr, rhythm: set.rhythm, cpr: arrest.cpr }].slice(-6));
+    addLog(`Analyse · ${when}${arrest.cpr ? " · compressions still going" : ""}`);
+  };
+  const shock = () => {
+    if (!arrest.pads) return;
+    startClock();
+    const t = now();
+    const prev = arrest.analyses[arrest.analyses.length - 1];
+    const n = arrest.shocks.length + 1;
+    setArrest((a) => ({ ...a, shocks: [...a.shocks, t], shockId: Date.now() }));
+    addLog(`Shock ${n} · ${prev === undefined ? "no analysis before it" : `${clock(t - prev)} after analysing`}${arrest.cpr ? " · compressions still going" : ""}`);
   };
   const acquireRef = useRef(null);
   acquireRef.current = acquire;
@@ -137,9 +187,16 @@ export default function LiveRun({ scenario, studentMode, onClose }) {
     setReveal({ bgl: false, temp: false });
     setLog([]);
     setPrints([]);
+    setArrest(NO_ARREST);
   };
 
   const connected = Date.now() - monitorSeen < 7000;
+  const hasArrest = sets.some((s) => s.noPulse);
+  const lastAnalysis = arrest.analyses[arrest.analyses.length - 1];
+  const sinceAnalysis = lastAnalysis === undefined ? null : Math.max(0, elapsed - lastAnalysis);
+  const handsOffNow = !arrest.cpr && arrest.pauseAt !== null ? Math.max(0, elapsed - arrest.pauseAt) : null;
+  const handsOffTotal = arrest.pauses.reduce((a, b) => a + b, 0) + (handsOffNow || 0);
+  const longestPause = Math.max(0, ...arrest.pauses, handsOffNow || 0);
 
   if (!confirmed) {
     return (
@@ -216,6 +273,33 @@ export default function LiveRun({ scenario, studentMode, onClose }) {
             {autoShape === "shark" && <span className="lr-hint">Suggested by the scenario</span>}
           </label>
         </section>
+
+        <details className="lr-card lr-arrest" open={hasArrest || undefined}>
+          <summary className="lr-h3">Cardiac arrest{hasArrest ? "" : " (not expected in this scenario)"}</summary>
+          <p className="lr-hint">Mark what the crew does and when. The rhythm only changes when you pick the next set below.</p>
+          <div className="lr-row">
+            <button type="button" className={`lr-chip${arrest.pads ? " lr-chip--on" : ""}`} aria-pressed={arrest.pads} onClick={togglePads}>Pads on</button>
+            <button type="button" className={`lr-chip${arrest.cpr ? " lr-chip--on lr-chip--cpr" : ""}`} aria-pressed={arrest.cpr} onClick={toggleCpr}>
+              {arrest.cpr ? "CPR on · tap when they stop" : arrest.cprEverOn ? "CPR stopped · tap when they resume" : "Start CPR"}
+            </button>
+            <button type="button" className="lr-chip" onClick={analyze} disabled={!arrest.pads}>Analyse</button>
+            <button type="button" className="lr-chip lr-chip--shock" onClick={shock} disabled={!arrest.pads}>Shock</button>
+          </div>
+          {!arrest.pads && <p className="lr-hint">Analyse and Shock unlock once pads are on.</p>}
+          <dl className="lr-now lr-arrest-times">
+            <div><dt>Pads on at</dt><dd>{arrest.padsAt === null ? "-" : clock(arrest.padsAt)}</dd></div>
+            <div className={sinceAnalysis !== null && sinceAnalysis > CYCLE_MS ? "lr-late" : ""}>
+              <dt>Since last analysis</dt><dd>{sinceAnalysis === null ? "-" : clock(sinceAnalysis)}</dd>
+            </div>
+            <div className={handsOffNow !== null && handsOffNow > 10000 ? "lr-late" : ""}>
+              <dt>Hands off now</dt><dd>{handsOffNow === null ? "-" : clock(handsOffNow)}</dd>
+            </div>
+            <div><dt>Analyses</dt><dd>{arrest.analyses.length}</dd></div>
+            <div><dt>Shocks</dt><dd>{arrest.shocks.length}</dd></div>
+            <div><dt>Hands off, total</dt><dd>{arrest.cprEverOn ? clock(handsOffTotal) : "-"}</dd></div>
+            <div><dt>Longest pause</dt><dd>{arrest.cprEverOn && longestPause ? clock(longestPause) : "-"}</dd></div>
+          </dl>
+        </details>
 
         <section className="lr-card">
           <h3 className="lr-h3">Where the call is now</h3>

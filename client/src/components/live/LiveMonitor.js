@@ -5,9 +5,11 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { isRhythmOnlyPattern, normalizeRhythm, sampleLead } from "../ecg/ecgEngine";
 import { openLiveChannel, readLiveState } from "./liveChannel";
 import EcgPrintouts from "./EcgPrintouts";
+import { cprArtifact } from "./liveModel";
 import "./live.css";
 
 const COLORS = { ecg: "#3ee07a", pleth: "#43c6e8", co2: "#f5d547", nibp: "#e8ecef" };
+const SHOCK_MS = 700; // how long a defibrillation spike and its recovery take on the trace
 const SWEEP_MS = 6000; // screen width in time, like a 25 mm/s strip
 
 // Pleth and capnography shapes, one cycle each, phase 0..1 -> 0..1
@@ -57,6 +59,9 @@ function Trace({ kind, params }) {
     let x = 0;
     let T = 0;
     let lastY = null;
+    // A shock only draws when it's new: opening the monitor mid-run doesn't replay an old one.
+    let seenShock = live.current && live.current.shockId;
+    let shockT = null;
     let last = performance.now();
     let raf = 0;
 
@@ -64,10 +69,16 @@ function Trace({ kind, params }) {
       const p = live.current;
       if (!p || !p.on) return null;
       if (kind === "ecg") {
+        if (shockT !== null && t - shockT >= 0 && t - shockT < SHOCK_MS) {
+          const d = t - shockT;
+          if (d < 25) return H * 0.04;
+          if (d < 60) return H * 0.96;
+          return H * 0.58 + H * 0.3 * Math.exp(-(d - 60) / 140);
+        }
         const s = p.samples;
         if (!s || !s.length) return H * 0.55;
         const i = Math.floor((((t % p.duration) + p.duration) % p.duration) / 4) % s.length;
-        const v = s[i] ? s[i][1] : 0;
+        const v = (s[i] ? s[i][1] : 0) * (p.cpr ? 0.35 : 1) + (p.cpr ? cprArtifact(t) : 0);
         return H * 0.58 - v * (H / 3.2);
       }
       if (kind === "pleth") {
@@ -83,6 +94,11 @@ function Trace({ kind, params }) {
     const frame = (now) => {
       const dt = Math.max(0, Math.min(100, now - last)); // rAF can report a time just before `last`
       last = now;
+      const cur = live.current;
+      if (cur && cur.shockId && cur.shockId !== seenShock) {
+        seenShock = cur.shockId;
+        shockT = T;
+      }
       const pxPerMs = W / SWEEP_MS;
       const steps = Math.max(1, Math.ceil(dt * pxPerMs));
       ctx.lineWidth = 2.2 * dpr;
@@ -160,15 +176,24 @@ function MonitorFace({ state, onAcquire, buttonsSlot }) {
     }
   }, [rhythm, ecgRate, shapeKey]);
 
-  const eHr = round(useEased(hr, 6));
-  const eSpo2 = round(useEased(set.spo2, 2));
-  const eCo2 = round(useEased(set.etco2, 2));
-  const eRr = round(useEased(set.rr, 2));
-  const perfusionAmp = set.noPulse ? 0 : set.sys && set.sys < 90 ? 0.45 : 0.85;
+  const arrest = state.arrest || {};
+  const cpr = !!arrest.cpr;
+  const ecgOn = !!att.ecg || !!arrest.pads;
+  // In arrest, CO2 comes from compressions and bagging: low (the scenario's number if it gives one) with about
+  // 10 breaths a minute during CPR, a flat line when compressions stop. A set with a pulse brings it back up (ROSC).
+  const co2Target = set.noPulse ? (cpr ? (set.etco2Estimated ? 14 : set.etco2) : 0) : set.etco2;
+  const co2Rate = set.noPulse ? (cpr ? 10 : 0) : set.rr || 0;
 
-  const apnea = !!att.etco2 && !set.noPulse && (!set.rr || set.rr <= 0);
+  const eHr = round(useEased(hr, 6));
+  const eSpo2 = round(useEased(set.noPulse ? null : set.spo2, 2));
+  const eCo2 = round(useEased(co2Target, set.noPulse ? 10 : 3)); // capnography changes breath to breath in arrest
+  const eRr = round(useEased(set.noPulse ? co2Rate : set.rr, 2));
+  const perfusionAmp = set.noPulse ? (cpr ? 0.3 : 0) : set.sys && set.sys < 90 ? 0.45 : 0.85;
+  const plethRate = set.noPulse ? (cpr ? 110 : 0) : set.hr;
+
+  const apnea = !!att.etco2 && co2Rate <= 0;
   const alarm = {
-    hr: att.ecg && eHr !== null && (eHr < 50 || eHr > 130),
+    hr: ecgOn && ((eHr !== null && (eHr < 50 || eHr > 130)) || (!!set.noPulse && !cpr)),
     spo2: att.spo2 && eSpo2 !== null && eSpo2 < 90,
     co2: att.etco2 && (apnea || (eCo2 !== null && (eCo2 > 50 || eCo2 < 30))),
   };
@@ -192,16 +217,18 @@ function MonitorFace({ state, onAcquire, buttonsSlot }) {
   return (
     <div className="lm-face">
       <div className="lm-traces">
-        <div className="lm-trace-label" style={{ color: COLORS.ecg }}>II {att.ecg ? "" : "· leads off"}</div>
-        <Trace kind="ecg" params={{ on: !!att.ecg, samples, duration: 12000 }} />
+        <div className="lm-trace-label" style={{ color: COLORS.ecg }}>
+          {!att.ecg && arrest.pads ? "Pads" : "II"} {ecgOn ? "" : "· leads off"}
+        </div>
+        <Trace kind="ecg" params={{ on: ecgOn, samples, duration: 12000, cpr, shockId: arrest.shockId || 0 }} />
         <div className="lm-trace-label" style={{ color: COLORS.pleth }}>Pleth {att.spo2 ? "" : "· probe off"}</div>
-        <Trace kind="pleth" params={{ on: !!att.spo2, rate: set.noPulse ? 0 : set.hr, amp: perfusionAmp }} />
+        <Trace kind="pleth" params={{ on: !!att.spo2, rate: plethRate, amp: perfusionAmp }} />
         <div className="lm-trace-label" style={{ color: COLORS.co2 }}>
           CO2 {att.etco2 ? "" : "· not connected"}
           {apnea && <span className="lm-apnea">APNEA</span>}
         </div>
         <div className="lm-co2-wrap">
-          <Trace kind="co2" params={{ on: !!att.etco2, rate: set.rr || 0, shape: state.co2Shape, amp: Math.max(0.08, Math.min(1.1, (eCo2 || 0) / 60)) }} />
+          <Trace kind="co2" params={{ on: !!att.etco2, rate: co2Rate, shape: set.noPulse ? "normal" : state.co2Shape, amp: Math.max(0.08, Math.min(1.1, (eCo2 || 0) / 60)) }} />
           {att.etco2 && (
             <div className="lm-co2-scale" aria-hidden="true">
               <span style={{ top: "25.5%" }}>50</span>
@@ -212,7 +239,7 @@ function MonitorFace({ state, onAcquire, buttonsSlot }) {
         <EcgPrintouts prints={state.prints} ecgOn={!!att.ecg} onAcquire={onAcquire} ecg={state.ecg} patternKey={state.patternKey} buttonsSlot={buttonsSlot} />
       </div>
       <div className="lm-nums">
-        {cell("hr", "HR", eHr, "bpm", rhythm, !!att.ecg, alarm.hr)}
+        {cell("hr", "HR", eHr, "bpm", cpr ? "CPR in progress" : ecgOn ? rhythm : "", ecgOn, alarm.hr)}
         {cell("spo2", "SpO2", eSpo2, "%", "", !!att.spo2, alarm.spo2)}
         {cell("co2", "EtCO2", eCo2, "mmHg", eRr !== null ? `awRR ${eRr}` : "", !!att.etco2, alarm.co2)}
         {cell("nibp", "NIBP", state.nibp ? `${state.nibp.sys}/${state.nibp.dia}` : null, "mmHg",
