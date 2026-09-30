@@ -210,6 +210,35 @@ async function edit(file, changes) {
   const hashes = copies.map((p) => (fs.existsSync(p) ? crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex') : 'missing'));
   ok(hashes.every((h) => h !== 'missing' && h === hashes[0]), 'blank Practice ACR is identical on the server and the site');
 
+  // Triage report practice: the report is checked against the chart, rule by rule.
+  {
+    const { checkTriageReport, normalizeSpoken } = await import('../lib/triageReport.js');
+    ok(normalizeSpoken('pressure one-oh-two over sixty, sats ninety-five, sugar five point nine, at eighteen thirty') === 'pressure 102/60 sats 95 sugar 5.9 at 1830', 'spoken numbers become digits');
+    const odChart = chartModel((await extractAcr(fs.readFileSync(T('ACR_mediocre_overdose.pdf')))).fields);
+    const good = checkTriageReport(odChart, 'This is a 34 year old male, suspected opioid overdose. GCS 11 on arrival, now 13. Resps 8, now 10. Sats 94, BP 124/76, heart rate 76, end tidal 47. We bagged him and gave naloxone 0.4 IM. Sugar 5.8. No known allergies.', { durationSec: 40 });
+    ok(good.items.every((i) => i.status === 'ok'), `a complete report passes every check (${good.items.filter((i) => i.status !== 'ok').map((i) => i.title).join('; ') || 'none open'})`);
+    const bad = checkTriageReport(odChart, 'Thirty four year old male, overdose. GCS 12, sats 89. We haven\'t given anything.');
+    const titles = bad.items.map((i) => `${i.status}:${i.title}`).join(' | ');
+    ok(/conflict:You said GCS 12/.test(titles), 'a number that is not on the chart is a conflict');
+    ok(/conflict:You said nothing was given/.test(titles), '"nothing given" with naloxone on the chart is a conflict');
+    ok(/note:SpO2 from an earlier set/.test(titles) && /missing:Naloxone/.test(titles), 'an old value is flagged, and a missing drug is named');
+    const typed = await new Promise((resolve) => {
+      const boundary = 'x' + Date.now();
+      const pdf = fs.readFileSync(T('ACR_mediocre_overdose.pdf'));
+      const part = (name, value) => `--${boundary}\r\nContent-Disposition: form-data; name="${name}"\r\n\r\n${value}\r\n`;
+      const body = Buffer.concat([
+        Buffer.from(part('practiceConfirm', 'yes') + part('transcript', 'Thirty four year old male, GCS 13, sats 94.')
+          + `--${boundary}\r\nContent-Disposition: form-data; name="acr"; filename="acr.pdf"\r\nContent-Type: application/pdf\r\n\r\n`),
+        pdf, Buffer.from(`\r\n--${boundary}--\r\n`)]);
+      const req = http.request({ port: server.address().port, path: '/api/acr-review/triage-report', method: 'POST',
+        headers: { 'Content-Type': `multipart/form-data; boundary=${boundary}`, 'Content-Length': body.length } }, (res) => {
+        let d = ''; res.on('data', (c) => (d += c)); res.on('end', () => resolve({ status: res.statusCode, body: JSON.parse(d) }));
+      });
+      req.end(body);
+    });
+    ok(typed.status === 200 && typed.body.source === 'typed' && typed.body.items.some((i) => i.title === 'GCS matches your last set'), 'POST /triage-report checks a typed report against the uploaded chart');
+  }
+
   server.close();
   console.log(failed ? `\n${failed} FAILED` : '\nall passed');
   process.exit(failed ? 1 : 0);

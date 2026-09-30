@@ -66,3 +66,9 @@ export async function downloadScenarioAcr(scenario, onWaking) {
   setTimeout(() => URL.revokeObjectURL(url), 10000);
   return { callNumber, formVersion };
 }
+
+// Triage report practice: the chart plus a recording or typed report, checked against each other.
+export async function checkTriageReport(formData, onWaking) {
+  const res = await withWake(() => axios.post(`${ACR}/triage-report`, formData, { timeout: 120000 }), onWaking);
+  return res.data;
+}
