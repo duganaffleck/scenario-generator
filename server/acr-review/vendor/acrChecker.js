@@ -51,19 +51,29 @@ function acrRow(doc, i) {
   for (c = 0; c < ACR_COLS.length; c++) if (r[ACR_COLS[c]]) r.used = true;
   return r;
 }
-// A row the text carried on to from the row above (written across, no time, code, crew or columns) is part of that
-// entry, not an entry of its own: its words join the row above.
-function acrIsCarry(r) {
-  if (!r.fullLine || r.time || r.code || r.crew || !r.line) return false;
+// A row the text carried on to from the row above is part of that entry, not an entry of its own: its words join
+// the row above. It counts only when it looks exactly like a carry: written across, no time, code, crew or columns,
+// and the same side of the row above is full (its text plus this row's first word wouldn't have fit). A new entry
+// that's only missing its time and code, under a short line, is still flagged.
+function acrLineFull(prevText, nextText, side) {
+  var room = ACR_LINE_ROOM[side], first = String(nextText || "").split(/\s+/)[0] || "";
+  if (!prevText) return false;
+  return acrTextWidth(prevText + " mmm") > room || acrTextWidth(prevText + " " + first) > room;
+}
+function acrIsCarry(r, above) {
+  if (!above || !r.fullLine || r.time || r.code || r.crew || !r.line) return false;
   for (var c = 0; c < ACR_COLS.length; c++) if (r[ACR_COLS[c]]) return false;
+  if (r.procLine && !acrLineFull(above.procLine, r.procLine, "P")) return false;
+  if (r.resultLine && !acrLineFull(above.resultLine, r.resultLine, "R")) return false;
   return true;
 }
 function acrRows(doc) {
-  var out = [];
+  var out = [], above = null;
   for (var i = 1; i <= ACR_ROWS; i++) {
-    var r = acrRow(doc, i), last = out[out.length - 1];
+    var r = acrRow(doc, i), last = out[out.length - 1], raw = above;
+    above = r;  // the row directly above the next one, as written (before any joining)
     if (!r.used) continue;
-    if (last && acrIsCarry(r) && last.i + (last.carried || 0) === i - 1) {
+    if (last && acrIsCarry(r, raw) && last.i + (last.carried || 0) === i - 1) {
       if (r.procLine) last.procLine = last.procLine ? last.procLine + " " + r.procLine : r.procLine;
       if (r.resultLine) last.resultLine = last.resultLine ? last.resultLine + " " + r.resultLine : r.resultLine;
       last.line = last.procLine && last.resultLine ? last.procLine + ", " + last.resultLine : (last.procLine || last.resultLine);
@@ -213,7 +223,9 @@ function acrTextWidth(s) {
   for (var k = 0; k < s.length; k++) { var c = s.charCodeAt(k); w += (c >= 32 && c <= 126) ? ACR_HELV[c - 32] : 600; }
   return w * ACR_LINE_PT / 1000;
 }
-function acrLineRoom(f) { var r = f.rect; return Math.abs(r[2] - r[0]) - 5; }
+// The usable width of a write-across line, in points: the procedure side is 191.6 wide, the Results side 159.8.
+var ACR_LINE_ROOM = { P: 186.6, R: 154.8 };
+function acrLineRoom(f) { var r = f && f.rect; return r ? Math.abs(r[2] - r[0]) - 5 : ACR_LINE_ROOM[/Result/.test(f && f.name) ? "R" : "P"]; }
 function acrFits(f, s) { return acrTextWidth(s) <= acrLineRoom(f); }
 // What fits on this line, and the rest. Breaks at a space where it can.
 function acrSplitLine(f, s) {

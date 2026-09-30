@@ -211,15 +211,24 @@ async function edit(file, changes) {
   ok(hashes.every((h) => h !== 'missing' && h === hashes[0]), 'blank Practice ACR is identical on the server and the site');
 
   // v3.6: a write-across line that carries on to the row below is one entry, not a row missing its time and code.
+  // It only counts as carried on when the line above is full; under a short line it's a new entry and still flagged.
   {
-    const carried = await edit('ACR_model_chest_pain.pdf', { 'Treatment Row 13 - Procedure Across': true, 'Treatment Row 13 - Procedure Line': 'ETA 10 min, report given to triage RN' });
+    const FULL = 'Fleming General triage: 64 M ischemic chest pain, no STEMI on the 12-lead,';
+    const carried = await edit('ACR_model_chest_pain.pdf', { 'Treatment Row 12 - Procedure Line': FULL, 'Treatment Row 13 - Procedure Across': true, 'Treatment Row 13 - Procedure Line': 'ETA 10 min, report given to triage RN' });
     const cr = await post(port, { practiceConfirm: 'yes', scenarioId: 'chest-pain-ischemic-01' }, carried);
     const issues = (cr.body.checker && cr.body.checker.issues) || [];
-    ok(cr.status === 200 && !issues.some((x) => /Row 13 /.test(x)), `a carried-on row isn't flagged as a row of its own (${issues.filter((x) => /Row 13 /.test(x)).join('; ') || 'none'})`);
+    ok(cr.status === 200 && !issues.some((x) => /Row 13 /.test(x)), `a carried-on row under a full line isn't flagged (${issues.filter((x) => /Row 13 /.test(x)).join('; ') || 'none'})`);
     const { chartModel: cm } = await import('../lib/chartModel.js');
     const ch = cm((await extractAcr(carried)).fields);
     const r12 = ch.treatmentGrid.find((r) => r.row === 12);
-    ok(r12 && /ETA 10 min, report given to triage RN$/.test(r12.procedure_line) && !ch.treatmentGrid.some((r) => r.row === 13), 'the server chart joins the carried-on words to the row above');
+    ok(r12 && /no STEMI on the 12-lead, ETA 10 min, report given to triage RN$/.test(r12.procedure_line) && !ch.treatmentGrid.some((r) => r.row === 13), 'the server chart joins the carried-on words to the row above');
+
+    const shortAbove = await edit('ACR_model_chest_pain.pdf', { 'Treatment Row 12 - Procedure Line': 'Patch to Fleming', 'Treatment Row 13 - Procedure Across': true, 'Treatment Row 13 - Procedure Line': 'Repeat vitals stable' });
+    const sa = await post(port, { practiceConfirm: 'yes', scenarioId: 'chest-pain-ischemic-01' }, shortAbove);
+    const saIssues = (sa.body.checker && sa.body.checker.issues) || [];
+    ok(saIssues.some((x) => /^Row 13 has entries but no time/.test(x)), 'a new entry under a short line is still flagged for its missing time');
+    const ch2 = cm((await extractAcr(shortAbove)).fields);
+    ok(ch2.treatmentGrid.some((r) => r.row === 13 && r.procedure_line === 'Repeat vitals stable'), 'the server chart keeps it as its own row');
   }
 
   // Triage report practice: the report is checked against the chart, rule by rule.

@@ -5,12 +5,28 @@ const COLS = ['Dose/Unit', 'Route', 'Pulse', 'Resp', 'BP', 'Temp', 'Reading/Code
 const P_COLS = ['Dose/Unit', 'Route', 'Pulse', 'Resp', 'BP', 'Temp'];
 const EVENTS = ['Call Received', 'Crew Notified', 'Crew Mobile', 'Arrive Scene', 'Patient Contact', 'Depart Scene', 'Arrive Destination', 'TOC '];
 
+// When a write-across line is full, the form carries the words on to the row below (v3.6). Same measure as the form:
+// Helvetica at 8 pt, in a line 191.6 pt wide (procedure side) or 159.8 pt (Results side), less 5 pt of padding.
+const HELV = [278, 278, 355, 556, 556, 889, 667, 191, 333, 333, 389, 584, 278, 333, 278, 278, 556, 556, 556, 556, 556, 556, 556, 556, 556, 556,
+  278, 278, 584, 584, 584, 556, 1015, 667, 667, 722, 722, 667, 611, 778, 722, 278, 500, 667, 556, 833, 722, 778, 667, 778, 722, 667, 611, 722, 667,
+  944, 667, 667, 611, 278, 278, 278, 469, 556, 333, 556, 556, 500, 556, 556, 278, 556, 556, 222, 222, 500, 222, 833, 556, 556, 556, 556, 333, 500,
+  278, 556, 500, 722, 500, 500, 500, 334, 260, 334, 584];
+const LINE_ROOM = { procedure_line: 186.6, result_line: 154.8 };
+const textWidth = (s) => [...String(s)].reduce((w, ch) => { const c = ch.charCodeAt(0); return w + (c >= 32 && c <= 126 ? HELV[c - 32] : 600); }, 0) * 8 / 1000;
+// The line above was full: its text plus the next row's first word (or three wide letters) wouldn't fit.
+function lineFull(prev, next, key) {
+  if (!prev) return false;
+  const first = String(next || '').split(/\s+/)[0] || '';
+  return textWidth(`${prev} mmm`) > LINE_ROOM[key] || textWidth(`${prev} ${first}`) > LINE_ROOM[key];
+}
+
 function chartModel(fields) {
   const v = (n) => (fields[n] ? fields[n].value : '');
   const on = (n) => fields[n] && fields[n].value && fields[n].value !== 'Off';
   const ticked = (prefix) => Object.keys(fields).filter((n) => n.startsWith(prefix) && fields[n].type === 'checkbox' && on(n)).map((n) => n.slice(prefix.length));
 
   const rows = [];
+  let above = null; // the row directly above, as written
   for (let i = 1; i <= 52; i++) {
     const r = (k) => v(`Treatment Row ${i} - ${k}`);
     // v3.4: P writes across the procedure side (Dose/Unit to Temp), R across the Results side (Reading/Code to Pain).
@@ -27,11 +43,16 @@ function chartModel(fields) {
       const hidden = P_COLS.includes(c) ? pAcross : rAcross;
       if (!hidden && r(c)) row[c] = r(c);
     });
+    const prevRaw = above;
+    above = row;
     if (!Object.keys(row).some((k) => !['row'].includes(k) && row[k])) continue;
-    // A row the words carried on to from the row above (v3.6: written across, nothing else on it) joins that row.
+    // A row the words carried on to from the row above joins that row: written across, nothing else on it, and the
+    // same side of the row above full. A new entry missing its time and code, under a short line, stays a row.
     const last = rows[rows.length - 1];
-    const carry = (pAcross || rAcross) && !row.time && !row.code && !row.crew
-      && Object.keys(row).every((k) => ['row', 'time', 'code', 'crew', 'procedure_line', 'result_line'].includes(k));
+    const carry = (pAcross || rAcross) && !row.time && !row.code && !row.crew && prevRaw
+      && Object.keys(row).every((k) => ['row', 'time', 'code', 'crew', 'procedure_line', 'result_line'].includes(k))
+      && (!row.procedure_line || lineFull(prevRaw.procedure_line, row.procedure_line, 'procedure_line'))
+      && (!row.result_line || lineFull(prevRaw.result_line, row.result_line, 'result_line'));
     if (carry && last && last.row + (last.carried || 0) === i - 1) {
       if (row.procedure_line) last.procedure_line = last.procedure_line ? `${last.procedure_line} ${row.procedure_line}` : row.procedure_line;
       if (row.result_line) last.result_line = last.result_line ? `${last.result_line} ${row.result_line}` : row.result_line;
