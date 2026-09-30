@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import jsPDF from "jspdf";
-import { FaSpinner, FaFilePdf, FaFileMedical, FaClipboardList, FaUserGraduate, FaMoon, FaSun, FaUndoAlt, FaLink } from "react-icons/fa";
+import { FaSpinner, FaFilePdf, FaFileMedical, FaClipboardList, FaUserGraduate, FaMoon, FaSun, FaUndoAlt, FaLink, FaHeartbeat, FaBroadcastTower } from "react-icons/fa";
+import LiveRun from "../live/LiveRun";
+import RadioDispatch from "../dispatch/RadioDispatch";
 import { ACR_FORM_VERSION, downloadScenarioAcr, errorMessage } from "../acr/acrApi";
 import { openRunSheet } from "../runsheet/runSheet";
 import { RhythmStripSVG, TwelveLeadSVG } from "../ecg/EcgViews";
@@ -280,6 +282,8 @@ const formatElapsed = (sec) => `${Math.floor(sec / 60)}:${String(sec % 60).padSt
 
 const ScenarioForm = () => {
   const [scenario, setScenario] = useState(null);
+  const [monitorOpen, setMonitorOpen] = useState(false);
+  const [dispatchOpen, setDispatchOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   // Info section visibility: show only before scenario is generated
   const showInfoSection = !scenario && !loading;
@@ -2369,6 +2373,8 @@ const ScenarioForm = () => {
                     <div><dt>Start over</dt><dd>Under the form. Puts the options back to the defaults and clears the scenario. Your last options are otherwise remembered on this device.</dd></div>
                     <div><dt>Scenario bar</dt><dd>Stays at the top while you read: Export (PDF), Run sheet (a printable page for lab), Practice ACR, Share link, and a tab for each section.</dd></div>
                     <div><dt>Share link</dt><dd>Copies a link to the scenario. Anyone who opens it gets the same call; new visitors start in student mode.</dd></div>
+                    <div><dt>Dispatch</dt><dd>Plays the call over the radio, once. Students write down what they caught, then check it against the transcript.</dd></div>
+                    <div><dt>Monitor screen</dt><dd>Run the call in lab with a patient monitor. Pop it out onto a TV, or show it beside your controls. Press the vitals set that matches what the crew did.</dd></div>
                     <div><dt>Recent scenarios</dt><dd>Your last ten, in the side panel, kept on this device only.</dd></div>
                   </dl>
                 </details>
@@ -2380,6 +2386,8 @@ const ScenarioForm = () => {
           {scenario && (
             <>
             <div ref={outputRef} style={{ ...styles.outputBox, scrollMarginTop: isMobile ? "12px" : "90px" }}>
+              {monitorOpen && <LiveRun scenario={scenario} studentMode={studentMode} onClose={() => setMonitorOpen(false)} />}
+              {dispatchOpen && <RadioDispatch scenario={scenario} environment={formData.environment} onClose={() => setDispatchOpen(false)} />}
               <div className="scenario-bar">
                 <div className="scenario-bar-top">
                   <h2 className="scenario-output-title">{scenario.title || "Scenario"}</h2>
@@ -2396,6 +2404,12 @@ const ScenarioForm = () => {
                     </button>
                     <button type="button" className="sbar-btn a11y-focus" onClick={shareScenario} title="Copy a link to this scenario">
                       <FaLink aria-hidden="true" /> Share link
+                    </button>
+                    <button type="button" className="sbar-btn a11y-focus" onClick={() => setDispatchOpen(true)} title="Hear the dispatch over the radio and write down what you catch">
+                      <FaBroadcastTower aria-hidden="true" /> Dispatch
+                    </button>
+                    <button type="button" className="sbar-btn a11y-focus" onClick={() => setMonitorOpen(true)} title="Run this call in lab with a live patient monitor">
+                      <FaHeartbeat aria-hidden="true" /> Monitor screen
                     </button>
                   </div>
                 </div>
