@@ -2,6 +2,7 @@
 // seconds, then a paper printout slides out of the bottom. Tap it to open it full size and zoom in. The printout shows
 // the tracing only, never the finding: reading it is the student's job.
 import React, { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { TwelveLeadSVG } from "../ecg/EcgViews";
 
 export const ACQUIRE_MS = 8000;
@@ -102,7 +103,7 @@ function Viewer({ print, ecg, patternKey, onClose }) {
   );
 }
 
-export default function EcgPrintouts({ prints, ecgOn, onAcquire, ecg, patternKey }) {
+export default function EcgPrintouts({ prints, ecgOn, onAcquire, ecg, patternKey, buttonsSlot }) {
   const seen = useRef({});
   const [now, setNow] = useState(Date.now());
   const [open, setOpen] = useState(null);
@@ -140,13 +141,18 @@ export default function EcgPrintouts({ prints, ecgOn, onAcquire, ecg, patternKey
 
   const openPrint = open !== null ? list.find((p) => p.id === open) : null;
 
+  // The buttons sit in the monitor's top bar, clear of the traces and the numbers.
+  const buttons = (
+    <div className="lm-ecg-buttons">
+      {notice && <span className="lm-ecg-notice">{notice}</span>}
+      <button type="button" onClick={() => press("12")} disabled={!onAcquire || acquiring}>12-lead</button>
+      <button type="button" onClick={() => press("15")} disabled={!onAcquire || acquiring}>15-lead</button>
+    </div>
+  );
+
   return (
     <>
-      <div className="lm-ecg-buttons">
-        <button type="button" onClick={() => press("12")} disabled={!onAcquire || acquiring}>12-lead</button>
-        <button type="button" onClick={() => press("15")} disabled={!onAcquire || acquiring}>15-lead</button>
-        {notice && <span className="lm-ecg-notice">{notice}</span>}
-      </div>
+      {buttonsSlot ? createPortal(buttons, buttonsSlot) : buttons}
       {acquiring && (
         <div className="lm-acquiring" role="status">
           <strong>Acquiring {latest.leads}-lead. Patient still, please.</strong>

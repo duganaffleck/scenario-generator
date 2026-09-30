@@ -4,7 +4,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import LiveMonitor from "./LiveMonitor";
 import { MONITOR_HASH, openLiveChannel, saveLiveState } from "./liveChannel";
-import { clock, progressionNotes, vitalSets } from "./liveModel";
+import { clock, progressionNotes, suggestedCo2Shape, vitalSets } from "./liveModel";
 import "./live.css";
 
 const MONITOR_FEATURES = "popup=yes,width=1100,height=720";
@@ -24,6 +24,8 @@ export default function LiveRun({ scenario, studentMode, onClose }) {
   const [monitorSeen, setMonitorSeen] = useState(0);
   const [popupBlocked, setPopupBlocked] = useState(false);
   const [prints, setPrints] = useState([]);
+  const autoShape = useMemo(() => suggestedCo2Shape(scenario), [scenario]);
+  const [co2Shape, setCo2Shape] = useState(autoShape);
   const startedAt = useRef(null);
   const channel = useRef(null);
 
@@ -55,9 +57,10 @@ export default function LiveRun({ scenario, studentMode, onClose }) {
         fifteenLeadFindings: (scenario && scenario.ecgFindings && scenario.ecgFindings.fifteenLeadFindings) || "",
       },
       prints,
+      co2Shape,
       ended: false,
     }),
-    [running, elapsed, set, attached, nibp, reveal, scenario, prints]
+    [running, elapsed, set, attached, nibp, reveal, scenario, prints, co2Shape]
   );
   const stateRef = useRef(monitorState);
   stateRef.current = monitorState;
@@ -137,7 +140,6 @@ export default function LiveRun({ scenario, studentMode, onClose }) {
   };
 
   const connected = Date.now() - monitorSeen < 7000;
-  const hasCo2 = sets.some((s) => s.etco2 !== null);
 
   if (!confirmed) {
     return (
@@ -194,9 +196,7 @@ export default function LiveRun({ scenario, studentMode, onClose }) {
           <div className="lr-row">
             <button type="button" className={`lr-chip${attached.ecg ? " lr-chip--on" : ""}`} aria-pressed={attached.ecg} onClick={() => toggle("ecg", "ECG leads")}>ECG leads</button>
             <button type="button" className={`lr-chip${attached.spo2 ? " lr-chip--on" : ""}`} aria-pressed={attached.spo2} onClick={() => toggle("spo2", "SpO2 probe")}>SpO2 probe</button>
-            {hasCo2 && (
-              <button type="button" className={`lr-chip${attached.etco2 ? " lr-chip--on" : ""}`} aria-pressed={attached.etco2} onClick={() => toggle("etco2", "EtCO2")}>EtCO2</button>
-            )}
+            <button type="button" className={`lr-chip${attached.etco2 ? " lr-chip--on" : ""}`} aria-pressed={attached.etco2} onClick={() => toggle("etco2", "EtCO2")}>EtCO2</button>
             <button type="button" className="lr-chip" onClick={cycleBp} disabled={set.sys === null || set.sys === undefined}>Cycle the BP</button>
             <button type="button" className="lr-chip" onClick={() => acquire("12")}>Print 12-lead</button>
             <button type="button" className="lr-chip" onClick={() => acquire("15")}>Print 15-lead</button>
@@ -207,6 +207,14 @@ export default function LiveRun({ scenario, studentMode, onClose }) {
               <button type="button" className="lr-chip" onClick={() => showReading("temp", "Temp", set.temp)}>Show temp</button>
             )}
           </div>
+          <label className="lr-select">
+            Capnography waveform
+            <select value={co2Shape} onChange={(e) => { setCo2Shape(e.target.value); addLog(`Capnography: ${e.target.value === "shark" ? "shark fin (bronchospasm)" : "normal square"}`); }}>
+              <option value="normal">Normal square wave</option>
+              <option value="shark">Shark fin (bronchospasm)</option>
+            </select>
+            {autoShape === "shark" && <span className="lr-hint">Suggested by the scenario</span>}
+          </label>
         </section>
 
         <section className="lr-card">
@@ -233,7 +241,7 @@ export default function LiveRun({ scenario, studentMode, onClose }) {
             <div><dt>RR</dt><dd>{set.rrText || "-"}</dd></div>
             <div><dt>BP</dt><dd>{set.bp || "-"}</dd></div>
             <div><dt>SpO2</dt><dd>{set.spo2 ?? "-"}</dd></div>
-            <div><dt>EtCO2</dt><dd>{set.etco2 ?? "-"}</dd></div>
+            <div><dt>EtCO2</dt><dd>{set.etco2 ?? "-"}{set.etco2Estimated ? " (est.)" : ""}</dd></div>
             <div><dt>GCS</dt><dd>{set.gcs ?? "-"}</dd></div>
             <div><dt>BGL</dt><dd>{set.bgl ?? "-"}</dd></div>
             <div><dt>Rhythm</dt><dd>{set.rhythm || "-"}</dd></div>
