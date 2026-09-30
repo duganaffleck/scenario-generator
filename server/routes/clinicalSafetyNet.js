@@ -5,6 +5,8 @@
 //   2. Hypoglycemia (BGL under 4.0) with an altered level of awareness gets the Hypoglycemia directive, by name.
 //   3. A trauma patient who meets Field Trauma Triage step 1 or 2 gets a destination decision.
 //   4. Oxytocin is 10 units IM for a PCP. Wherever the scenario gives it an IV route, the route becomes IM.
+//   5. Age and weight limits in the PCP directives (server/data/als-standards.txt). A child isn't offered a medication
+//      or procedure whose directive starts at an older age or a higher weight: the line says why instead.
 
 const text = (v) => {
   if (v == null) return '';
@@ -183,6 +185,58 @@ function fixOxytocinRoute(value, fixed) {
   return value;
 }
 
+// Age in years and weight in kg from the demographics: "4 months", "3 days", "2 minutes", "Newborn", "7", "26 kg".
+const AGE_UNIT_YEARS = { minute: 1 / 525600, min: 1 / 525600, hour: 1 / 8760, hr: 1 / 8760, day: 1 / 365, week: 7 / 365, wk: 7 / 365, month: 1 / 12, mo: 1 / 12, year: 1, yr: 1, y: 1 };
+function ageYears(text) {
+  const t = String(text ?? '').toLowerCase();
+  const m = t.match(/(\d+(?:\.\d+)?)\s*(minutes?|mins?|hours?|hrs?|days?|weeks?|wks?|months?|mo|years?|yrs?|y)?\b/);
+  if (m) return Number(m[1]) * (AGE_UNIT_YEARS[(m[2] || 'year').replace(/s$/, '')] ?? 1);
+  return /newborn|neonate/.test(t) ? 0 : null;
+}
+const LIMITS = [
+  { re: /\b(tranexamic acid|TXA)\b/i, name: 'Tranexamic acid', minAge: 16, directive: 'Traumatic Hemorrhage' },
+  { re: /\b(ketorolac|ibuprofen|acetaminophen)\b/i, name: 'PCP analgesia (acetaminophen, ibuprofen, ketorolac)', minAge: 12, directive: 'Analgesia' },
+  { re: /\b(ASA|aspirin)\b/, name: 'ASA', minAge: 18, directive: 'Cardiac Ischemia' },
+  { re: /\bnitro(glycerin)?\b/i, name: 'Nitroglycerin', minAge: 18, directive: 'Cardiac Ischemia' },
+  { re: /\bCPAP\b/, name: 'CPAP', minAge: 18, directive: 'CPAP' },
+  { re: /\bvalsalva\b/i, name: 'Modified Valsalva', minAge: 18, directive: 'Tachydysrhythmia' },
+  { re: /\bbuprenorphine\b/i, name: 'Buprenorphine/naloxone', minAge: 16, directive: 'Opioid Toxicity and Withdrawal' },
+  { re: /\b(D10W|D50W|dextrose (IV|10|50)|IV dextrose)\b/i, name: 'IV dextrose', minAge: 2, directive: 'Hypoglycemia' },
+  { re: /\b(fluid|NaCl|saline) bolus\b|\bbolus of (0\.9% NaCl|normal saline)\b/i, name: 'A fluid bolus', minAge: 2, directive: 'IV and Fluid Therapy' },
+  { re: /\b(dimenhydrinate|gravol|ondansetron)\b/i, name: 'An antiemetic (dimenhydrinate, ondansetron)', minKg: 25, directive: 'Nausea / Vomiting' },
+  { re: /\bdiphenhydramine\b/i, name: 'Diphenhydramine', minKg: 25, directive: 'Moderate to Severe Allergic Reaction' },
+  { re: /\btreat(ment)?[- ]and[- ](discharge|release)\b|\bT&D\b/i, name: 'Treat and discharge', minAge: 18, keep: /\b(adults? only|only (for )?adults?|adults? \(?18)/i,
+    why: 'hypoglycemia and seizure treat and discharge are for adults 18 or older only. This child is transported' },
+];
+function ageAndWeightLimits(scenario, notes) {
+  const pd = scenario.patientDemographics || {};
+  const age = ageYears(pd.age);
+  const kg = Number(String(pd.weight ?? '').match(/(\d+(?:\.\d+)?)\s*kg/i)?.[1] ?? NaN);
+  if (age === null && Number.isNaN(kg)) return;
+  const under = (l) => (l.minAge && age !== null && age < l.minAge) || (l.minKg && !Number.isNaN(kg) && kg < l.minKg);
+  const fixList = (list) => {
+    if (!Array.isArray(list)) return list;
+    const out = [];
+    for (const line of list) {
+      const hit = typeof line === 'string' && LIMITS.find((l) => l.re.test(line) && under(l));
+      if (!hit) { out.push(line); continue; }
+      // A line that already explains the limit ("applies to age 16 and older, so it does not fit") stays.
+      const limit = hit.minAge ? `(age|aged)\\s*(of\\s*)?${hit.minAge}|${hit.minAge}\\s*(years|yrs|and older|or older)` : `${hit.minKg}\\s*kg`;
+      if ((new RegExp(limit, 'i').test(line) || (hit.keep && hit.keep.test(line))) && !/^\s*(give|administer|consider|start)\b/i.test(line)) { out.push(line); continue; }
+      // Anything else that talks about it as an option is replaced with the reason it isn't one.
+      const named = hit.name || line.match(hit.re)[0].replace(/^./, (c) => c.toUpperCase());
+      const why = hit.why || (hit.minAge ? `the ${hit.directive} directive starts at age ${hit.minAge}` : `the ${hit.directive} directive starts at ${hit.minKg} kg`);
+      const text = `${named} is not an option for this patient: ${why}.`;
+      if (!out.includes(text)) out.push(text);
+      const note = `${named.split(' (')[0].toLowerCase()} held: patient under the directive's age or weight limit`;
+      if (!notes.includes(note)) notes.push(note);
+    }
+    return out;
+  };
+  scenario.expectedTreatment = fixList(scenario.expectedTreatment);
+  scenario.protocolNotes = fixList(scenario.protocolNotes);
+}
+
 export function clinicalSafetyNet(scenario, { semester, type } = {}) {
   const notes = [];
   if (!scenario || typeof scenario !== 'object') return notes;
@@ -190,6 +244,7 @@ export function clinicalSafetyNet(scenario, { semester, type } = {}) {
   highConcentrationOxygen(scenario, notes);
   hypoglycemia(scenario, semester, notes);
   fieldTraumaTriage(scenario, type, notes);
+  ageAndWeightLimits(scenario, notes);
   const fixed = { count: 0 };
   fixOxytocinRoute(scenario, fixed);
   if (fixed.count) notes.push('oxytocin route IM');

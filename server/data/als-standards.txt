@@ -14,6 +14,7 @@ SCOPE BOUNDARY: This file is the complete PCP medication and procedure scope. An
 - Oral glucose when alert and able to swallow safely (BLS PCS)
 - Glucagon (altered LOA): 0.5 mg IM under 25 kg, 1 mg IM at 25 kg or more, or 3 mg IN at age 4 or older; every 20 min, max 2 doses; contraindicated in pheochromocytoma
 - Dextrose IV (altered LOA, age 2 or older): D10W 0.2 g/kg (2 mL/kg) or D50W 0.5 g/kg (1 mL/kg), max 25 g per dose, every 10 min, max 2 doses
+- Treat and discharge: age 18 or older only. A child with hypoglycemia is transported.
 
 3. Cardiac Ischemia
 - ASA 160-162 mg PO, 1 dose: age 18 or older, unaltered LOA, able to chew and swallow
@@ -100,7 +101,7 @@ PCP AUXILIARY DIRECTIVES (the paramedic must be authorized for each in advance b
 - Reduction, max 2 attempts: age 10-50, unaltered LOA; not after high velocity or direct knee trauma
 
 22. Seizure
-- Treat and discharge criteria only. There is no PCP seizure medication.
+- Treat and discharge criteria only, age 18 or older. A child who seizes is transported. There is no PCP seizure medication.
 
 NOT DIRECTIVES BUT ALWAYS IN PLAY
 - Stroke: apply the Ontario Acute Stroke Protocol and regional bypass criteria; last known well time drives destination; confirm BGL
