@@ -4,6 +4,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { isRhythmOnlyPattern, normalizeRhythm, sampleLead } from "../ecg/ecgEngine";
 import { openLiveChannel, readLiveState } from "./liveChannel";
+import EcgPrintouts from "./EcgPrintouts";
 import "./live.css";
 
 const COLORS = { ecg: "#3ee07a", pleth: "#43c6e8", co2: "#f5d547", nibp: "#e8ecef" };
@@ -133,7 +134,7 @@ function useEased(target, perSecond) {
 
 const round = (v) => (v === null || v === undefined ? null : Math.round(v));
 
-function MonitorFace({ state }) {
+function MonitorFace({ state, onAcquire }) {
   const set = state.set || {};
   const att = state.attached || {};
   const rhythm = normalizeRhythm(set.rhythm) || "Normal Sinus Rhythm";
@@ -181,6 +182,7 @@ function MonitorFace({ state }) {
         <Trace kind="pleth" height="24%" params={{ on: !!att.spo2, rate: set.noPulse ? 0 : set.hr, amp: perfusionAmp }} />
         <div className="lm-trace-label" style={{ color: COLORS.co2 }}>CO2 {att.etco2 ? "" : "· not connected"}</div>
         <Trace kind="co2" height="24%" params={{ on: !!att.etco2, rate: set.rr || 0, amp: Math.max(0.15, Math.min(1, (set.etco2 || 0) / 60)) }} />
+        <EcgPrintouts prints={state.prints} ecgOn={!!att.ecg} onAcquire={onAcquire} ecg={state.ecg} patternKey={state.patternKey} />
         <div className="lm-footer">
           {state.reveal && state.reveal.bgl && set.bgl !== null && <span>BGL {set.bgl} mmol/L</span>}
           {state.reveal && state.reveal.temp && set.temp !== null && <span>Temp {set.temp} °C</span>}
@@ -198,18 +200,21 @@ function MonitorFace({ state }) {
 }
 
 // state: pass it to embed the monitor beside the controls; leave it out to listen for the instructor's window.
-export default function LiveMonitor({ state: embeddedState, embedded = false }) {
+export default function LiveMonitor({ state: embeddedState, embedded = false, onAcquire }) {
   const [remote, setRemote] = useState(() => (embedded ? null : readLiveState()));
+  const channelRef = useRef(null);
 
   useEffect(() => {
     if (embedded) return undefined;
     const ch = openLiveChannel((msg) => {
       if (msg && msg.type === "state") setRemote(msg.state);
     });
+    channelRef.current = ch;
     ch.post({ type: "hello" });
     const beat = setInterval(() => ch.post({ type: "here" }), 3000);
     return () => {
       clearInterval(beat);
+      channelRef.current = null;
       ch.close();
     };
   }, [embedded]);
@@ -242,7 +247,10 @@ export default function LiveMonitor({ state: embeddedState, embedded = false }) 
           </p>
         </div>
       ) : (
-        <MonitorFace state={state} />
+        <MonitorFace
+          state={state}
+          onAcquire={embedded ? onAcquire : (leads) => channelRef.current && channelRef.current.post({ type: "acquire", leads })}
+        />
       )}
     </div>
   );

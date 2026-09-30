@@ -49,11 +49,13 @@ export function RhythmStripSVG({ rhythm, hr, isNightShift, patternKey = "" }) {
 }
 
 // 12-lead (or 15-lead) printout: four columns of 2.5 s from one continuous 10 s recording, then a 10 s lead II.
-export function TwelveLeadSVG({ ecgType, rhythmInterp, twelveLeadFindings, fifteenLeadFindings, hr, isNightShift, patternKey }) {
+// caption replaces the title line (a printout for students shouldn't name the finding); leadSet '12' or '15' overrides
+// which right-hand column prints.
+export function TwelveLeadSVG({ ecgType, rhythmInterp, twelveLeadFindings, fifteenLeadFindings, hr, isNightShift, patternKey, caption, leadSet }) {
   const pattern = pickTwelveLeadPattern(ecgType, rhythmInterp, twelveLeadFindings, fifteenLeadFindings, patternKey);
   const p = _TL_PATTERNS[pattern] || _TL_PATTERNS.normal;
   const rhythm = normalizeRhythm(rhythmInterp) || rhythmForPattern(pattern) || "Normal Sinus Rhythm";
-  const is15 = ecgType === "15-lead" || pattern === "inferiorRV" || pattern === "posterior";
+  const is15 = leadSet ? leadSet === "15" : ecgType === "15-lead" || pattern === "inferiorRV" || pattern === "posterior";
   const cols = [["I", "II", "III"], ["aVR", "aVL", "aVF"], ["V1", "V2", "V3"], is15 ? ["V4R", "V8", "V9"] : ["V4", "V5", "V6"]];
   const events = rhythmEvents(rhythm, hr, 10000, 11);
   const sinus = /sinus rhythm$|sinus (brady|tachy)cardia/i.test(rhythm) && rhythm !== "Sinus Rhythm with PVCs";
@@ -63,7 +65,7 @@ export function TwelveLeadSVG({ ecgType, rhythmInterp, twelveLeadFindings, fifte
   return (
     <div>
       <div style={{ fontSize: "0.72rem", fontWeight: 700, color: "var(--vn-muted-text)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "0.5rem" }}>
-        {title} · {hr} bpm
+        {caption || `${title} · ${hr} bpm`}
       </div>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))", gap: "2px", background: c.major, border: `1px solid ${c.major}`, borderRadius: 4, overflow: "hidden" }}>
         {[0, 1, 2].map((row) => cols.map((col, ci) => {

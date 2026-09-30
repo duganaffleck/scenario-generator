@@ -23,6 +23,7 @@ export default function LiveRun({ scenario, studentMode, onClose }) {
   const [split, setSplit] = useState(false);
   const [monitorSeen, setMonitorSeen] = useState(0);
   const [popupBlocked, setPopupBlocked] = useState(false);
+  const [prints, setPrints] = useState([]);
   const startedAt = useRef(null);
   const channel = useRef(null);
 
@@ -49,9 +50,14 @@ export default function LiveRun({ scenario, studentMode, onClose }) {
       nibp,
       reveal,
       patternKey: (scenario && scenario.ecgFindings && scenario.ecgFindings.patternKey) || "",
+      ecg: {
+        twelveLeadFindings: (scenario && scenario.ecgFindings && scenario.ecgFindings.twelveLeadFindings) || "",
+        fifteenLeadFindings: (scenario && scenario.ecgFindings && scenario.ecgFindings.fifteenLeadFindings) || "",
+      },
+      prints,
       ended: false,
     }),
-    [running, elapsed, set, attached, nibp, reveal, scenario]
+    [running, elapsed, set, attached, nibp, reveal, scenario, prints]
   );
   const stateRef = useRef(monitorState);
   stateRef.current = monitorState;
@@ -63,6 +69,7 @@ export default function LiveRun({ scenario, studentMode, onClose }) {
       if (!msg) return;
       if (msg.type === "hello" || msg.type === "here") setMonitorSeen(Date.now());
       if (msg.type === "hello") ch.post({ type: "state", state: stateRef.current });
+      if (msg.type === "acquire" && acquireRef.current) acquireRef.current(msg.leads === "15" ? "15" : "12");
     });
     channel.current = ch;
     return () => {
@@ -108,6 +115,15 @@ export default function LiveRun({ scenario, studentMode, onClose }) {
     setPopupBlocked(!w);
     if (w) channel.current && channel.current.post({ type: "state", state: stateRef.current });
   };
+  // A 12- or 15-lead, from this panel or from the monitor itself. It prints the patient as they are right now.
+  const acquire = (leads) => {
+    if (!attached.ecg) setAttached((a) => ({ ...a, ecg: true }));
+    setPrints((p) => [...p, { id: Date.now(), leads, at: clock(elapsed), hr: set.hr, rhythm: set.rhythm }].slice(-4));
+    addLog(`${leads}-lead acquired`);
+  };
+  const acquireRef = useRef(null);
+  acquireRef.current = acquire;
+
   const reset = () => {
     setRunning(false);
     setElapsed(0);
@@ -117,6 +133,7 @@ export default function LiveRun({ scenario, studentMode, onClose }) {
     setNibp(null);
     setReveal({ bgl: false, temp: false });
     setLog([]);
+    setPrints([]);
   };
 
   const connected = Date.now() - monitorSeen < 7000;
@@ -181,6 +198,8 @@ export default function LiveRun({ scenario, studentMode, onClose }) {
               <button type="button" className={`lr-chip${attached.etco2 ? " lr-chip--on" : ""}`} aria-pressed={attached.etco2} onClick={() => toggle("etco2", "EtCO2")}>EtCO2</button>
             )}
             <button type="button" className="lr-chip" onClick={cycleBp} disabled={set.sys === null || set.sys === undefined}>Cycle the BP</button>
+            <button type="button" className="lr-chip" onClick={() => acquire("12")}>Print 12-lead</button>
+            <button type="button" className="lr-chip" onClick={() => acquire("15")}>Print 15-lead</button>
             {set.bgl !== null && set.bgl !== undefined && (
               <button type="button" className="lr-chip" onClick={() => showReading("bgl", "BGL", set.bgl)}>Show glucose</button>
             )}
@@ -249,7 +268,7 @@ export default function LiveRun({ scenario, studentMode, onClose }) {
       </div>
       {split && (
         <div className="lr-split-monitor">
-          <LiveMonitor embedded state={monitorState} />
+          <LiveMonitor embedded state={monitorState} onAcquire={(leads) => acquire(leads)} />
         </div>
       )}
     </div>
