@@ -43,15 +43,22 @@ export default function VariantDialog({ scenario, pressuredNow, onMake, onClose 
   const [laterCue, setLaterCue] = useState(false);
   const [pressured, setPressured] = useState(!!pressuredNow);
   const field = useRef(null);
+  const closeRef = useRef(onClose);
+  closeRef.current = onClose;
 
+  // Focus the decision once on open, close on Escape, and hand focus back to the button that opened it.
   useEffect(() => {
+    const opener = document.activeElement;
     if (field.current) field.current.focus();
     const onKey = (e) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") closeRef.current();
     };
     window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [onClose]);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      if (opener && typeof opener.focus === "function" && document.contains(opener)) opener.focus();
+    };
+  }, []);
 
   const ready = target.trim().length >= 12;
   const make = () => {

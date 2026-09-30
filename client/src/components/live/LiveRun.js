@@ -96,7 +96,10 @@ export default function LiveRun({ scenario, studentMode, onClose }) {
     saveLiveState(monitorState);
   }, [monitorState, confirmed]);
 
-  const addLog = useCallback((what) => setLog((l) => [{ t: clock(startedAt.current ? Date.now() - startedAt.current : 0), what }, ...l].slice(0, 30)), []);
+  // The run clock right now. After a pause, startedAt is stale until the timer restarts, so use elapsed then.
+  const runClock = useRef(() => 0);
+  runClock.current = () => (running && startedAt.current ? Date.now() - startedAt.current : elapsed);
+  const addLog = useCallback((what) => setLog((l) => [{ t: clock(runClock.current()), what }, ...l].slice(0, 30)), []);
 
   const goTo = (i) => {
     setCurrent(i);
@@ -132,7 +135,7 @@ export default function LiveRun({ scenario, studentMode, onClose }) {
   };
 
   // Arrest marks. These record what the crew did and when; the rhythm only changes when you pick the next set.
-  const now = () => (running && startedAt.current ? Date.now() - startedAt.current : elapsed);
+  const now = () => runClock.current();
   const startClock = () => {
     if (!running) setRunning(true);
   };

@@ -240,3 +240,4 @@
 @media (max-width: 760px) {
   .tr-result { grid-template-columns: minmax(0, 1fr); }
 }
+.tr-tab:disabled { opacity: 0.5; cursor: default; }

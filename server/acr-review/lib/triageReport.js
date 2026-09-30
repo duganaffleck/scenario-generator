@@ -12,31 +12,33 @@ const isNumWord = (w) => w in UNITS || w in TENS || w === 'hundred';
 function groupValue(words) {
   // "one oh two" -> 102: spoken digit by digit
   if (words.includes('oh') && words.length >= 3) return Number(words.map((w) => (w in UNITS ? UNITS[w] : TENS[w] || 0)).join(''));
-  // "one twenty two" -> 122: a leading 1 or 2 before a tens word is the hundreds, as in blood pressures
-  if (words.length >= 2 && (words[0] === 'one' || words[0] === 'two') && words[1] in TENS) {
+  // "one twenty two" -> 122, "one eighteen" -> 118: a leading 1 or 2 before a tens or teens word is the hundreds,
+  // the way pressures and rates are said
+  if (words.length >= 2 && (words[0] === 'one' || words[0] === 'two') && (words[1] in TENS || UNITS[words[1]] >= 10)) {
     return UNITS[words[0]] * 100 + groupValue(words.slice(1));
   }
   // "eighteen thirty" -> 1830: a time
   if (words.length >= 2 && UNITS[words[0]] >= 10 && words[1] in TENS) return Number(`${UNITS[words[0]]}${groupValue(words.slice(1))}`);
-  let total = 0;
   let cur = 0;
   for (const w of words) {
     if (w === 'hundred') cur = (cur || 1) * 100;
     else if (w in TENS) cur += TENS[w];
     else if (w in UNITS) cur += UNITS[w];
   }
-  total += cur;
-  return total;
+  return cur;
 }
 
+// Lower case, spoken numbers as digits, "over" as a slash. Clock times become one token ("t1850"), and commas and
+// full stops become their own "," token, so "resps ten, twelve after" stays two numbers.
 export function normalizeSpoken(text) {
   const tokens = String(text || '')
     .toLowerCase()
     .replace(/[“”"’]/g, "'")
+    .replace(/\b(\d{1,2}):(\d{2})\b/g, 't$1$2')
     .replace(/(\d),(\d{3})/g, '$1$2')
     .replace(/([a-z])-([a-z])/g, '$1 $2')
-    .replace(/([a-z0-9])[.,;:!?](?=\s|$)/g, '$1')
-    .replace(/[^a-z0-9./%' ]+/g, ' ')
+    .replace(/([a-z0-9%])[.,;:!?](?=\s|$)/g, '$1 ,')
+    .replace(/[^a-z0-9./%', ]+/g, ' ')
     .split(/\s+/)
     .filter(Boolean);
   const out = [];
@@ -76,43 +78,63 @@ const VITALS = [
   { key: 'BP', name: 'blood pressure', words: /\b(bp|pressure|blood pressure)\b/, tol: 4, core: true, bp: true },
   { key: 'SpO2', name: 'SpO2', words: /\b(sats?|spo2|sat|saturations?|saturating|o2 sats?|oxygen saturation|pulse ox)\b/, tol: 1, core: true, range: [50, 100] },
   { key: 'GCS', name: 'GCS', words: /\b(gcs|glasgow)\b/, tol: 0, range: [3, 15] },
-  { key: 'EtCO2', name: 'EtCO2', words: /\b(etco2|end tidal|end tidal co2|capnography|co2)\b/, tol: 3, range: [5, 120] },
+  { key: 'EtCO2', name: 'EtCO2', words: /\b(etco2|end tidal|end tidal co2|tidal|capnography|co2)\b/, tol: 3, range: [5, 120] },
   { key: 'Temp', name: 'temperature', words: /\b(temp|temperature)\b/, tol: 0.3, range: [25, 45] },
 ];
 
 // Another vital's name ends the search window, so "pressure 102/60, sats 95" doesn't give the pressure 95.
 const ANY_VITAL = /^(sats?|spo2|saturations?|gcs|glasgow|bp|pressure|pulse|heart|hr|resps?|respirations?|rr|etco2|co2|tidal|temp|temperature|glucose|sugar|bgl|cbg)$/;
+// Words that end the window: the number belongs to something else ("after 2 doses", "surgery 20 years ago").
+const STOP_WORDS = new Set(['after', 'ago', 'before', 'since', 'history', 'hx']);
+// A number followed by one of these is a count or a dose, not the vital: "2 doses", "20 years".
+const UNIT_WORDS = new Set(['years', 'year', 'yo', 'days', 'weeks', 'months', 'doses', 'dose', 'mg', 'mcg', 'ml', 'l', 'litres', 'liters',
+  'lpm', 'minutes', 'minute', 'min', 'mins', 'hours', 'hour', 'hrs', 'times', 'puffs', 'sprays', 'tabs', 'tablets', 'pills']);
+const TREND_LINK = new Set([',', 'on', 'arrival', 'now', 'then', 'to', 'and', 'up', 'down', 'from', 'improved', 'improving', 'came', 'went',
+  'dropped', 'rose', 'initially', 'first', 'later', 'currently', 'is', 'was', "it's", 'it', 'are', 'were', 'of', 'back',
+  'room', 'air', 'the', 'bag', 'with', 'oxygen', 'o2', 'mask', 'bvm']);
 
-const TREND_LINK = new Set(['on', 'arrival', 'now', 'then', 'to', 'and', 'up', 'down', 'from', 'improved', 'improving', 'came', 'went',
-  'dropped', 'rose', 'after', 'initially', 'first', 'later', 'currently', 'is', 'was', "it's", 'it', 'are', 'were', 'at', 'of', 'back']);
-
-// Numbers said within a few words after a vital's name: "sats 89", "pressure 102/60", "heart rate's in the 50s".
+// Numbers said just after a vital's name: "sats 89", "pressure 102/60", "heart rate's in the 50s",
+// "GCS 11 on arrival, now 13" (both count, for the trend).
 function saidValues(norm, vital) {
   const tokens = norm.split(' ');
   const found = [];
+  const inRange = (v) => !vital.range || (v >= vital.range[0] && v <= vital.range[1]);
   for (let i = 0; i < tokens.length; i += 1) {
     // The vital's name has to start here, not somewhere later in the window
     const phrase = tokens.slice(i, i + 3).join(' ').replace(/'s\b/g, '');
     const m = phrase.match(vital.words);
     if (!m || m.index !== 0) continue;
-    if (tokens[i] === 'pulse' && tokens[i + 1] === 'ox' && !vital.words.test('pulse ox')) continue;
+    if (tokens[i] === 'pulse' && tokens[i + 1] === 'ox' && vital.key !== 'SpO2') continue; // "pulse ox" is a saturation
     const start = i + m[0].split(' ').length;
-    // "GCS 11 on arrival, now 13" gives both numbers: the trend counts.
     let got = 0;
-    for (let j = start; j <= start + (got ? 9 : 5) && j < tokens.length && got < 3; j += 1) {
+    for (let j = start; j < tokens.length && got < 3; j += 1) {
+      if (!got && j > start + 3) break; // the first number comes within a few words of the name
+      if (got && j > start + 10) break;
       const t = tokens[j].replace(/'s$/, '');
+      const next = tokens[j + 1] || '';
+      if (t.startsWith('t') && /^t\d{3,4}$/.test(t)) break; // a clock time
+      if (STOP_WORDS.has(t)) break;
+      if (j > start && ANY_VITAL.test(t) && !vital.words.test(`${tokens[j - 1]} ${t}`)) break;
+      if (!got && t === ',') continue;
       // After the first number, only linking words ("on arrival, now 13") may sit between it and the next.
       if (got && !/^\d/.test(t) && !TREND_LINK.has(t)) break;
-      if (j > start && ANY_VITAL.test(t) && !vital.words.test(`${tokens[j - 1]} ${t}`)) break;
       if (vital.bp) {
         const b = t.match(/^(\d{2,3})\/(\d{2,3})$/);
-        if (b) { found.push({ sys: Number(b[1]), dia: Number(b[2]), text: t }); got += 1; }
+        const sys = Number(t);
+        if (b) { found.push({ sys: Number(b[1]), dia: Number(b[2]), text: t }); got += 1; continue; }
+        // "pressure 124 76": two numbers in a row
+        if (/^\d{2,3}$/.test(t) && /^\d{2,3}$/.test(next) && sys >= 60 && sys <= 260 && Number(next) >= 30 && Number(next) < sys) {
+          found.push({ sys, dia: Number(next), text: `${t}/${next}` });
+          got += 1;
+          j += 1;
+        }
         continue;
       }
+      if (UNIT_WORDS.has(next)) continue; // "2 doses", "20 years": not this vital
       const decade = t.match(/^(\d0)s$/);
       if (decade) { found.push({ low: Number(decade[1]), high: Number(decade[1]) + 9, text: `${decade[1]}s` }); got += 1; continue; }
       const n = t.match(/^(\d{1,3}(?:\.\d)?)%?$/);
-      if (n && (!vital.range || (Number(n[1]) >= vital.range[0] && Number(n[1]) <= vital.range[1]))) {
+      if (n && inRange(Number(n[1]))) {
         found.push({ value: Number(n[1]), text: n[1] });
         got += 1;
       }
@@ -170,7 +192,8 @@ const TREATMENTS = [
   { codes: ['306', '307', '308'], name: 'defibrillation', said: /\b(shock\w*|defib\w*)\b/ },
   { codes: ['316'], name: 'return of spontaneous circulation', said: /\b(rosc|pulse back|got (a|her|him) pulse back|return of (spontaneous )?circulation)\b/ },
 ];
-const NOTHING_GIVEN = /\b(haven'?t|have not|didn'?t|did not|nothing|no) (given|give|meds|medications|treatment|anything)\b|\bnothing given\b|\bhaven'?t given\b/;
+// Saying no treatment was given. "No meds" alone is usually the medication history, so it doesn't count.
+const NOTHING_GIVEN = /\b(haven'?t|have not|didn'?t|did not)( been able to)? (given?|administered?|done) (any|anything)\b|\bnothing (has been |was )?(given|administered|done)\b|\bno (meds|medications|treatment|drugs) (were |was |have been )?(given|administered)\b|\bhaven'?t given\b/;
 
 const CC_WORDS = { od: 'overdose', sob: 'short of breath', cp: 'chest pain', aloc: 'altered', loc: 'conscious', mvc: 'collision', nv: 'nausea', 'n/v': 'nausea', abd: 'abdominal', fx: 'fracture', gi: 'bleed' };
 const STOP = new Set(['and', 'the', 'with', 'after', 'for', 'from', 'of', 'to', 'a', 'x', 'min', 'mins', 'minutes', 'hour', 'hours', 'pt', 'patient', 'possible', 'query', 'since', 'at', 'in', 'on']);
@@ -178,7 +201,7 @@ const STOP = new Set(['and', 'the', 'with', 'after', 'for', 'from', 'of', 'to', 
 // ---- the check -------------------------------------------------------------------------------------------------
 export function checkTriageReport(chart, transcript, { durationSec = null } = {}) {
   const norm = normalizeSpoken(transcript);
-  const words = norm.split(' ').filter(Boolean);
+  const words = norm.split(' ').filter((w) => w && w !== ',');
   const items = [];
   const add = (status, title, detail = '') => items.push({ status, title, detail });
 

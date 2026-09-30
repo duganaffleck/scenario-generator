@@ -27,7 +27,7 @@ const clockOf = (s) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padSt
 
 export default function TriageReport({ file, confirmed, accessCode, canRecord }) {
   const [mode, setMode] = useState(canRecord ? "speak" : "type");
-  const [phase, setPhase] = useState("idle"); // idle | recording | checking | waking
+  const [phase, setPhase] = useState("idle"); // idle | starting | recording | checking | waking
   const [seconds, setSeconds] = useState(0);
   const [typed, setTyped] = useState("");
   const [result, setResult] = useState(null);
@@ -83,11 +83,14 @@ export default function TriageReport({ file, confirmed, accessCode, canRecord })
   const start = async () => {
     const problem = ready();
     if (problem) { setError(problem); return; }
+    if (phase !== "idle") return;
     setError("");
     setResult(null);
+    setPhase("starting");
     try {
       stream.current = await navigator.mediaDevices.getUserMedia({ audio: true });
     } catch (e) {
+      setPhase("idle");
       setError("The microphone isn't available. Allow it for this site, or type your report instead.");
       return;
     }
@@ -124,7 +127,8 @@ export default function TriageReport({ file, confirmed, accessCode, canRecord })
   };
 
   const over = seconds > LIMIT_S;
-  const busy = phase === "checking" || phase === "waking";
+  const busy = phase === "checking" || phase === "waking" || phase === "starting";
+  const locked = busy || phase === "recording";
 
   return (
     <div className="acr-panel acr-noprint tr-panel">
@@ -136,8 +140,8 @@ export default function TriageReport({ file, confirmed, accessCode, canRecord })
 
       {canRecord && (
         <div className="tr-tabs" role="tablist" aria-label="How to give the report">
-          <button type="button" role="tab" aria-selected={mode === "speak"} className={`tr-tab${mode === "speak" ? " tr-tab-on" : ""}`} onClick={() => setMode("speak")}>Say it</button>
-          <button type="button" role="tab" aria-selected={mode === "type"} className={`tr-tab${mode === "type" ? " tr-tab-on" : ""}`} onClick={() => setMode("type")}>Type it</button>
+          <button type="button" role="tab" aria-selected={mode === "speak"} className={`tr-tab${mode === "speak" ? " tr-tab-on" : ""}`} onClick={() => setMode("speak")} disabled={locked}>Say it</button>
+          <button type="button" role="tab" aria-selected={mode === "type"} className={`tr-tab${mode === "type" ? " tr-tab-on" : ""}`} onClick={() => setMode("type")} disabled={locked}>Type it</button>
         </div>
       )}
 

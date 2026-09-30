@@ -156,8 +156,10 @@ export default function EcgPrintouts({ prints, ecgOn, onAcquire, ecg, patternKey
   list.forEach((p) => {
     if (!seen.current[p.id]) seen.current[p.id] = Date.now();
   });
-  const latest = list[list.length - 1];
-  const acquiring = latest && now - seen.current[latest.id] < acquireMs(latest);
+  // Anything still printing. A strip can print while a 12-lead is still acquiring; the 12-lead keeps its lock.
+  const pending = list.filter((p) => now - seen.current[p.id] < acquireMs(p));
+  const latest = pending[pending.length - 1];
+  const acquiring = !!latest;
   const progress = latest ? Math.min(1, (now - seen.current[latest.id]) / acquireMs(latest)) : 0;
   const ready = list.filter((p) => now - seen.current[p.id] >= acquireMs(p));
 
@@ -178,11 +180,11 @@ export default function EcgPrintouts({ prints, ecgOn, onAcquire, ecg, patternKey
       setTimeout(() => setNotice(""), 2500);
       return;
     }
-    if (acquiring && latest.leads !== "strip") return;
+    if (pending.some((p) => p.leads !== "strip")) return;
     if (onAcquire) onAcquire(leads);
   };
 
-  const twelveBusy = acquiring && latest.leads !== "strip";
+  const twelveBusy = pending.some((p) => p.leads !== "strip");
   const openPrint = open !== null ? list.find((p) => p.id === open) : null;
 
   // The buttons sit in the monitor's top bar, clear of the traces and the numbers.

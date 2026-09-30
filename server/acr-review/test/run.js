@@ -213,7 +213,7 @@ async function edit(file, changes) {
   // Triage report practice: the report is checked against the chart, rule by rule.
   {
     const { checkTriageReport, normalizeSpoken } = await import('../lib/triageReport.js');
-    ok(normalizeSpoken('pressure one-oh-two over sixty, sats ninety-five, sugar five point nine, at eighteen thirty') === 'pressure 102/60 sats 95 sugar 5.9 at 1830', 'spoken numbers become digits');
+    ok(normalizeSpoken('pressure one-oh-two over sixty, sats ninety-five, sugar five point nine, at eighteen thirty, one eighteen over seventy-two') === 'pressure 102/60 , sats 95 , sugar 5.9 , at 1830 , 118/72', 'spoken numbers become digits');
     const odChart = chartModel((await extractAcr(fs.readFileSync(T('ACR_mediocre_overdose.pdf')))).fields);
     const good = checkTriageReport(odChart, 'This is a 34 year old male, suspected opioid overdose. GCS 11 on arrival, now 13. Resps 8, now 10. Sats 94, BP 124/76, heart rate 76, end tidal 47. We bagged him and gave naloxone 0.4 IM. Sugar 5.8. No known allergies.', { durationSec: 40 });
     ok(good.items.every((i) => i.status === 'ok'), `a complete report passes every check (${good.items.filter((i) => i.status !== 'ok').map((i) => i.title).join('; ') || 'none open'})`);

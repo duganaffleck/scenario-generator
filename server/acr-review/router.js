@@ -58,9 +58,24 @@ function accessOk(given) {
 const reportUpload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: 12 * 1024 * 1024, files: 2, fieldSize: 64 * 1024 },
-  fileFilter: (req, file, cb) => cb(null, file.fieldname === 'acr'
-    ? file.mimetype === 'application/pdf' || /\.pdf$/i.test(file.originalname)
-    : /^(audio|video)\//.test(file.mimetype) || /\.(webm|m4a|mp4|mp3|wav|ogg|aac)$/i.test(file.originalname)),
+  fileFilter: (req, file, cb) => {
+    const okType = file.fieldname === 'acr'
+      ? file.mimetype === 'application/pdf' || /\.pdf$/i.test(file.originalname)
+      : /^(audio|video)\//.test(file.mimetype) || /\.(webm|m4a|mp4|mp3|wav|ogg|aac)$/i.test(file.originalname);
+    if (okType) return cb(null, true);
+    const e = new Error(file.fieldname === 'acr' ? 'The ACR has to be the Practice ACR PDF.' : 'That recording format isn\'t supported. Type your report instead.');
+    e.userFacing = true;
+    return cb(e);
+  },
+});
+// Upload problems (too big, wrong type, unexpected field) get a plain answer instead of a server error.
+const reportFiles = (req, res, next) => reportUpload.fields([{ name: 'acr', maxCount: 1 }, { name: 'audio', maxCount: 1 }])(req, res, (err) => {
+  if (!err) return next();
+  if (err.userFacing) return res.status(400).json({ error: err.message });
+  if (err instanceof multer.MulterError) {
+    return res.status(400).json({ error: err.code === 'LIMIT_FILE_SIZE' ? 'That file is too big. A report recording should be a minute or two.' : 'The upload didn\'t look right. Try again.' });
+  }
+  return next(err);
 });
 const reportLimiter = rateLimit({
   windowMs: Number(process.env.ACR_REVIEW_RATE_WINDOW_MS || 10 * 60_000),
@@ -174,7 +189,7 @@ router.post('/', reviewLimiter, upload.single('acr'), async (req, res) => {
   }
 });
 
-router.post('/triage-report', reportLimiter, reportUpload.fields([{ name: 'acr', maxCount: 1 }, { name: 'audio', maxCount: 1 }]), async (req, res) => {
+router.post('/triage-report', reportLimiter, reportFiles, async (req, res) => {
   try {
     if (!accessOk(req.body.accessCode)) return res.status(403).json({ error: 'That class access code isn\'t right. Ask your instructor for it.', accessCodeRequired: true });
     if (req.body.practiceConfirm !== 'yes') return res.status(400).json({ error: 'Confirm that this is a practice chart from a lab scenario first.' });
@@ -207,7 +222,7 @@ router.post('/triage-report', reportLimiter, reportUpload.fields([{ name: 'acr',
   } catch (e) {
     if (e.userFacing) return res.status(400).json({ error: e.message });
     console.error('[acr-review] triage report', e);
-    res.status(500).json({ error: 'The check failed. ' + (process.env.NODE_ENV === 'production' ? 'Try again in a minute.' : e.message) });
+    res.status(500).json({ error: 'The check failed. Try again in a minute.' });
   }
 });
 
