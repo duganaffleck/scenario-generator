@@ -210,6 +210,18 @@ async function edit(file, changes) {
   const hashes = copies.map((p) => (fs.existsSync(p) ? crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex') : 'missing'));
   ok(hashes.every((h) => h !== 'missing' && h === hashes[0]), 'blank Practice ACR is identical on the server and the site');
 
+  // v3.6: a write-across line that carries on to the row below is one entry, not a row missing its time and code.
+  {
+    const carried = await edit('ACR_model_chest_pain.pdf', { 'Treatment Row 13 - Procedure Across': true, 'Treatment Row 13 - Procedure Line': 'ETA 10 min, report given to triage RN' });
+    const cr = await post(port, { practiceConfirm: 'yes', scenarioId: 'chest-pain-ischemic-01' }, carried);
+    const issues = (cr.body.checker && cr.body.checker.issues) || [];
+    ok(cr.status === 200 && !issues.some((x) => /Row 13 /.test(x)), `a carried-on row isn't flagged as a row of its own (${issues.filter((x) => /Row 13 /.test(x)).join('; ') || 'none'})`);
+    const { chartModel: cm } = await import('../lib/chartModel.js');
+    const ch = cm((await extractAcr(carried)).fields);
+    const r12 = ch.treatmentGrid.find((r) => r.row === 12);
+    ok(r12 && /ETA 10 min, report given to triage RN$/.test(r12.procedure_line) && !ch.treatmentGrid.some((r) => r.row === 13), 'the server chart joins the carried-on words to the row above');
+  }
+
   // Triage report practice: the report is checked against the chart, rule by rule.
   {
     const { checkTriageReport, normalizeSpoken } = await import('../lib/triageReport.js');

@@ -51,7 +51,30 @@ function acrRow(doc, i) {
   for (c = 0; c < ACR_COLS.length; c++) if (r[ACR_COLS[c]]) r.used = true;
   return r;
 }
-function acrRows(doc) { var out = []; for (var i = 1; i <= ACR_ROWS; i++) { var r = acrRow(doc, i); if (r.used) out.push(r); } return out; }
+// A row the text carried on to from the row above (written across, no time, code, crew or columns) is part of that
+// entry, not an entry of its own: its words join the row above.
+function acrIsCarry(r) {
+  if (!r.fullLine || r.time || r.code || r.crew || !r.line) return false;
+  for (var c = 0; c < ACR_COLS.length; c++) if (r[ACR_COLS[c]]) return false;
+  return true;
+}
+function acrRows(doc) {
+  var out = [];
+  for (var i = 1; i <= ACR_ROWS; i++) {
+    var r = acrRow(doc, i), last = out[out.length - 1];
+    if (!r.used) continue;
+    if (last && acrIsCarry(r) && last.i + (last.carried || 0) === i - 1) {
+      if (r.procLine) last.procLine = last.procLine ? last.procLine + " " + r.procLine : r.procLine;
+      if (r.resultLine) last.resultLine = last.resultLine ? last.resultLine + " " + r.resultLine : r.resultLine;
+      last.line = last.procLine && last.resultLine ? last.procLine + ", " + last.resultLine : (last.procLine || last.resultLine);
+      last.hasVitals = last.hasVitals || /\b(hr|bp|rr|spo2|pulse)\b/i.test(last.line);
+      last.carried = (last.carried || 0) + 1;
+      continue;
+    }
+    out.push(r);
+  }
+  return out;
+}
 // Codes follow the current Ontario list (ontario.ca, ACR codes): 10 not 010, and decimal sub-codes such as 401.4.
 function acrNormCode(code) { return String(code || "").replace(/\s/g, "").replace(/^0+(?=\d)/, ""); }
 function acrIsCode(code, list) { var c = acrNormCode(code); for (var k = 0; k < list.length; k++) if (c === list[k]) return true; return false; }
@@ -174,6 +197,84 @@ function acrToggleLine(doc, i, side) {
     line.display = display.hidden;
     for (k = 0; k < S.cols.length; k++) doc.getField(p + S.cols[k]).display = display.visible;
   }
+}
+
+// ------------------------------------------------------------------ write-across lines carry on to the next row
+// The text stays one size (ACR_LINE_PT). When a line is full, the words carry on to the line of the row below:
+// its box is ticked and its columns hidden, and the next procedure starts on the row after that.
+// Helvetica widths (thousandths of the font size) for printable ASCII, so the form can tell when a line is full.
+var ACR_LINE_PT = 8;
+var ACR_HELV = [278,278,355,556,556,889,667,191,333,333,389,584,278,333,278,278,556,556,556,556,556,556,556,556,556,556,
+  278,278,584,584,584,556,1015,667,667,722,722,667,611,778,722,278,500,667,556,833,722,778,667,778,722,667,611,722,667,
+  944,667,667,611,278,278,278,469,556,333,556,556,500,556,556,278,556,556,222,222,500,222,833,556,556,556,556,333,500,
+  278,556,500,722,500,500,500,334,260,334,584];
+function acrTextWidth(s) {
+  var w = 0;
+  for (var k = 0; k < s.length; k++) { var c = s.charCodeAt(k); w += (c >= 32 && c <= 126) ? ACR_HELV[c - 32] : 600; }
+  return w * ACR_LINE_PT / 1000;
+}
+function acrLineRoom(f) { var r = f.rect; return Math.abs(r[2] - r[0]) - 5; }
+function acrFits(f, s) { return acrTextWidth(s) <= acrLineRoom(f); }
+// What fits on this line, and the rest. Breaks at a space where it can.
+function acrSplitLine(f, s) {
+  s = String(s || "");
+  if (acrFits(f, s)) return [s, ""];
+  var cut = s.length;
+  while (cut > 1 && !acrFits(f, s.slice(0, cut))) cut--;
+  var sp = s.lastIndexOf(" ", cut);
+  if (sp > cut * 0.4) cut = sp;
+  return [s.slice(0, cut).replace(/\s+$/, ""), s.slice(cut).replace(/^\s+/, "")];
+}
+// A row the words can carry on to: no time, no code, no crew, nothing in that side's columns. Its line may already
+// hold the carried-on end of this same entry.
+function acrRowFree(doc, i, side) {
+  var S = ACR_SIDES[side], p = "Treatment Row " + i + " - ";
+  if (i > ACR_ROWS || !doc.getField(p + S.line)) return false;
+  if (acrV(doc, p + "Time") || acrV(doc, p + "Procedure Code") || acrV(doc, p + "Crew Member Number")) return false;
+  for (var k = 0; k < S.cols.length; k++) if (acrV(doc, p + S.cols[k]) !== "") return false;
+  return true;
+}
+function acrOpenLine(doc, i, side) {
+  var S = ACR_SIDES[side], p = "Treatment Row " + i + " - ";
+  doc.getField(p + S.box).value = "Yes";
+  for (var k = 0; k < S.cols.length; k++) doc.getField(p + S.cols[k]).display = display.hidden;
+  var line = doc.getField(p + S.line);
+  line.display = display.visible;
+  return line;
+}
+// Lay text (plus whatever the rows below already carry) down from row i. Plans first, writes only if it all fits.
+function acrCarry(doc, i, side, text) {
+  var S = ACR_SIDES[side], plan = [], n = i, rest = text;
+  while (rest) {
+    if (!acrRowFree(doc, n, side)) return false;
+    var f = doc.getField("Treatment Row " + n + " - " + S.line), had = acrV(doc, "Treatment Row " + n + " - " + S.line);
+    var parts = acrSplitLine(f, had ? rest + " " + had : rest);
+    plan.push([n, parts[0]]);
+    rest = parts[1];
+    n++;
+  }
+  for (var k = 0; k < plan.length; k++) acrOpenLine(doc, plan[k][0], side).value = plan[k][1];
+  return true;
+}
+// Keystroke (and Validate) script on each write-across line: acrLineKey(this, event, row, "P" or "R").
+function acrLineKey(doc, ev, i, side) {
+  var f = ev.target;
+  if (ev.name === "Keystroke" && !ev.willCommit) {
+    // Typing at the end of a full line: the space that would start the next word starts the next row instead.
+    if (ev.change === " " && ev.selStart === ev.selEnd && ev.selStart === String(ev.value).length
+        && !acrFits(f, ev.value + " mmm") && acrRowFree(doc, i + 1, side)
+        && acrV(doc, "Treatment Row " + (i + 1) + " - " + ACR_SIDES[side].line) === "") {
+      ev.change = "";
+      acrOpenLine(doc, i + 1, side).setFocus();
+    }
+    return;
+  }
+  // Leaving the line, or pasting into it: whatever doesn't fit carries on down.
+  var v = String(ev.value || "");
+  if (acrFits(f, v)) return;
+  var parts = acrSplitLine(f, v);
+  if (acrCarry(doc, i + 1, side, parts[1])) ev.value = parts[0];
+  else app.alert("Row " + i + ": this doesn't fit on one line, and the row below is already in use. Shorten it, or leave the next row empty so it can carry on there.", 3);
 }
 
 // ------------------------------------------------------------------ highlights

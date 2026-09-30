@@ -27,7 +27,18 @@ function chartModel(fields) {
       const hidden = P_COLS.includes(c) ? pAcross : rAcross;
       if (!hidden && r(c)) row[c] = r(c);
     });
-    if (Object.keys(row).some((k) => !['row'].includes(k) && row[k])) rows.push(row);
+    if (!Object.keys(row).some((k) => !['row'].includes(k) && row[k])) continue;
+    // A row the words carried on to from the row above (v3.6: written across, nothing else on it) joins that row.
+    const last = rows[rows.length - 1];
+    const carry = (pAcross || rAcross) && !row.time && !row.code && !row.crew
+      && Object.keys(row).every((k) => ['row', 'time', 'code', 'crew', 'procedure_line', 'result_line'].includes(k));
+    if (carry && last && last.row + (last.carried || 0) === i - 1) {
+      if (row.procedure_line) last.procedure_line = last.procedure_line ? `${last.procedure_line} ${row.procedure_line}` : row.procedure_line;
+      if (row.result_line) last.result_line = last.result_line ? `${last.result_line} ${row.result_line}` : row.result_line;
+      last.carried = (last.carried || 0) + 1;
+      continue;
+    }
+    rows.push(row);
   }
   const events = {};
   for (const e of EVENTS) {
