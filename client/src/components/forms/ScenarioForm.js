@@ -1970,6 +1970,8 @@ const ScenarioForm = () => {
       case 'bgl': {
         const b = parseFloat(str);
         if (isNaN(b)) return normal;
+        // In the first days of life a glucose from 2.6 up is expected while the baby transitions: amber, not red.
+        if (band.key === 'newborn' && b >= 2.6 && b < 4.0) return amber;
         if (b < 4.0 || b > 20) return red;
         if (b < 5.0 || b > 11) return amber;
         return normal;

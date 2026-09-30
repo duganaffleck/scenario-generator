@@ -712,6 +712,31 @@ function inferChiefComplaint({ existingChiefComplaint = '', selectedType = '', s
   return existing || 'Medical complaint';
 }
 
+// The Call reads badly with a blank presentation or narrative (it happened on a Quick Draft newborn in round 5).
+// When the model leaves either one empty, build a plain version from what it did write.
+function backfillCallNarrative(n) {
+  const clean = (v) => String(v ?? '').trim().replace(/[.\s]+$/, '');
+  const sentence = (parts) => parts.map(clean).filter(Boolean).map((p) => `${p.charAt(0).toUpperCase()}${p.slice(1)}.`).join(' ');
+  const list = (v) => (Array.isArray(v) ? v : v ? [v] : []).map(clean).filter(Boolean);
+  if (!clean(n.patientPresentation)) {
+    const fi = n.firstImpression || {};
+    const pd = n.patientDemographics || {};
+    const clues = list(fi.visibleClues);
+    n.patientPresentation = sentence([
+      pd.appearance ? `On first contact: ${clean(pd.appearance).toLowerCase()}` : fi.generalAppearance,
+      fi.positionFound,
+      clues.length ? `On approach the crew can see ${clues.join(', ').toLowerCase()}` : '',
+    ]);
+    if (n.patientPresentation) console.log('[backfill] patientPresentation');
+  }
+  if (!clean(n.incidentNarrative)) {
+    const events = n.sample?.eventsLeadingUp;
+    const dispatch = list(n.callInformation?.dispatchNotes);
+    n.incidentNarrative = sentence([events, ...dispatch]);
+    if (n.incidentNarrative) console.log('[backfill] incidentNarrative');
+  }
+}
+
 function fillScenarioGaps(normalized, options = {}) {
   const allScenarioText = [
     normalized.title,
@@ -1014,6 +1039,7 @@ function normalizeScenario(parsed, options = {}) {
     normalized.customPrompt = options.customPrompt;
   }
 
+  backfillCallNarrative(normalized);
   let filled = fillScenarioGaps(normalized, options);
   if (optSemester || optType) scrubOutOfScopeProse(filled);
   const caught = clinicalSafetyNet(filled, { semester: optSemester, type: optType });
@@ -2553,7 +2579,8 @@ Section discipline rules, for every section:
   - sceneArrival describes the physical environment, access and bystanders. No patient appearance, findings or distress level.
   - firstImpression describes what the crew sees in the first 15 seconds: appearance, position, visible distress, and observable warning signs (initialRedFlags). apparentSeverity and initialRedFlags are observations in plain words ("grey, sweaty, speaking in short phrases"), never a diagnosis or an interpretation ("classic ischemic pain", "high-risk cardiac presentation"). Do not repeat scene details, and do not restate findings that appear in physicalExam or vitalSigns. initialRedFlags lists only flags not already named in visibleClues.
   - vitalSigns context labels describe timing only ("On arrival", "After first intervention", "En route"), never whether the crew's care was right or wrong.
-- patientPresentation describes behaviour, speech and demeanour at first contact. It does not repeat the general appearance from firstImpression.
+- patientPresentation describes behaviour, speech and demeanour at first contact. It does not repeat the general appearance from firstImpression. It is never left empty: for a newborn, describe tone, colour, cry and breathing effort as the crew first sees them.
+- incidentNarrative is never left empty: for a birth, give the labour and delivery timeline up to the call.
 - physicalExam.generalAppearance adds exam-level detail only. It does not repeat firstImpression.
 - incidentNarrative gives the timeline leading to the call. It does not repeat SAMPLE eventsLeadingUp.
 - instructorGuidance.psychologicalSafetyDebrief is one short paragraph that frames feedback around observable decisions, reassessment, communication and next-call improvement. No blame, shame or gotcha language.
@@ -2686,6 +2713,7 @@ Scenario shaping rules:
 - Keep the scene, the findings, the progression, expected management and the GRS anchors in agreement. An action the scene has already done (boots already off, patient already on their side, oxygen already on) cannot be the corrective action the crew is expected to take, and anchors must only reward actions the case makes possible.
 - The Call sections (sceneArrival, patientPresentation, incidentNarrative, opqrst, sample, physicalExam) describe only what the crew finds on arrival and before any treatment. How the patient responds to care belongs in the later vital sign sets and caseProgression, not in those sections, because students read The Call first.
 - For infants and children, choose vital signs that are normal or abnormal for the patient's age (a newborn at 140 has a normal heart rate; a newborn's SpO2 in the first minutes of life rises from about 60% toward 85 to 95% by 10 minutes). Name the rhythm by the standard ECG criteria at any age: a sinus rhythm over 100 is sinus tachycardia even when the rate is normal for a newborn.
+- Before any medication or procedure goes into expectedTreatment, protocolNotes or caseProgression, check the patient's age and weight against that directive's limits in the standards above. When the patient is under the limit, do not offer it with "if authorized" or "only if criteria are met": leave it out, or say plainly that it is not an option for this patient and why (for example, a 10-year-old with traumatic hemorrhage gets no TXA because the directive starts at age 16; an 8-year-old gets no ketorolac, ibuprofen or acetaminophen because Analgesia starts at age 12). Children under these limits still get excellent care: positioning, hemorrhage control, splinting, oxygen when indicated, reassurance, and timely transport.
 - The selected type, environment, complexity, semester, and uniqueness must all produce visible differences in the final scenario.
 - Avoid generic template-feeling scenarios; make this one feel deliberately authored.
 - The title must be specific to this exact call. Do not use generic titles like "The Chest Pain Call" or "Diabetic Emergency".
@@ -2887,6 +2915,7 @@ function buildVariantBlock(variant) {
     variant.setting ? `- Use a different specific location and story from the earlier one (<<<${variant.setting.replace(/[<>]/g, '')}>>>).` : '- Use a new specific location and story.',
     '- Change the first thing that looks reassuring or distracting. The underlying cause can stay the same or change, as long as the crew faces the same decision at a similar point in the call.',
     '- Do not reuse the earlier title, names, places, or quoted lines.',
+    '- Choose new vital sign numbers that fit the new patient\'s age and story. They should point to the same decision, but no set should repeat the earlier case\'s values.',
     '- Rebuild the scene around the new story rather than editing the old one: whatever the crew is expected to fix must not already be done when they arrive, and the progression, expected management and GRS anchors must fit the new scene.',
     '- The Ontario PCP scope, directive and semester rules above still apply in full.',
   ];
