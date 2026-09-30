@@ -1,0 +1,18 @@
+.cv-card { width: min(560px, 100%); }
+.cv-note { margin: 0; font-size: 0.95rem; line-height: 1.55; }
+.cv-hint { margin: -0.4rem 0 0; font-size: 0.82rem; color: var(--vn-muted-text, #56626d); }
+.cv-harder { border: 0; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.45rem; }
+.cv-harder legend { margin-bottom: 0.35rem; padding: 0; }
+.cv-harder label { display: flex; gap: 0.55rem; align-items: center; font-size: 0.95rem; min-height: 32px; cursor: pointer; }
+.cv-harder input { width: 18px; height: 18px; }
+.cv-actions { display: flex; justify-content: flex-end; }
+.cv-banner {
+  margin: 0 0 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  border-left: 6px solid var(--vn-accent-card-border, #0a6e72);
+  background: var(--vn-accent-card-bg, #eaf5f7);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+.cv-banner p { margin: 0.25rem 0 0; }

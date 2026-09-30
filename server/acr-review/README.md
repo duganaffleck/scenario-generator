@@ -27,6 +27,16 @@ The student page is `client/src/components/acr/AcrReview.js`, reached at `/#acr-
 | `GET /config` | Mode, whether a class access code is needed, and the sample scenarios |
 | `POST /acr-for-scenario` | JSON `{ scenario }` (the object `/api/generate-scenario` returns). Returns the Practice ACR pre-filled with dispatch details, with the scenario sealed inside it |
 | `POST /` | Multipart: `acr` (PDF), `practiceConfirm=yes`, optional `scenarioId`, `previousFeedback`, `accessCode`. Returns the review |
+| `POST /triage-report` | Multipart: `acr` (PDF), `practiceConfirm=yes`, and either `audio` (a recording, with `durationSec`) or `transcript` (typed). Optional `accessCode`. Returns the transcript and a checklist of the report against the chart |
+
+### Triage report practice
+
+The student says (or types) the report they'd give the triage nurse. `lib/triageReport.js` checks it against their chart
+with plain rules, so every item points at a row or box: numbers that aren't on the chart, older values given as
+current, missing vitals, glucose and treatments, "nothing given" when the grid says otherwise, allergies, the trend and
+the one-minute limit. Recordings are turned into text by OpenAI (`ACR_TRANSCRIBE_MODEL`, default
+`gpt-4o-mini-transcribe`, falling back to `whisper-1`) and only when `ACR_REVIEW_MODE=openai`; otherwise the page offers
+typing only. Nothing is stored. `ACR_REPORT_RATE_MAX` (default 30 per window) limits requests.
 
 ## How a pre-filled ACR finds its scenario
 

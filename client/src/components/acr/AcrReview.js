@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import TriageReport from "./TriageReport";
 import { ACR_FORM_VERSION, BLANK_ACR_URL, getAcrConfig, reviewAcr, errorMessage } from "./acrApi";
 import "./AcrReview.css";
 
@@ -306,6 +307,13 @@ export default function AcrReview() {
       <div ref={resultRef}>
         {result && <Feedback data={result} onPrint={printFeedback} onRevise={revise} onStartOver={startOver} />}
       </div>
+
+      <TriageReport
+        file={file}
+        confirmed={confirmed}
+        accessCode={accessCode}
+        canRecord={!!(config && config.mode === "openai" && typeof window !== "undefined" && window.MediaRecorder && navigator.mediaDevices)}
+      />
 
       <div className="acr-panel acr-noprint">
         <h2 className="acr-h2">Practice ACR files</h2>

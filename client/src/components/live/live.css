@@ -119,6 +119,12 @@ details.lr-card > summary { cursor: pointer; }
   color: #ffffff;
 }
 .lr-chip:disabled { opacity: 0.45; cursor: default; }
+.lr-chip--cpr { background: #b25e09; border-color: #b25e09; }
+.lr-chip--shock { border-color: #b42318; color: #b42318; }
+.lr-chip--shock:not(:disabled):active { background: #b42318; color: #ffffff; }
+.lr-arrest-times { margin-top: 0.7rem; }
+.lr-late dd { color: #b42318; }
+.lr-arrest > .lr-hint { margin: 0.4rem 0 0.6rem; }
 .lr-sets { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 0.5rem; }
 .lr-set {
   text-align: left;
@@ -287,6 +293,8 @@ details.lr-card > summary { cursor: pointer; }
   .lm-embedded .lm-num--other { padding: 0.2rem 0.5rem; font-size: 0.85rem; }
   .lm-slip-thumb { width: 160px; height: 89px; }
   .lm-slip-scale { transform: scale(0.1565); }
+  .lm-slip-thumb--strip { height: 40px; }
+  .lm-slip-thumb--strip .lm-slip-scale { transform: scale(0.19); }
 }
 /* A phone on its side: short and wide. Keep the side column, shrink everything to fit the height. */
 @media (max-height: 520px) {
@@ -377,6 +385,8 @@ details.lr-card > summary { cursor: pointer; }
 }
 .lm-slip-thumb { display: block; width: 230px; height: 128px; overflow: hidden; position: relative; }
 .lm-slip-scale { position: absolute; left: 0; top: 0; transform: scale(0.225); transform-origin: 0 0; }
+.lm-slip-thumb--strip { height: 58px; }
+.lm-slip-thumb--strip .lm-slip-scale { transform: scale(0.27); }
 .lm-slip-label { font-size: 0.75rem; font-weight: 800; text-align: left; }
 .lm-paper { background: #fffdf9; color: #1f2933; padding: 10px 12px 12px; width: max-content; }
 .lm-paper-head { display: flex; gap: 1.2rem; font-size: 13px; margin-bottom: 4px; align-items: baseline; }
@@ -425,3 +435,5 @@ details.lr-card > summary { cursor: pointer; }
   .lm-viewer-scroll > div > div { transform: none !important; }
 }
 .lm-slip--tab { padding: 0.35rem 0.7rem; box-shadow: 0 -3px 10px rgba(0, 0, 0, 0.4); }
+html[data-theme="night"] .lr-chip--shock { color: #ff9b91; border-color: #ff9b91; }
+html[data-theme="night"] .lr-late dd { color: #ff9b91; }

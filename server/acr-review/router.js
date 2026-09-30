@@ -8,6 +8,8 @@
 //   GET  /scenarios          sample scenarios (older name for the same list)
 //   POST /acr-for-scenario   JSON { scenario } from /api/generate-scenario  ->  pre-filled Practice ACR (PDF)
 //   POST /                   multipart: acr (PDF), practiceConfirm=yes, [scenarioId], [previousFeedback], [accessCode]
+//   POST /triage-report      multipart: acr (PDF), practiceConfirm=yes, audio (a recording) or transcript (typed),
+//                            [durationSec], [accessCode]  ->  the report checked against the chart
 //
 // Nothing is stored. PDFs are read in memory and discarded.
 
@@ -26,6 +28,7 @@ import { acrForScenario, LINK_FIELD, templateVersion } from './lib/prefill.js';
 import { open } from './lib/scenarioToken.js';
 
 import { documentationRules } from './lib/documentationRules.js';
+import { checkTriageReport } from './lib/triageReport.js';
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: 12 * 1024 * 1024, files: 1, fieldSize: 256 * 1024 },
@@ -49,6 +52,59 @@ function accessOk(given) {
   const a = crypto.createHash('sha256').update(String(given || '').trim().toLowerCase()).digest();
   const b = crypto.createHash('sha256').update(want.toLowerCase()).digest();
   return crypto.timingSafeEqual(a, b);
+}
+
+// Triage report practice: the chart plus a short recording (or typed text). Audio is small: a minute or so.
+const reportUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 12 * 1024 * 1024, files: 2, fieldSize: 64 * 1024 },
+  fileFilter: (req, file, cb) => {
+    const okType = file.fieldname === 'acr'
+      ? file.mimetype === 'application/pdf' || /\.pdf$/i.test(file.originalname)
+      : /^(audio|video)\//.test(file.mimetype) || /\.(webm|m4a|mp4|mp3|wav|ogg|aac)$/i.test(file.originalname);
+    if (okType) return cb(null, true);
+    const e = new Error(file.fieldname === 'acr' ? 'The ACR has to be the Practice ACR PDF.' : 'That recording format isn\'t supported. Type your report instead.');
+    e.userFacing = true;
+    return cb(e);
+  },
+});
+// Upload problems (too big, wrong type, unexpected field) get a plain answer instead of a server error.
+const reportFiles = (req, res, next) => reportUpload.fields([{ name: 'acr', maxCount: 1 }, { name: 'audio', maxCount: 1 }])(req, res, (err) => {
+  if (!err) return next();
+  if (err.userFacing) return res.status(400).json({ error: err.message });
+  if (err instanceof multer.MulterError) {
+    return res.status(400).json({ error: err.code === 'LIMIT_FILE_SIZE' ? 'That file is too big. A report recording should be a minute or two.' : 'The upload didn\'t look right. Try again.' });
+  }
+  return next(err);
+});
+const reportLimiter = rateLimit({
+  windowMs: Number(process.env.ACR_REVIEW_RATE_WINDOW_MS || 10 * 60_000),
+  max: Number(process.env.ACR_REPORT_RATE_MAX || 30),
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'That is a lot of reports in a short time. Take a few minutes and try again.' },
+});
+
+// Speech to text through OpenAI. The audio is sent, turned into text and dropped; nothing is kept here.
+async function transcribe(buffer, mimetype) {
+  const { default: OpenAI, toFile } = await import('openai');
+  const client = new OpenAI();
+  const type = mimetype || 'audio/webm';
+  const ext = /mp4|m4a|aac/.test(type) ? 'm4a' : /ogg/.test(type) ? 'ogg' : /wav/.test(type) ? 'wav' : /mpeg|mp3/.test(type) ? 'mp3' : 'webm';
+  const prompt = 'A paramedic student giving a triage report at hospital. Write numbers as digits: GCS 11, sats 89, BP 102/60, EtCO2 56, glucose 5.9, naloxone 0.4 mg IM.';
+  const models = [...new Set([process.env.ACR_TRANSCRIBE_MODEL || 'gpt-4o-mini-transcribe', 'whisper-1'])];
+  let lastError = null;
+  for (const model of models) {
+    try {
+      const file = await toFile(buffer, `report.${ext}`, { type });
+      const out = await client.audio.transcriptions.create({ file, model, language: 'en', prompt });
+      return String((out && out.text) || '').trim();
+    } catch (e) {
+      lastError = e;
+      if (![400, 404].includes(Number(e && e.status))) break; // only a missing or refused model is worth a second try
+    }
+  }
+  throw lastError || new Error('transcription failed');
 }
 
 const router = express.Router();
@@ -130,6 +186,43 @@ router.post('/', reviewLimiter, upload.single('acr'), async (req, res) => {
     if (e.userFacing) return res.status(400).json({ error: e.message });
     console.error('[acr-review]', e);
     res.status(500).json({ error: 'The review failed. ' + (process.env.NODE_ENV === 'production' ? 'Try again in a minute.' : e.message) });
+  }
+});
+
+router.post('/triage-report', reportLimiter, reportFiles, async (req, res) => {
+  try {
+    if (!accessOk(req.body.accessCode)) return res.status(403).json({ error: 'That class access code isn\'t right. Ask your instructor for it.', accessCodeRequired: true });
+    if (req.body.practiceConfirm !== 'yes') return res.status(400).json({ error: 'Confirm that this is a practice chart from a lab scenario first.' });
+    const acr = req.files && req.files.acr && req.files.acr[0];
+    if (!acr) return res.status(400).json({ error: 'Choose your ACR above first. The report is checked against it.' });
+    const audio = req.files && req.files.audio && req.files.audio[0];
+    const { fields } = await extractAcr(acr.buffer);
+    delete fields[LINK_FIELD];
+    checkPracticeOnly(fields);
+    const chart = chartModel(fields);
+
+    let transcript = String(req.body.transcript || '').slice(0, 4000);
+    let durationSec = null;
+    if (audio) {
+      if (mode() !== 'openai' || !process.env.OPENAI_API_KEY) {
+        return res.status(400).json({ error: 'Recording needs the AI connection, and it\'s switched off on this server. Type your report instead.' });
+      }
+      try {
+        transcript = await transcribe(audio.buffer, audio.mimetype);
+      } catch (e) {
+        console.error('[acr-review] transcription failed', e && e.message);
+        return res.status(503).json({ error: 'Couldn\'t turn the recording into text just now. Try again, or type your report.' });
+      }
+      const d = Number(req.body.durationSec);
+      durationSec = Number.isFinite(d) && d > 0 && d < 600 ? d : null;
+    }
+    if (!transcript.trim()) return res.status(400).json({ error: audio ? 'The recording came back empty. Check your microphone and try again.' : 'Type your report first.' });
+    const result = checkTriageReport(chart, transcript, { durationSec });
+    res.json({ transcript, source: audio ? 'audio' : 'typed', ...result });
+  } catch (e) {
+    if (e.userFacing) return res.status(400).json({ error: e.message });
+    console.error('[acr-review] triage report', e);
+    res.status(500).json({ error: 'The check failed. Try again in a minute.' });
   }
 });
 
