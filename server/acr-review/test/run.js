@@ -243,6 +243,9 @@ async function edit(file, changes) {
     ok(/conflict:You said GCS 12/.test(titles), 'a number that is not on the chart is a conflict');
     ok(/conflict:You said nothing was given/.test(titles), '"nothing given" with naloxone on the chart is a conflict');
     ok(/note:SpO2 from an earlier set/.test(titles) && /missing:Naloxone/.test(titles), 'an old value is flagged, and a missing drug is named');
+    const close = checkTriageReport(odChart, 'Resps 12, sats 94, pressure 126/74, heart rate 76.');
+    const closeTitles = close.items.map((i) => `${i.status}:${i.title}`).join(' | ');
+    ok(/note:Respiratory rate: close, not exact/.test(closeTitles) && /note:Blood pressure: close, not exact/.test(closeTitles) && /ok:Heart rate matches your last set exactly/.test(closeTitles), 'close numbers are called close, exact ones exact');
     const typed = await new Promise((resolve) => {
       const boundary = 'x' + Date.now();
       const pdf = fs.readFileSync(T('ACR_mediocre_overdose.pdf'));
@@ -257,7 +260,7 @@ async function edit(file, changes) {
       });
       req.end(body);
     });
-    ok(typed.status === 200 && typed.body.source === 'typed' && typed.body.items.some((i) => i.title === 'GCS matches your last set'), 'POST /triage-report checks a typed report against the uploaded chart');
+    ok(typed.status === 200 && typed.body.source === 'typed' && typed.body.items.some((i) => i.title === 'GCS matches your last set exactly'), 'POST /triage-report checks a typed report against the uploaded chart');
   }
 
   server.close();

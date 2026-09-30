@@ -4,6 +4,7 @@
 //   1. High-concentration oxygen whatever the SpO2 for diving injuries, CO, cyanide, smoke inhalation, airway burns.
 //   2. Hypoglycemia (BGL under 4.0) with an altered level of awareness gets the Hypoglycemia directive, by name.
 //   3. A trauma patient who meets Field Trauma Triage step 1 or 2 gets a destination decision.
+//   4. Oxytocin is 10 units IM for a PCP. Wherever the scenario gives it an IV route, the route becomes IM.
 
 const text = (v) => {
   if (v == null) return '';
@@ -156,6 +157,32 @@ function fieldTraumaTriage(s, type, notes) {
   notes.push('field trauma triage');
 }
 
+// Oxytocin's PCP route is IM (Emergency Childbirth directive). "IM or IV", "IM/IV", "10 units IV", "oxytocin IV":
+// every string in the scenario that names oxytocin gets IM, and the rest of the sentence is left alone.
+const OXY_ROUTE = [
+  [/\b(IM\s*(?:or|\/)\s*IV|IV\s*(?:or|\/)\s*IM)\b/g, 'IM'],
+  [/\b(oxytocin[^.;\n]{0,40}?\b\d+\s*(?:units?|U|IU))\s+(?:IV|intravenous(?:ly)?)\b/gi, '$1 IM'],
+  [/\b(oxytocin)\s+(?:IV|intravenous(?:ly)?)\b/gi, '$1 IM'],
+];
+function fixOxytocinRoute(value, fixed) {
+  if (typeof value === 'string') {
+    if (!/oxytocin/i.test(value)) return value;
+    const out = value.split(/(?<=[.;\n])/).map((sentence) => {
+      // "IV oxytocin is not a PCP route" is already right; only sentences that give it IV are changed.
+      if (!/oxytocin/i.test(sentence) || /\b(not|never|no|isn'?t|cannot|can'?t)\b/i.test(sentence)) return sentence;
+      return OXY_ROUTE.reduce((t, [re, to]) => t.replace(re, to), sentence);
+    }).join('');
+    if (out !== value) fixed.count += 1;
+    return out;
+  }
+  if (Array.isArray(value)) return value.map((v) => fixOxytocinRoute(v, fixed));
+  if (value && typeof value === 'object') {
+    for (const k of Object.keys(value)) value[k] = fixOxytocinRoute(value[k], fixed);
+    return value;
+  }
+  return value;
+}
+
 export function clinicalSafetyNet(scenario, { semester, type } = {}) {
   const notes = [];
   if (!scenario || typeof scenario !== 'object') return notes;
@@ -163,5 +190,8 @@ export function clinicalSafetyNet(scenario, { semester, type } = {}) {
   highConcentrationOxygen(scenario, notes);
   hypoglycemia(scenario, semester, notes);
   fieldTraumaTriage(scenario, type, notes);
+  const fixed = { count: 0 };
+  fixOxytocinRoute(scenario, fixed);
+  if (fixed.count) notes.push('oxytocin route IM');
   return notes;
 }

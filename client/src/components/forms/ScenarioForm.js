@@ -3,6 +3,7 @@ import axios from "axios";
 import jsPDF from "jspdf";
 import { FaSpinner, FaFilePdf, FaFileMedical, FaClipboardList, FaUserGraduate, FaMoon, FaSun, FaUndoAlt, FaLink, FaHeartbeat, FaBroadcastTower, FaRandom } from "react-icons/fa";
 import VariantDialog from "../variant/VariantDialog";
+import { bandFor, newbornSpo2Floor, parseAge, sbpFloor } from "../../utils/ageBands";
 import LiveRun from "../live/LiveRun";
 import RadioDispatch from "../dispatch/RadioDispatch";
 import { ACR_FORM_VERSION, downloadScenarioAcr, errorMessage } from "../acr/acrApi";
@@ -450,6 +451,8 @@ const ScenarioForm = () => {
   });
   const outputRef = useRef(null);
   const [collapsedSections, setCollapsedSections] = useState({});
+  // Student mode shows the vitals one set at a time: the arrival set first, the next when they press for it.
+  const [setsShown, setsShownSet] = useState(1);
   const [isMobile, setIsMobile] = useState(() =>
     typeof window !== "undefined" ? window.matchMedia("(max-width: 900px)").matches : false
   );
@@ -759,6 +762,7 @@ const ScenarioForm = () => {
   useEffect(() => {
     if (!scenario) return;
     setCollapsedSections(studentMode ? Object.fromEntries(STUDENT_LOCKED_GROUPS.map((g) => [g, true])) : {});
+    setsShownSet(1);
   }, [scenario, studentMode]);
 
   // Bring the new scenario into view (on a phone it's below the whole form).
@@ -1681,23 +1685,25 @@ const ScenarioForm = () => {
         "5": { bg: "transparent", border: "var(--vn-border)", label: "var(--vn-muted-text)" },
         "7": { bg: "transparent", border: "var(--vn-border)", label: "var(--vn-accent-text)" },
       };
+      // Each domain folds on its own, so an instructor can open just the one they're scoring while the call runs.
+      const setAll = (e, open) => {
+        const wrap = e.currentTarget.closest(".grs-wrap");
+        if (wrap) wrap.querySelectorAll("details.grs-domain").forEach((d) => { d.open = open; });
+      };
       return (
-        <div>
+        <div className="grs-wrap">
+          <div className="grs-toolbar">
+            <button type="button" className="sbar-btn a11y-focus" onClick={(e) => setAll(e, true)}>Open all</button>
+            <button type="button" className="sbar-btn a11y-focus" onClick={(e) => setAll(e, false)}>Close all</button>
+          </div>
           {Object.entries(data)
             .filter(([, scores]) => scores && ["3", "5", "7"].some((sc) => Array.isArray(scores[sc]) && scores[sc].length))
             .map(([domain, scores]) => (
-            <div key={domain} style={{ marginBottom: "1.25rem" }}>
-              <div style={{
-                fontSize: "0.95rem",
-                fontWeight: 800,
-                color: "var(--vn-ink)",
-                borderLeft: "4px solid var(--vn-teal)",
-                paddingLeft: "0.6rem",
-                marginBottom: "0.6rem",
-                fontFamily: "var(--vn-font-body)",
-              }}>
+            <details key={domain} className="grs-domain">
+              <summary>
                 {domainLabels[domain] || domain}
-              </div>
+                <span className="grs-scores">3 · 5 · 7</span>
+              </summary>
               {["3", "5", "7"].map((score) => {
                 const bullets = Array.isArray(scores[score]) ? scores[score] : [];
                 if (!bullets.length) return null;
@@ -1735,7 +1741,7 @@ const ScenarioForm = () => {
                   </div>
                 );
               })}
-            </div>
+            </details>
           ))}
         </div>
       );
@@ -1896,6 +1902,34 @@ const ScenarioForm = () => {
     const red = 'var(--vn-error-text)';
     const amber = '#c97a1a';
     const normal = 'var(--vn-ink)';
+    // Children are coloured against their own age's ranges (a newborn at 140 is normal). Adults keep the ranges below.
+    const ageText = scenario && scenario.patientDemographics && scenario.patientDemographics.age;
+    const band = bandFor(ageText);
+    if (band.key !== 'adult' && ['hr', 'rr', 'bp', 'spo2'].includes(key)) {
+      if (key === 'hr') {
+        const [low, high] = band.hr;
+        if (num < (band.hrLowRed || low - 10) || num > high + 20) return red;
+        if (num < low || num > high) return amber;
+        return normal;
+      }
+      if (key === 'rr') {
+        const [low, high] = band.rr;
+        if (num < low - 6 || num > high + 10) return red;
+        if (num < low || num > high) return amber;
+        return normal;
+      }
+      if (key === 'bp') {
+        const sys = parseFloat(str.split('/')[0]);
+        if (isNaN(sys)) return normal;
+        const floor = sbpFloor(ageText);
+        if (sys < floor) return red;
+        if (sys < floor + 10) return amber;
+        return normal;
+      }
+      const age = parseAge(ageText);
+      const nb = band.key === 'newborn' && age && age.minutes !== null ? newbornSpo2Floor(age.minutes) : null;
+      if (nb !== null) return num < nb ? red : normal;
+    }
     switch (key) {
       case 'hr':
         if (num < 50 || num > 120) return red;
@@ -1964,9 +1998,14 @@ const ScenarioForm = () => {
           : []),
       ].filter(s => s.data && Object.values(s.data).some(Boolean));
       if (!sets.length) return null;
+      // Student mode: only the sets reached so far. Later sets (and their labels, which name the care given)
+      // stay hidden until the student asks for the next one.
+      const staged = studentMode;
+      const shownSets = staged ? sets.slice(0, setsShown) : sets;
+      const hiddenCount = sets.length - shownSets.length;
       // A row per set and the vitals across, in the order the ACR vitals columns run, so what a student
       // reads here is what they write on the chart. The run sheet and the PDF use the same order.
-      const cols = VITAL_COLUMNS.filter((f) => sets.some((set) => set.data?.[f.key]));
+      const cols = VITAL_COLUMNS.filter((f) => shownSets.some((set) => set.data?.[f.key]));
       return (
         <div style={{ ...styles.card }} key="vitalSigns">
           <h3 className="scenario-section-h2">Vital Signs</h3>
@@ -1979,7 +2018,7 @@ const ScenarioForm = () => {
                 </tr>
               </thead>
               <tbody>
-                {sets.map((set, si) => (
+                {shownSets.map((set, si) => (
                   <tr key={si}>
                     <th scope="row">{set.label}</th>
                     {cols.map((f) => {
@@ -1998,6 +2037,14 @@ const ScenarioForm = () => {
               </tbody>
             </table>
           </div>
+          {staged && hiddenCount > 0 && (
+            <div className="vitals-stage">
+              <span>{hiddenCount === 1 ? "One more set" : `${hiddenCount} more sets`} later in the call.</span>
+              <button type="button" className="sbar-btn a11y-focus" onClick={() => setsShownSet((n) => n + 1)}>
+                Show the next set
+              </button>
+            </div>
+          )}
         </div>
       );
     }
@@ -2019,7 +2066,7 @@ const ScenarioForm = () => {
               hr: s.hr,
             }))
           : []),
-      ].filter((s) => s.ecg && s.ecg.trim());
+      ].slice(0, studentMode ? setsShown : undefined).filter((s) => s.ecg && s.ecg.trim());
 
       if (!sets.length) return null;
 
@@ -2592,7 +2639,7 @@ const ScenarioForm = () => {
             </div>
             <div className="loading-elapsed" aria-live="off">{formatElapsed(elapsed)}</div>
             <div style={{ ...styles.loadingSubtext, marginTop: "0.2rem", fontSize: "0.85rem", color: "var(--vn-loading-muted)", textAlign: "center" }}>
-              Usually 30 to 90 seconds. Detailed and Complex take the longest.
+              A Quick Draft usually takes under a minute. Detailed and Complex can take two to three.
               {elapsed >= 60 && (
                 <><br />Still going? The first scenario after a quiet spell is slower while the server wakes up.</>
               )}

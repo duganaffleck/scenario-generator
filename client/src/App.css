@@ -969,3 +969,9 @@ button, input, select, textarea { font-family: inherit; }
   .vitals-table tbody th, .vitals-table thead th:first-child { min-width: 6.5rem; max-width: 8rem; }
   .vitals-table tbody th { font-size: 0.78rem; }
 }
+.vitals-stage { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem 1rem; margin-top: 0.8rem; font-size: 0.9rem; color: var(--vn-muted-text); }
+.grs-domain { margin-bottom: 0.6rem; border: 1px solid var(--vn-border); border-radius: 10px; padding: 0.2rem 0.8rem; }
+.grs-domain > summary { cursor: pointer; padding: 0.55rem 0; font-size: 0.95rem; font-weight: 800; color: var(--vn-ink); list-style-position: inside; }
+.grs-domain > summary .grs-scores { font-weight: 600; font-size: 0.8rem; color: var(--vn-muted-text); margin-left: 0.5rem; }
+.grs-domain[open] > summary { border-bottom: 1px solid var(--vn-border); margin-bottom: 0.6rem; }
+.grs-toolbar { display: flex; gap: 0.5rem; margin-bottom: 0.7rem; }

@@ -489,7 +489,7 @@ function mapRhythmVariant(label) {
 // status...") is dropped so the vitals table shows a gap instead of a paragraph.
 const VITAL_READING_KEYS = ['hr', 'rr', 'bp', 'spo2', 'etco2', 'temp', 'gcs', 'bgl'];
 
-function sanitizeVitalSet(raw = {}, ecgInterpretation = '') {
+function sanitizeVitalSet(raw = {}, ecgInterpretation = '', normalHr = [60, 100]) {
   const set = { ...defaultVitalSet(), ...(raw && typeof raw === 'object' ? raw : {}) };
   VITAL_READING_KEYS.forEach((k) => {
     if (typeof set[k] === 'string' && !/\d/.test(set[k]) && set[k].trim().length > 12) set[k] = '';
@@ -503,19 +503,34 @@ function sanitizeVitalSet(raw = {}, ecgInterpretation = '') {
     set.ecgInterpretation = mapRhythmVariant(set.ecgInterpretation);
   }
 
-  return alignSinusLabelWithRate(set);
+  return alignSinusLabelWithRate(set, normalHr);
 }
 
-// A sinus label has to match the heart rate in the same set (tachycardia over 100, bradycardia under 60).
-// A set with a regular pulse and no rhythm at all (trauma calls often come back this way) gets the sinus label
-// for its rate, so the monitor always has something to show.
-function alignSinusLabelWithRate(set) {
+// Normal heart rates by age (awake, at rest), the same table the site uses (client/src/utils/ageBands.js).
+// A newborn at 140 is in normal sinus rhythm, not sinus tachycardia.
+const HR_BY_AGE = [[28, [100, 180]], [365, [100, 160]], [3 * 365, [90, 150]], [6 * 365, [80, 140]], [12 * 365, [70, 120]], [Infinity, [60, 100]]];
+const AGE_UNIT_DAYS = { minute: 1 / 1440, min: 1 / 1440, hour: 1 / 24, hr: 1 / 24, day: 1, week: 7, wk: 7, month: 30.4, mo: 30.4, year: 365, yr: 365, y: 365 };
+function normalHrForAge(ageText) {
+  const s = String(ageText ?? '').toLowerCase();
+  const m = s.match(/(\d+(?:\.\d+)?)\s*(minutes?|mins?|hours?|hrs?|days?|weeks?|wks?|months?|mo|years?|yrs?|y)?\b/);
+  let days = null;
+  if (m) days = Number(m[1]) * (AGE_UNIT_DAYS[(m[2] || 'year').replace(/s$/, '')] ?? 365);
+  else if (/newborn|neonate/.test(s)) days = 0;
+  if (days === null) return [60, 100];
+  return HR_BY_AGE.find(([maxDays]) => days < maxDays)[1];
+}
+
+// A sinus label has to match the heart rate in the same set: over the normal range for the patient's age is
+// tachycardia, under it bradycardia (adults: over 100, under 60). A set with a regular pulse and no rhythm at all
+// (trauma calls often come back this way) gets the sinus label for its rate, so the monitor always has something.
+function alignSinusLabelWithRate(set, normalHr = [60, 100]) {
   if (!set || !set.hr) return set;
   const hrNum = parseInt(String(set.hr).match(/\d+/)?.[0] ?? '', 10);
   if (isNaN(hrNum)) return set;
-  const sinus = hrNum > 100 ? 'Sinus Tachycardia' : hrNum < 60 ? 'Sinus Bradycardia' : 'Normal Sinus Rhythm';
+  const [low, high] = normalHr;
+  const sinus = hrNum > high ? 'Sinus Tachycardia' : hrNum < low ? 'Sinus Bradycardia' : 'Normal Sinus Rhythm';
   if (!set.ecgInterpretation) {
-    if (hrNum >= 40 && hrNum <= 150 && !/irregular|absent|pulseless|none|no pulse/i.test(String(set.hr))) set.ecgInterpretation = sinus;
+    if (hrNum >= low - 20 && hrNum <= high + 50 && !/irregular|absent|pulseless|none|no pulse/i.test(String(set.hr))) set.ecgInterpretation = sinus;
     return set;
   }
   if (['Sinus Tachycardia', 'Sinus Bradycardia', 'Normal Sinus Rhythm'].includes(set.ecgInterpretation)) {
@@ -524,21 +539,22 @@ function alignSinusLabelWithRate(set) {
   return set;
 }
 
-function normalizeVitalSigns(value, ecgInterpretation) {
+function normalizeVitalSigns(value, ecgInterpretation, ageText) {
+  const normalHr = normalHrForAge(ageText);
   const source = value && typeof value === 'object' ? value : {};
   const firstRaw = source.firstSet || source.first || {};
   const secondRaw = source.secondSet || source.second || {};
   const additionalSets = Array.isArray(source.additionalSets)
-    ? source.additionalSets.map((set) => sanitizeVitalSet(set)).filter((set) => Object.values(set).some(Boolean))
+    ? source.additionalSets.map((set) => sanitizeVitalSet(set, '', normalHr)).filter((set) => Object.values(set).some(Boolean))
     : [];
-  const firstSet = sanitizeVitalSet(firstRaw, ecgInterpretation);
-  const secondSet = sanitizeVitalSet(secondRaw, firstSet.ecgInterpretation);
+  const firstSet = sanitizeVitalSet(firstRaw, ecgInterpretation, normalHr);
+  const secondSet = sanitizeVitalSet(secondRaw, firstSet.ecgInterpretation, normalHr);
   const normalizedAdditional = additionalSets.map((set, i) => {
     if (!set.ecgInterpretation) {
       const prev = i === 0 ? secondSet : additionalSets[i - 1];
       set.ecgInterpretation = prev?.ecgInterpretation || firstSet.ecgInterpretation || '';
     }
-    return alignSinusLabelWithRate(set);
+    return alignSinusLabelWithRate(set, normalHr);
   });
   return {
     firstSet,
@@ -960,7 +976,7 @@ function normalizeScenario(parsed, options = {}) {
     ECG_WHITELIST.includes(value)
   );
 
-  normalized.vitalSigns = normalizeVitalSigns(source.vitalSigns, ecgInterpretation);
+  normalized.vitalSigns = normalizeVitalSigns(source.vitalSigns, ecgInterpretation, (source.patientDemographics || {}).age);
 
   if (source.ecgFindings && typeof source.ecgFindings === "object") {
     normalized.ecgFindings = {
@@ -2316,7 +2332,7 @@ function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
       return {
         style: 'obstetric medication and procedural scenario',
         likelyMedicationOpportunities: [
-          'Oxytocin 10 units IM or IV immediately after delivery of all fetuses and/or placenta and up to 4 hours post-placenta: for post-partum hemorrhage prevention and management',
+          'Oxytocin 10 units IM (the PCP route; IV is not a PCP route for oxytocin) immediately after delivery of all fetuses and/or placenta and up to 4 hours post-placenta: for post-partum hemorrhage prevention and management',
           'External uterine massage after placenta delivery if fundus is soft or boggy',
           'External bimanual compression if uterine massage is unsuccessful',
           'Oxygen for maternal hypoxia or fetal distress concern'
@@ -2681,6 +2697,9 @@ Scenario shaping rules:
 - Avoid generic protocol-summary phrasing.
 - Build the scenario from the outside in: realistic dispatch, believable patient presentation, meaningful assessment findings, then clinically justified treatment opportunities.
 - Make the scenario internally coherent across chief complaint, history, physical findings, vital signs, ECG use, progression, differential, and treatment.
+- Keep the scene, the findings, the progression, expected management and the GRS anchors in agreement. An action the scene has already done (boots already off, patient already on their side, oxygen already on) cannot be the corrective action the crew is expected to take, and anchors must only reward actions the case makes possible.
+- The Call sections (sceneArrival, patientPresentation, incidentNarrative, opqrst, sample, physicalExam) describe only what the crew finds on arrival and before any treatment. How the patient responds to care belongs in the later vital sign sets and caseProgression, not in those sections, because students read The Call first.
+- For infants and children, write vital signs and rhythm labels against normal ranges for age: a newborn at 140 is normal sinus rhythm, not sinus tachycardia, and a newborn's SpO2 in the first minutes of life rises from about 60% toward 85 to 95% by 10 minutes.
 - The selected type, environment, complexity, semester, and uniqueness must all produce visible differences in the final scenario.
 - Avoid generic template-feeling scenarios; make this one feel deliberately authored.
 - The title must be specific to this exact call. Do not use generic titles like "The Chest Pain Call" or "Diabetic Emergency".
@@ -2882,6 +2901,7 @@ function buildVariantBlock(variant) {
     variant.setting ? `- Use a different specific location and story from the earlier one (<<<${variant.setting.replace(/[<>]/g, '')}>>>).` : '- Use a new specific location and story.',
     '- Change the first thing that looks reassuring or distracting. The underlying cause can stay the same or change, as long as the crew faces the same decision at a similar point in the call.',
     '- Do not reuse the earlier title, names, places, or quoted lines.',
+    '- Rebuild the scene around the new story rather than editing the old one: whatever the crew is expected to fix must not already be done when they arrive, and the progression, expected management and GRS anchors must fit the new scene.',
     '- The Ontario PCP scope, directive and semester rules above still apply in full.',
   ];
   if (variant.harder.distractor) {

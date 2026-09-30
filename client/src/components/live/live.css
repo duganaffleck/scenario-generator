@@ -200,7 +200,8 @@ details.lr-card > summary { cursor: pointer; }
   color: #9fb0bb;
   border-bottom: 1px solid #1d2a33;
 }
-.lm-top-title { font-weight: 800; color: #dbeff2; margin-right: auto; }
+.lm-top-title { font-weight: 800; color: #dbeff2; }
+.lm-top-age { font-weight: 800; color: #f5d547; margin-right: auto; white-space: nowrap; }
 .lm-full-btn {
   min-height: 36px;
   padding: 0.3rem 0.8rem;
