@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import jsPDF from "jspdf";
-import { FaSpinner, FaFilePdf, FaFileMedical, FaClipboardList, FaUserGraduate, FaMoon, FaSun, FaUndoAlt, FaLink, FaHeartbeat, FaBroadcastTower } from "react-icons/fa";
+import { FaSpinner, FaFilePdf, FaFileMedical, FaClipboardList, FaUserGraduate, FaMoon, FaSun, FaUndoAlt, FaLink, FaHeartbeat, FaBroadcastTower, FaRandom } from "react-icons/fa";
+import VariantDialog from "../variant/VariantDialog";
 import LiveRun from "../live/LiveRun";
 import RadioDispatch from "../dispatch/RadioDispatch";
 import { ACR_FORM_VERSION, downloadScenarioAcr, errorMessage } from "../acr/acrApi";
@@ -302,6 +303,7 @@ const ScenarioForm = () => {
   const [scenario, setScenario] = useState(null);
   const [monitorOpen, setMonitorOpen] = useState(false);
   const [dispatchOpen, setDispatchOpen] = useState(false);
+  const [variantOpen, setVariantOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   // Info section visibility: show only before scenario is generated
   const showInfoSection = !scenario && !loading;
@@ -1066,6 +1068,11 @@ const ScenarioForm = () => {
       return;
     }
 
+    await requestScenario({ ...formData, includeTeachingCues: false }, { ...formData });
+  };
+
+  // One trip to the generator. savedForm is what Recent remembers as the settings for this scenario.
+  const requestScenario = async (payload, savedForm) => {
     setLoading(true);
     setError("");
     setScenario(null);
@@ -1076,10 +1083,6 @@ const ScenarioForm = () => {
     abortControllerRef.current = controller;
 
     const baseURL = API_BASE;
-    const payload = {
-      ...formData,
-      includeTeachingCues: false,
-    };
 
     try {
       const response = await axios.post(`${baseURL}/api/generate-scenario`, payload, { signal: controller.signal });
@@ -1090,7 +1093,7 @@ const ScenarioForm = () => {
       }
 
       setScenario(generated);
-      saveRecent(generated, { ...formData });
+      saveRecent(generated, savedForm);
       sessionCalls.current += 1;
       if (new Date().getHours() === 3) showToast("0300. Of course it's a call.");
       else if (sessionCalls.current === 10) showToast("Ten calls this session. Eat something. Drink some water. Then run another.", 6000);
@@ -1109,6 +1112,26 @@ const ScenarioForm = () => {
       abortControllerRef.current = null;
       setLoading(false);
     }
+  };
+
+  // Case variant: the same semester, call type and complexity as the scenario on screen, a new patient, and the
+  // decision the instructor chose to keep.
+  const makeVariant = ({ variantOf, pressured }) => {
+    if (!scenario) return;
+    setVariantOpen(false);
+    const meta = scenario.generationMetadata || {};
+    const pickOr = (value, allowed, fallback) => (allowed.includes(String(value)) ? String(value) : fallback);
+    const base = {
+      ...formData,
+      semester: pickOr(meta.semester, SEMESTERS, formData.semester),
+      type: pickOr(meta.callType, SCENARIO_TYPES, formData.type),
+      complexity: pickOr(meta.complexity, COMPLEXITIES, formData.complexity),
+      environment: pickOr(meta.environment, ENVIRONMENTS, formData.environment),
+      scenarioFriction: pressured ? "Pressured" : "Clean",
+      customPrompt: String(scenario.customPrompt || "").slice(0, 320),
+    };
+    setFormData(base);
+    requestScenario({ ...base, includeTeachingCues: false, variantOf }, base);
   };
 
   // Practice ACR pre-filled with this scenario's dispatch details. The scenario rides inside it (encrypted),
@@ -1175,6 +1198,7 @@ const ScenarioForm = () => {
       "vocationalLearningOutcomes",
       "generationMetadata",
       "customPrompt",
+      "variantOf",
       "directiveSources",
       "firstImpression",
       "initialAssessment",
@@ -2393,6 +2417,7 @@ const ScenarioForm = () => {
                     <div><dt>Share link</dt><dd>Copies a link to the scenario. Anyone who opens it gets the same call; new visitors start in student mode.</dd></div>
                     <div><dt>Dispatch</dt><dd>Plays the call over the radio, once. Students write down what they caught, then check it against the transcript.</dd></div>
                     <div><dt>Monitor screen</dt><dd>Run the call in lab with a patient monitor. Pop it out onto a TV, or show it beside your controls. Press the vitals set that matches what the crew did.</dd></div>
+                    <div><dt>Make a variant</dt><dd>A new case that keeps the decision this one tests, with a different patient, setting and story. Add a distractor or a later cue to make it harder.</dd></div>
                     <div><dt>Recent scenarios</dt><dd>Your last ten, in the side panel, kept on this device only.</dd></div>
                   </dl>
                 </details>
@@ -2406,6 +2431,14 @@ const ScenarioForm = () => {
             <div ref={outputRef} style={{ ...styles.outputBox, scrollMarginTop: isMobile ? "12px" : "90px" }}>
               {monitorOpen && <LiveRun scenario={scenario} studentMode={studentMode} onClose={() => setMonitorOpen(false)} />}
               {dispatchOpen && <RadioDispatch scenario={scenario} environment={formData.environment} onClose={() => setDispatchOpen(false)} />}
+              {variantOpen && (
+                <VariantDialog
+                  scenario={scenario}
+                  pressuredNow={formData.scenarioFriction === "Pressured"}
+                  onMake={makeVariant}
+                  onClose={() => setVariantOpen(false)}
+                />
+              )}
               <div className="scenario-bar">
                 <div className="scenario-bar-top">
                   <h2 className="scenario-output-title">{scenario.title || "Scenario"}</h2>
@@ -2429,6 +2462,10 @@ const ScenarioForm = () => {
                     <button type="button" className="sbar-btn a11y-focus" onClick={() => setMonitorOpen(true)} title="Run this call in lab with a live patient monitor">
                       <FaHeartbeat aria-hidden="true" /> Monitor screen
                     </button>
+                    <button type="button" className="sbar-btn a11y-focus" onClick={() => setVariantOpen(true)} disabled={loading}
+                      title="A new case that tests the same decision with a different patient">
+                      <FaRandom aria-hidden="true" /> Make a variant
+                    </button>
                   </div>
                 </div>
                 <nav className="scenario-tabs" aria-label="Scenario sections">
@@ -2439,6 +2476,12 @@ const ScenarioForm = () => {
                   ))}
                 </nav>
               </div>
+              {scenario.variantOf && scenario.variantOf.target && (
+                <div className="cv-banner">
+                  <strong>Variant{scenario.variantOf.title ? ` of ${scenario.variantOf.title}` : ""}</strong>
+                  <p>Keeps the decision: {scenario.variantOf.target}</p>
+                </div>
+              )}
               {scenario.customPrompt && (
                 <div
                   style={{
