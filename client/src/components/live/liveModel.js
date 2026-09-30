@@ -1,6 +1,6 @@
 // Reads a generated scenario into what live run needs: each vitals set as numbers, in the order the scenario gives them.
 import { normalizeRhythm } from "../ecg/ecgEngine";
-import { bandFor, sinusLabel } from "../../utils/ageBands";
+import { bandFor } from "../../utils/ageBands";
 
 export const num = (v) => {
   const m = String(v ?? "").match(/-?\d+(\.\d+)?/);
@@ -23,7 +23,7 @@ function estimateCo2(rr, noPulse, band) {
   if (rr > high + 2) return 32;
   return 38;
 }
-const SINUS = ["Normal Sinus Rhythm", "Sinus Tachycardia", "Sinus Bradycardia"];
+
 
 // Bronchospasm shows as a "shark fin" capnogram. Read the exam for it; the instructor can change it.
 // Only the exam counts (a history of teenage asthma is not today's airway), only affirmed findings count
@@ -52,9 +52,8 @@ export function vitalSets(scenario) {
   return raw
     .filter((s) => s && typeof s === "object" && Object.values(s).some((v) => v !== "" && v !== null && v !== undefined))
     .map((s, i) => {
-      let rhythm = normalizeRhythm(s.ecgInterpretation || "") || last || "";
-      // A newborn at 140 is in sinus rhythm, not sinus tachycardia: sinus labels follow the age.
-      if (SINUS.includes(rhythm) && num(s.hr) !== null) rhythm = sinusLabel(num(s.hr), band);
+      // The rhythm keeps its ECG name (a newborn at 140 is in sinus tachycardia); only the alarms follow age.
+      const rhythm = normalizeRhythm(s.ecgInterpretation || "") || last || "";
       last = rhythm || last;
       const bp = String(s.bp || "");
       const m = bp.match(/(\d{2,3})\s*\/\s*(\d{2,3})/);
