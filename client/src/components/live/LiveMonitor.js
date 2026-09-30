@@ -12,15 +12,21 @@ const SWEEP_MS = 6000; // screen width in time, like a 25 mm/s strip
 
 // Pleth and capnography shapes, one cycle each, phase 0..1 -> 0..1
 const plethAt = (p) => (p < 0.12 ? Math.pow(p / 0.12, 1.4) : Math.exp(-(p - 0.12) * 4.2) * 0.92 + 0.14 * Math.exp(-((p - 0.42) ** 2) / 0.003));
-const co2At = (p) => {
+// Capnography: a square wave normally; a "shark fin" in bronchospasm, where the slow, obstructed exhale never plateaus.
+const co2At = (p, shape) => {
   if (p < 0.06) return 0;
+  if (shape === "shark") {
+    if (p < 0.5) return (1 - Math.exp(-(p - 0.06) * 7)) / (1 - Math.exp(-0.44 * 7));
+    if (p < 0.56) return Math.max(0, 1 - (p - 0.5) / 0.06);
+    return 0;
+  }
   if (p < 0.12) return (p - 0.06) / 0.06;
   if (p < 0.5) return 0.94 + (p - 0.12) * 0.15;
   if (p < 0.56) return Math.max(0, 1 - (p - 0.5) / 0.06);
   return 0;
 };
 
-function Trace({ kind, params, height }) {
+function Trace({ kind, params }) {
   const ref = useRef(null);
   const live = useRef(params);
   live.current = params;
@@ -42,6 +48,9 @@ function Trace({ kind, params, height }) {
       ctx.fillRect(0, 0, W, H);
     };
     size();
+    // The canvas changes size with the window, the split view and a phone's rotation.
+    const ro = typeof ResizeObserver !== "undefined" ? new ResizeObserver(() => size()) : null;
+    if (ro) ro.observe(canvas);
     const onResize = () => size();
     window.addEventListener("resize", onResize);
 
@@ -66,9 +75,9 @@ function Trace({ kind, params, height }) {
         const period = 60000 / p.rate;
         return H * 0.85 - plethAt((t % period) / period) * H * 0.7 * p.amp;
       }
-      if (!p.rate) return H * 0.85;
+      if (!p.rate) return H * 0.88;
       const period = 60000 / p.rate;
-      return H * 0.88 - co2At((t % period) / period) * H * 0.75 * p.amp;
+      return H * 0.88 - co2At((t % period) / period, p.shape) * H * 0.75 * p.amp;
     };
 
     const frame = (now) => {
@@ -105,11 +114,12 @@ function Trace({ kind, params, height }) {
     raf = requestAnimationFrame(frame);
     return () => {
       cancelAnimationFrame(raf);
+      if (ro) ro.disconnect();
       window.removeEventListener("resize", onResize);
     };
   }, [kind]);
 
-  return <canvas ref={ref} className="lm-trace" style={{ height }} aria-hidden="true" />;
+  return <canvas ref={ref} className={`lm-trace lm-trace--${kind}`} aria-hidden="true" />;
 }
 
 // A number that eases toward its target instead of jumping.
@@ -134,7 +144,7 @@ function useEased(target, perSecond) {
 
 const round = (v) => (v === null || v === undefined ? null : Math.round(v));
 
-function MonitorFace({ state, onAcquire }) {
+function MonitorFace({ state, onAcquire, buttonsSlot }) {
   const set = state.set || {};
   const att = state.attached || {};
   const rhythm = normalizeRhythm(set.rhythm) || "Normal Sinus Rhythm";
@@ -156,11 +166,17 @@ function MonitorFace({ state, onAcquire }) {
   const eRr = round(useEased(set.rr, 2));
   const perfusionAmp = set.noPulse ? 0 : set.sys && set.sys < 90 ? 0.45 : 0.85;
 
+  const apnea = !!att.etco2 && !set.noPulse && (!set.rr || set.rr <= 0);
   const alarm = {
     hr: att.ecg && eHr !== null && (eHr < 50 || eHr > 130),
     spo2: att.spo2 && eSpo2 !== null && eSpo2 < 90,
-    co2: att.etco2 && eCo2 !== null && (eCo2 > 50 || eCo2 < 30),
+    co2: att.etco2 && (apnea || (eCo2 !== null && (eCo2 > 50 || eCo2 < 30))),
   };
+  const reveal = state.reveal || {};
+  const others = [
+    reveal.bgl && set.bgl !== null && set.bgl !== undefined ? `BGL ${set.bgl} mmol/L` : "",
+    reveal.temp && set.temp !== null && set.temp !== undefined ? `Temp ${set.temp} °C` : "",
+  ].filter(Boolean);
 
   const cell = (key, label, value, unit, sub, on, isAlarm) => (
     <div className={`lm-num lm-num--${key}${isAlarm ? " lm-alarm" : ""}`}>
@@ -177,16 +193,23 @@ function MonitorFace({ state, onAcquire }) {
     <div className="lm-face">
       <div className="lm-traces">
         <div className="lm-trace-label" style={{ color: COLORS.ecg }}>II {att.ecg ? "" : "· leads off"}</div>
-        <Trace kind="ecg" height="34%" params={{ on: !!att.ecg, samples, duration: 12000 }} />
+        <Trace kind="ecg" params={{ on: !!att.ecg, samples, duration: 12000 }} />
         <div className="lm-trace-label" style={{ color: COLORS.pleth }}>Pleth {att.spo2 ? "" : "· probe off"}</div>
-        <Trace kind="pleth" height="24%" params={{ on: !!att.spo2, rate: set.noPulse ? 0 : set.hr, amp: perfusionAmp }} />
-        <div className="lm-trace-label" style={{ color: COLORS.co2 }}>CO2 {att.etco2 ? "" : "· not connected"}</div>
-        <Trace kind="co2" height="24%" params={{ on: !!att.etco2, rate: set.rr || 0, amp: Math.max(0.15, Math.min(1, (set.etco2 || 0) / 60)) }} />
-        <EcgPrintouts prints={state.prints} ecgOn={!!att.ecg} onAcquire={onAcquire} ecg={state.ecg} patternKey={state.patternKey} />
-        <div className="lm-footer">
-          {state.reveal && state.reveal.bgl && set.bgl !== null && <span>BGL {set.bgl} mmol/L</span>}
-          {state.reveal && state.reveal.temp && set.temp !== null && <span>Temp {set.temp} °C</span>}
+        <Trace kind="pleth" params={{ on: !!att.spo2, rate: set.noPulse ? 0 : set.hr, amp: perfusionAmp }} />
+        <div className="lm-trace-label" style={{ color: COLORS.co2 }}>
+          CO2 {att.etco2 ? "" : "· not connected"}
+          {apnea && <span className="lm-apnea">APNEA</span>}
         </div>
+        <div className="lm-co2-wrap">
+          <Trace kind="co2" params={{ on: !!att.etco2, rate: set.rr || 0, shape: state.co2Shape, amp: Math.max(0.08, Math.min(1.1, (eCo2 || 0) / 60)) }} />
+          {att.etco2 && (
+            <div className="lm-co2-scale" aria-hidden="true">
+              <span style={{ top: "25.5%" }}>50</span>
+              <span style={{ top: "88%" }}>0</span>
+            </div>
+          )}
+        </div>
+        <EcgPrintouts prints={state.prints} ecgOn={!!att.ecg} onAcquire={onAcquire} ecg={state.ecg} patternKey={state.patternKey} buttonsSlot={buttonsSlot} />
       </div>
       <div className="lm-nums">
         {cell("hr", "HR", eHr, "bpm", rhythm, !!att.ecg, alarm.hr)}
@@ -194,6 +217,11 @@ function MonitorFace({ state, onAcquire }) {
         {cell("co2", "EtCO2", eCo2, "mmHg", eRr !== null ? `awRR ${eRr}` : "", !!att.etco2, alarm.co2)}
         {cell("nibp", "NIBP", state.nibp ? `${state.nibp.sys}/${state.nibp.dia}` : null, "mmHg",
           state.nibp ? `taken at ${state.nibp.at}` : "not taken yet", true, false)}
+        {others.length > 0 && (
+          <div className="lm-num lm-num--other">
+            {others.map((o) => <span key={o}>{o}</span>)}
+          </div>
+        )}
       </div>
     </div>
   );
@@ -202,6 +230,7 @@ function MonitorFace({ state, onAcquire }) {
 // state: pass it to embed the monitor beside the controls; leave it out to listen for the instructor's window.
 export default function LiveMonitor({ state: embeddedState, embedded = false, onAcquire }) {
   const [remote, setRemote] = useState(() => (embedded ? null : readLiveState()));
+  const [slot, setSlot] = useState(null);
   const channelRef = useRef(null);
 
   useEffect(() => {
@@ -231,7 +260,8 @@ export default function LiveMonitor({ state: embeddedState, embedded = false, on
     <div className={`lm-root${embedded ? " lm-embedded" : ""}`}>
       <div className="lm-topbar">
         <span className="lm-top-title">Patient monitor</span>
-        <span>{state && !state.ended ? `Adult · ${state.running ? "running" : "paused"} · ${state.clock || "00:00"}` : ""}</span>
+        <span className="lm-top-status">{state && !state.ended ? `Adult · ${state.running ? "running" : "paused"} · ${state.clock || "00:00"}` : ""}</span>
+        <span className="lm-top-slot" ref={setSlot} />
         {canFull && (
           <button type="button" className="lm-full-btn" onClick={toggleFull}>
             {full ? "Exit full screen" : "Full screen"}
@@ -249,6 +279,7 @@ export default function LiveMonitor({ state: embeddedState, embedded = false, on
       ) : (
         <MonitorFace
           state={state}
+          buttonsSlot={slot}
           onAcquire={embedded ? onAcquire : (leads) => channelRef.current && channelRef.current.post({ type: "acquire", leads })}
         />
       )}

@@ -10,6 +10,36 @@ export const num = (v) => {
 const BRANCH = /^\s*(if|without|when care|had the crew)\b|delay|missed|not (done|given|treated)/i;
 const NO_PULSE = /^(ventricular fibrillation|asystole|pulseless)/i;
 
+// When a set has no EtCO2, estimate one from the breathing so the capnography still means something:
+// slow breathing retains CO2, fast breathing blows it off, no breathing is a flat line.
+function estimateCo2(rr, noPulse) {
+  if (rr === null || rr === undefined) return noPulse ? 12 : 38;
+  if (rr <= 0) return 0;
+  if (rr < 10) return 52;
+  if (rr > 28) return 28;
+  if (rr > 22) return 32;
+  return 38;
+}
+
+// Bronchospasm shows as a "shark fin" capnogram. Read the exam for it; the instructor can change it.
+// Only the exam counts (a history of teenage asthma is not today's airway), only affirmed findings count
+// ("no wheeze, crackles or stridor" must not turn it on), and wet lungs win: the wheeze in pulmonary edema
+// is usually the distractor, and a shark fin would back the wrong answer.
+const findIn = (text, term) =>
+  text.split(/[.;"[\]{}]/).some((sentence) => {
+    const m = sentence.match(term);
+    if (!m) return false;
+    const before = sentence.slice(0, m.index);
+    return !/\b(no|not|without|denies|denied|negative for|absent|nil|free of)\b/.test(before) && !/does not dominate|not dominant/.test(sentence);
+  });
+
+export function suggestedCo2Shape(scenario) {
+  const exam = JSON.stringify((scenario && scenario.physicalExam) || {}).toLowerCase();
+  const tight = findIn(exam, /wheez|bronchospasm|prolonged expir|silent chest/);
+  const wet = findIn(exam, /crackle|rales|crepitation|frothy|pink sputum/);
+  return tight && !wet ? "shark" : "normal";
+}
+
 export function vitalSets(scenario) {
   const vs = (scenario && scenario.vitalSigns) || {};
   const raw = [vs.firstSet, vs.secondSet, ...(Array.isArray(vs.additionalSets) ? vs.additionalSets : [])];
@@ -33,7 +63,8 @@ export function vitalSets(scenario) {
         sys: m ? Number(m[1]) : null,
         dia: m ? Number(m[2]) : null,
         spo2: num(s.spo2),
-        etco2: num(s.etco2),
+        etco2: num(s.etco2) ?? estimateCo2(num(s.rr), NO_PULSE.test(rhythm)),
+        etco2Estimated: num(s.etco2) === null,
         temp: num(s.temp),
         bgl: num(s.bgl),
         gcs: num(s.gcs),
