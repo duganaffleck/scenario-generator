@@ -277,7 +277,25 @@ const pickChoices = (source) => Object.fromEntries(
     .filter(([k, allowed]) => source && allowed.includes(source[k]))
     .map(([k]) => [k, source[k]])
 );
-const loadInitialForm = () => ({ ...DEFAULT_FORM, ...pickChoices(readStore(LAST_FORM_KEY, {})) });
+// A link can open the form already set up, e.g. from a VitalNotes chapter:
+// ?type=Medical&complexity=Complex&focus=Give+a+believable+first+story...
+// Unknown values are ignored, focus fills the Instructor Prompt (320 characters at most), and the query is
+// cleared from the address bar so a reload doesn't keep forcing it.
+let linkedForm = null; // read once: React may call the initial-state function twice in development
+const readLinkedForm = () => {
+  if (linkedForm) return linkedForm;
+  linkedForm = {};
+  if (typeof window === "undefined" || !window.location.search) return linkedForm;
+  const q = new URLSearchParams(window.location.search);
+  const raw = Object.fromEntries(Object.keys(FORM_CHOICES).map((k) => [k, q.get(k)]));
+  const linked = pickChoices(raw);
+  const focus = (q.get("focus") || "").trim().slice(0, 320);
+  if (focus) linked.customPrompt = focus;
+  if (Object.keys(linked).length) window.history.replaceState(null, "", window.location.pathname + window.location.hash);
+  linkedForm = linked;
+  return linkedForm;
+};
+const loadInitialForm = () => ({ ...DEFAULT_FORM, ...pickChoices(readStore(LAST_FORM_KEY, {})), ...readLinkedForm() });
 const formatElapsed = (sec) => `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, "0")}`;
 
 const ScenarioForm = () => {
