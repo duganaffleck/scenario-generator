@@ -1,7 +1,7 @@
 // Normal ranges by age, so a newborn's heart rate of 140 isn't shown or alarmed as dangerous.
 // Awake, at rest. Pediatric bands follow the common PALS-style tables; adults keep the ranges the app always used.
-// If your program teaches a different table, change the numbers here: the scenario view, the monitor and the
-// rhythm labels all read from this one place.
+// If your program teaches a different table, change the numbers here: the scenario view's colours and the
+// monitor's alarms read from this one place. Rhythm names don't: they follow the ECG definitions at any age.
 
 export const BANDS = [
   { key: "newborn", label: "Newborn", maxDays: 28, hr: [100, 180], rr: [30, 60], hrLowRed: 100 },
@@ -56,13 +56,6 @@ export function newbornSpo2Floor(minuteOfLife) {
   return 80 + (5 * (m - 5)) / 5;
 }
 
-// The sinus label for a rate, by age: over the band's range is tachycardia, under it bradycardia.
-export function sinusLabel(hr, band) {
-  const b = band || BANDS[BANDS.length - 1];
-  if (hr > b.hr[1]) return "Sinus Tachycardia";
-  if (hr < b.hr[0]) return "Sinus Bradycardia";
-  return "Normal Sinus Rhythm";
-}
 
 // Short text for the monitor's top bar: "Newborn · 2 min", "Infant · 6 mo", "Child · 4 y", "Adult".
 export function ageLabel(ageText) {
