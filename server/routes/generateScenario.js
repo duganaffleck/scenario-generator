@@ -2117,7 +2117,7 @@ function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
         'Oral glucose requires intact swallowing and alertness: do not give if unsafe to swallow',
         'If glucagon was given with no improvement and IV subsequently established, administer dextrose regardless of time elapsed since glucagon',
         'Do not give multiple doses of same medication: transport if two doses of glucagon or dextrose required',
-        'Treat and discharge criteria require confirmed improvement, safe to care for self, follow up plan, and base hospital patch'
+        'Treat and discharge is for adults (18 or older) only, and requires confirmed improvement, safe to care for self, a follow up plan, and a base hospital patch'
       ],
       supportiveCareOpportunities: [
         'BGL confirmation before and after treatment',
@@ -2130,7 +2130,7 @@ function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
         'The real decision is oral glucose versus glucagon versus dextrose: it depends on level of consciousness and swallowing safety.',
         'Reassess BGL after treatment.',
         'Transport even after improvement if the cause is unclear or the patient is insulin-dependent.',
-        'Treat and discharge requires specific criteria and a base hospital patch.'
+        'Treat and discharge is for adults (18 or older) only, with specific criteria and a base hospital patch. A child is transported.'
       ].join(' ')
     };
   }
@@ -2241,13 +2241,13 @@ function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
         'Oral glucose or glucagon if hypoglycemia is confirmed or strongly suspected: always check BGL in altered consciousness',
         'Oxygen if hypoxic: not routine for suspected stroke without hypoxia',
         'Seizure: no PCP medication: protect from injury, position, oxygen if hypoxic, reassess',
-        'Seizure treat and discharge: specific BHP-authorized criteria for confirmed epilepsy with single seizure and meets all conditions'
+        'Seizure treat and discharge (adults 18 or older only): specific BHP-authorized criteria for confirmed epilepsy with single seizure and meets all conditions'
       ],
       contraindicationChecks: [
         'Confirm BGL before attributing altered consciousness to neurologic cause',
         'Do not give nitroglycerin for suspected stroke: not cardiac ischemia',
         'Stroke bypass decision: FAST positive with last known well time within window',
-                'Seizure treat and discharge requires confirmed epilepsy diagnosis, single seizure, full recovery, specific eligibility, and BHP patch'
+                'Seizure treat and discharge is for adults (18 or older) only and requires confirmed epilepsy diagnosis, single seizure, full recovery, specific eligibility, and BHP patch'
       ],
       supportiveCareOpportunities: [
         'BGL check',
@@ -2262,7 +2262,7 @@ function buildMedicationPlan({ semester, type, customPrompt, scenarioCore }) {
         'BGL must be checked before attributing altered consciousness to stroke or seizure.',
         'Stroke requires FAST screening and bypass destination decision.',
         'There is no PCP seizure medication: protect from injury, position, oxygen if hypoxic, BGL, reassess.',
-        'Seizure treat and discharge requires confirmed epilepsy, specific criteria, full recovery, and BHP patch.'
+        'Seizure treat and discharge is for adults (18 or older) only and requires confirmed epilepsy, specific criteria, full recovery, and BHP patch. A child who seizes, febrile seizure included, is transported.'
       ].join(' ')
     };
   }
@@ -2713,7 +2713,7 @@ Scenario shaping rules:
 - Keep the scene, the findings, the progression, expected management and the GRS anchors in agreement. An action the scene has already done (boots already off, patient already on their side, oxygen already on) cannot be the corrective action the crew is expected to take, and anchors must only reward actions the case makes possible.
 - The Call sections (sceneArrival, patientPresentation, incidentNarrative, opqrst, sample, physicalExam) describe only what the crew finds on arrival and before any treatment. How the patient responds to care belongs in the later vital sign sets and caseProgression, not in those sections, because students read The Call first.
 - For infants and children, choose vital signs that are normal or abnormal for the patient's age (a newborn at 140 has a normal heart rate; a newborn's SpO2 in the first minutes of life rises from about 60% toward 85 to 95% by 10 minutes). Name the rhythm by the standard ECG criteria at any age: a sinus rhythm over 100 is sinus tachycardia even when the rate is normal for a newborn.
-- Before any medication or procedure goes into expectedTreatment, protocolNotes or caseProgression, check the patient's age and weight against that directive's limits in the standards above. When the patient is under the limit, do not offer it with "if authorized" or "only if criteria are met": leave it out, or say plainly that it is not an option for this patient and why (for example, a 10-year-old with traumatic hemorrhage gets no TXA because the directive starts at age 16; an 8-year-old gets no ketorolac, ibuprofen or acetaminophen because Analgesia starts at age 12). Children under these limits still get excellent care: positioning, hemorrhage control, splinting, oxygen when indicated, reassurance, and timely transport.
+- Before any medication or procedure goes into expectedTreatment, protocolNotes or caseProgression, check the patient's age and weight against that directive's limits in the standards above. When the patient is under the limit, do not offer it with "if authorized" or "only if criteria are met": leave it out, or say plainly that it is not an option for this patient and why (for example, a 10-year-old with traumatic hemorrhage gets no TXA because the directive starts at age 16; an 8-year-old gets no ketorolac, ibuprofen or acetaminophen because Analgesia starts at age 12). Hypoglycemia and seizure treat and discharge are for adults 18 or older only: for anyone younger, never offer or discuss treat and discharge as an option; the child is transported. Children under these limits still get excellent care: positioning, hemorrhage control, splinting, oxygen when indicated, reassurance, and timely transport.
 - The selected type, environment, complexity, semester, and uniqueness must all produce visible differences in the final scenario.
 - Avoid generic template-feeling scenarios; make this one feel deliberately authored.
 - The title must be specific to this exact call. Do not use generic titles like "The Chest Pain Call" or "Diabetic Emergency".

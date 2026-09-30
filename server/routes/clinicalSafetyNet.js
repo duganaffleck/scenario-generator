@@ -205,6 +205,8 @@ const LIMITS = [
   { re: /\b(fluid|NaCl|saline) bolus\b|\bbolus of (0\.9% NaCl|normal saline)\b/i, name: 'A fluid bolus', minAge: 2, directive: 'IV and Fluid Therapy' },
   { re: /\b(dimenhydrinate|gravol|ondansetron)\b/i, name: 'An antiemetic (dimenhydrinate, ondansetron)', minKg: 25, directive: 'Nausea / Vomiting' },
   { re: /\bdiphenhydramine\b/i, name: 'Diphenhydramine', minKg: 25, directive: 'Moderate to Severe Allergic Reaction' },
+  { re: /\btreat(ment)?[- ]and[- ](discharge|release)\b|\bT&D\b/i, name: 'Treat and discharge', minAge: 18, keep: /\b(adults? only|only (for )?adults?|adults? \(?18)/i,
+    why: 'hypoglycemia and seizure treat and discharge are for adults 18 or older only. This child is transported' },
 ];
 function ageAndWeightLimits(scenario, notes) {
   const pd = scenario.patientDemographics || {};
@@ -220,10 +222,10 @@ function ageAndWeightLimits(scenario, notes) {
       if (!hit) { out.push(line); continue; }
       // A line that already explains the limit ("applies to age 16 and older, so it does not fit") stays.
       const limit = hit.minAge ? `(age|aged)\\s*(of\\s*)?${hit.minAge}|${hit.minAge}\\s*(years|yrs|and older|or older)` : `${hit.minKg}\\s*kg`;
-      if (new RegExp(limit, 'i').test(line) && !/^\s*(give|administer|consider|start)\b/i.test(line)) { out.push(line); continue; }
+      if ((new RegExp(limit, 'i').test(line) || (hit.keep && hit.keep.test(line))) && !/^\s*(give|administer|consider|start)\b/i.test(line)) { out.push(line); continue; }
       // Anything else that talks about it as an option is replaced with the reason it isn't one.
       const named = hit.name || line.match(hit.re)[0].replace(/^./, (c) => c.toUpperCase());
-      const why = hit.minAge ? `the ${hit.directive} directive starts at age ${hit.minAge}` : `the ${hit.directive} directive starts at ${hit.minKg} kg`;
+      const why = hit.why || (hit.minAge ? `the ${hit.directive} directive starts at age ${hit.minAge}` : `the ${hit.directive} directive starts at ${hit.minKg} kg`);
       const text = `${named} is not an option for this patient: ${why}.`;
       if (!out.includes(text)) out.push(text);
       const note = `${named.split(' (')[0].toLowerCase()} held: patient under the directive's age or weight limit`;
