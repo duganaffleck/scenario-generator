@@ -6,6 +6,7 @@ import { isRhythmOnlyPattern, normalizeRhythm, sampleLead } from "../ecg/ecgEngi
 import { openLiveChannel, readLiveState } from "./liveChannel";
 import EcgPrintouts from "./EcgPrintouts";
 import { cprArtifact } from "./liveModel";
+import { BANDS, newbornSpo2Floor } from "../../utils/ageBands";
 import "./live.css";
 
 const COLORS = { ecg: "#3ee07a", pleth: "#43c6e8", co2: "#f5d547", nibp: "#e8ecef" };
@@ -188,13 +189,21 @@ function MonitorFace({ state, onAcquire, buttonsSlot }) {
   const eSpo2 = round(useEased(set.noPulse ? null : set.spo2, 2));
   const eCo2 = round(useEased(co2Target, set.noPulse ? 10 : 3)); // capnography changes breath to breath in arrest
   const eRr = round(useEased(set.noPulse ? co2Rate : set.rr, 2));
-  const perfusionAmp = set.noPulse ? (cpr ? 0.3 : 0) : set.sys && set.sys < 90 ? 0.45 : 0.85;
+  const perfusionAmp = set.noPulse ? (cpr ? 0.3 : 0) : set.sys && set.sys < ((state.patient && state.patient.sbpFloor) || 90) ? 0.45 : 0.85;
   const plethRate = set.noPulse ? (cpr ? 110 : 0) : set.hr;
 
   const apnea = !!att.etco2 && co2Rate <= 0;
+  // Alarm limits by age. Adults keep 50 and 130. A child alarms outside its normal range (10 under, 20 over);
+  // a newborn alarms under 100, where ventilation is due. A newborn in its first 10 minutes has the rising
+  // SpO2 targets of the first minutes of life, not 90%.
+  const patient = state.patient || {};
+  const band = BANDS.find((b) => b.key === patient.band) || BANDS[BANDS.length - 1];
+  const hrLimits = band.key === "adult" ? [50, 130] : [band.hrLowRed || band.hr[0] - 10, band.hr[1] + 20];
+  const minuteOfLife = patient.ageMinutes !== null && patient.ageMinutes !== undefined ? patient.ageMinutes + (state.elapsedMs || 0) / 60000 : null;
+  const spo2Floor = band.key === "newborn" ? newbornSpo2Floor(minuteOfLife) ?? 90 : 90;
   const alarm = {
-    hr: ecgOn && ((eHr !== null && (eHr < 50 || eHr > 130)) || (!!set.noPulse && !cpr)),
-    spo2: att.spo2 && eSpo2 !== null && eSpo2 < 90,
+    hr: ecgOn && ((eHr !== null && (eHr < hrLimits[0] || eHr > hrLimits[1])) || (!!set.noPulse && !cpr)),
+    spo2: att.spo2 && eSpo2 !== null && eSpo2 < spo2Floor,
     co2: att.etco2 && (apnea || (eCo2 !== null && (eCo2 > 50 || eCo2 < 30))),
   };
   const reveal = state.reveal || {};
@@ -287,7 +296,8 @@ export default function LiveMonitor({ state: embeddedState, embedded = false, on
     <div className={`lm-root${embedded ? " lm-embedded" : ""}`}>
       <div className="lm-topbar">
         <span className="lm-top-title">Patient monitor</span>
-        <span className="lm-top-status">{state && !state.ended ? `Adult · ${state.running ? "running" : "paused"} · ${state.clock || "00:00"}` : ""}</span>
+        {state && !state.ended && <span className="lm-top-age">{(state.patient && state.patient.label) || "Adult"}</span>}
+        <span className="lm-top-status">{state && !state.ended ? `${state.running ? "running" : "paused"} · ${state.clock || "00:00"}` : ""}</span>
         <span className="lm-top-slot" ref={setSlot} />
         {canFull && (
           <button type="button" className="lm-full-btn" onClick={toggleFull}>

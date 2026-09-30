@@ -5,6 +5,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import LiveMonitor from "./LiveMonitor";
 import { MONITOR_HASH, openLiveChannel, saveLiveState } from "./liveChannel";
 import { clock, progressionNotes, suggestedCo2Shape, vitalSets } from "./liveModel";
+import { ageLabel, bandFor, parseAge, sbpFloor } from "../../utils/ageBands";
 import "./live.css";
 
 const MONITOR_FEATURES = "popup=yes,width=1100,height=720";
@@ -44,11 +45,19 @@ export default function LiveRun({ scenario, studentMode, onClose }) {
   }, [running]);
 
   const set = useMemo(() => sets[current] || {}, [sets, current]);
+  // Age decides the monitor's label, its alarm limits and what counts as a normal rate.
+  const patientInfo = useMemo(() => {
+    const ageText = scenario && scenario.patientDemographics && scenario.patientDemographics.age;
+    const age = parseAge(ageText);
+    return { band: bandFor(ageText).key, label: ageLabel(ageText), ageMinutes: age && age.minutes !== null ? age.minutes : null, sbpFloor: sbpFloor(ageText) };
+  }, [scenario]);
   const monitorState = useMemo(
     () => ({
       v: 1,
       running,
       clock: clock(elapsed),
+      elapsedMs: elapsed,
+      patient: patientInfo,
       set: {
         hr: set.hr, rr: set.rr, spo2: set.spo2, etco2: set.etco2, rhythm: set.rhythm, noPulse: set.noPulse,
         sys: set.sys, dia: set.dia, bgl: set.bgl, temp: set.temp, etco2Estimated: set.etco2Estimated,
@@ -66,7 +75,7 @@ export default function LiveRun({ scenario, studentMode, onClose }) {
       co2Shape,
       ended: false,
     }),
-    [running, elapsed, set, attached, nibp, reveal, scenario, prints, co2Shape, arrest.pads, arrest.cpr, arrest.shockId]
+    [running, elapsed, set, attached, nibp, reveal, scenario, prints, co2Shape, arrest.pads, arrest.cpr, arrest.shockId, patientInfo]
   );
   const stateRef = useRef(monitorState);
   stateRef.current = monitorState;

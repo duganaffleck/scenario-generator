@@ -248,7 +248,12 @@ export function checkTriageReport(chart, transcript, { durationSec = null } = {}
       add('note', `${v.name[0].toUpperCase()}${v.name.slice(1)} from an earlier set`,
         `You gave ${said[0].text}, which is on ${at(matchedRows[0])}. Your latest is ${last.text} (${at(last)}). Give the current one, and the change if it matters.`);
     } else {
-      add('ok', `${v.name[0].toUpperCase()}${v.name.slice(1)} matches your last set`, `${last.text}, ${at(last)}.`);
+      // Exact, or only close? "RR 18" against a charted 16 is near enough to be the same set, not the same number.
+      const exactLast = said.find((x) => matches(x, last, 0) && x.low === undefined);
+      const nearLast = said.find((x) => matches(x, last, v.tol));
+      if (exactLast) add('ok', `${v.name[0].toUpperCase()}${v.name.slice(1)} matches your last set exactly`, `${last.text}, ${at(last)}.`);
+      else add('note', `${v.name[0].toUpperCase()}${v.name.slice(1)}: close, not exact`,
+        `You said ${nearLast.text}; your last set says ${last.text} (${at(last)}). Give the number you charted, or chart the one you'd hand over.`);
     }
   }
 
@@ -259,7 +264,8 @@ export function checkTriageReport(chart, transcript, { durationSec = null } = {}
     const lastVal = num(last['Reading/Code']);
     const said = saidValues(norm, { words: /\b(bgl|glucose|sugar|blood sugar|cbg|gluc)\b/ });
     if (!said.length) add('missing', 'No blood glucose', `Your chart has ${lastVal} (${at(last)}).`);
-    else if (said.some((s) => Math.abs(s.value - lastVal) <= 0.2)) add('ok', 'Blood glucose', `${lastVal}, ${at(last)}.`);
+    else if (said.some((s) => s.value === lastVal)) add('ok', 'Blood glucose matches exactly', `${lastVal}, ${at(last)}.`);
+    else if (said.some((s) => Math.abs(s.value - lastVal) <= 0.2)) add('note', 'Blood glucose: close, not exact', `You said ${said[0].text}; your chart says ${lastVal} (${at(last)}).`);
     else add('conflict', `You said glucose ${said[0].text}. Your chart says ${lastVal}.`, `${at(last)}.`);
   }
 

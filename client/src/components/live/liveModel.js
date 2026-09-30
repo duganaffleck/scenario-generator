@@ -1,5 +1,6 @@
 // Reads a generated scenario into what live run needs: each vitals set as numbers, in the order the scenario gives them.
 import { normalizeRhythm } from "../ecg/ecgEngine";
+import { bandFor, sinusLabel } from "../../utils/ageBands";
 
 export const num = (v) => {
   const m = String(v ?? "").match(/-?\d+(\.\d+)?/);
@@ -12,14 +13,17 @@ const NO_PULSE = /^(ventricular fibrillation|asystole|pulseless)/i;
 
 // When a set has no EtCO2, estimate one from the breathing so the capnography still means something:
 // slow breathing retains CO2, fast breathing blows it off, no breathing is a flat line.
-function estimateCo2(rr, noPulse) {
+// "Slow" and "fast" depend on age: 40 a minute is normal for a newborn and fast for an adult.
+function estimateCo2(rr, noPulse, band) {
+  const [low, high] = (band && band.rr) || [12, 20];
   if (rr === null || rr === undefined) return noPulse ? 12 : 38;
   if (rr <= 0) return 0;
-  if (rr < 10) return 52;
-  if (rr > 28) return 28;
-  if (rr > 22) return 32;
+  if (rr < low - 2) return 52;
+  if (rr > high + 8) return 28;
+  if (rr > high + 2) return 32;
   return 38;
 }
+const SINUS = ["Normal Sinus Rhythm", "Sinus Tachycardia", "Sinus Bradycardia"];
 
 // Bronchospasm shows as a "shark fin" capnogram. Read the exam for it; the instructor can change it.
 // Only the exam counts (a history of teenage asthma is not today's airway), only affirmed findings count
@@ -42,12 +46,15 @@ export function suggestedCo2Shape(scenario) {
 
 export function vitalSets(scenario) {
   const vs = (scenario && scenario.vitalSigns) || {};
+  const band = bandFor(scenario && scenario.patientDemographics && scenario.patientDemographics.age);
   const raw = [vs.firstSet, vs.secondSet, ...(Array.isArray(vs.additionalSets) ? vs.additionalSets : [])];
   let last = "";
   return raw
     .filter((s) => s && typeof s === "object" && Object.values(s).some((v) => v !== "" && v !== null && v !== undefined))
     .map((s, i) => {
-      const rhythm = normalizeRhythm(s.ecgInterpretation || "") || last || "";
+      let rhythm = normalizeRhythm(s.ecgInterpretation || "") || last || "";
+      // A newborn at 140 is in sinus rhythm, not sinus tachycardia: sinus labels follow the age.
+      if (SINUS.includes(rhythm) && num(s.hr) !== null) rhythm = sinusLabel(num(s.hr), band);
       last = rhythm || last;
       const bp = String(s.bp || "");
       const m = bp.match(/(\d{2,3})\s*\/\s*(\d{2,3})/);
@@ -63,7 +70,7 @@ export function vitalSets(scenario) {
         sys: m ? Number(m[1]) : null,
         dia: m ? Number(m[2]) : null,
         spo2: num(s.spo2),
-        etco2: num(s.etco2) ?? estimateCo2(num(s.rr), NO_PULSE.test(rhythm)),
+        etco2: num(s.etco2) ?? estimateCo2(num(s.rr), NO_PULSE.test(rhythm), band),
         etco2Estimated: num(s.etco2) === null,
         temp: num(s.temp),
         bgl: num(s.bgl),
