@@ -184,6 +184,9 @@ async function edit(file, changes) {
   ok(linked.status === 200 && linked.body.scenario && linked.body.scenario.source === 'linked' && linked.body.scenario.title === 'Fair Day Reaction', 'upload of a pre-filled ACR: scenario found automatically');
   const lq = linked.body.feedback.scenario_questions.map((q) => q.question).join(' | ');
   ok(/Epinephrine/.test(lq) && /allergy/.test(lq), 'linked scenario drives the scenario questions (missing epinephrine, missing allergy)');
+  const lr = linked.body.feedback.rubric;
+  ok(/blank or nearly blank/.test(linked.body.feedback.summary) && lr.every((r) => r.score === null || r.score === 1),
+    `untouched pre-filled ACR: called blank, and no domain scores above 1 (${lr.map((r) => r.score).join(',')})`);
 
   const tampered = await setFields(acrRes.body, { 'Scenario Link': 'acr1.' + 'x'.repeat(40) });
   const tr = await post(port, { practiceConfirm: 'yes' }, tampered);

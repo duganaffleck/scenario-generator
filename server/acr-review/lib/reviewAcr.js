@@ -62,6 +62,16 @@ const SEVERITY = [
 ];
 function severity(msg) { for (const [re, s] of SEVERITY) if (re.test(msg)) return s; return 6; }
 
+const DOMAIN_SIGNS = {
+  Completeness: /Blank|nothing ticked|no box|no blood glucose|was notified|no ventilation rate|pill bottle|CNO|is empty/i,
+  'Accuracy and consistency': /ticked but|Unremarkable, but|doesn't match|works out to|before the call date|contradict|CTAS Arrive Patient is/i,
+  'Chronology and reassessment': /earlier than|before Patient Contact|vitals charted after|Only one set|No vitals|glucose was checked|Nothing charted after it shows/i,
+  'Clinical reasoning in the narrative': /Remarks|narrative|Nothing charted after it shows/i,
+  'Codes, times and format': /has no unit|has no route|has no dose|isn't on the current|problem code|designation|Age needs|time/i,
+  'Handover, disposition and refusal': /refusal|took over care|CTAS Arrive Patient is|was notified|with no name/i,
+};
+function plainIssue(m) { const t = m.replace(/\s*\((ODS 4\.0|ACR Manual)\)$/, ''); return t.length > 160 ? `${t.slice(0, 157)}...` : t; }
+
 function mockReview(input) {
   const { chart, checker } = input;
   const rows = chart.treatmentGrid;
@@ -107,8 +117,14 @@ function mockReview(input) {
     ['Chronology and reassessment', clamp(7 - 2 * count(/earlier than|before Patient Contact|vitals charted after|Only one set/i) - count(/glucose was checked/i) - 2 * unanswered)],
     ['Clinical reasoning in the narrative', /because|so |rather than|decid|reason/i.test(chart.remarks) ? clamp(6 - unanswered) : 3],
     ['Codes, times and format', clamp(7 - 2 * count(/has no unit|has no route|has no dose|isn't on the current|problem code|designation|Age needs|time.*(before|earlier)/i))],
-    ['Handover, disposition and refusal', chart.refusal || chart.callEvents.TOC ? clamp(7 - 2 * count(/refusal|took over care/i) - count(/CTAS Arrive Patient is|was notified|with no name/i)) : null],
-  ].map(([domain, score]) => ({ domain, score, evidence: score === null ? 'Nothing on this call needed it.' : `${n} checker finding${n === 1 ? '' : 's'} bear on this domain.` }));
+    ['Handover, disposition and refusal', chart.refusal || chart.callEvents.TOC || chart.callEvents['Arrive Destination'] ? clamp(7 - 2 * count(/refusal|took over care/i) - count(/CTAS Arrive Patient is|was notified|with no name/i)) : null],
+  ].map(([domain, score]) => {
+    if (score === null) return { domain, score, evidence: 'Nothing on this call needed it.' };
+    // Name the finding that cost the most here, so the student can see why the score is what it is.
+    const hit = checker.issues.find((m) => DOMAIN_SIGNS[domain].test(m));
+    const evidence = hit ? plainIssue(hit) : score >= 6 ? 'The checker found nothing wrong here.' : 'No single finding; see the fixes above.';
+    return { domain, score, evidence };
+  });
   const prev = input.previous_feedback;
   const plain = (m) => m.replace(/\s*\((ODS 4\.0|ACR Manual)\)$/, '');
   const improvement_since_last = prev ? (prev.fixes || []).map((f) => {
@@ -125,6 +141,56 @@ function mockReview(input) {
     strengths: strengths.slice(0, 2), fixes, scenario_questions, question_to_think_about: q, rubric, improvement_since_last,
     model_sentence: { offered: false, text: '', note: '' }, instructor_flags: [],
   };
+}
+
+// ---------------------------------------------------------------- score ceilings from what is on the chart
+// Both reviewers score by subtracting for problems they find, so a blank chart, with nothing to find wrong, used to
+// score 7 for accuracy and chronology. A score has to be earned by what is on the page. These limits come from the
+// chart itself and apply to the AI and the rule-based review alike. max 1 means the domain scores 1 whatever the
+// reviewer said; max null means there is too little to judge it at all.
+const words = (t) => String(t || '').trim().split(/\s+/).filter(Boolean).length;
+const hasAny = (o) => !!o && ((Array.isArray(o.ticked) && o.ticked.length > 0) || words(o.details) > 0);
+function chartFacts(chart) {
+  const grid = chart.treatmentGrid || [];
+  const vitals = grid.filter((r) => r.Pulse || r.BP || r.SpO2 || r.Resp);
+  const exam = Object.values(chart.physicalExam || {}).some((v) => (Array.isArray(v) ? v.length > 0 : v && v !== 'Off'));
+  const sections = [words(chart.chiefComplaint) >= 2, words(chart.incidentHistory) >= 5, words(chart.remarks) >= 5, vitals.length > 0,
+    exam, hasAny(chart.medications), hasAny(chart.allergies), hasAny(chart.pastHistory)].filter(Boolean).length;
+  return {
+    grid: grid.length, vitals: vitals.length, coded: grid.filter((r) => r.code).length, timed: grid.filter((r) => r.time).length,
+    events: Object.values(chart.callEvents || {}).filter(Boolean).length, remarksWords: words(chart.remarks), sections,
+    ended: !!(chart.refusal || (chart.callEvents || {}).TOC || (chart.callEvents || {})['Arrive Destination']),
+  };
+}
+function isNearlyBlank(chart) { const f = chartFacts(chart); return f.sections <= 1 && f.grid === 0; }
+function scoreCeilings(chart) {
+  const f = chartFacts(chart);
+  const c = {};
+  if (f.sections <= 2) c.Completeness = { max: 1, why: 'Most of the chart is blank.' };
+  if (f.sections < 3) c['Accuracy and consistency'] = { max: null, why: 'There isn\'t enough on the chart to check it against itself.' };
+  else if (f.sections < 5) c['Accuracy and consistency'] = { max: 5, why: 'Only part of the chart is filled in, so only part of it could be checked for consistency.' };
+  if (f.vitals === 0) c['Chronology and reassessment'] = { max: 1, why: 'No vitals in the treatment grid.' };
+  else if (f.vitals === 1) c['Chronology and reassessment'] = { max: 1, why: 'Only one set of vitals, so there is no reassessment to follow.' };
+  else if (f.grid > 0 && f.timed === 0) c['Chronology and reassessment'] = { max: 3, why: 'None of the treatment grid rows has a time.' };
+  else if (f.vitals === 2) c['Chronology and reassessment'] = { max: 5, why: 'Two sets of vitals: the trend is there, but thin.' };
+  if (f.remarksWords === 0) c['Clinical reasoning in the narrative'] = { max: 1, why: 'Remarks is empty.' };
+  else if (f.remarksWords < 25) c['Clinical reasoning in the narrative'] = { max: 3, why: 'Remarks is too short to explain a decision.' };
+  // Call times alone don't earn this: a pre-filled ACR arrives with the dispatch times already in.
+  if (f.coded === 0 && (f.grid === 0 || f.events === 0)) c['Codes, times and format'] = { max: 1, why: f.grid === 0 ? 'Nothing in the treatment grid, so no procedure codes to read.' : 'No procedure codes and no call times on the chart.' };
+  else if (f.coded === 0 || f.events < 3) c['Codes, times and format'] = { max: 3, why: f.coded === 0 ? 'No procedure codes in the treatment grid.' : 'Most call event times are blank.' };
+  if (!f.ended) c['Handover, disposition and refusal'] = { max: 1, why: 'No transfer of care, destination or refusal on the chart.' };
+  return c;
+}
+function applyCeilings(rubric, chart) {
+  const c = scoreCeilings(chart);
+  return rubric.map((r) => {
+    const cap = c[r.domain];
+    if (!cap) return r;
+    if (cap.max === null) return { ...r, score: null, evidence: cap.why };
+    if (cap.max === 1) return { ...r, score: 1, evidence: cap.why };
+    if (r.score !== null && r.score > cap.max) return { ...r, score: cap.max, evidence: `${r.evidence} ${cap.why}`.trim() };
+    return r;
+  });
 }
 
 // ---------------------------------------------------------------- checks on whatever came back
@@ -185,6 +251,7 @@ function postProcess(fb, chart, mode, fields) {
     instructor_flags: flags,
     meta: { mode, generated_at: new Date().toISOString() },
   };
+  out.rubric = applyCeilings(out.rubric, chart);
   if (!out.model_sentence) out.model_sentence = { offered: false, text: '', note: '' };
   const scored = out.rubric.filter((r) => r.score !== null);
   out.meta.rubric_total = scored.length ? `${scored.reduce((a, r) => a + r.score, 0)} / ${scored.length * 7}` : '';
@@ -195,6 +262,13 @@ async function reviewAcr(parts) {
   const input = buildInput(parts);
   const mode = (process.env.ACR_REVIEW_MODE || 'mock').toLowerCase();
   const { _issueDetails, ...modelInput } = input;
+  // A blank or nearly blank chart gets a short, honest answer without spending an AI review on it.
+  if (isNearlyBlank(parts.chart)) {
+    const fb = mockReview(input);
+    fb.summary = 'This chart is blank or nearly blank, so there is nothing yet to review. Fill it in from your scenario, then upload it again.';
+    fb.strengths = []; fb.fixes = fb.fixes.slice(0, 1);
+    return postProcess(fb, parts.chart, mode === 'openai' ? 'blank' : 'mock', parts.fields);
+  }
   if (mode !== 'openai') return postProcess(mockReview(input), parts.chart, 'mock', parts.fields);
   try {
     return postProcess(await reviewWithOpenAI(modelInput), parts.chart, 'openai', parts.fields);
@@ -205,4 +279,4 @@ async function reviewAcr(parts) {
   }
 }
 
-export { reviewAcr, buildInput, systemPrompt, postProcess, mockReview };
+export { reviewAcr, buildInput, systemPrompt, postProcess, mockReview, scoreCeilings, isNearlyBlank };
