@@ -10,7 +10,8 @@ import fs from 'fs';
 import path from 'path';
 import http from 'http';
 import { fileURLToPath } from 'url';
-import { PDFDocument } from 'pdf-lib';
+import { PDFDocument, PDFName, PDFRawStream } from 'pdf-lib';
+import { runChecker } from '../lib/runChecker.js';
 import { schema } from '../lib/feedbackSchema.js';
 import { postProcess, systemPrompt, buildInput } from '../lib/reviewAcr.js';
 import { extractAcr } from '../lib/extractAcr.js';
@@ -78,6 +79,8 @@ async function edit(file, changes) {
   ok(m1.status === 200 && m1.body.feedback.fixes.length === 0, 'model chest pain: 200, no fixes');
   ok(m1.body.feedback.scenario_questions.length === 0, 'model chest pain: matches its scenario');
   ok(validate(stripMeta(m1.body.feedback)), 'model chest pain feedback matches the schema');
+  const legacy = await post(port, { practiceConfirm: 'yes', scenarioId: 'chest-pain-ischemic-01' }, fs.readFileSync(T('fixtures/legacy-chest-pain-v3.4.pdf')));
+  ok(legacy.status === 200 && legacy.body.feedback.fixes.length === 0, 'completed legacy v3.4 chart remains reviewable after the v3.6.1 update');
 
   const m2 = await post(port, { practiceConfirm: 'yes', scenarioId: 'hypoglycemia-refusal-01' }, fs.readFileSync(T('ACR_model_hypoglycemia_refusal.pdf')));
   ok(m2.status === 200 && m2.body.feedback.fixes.length === 0 && m2.body.feedback.scenario_questions.length === 0, 'model hypoglycemia refusal: clean against scenario');
@@ -208,10 +211,53 @@ async function edit(file, changes) {
   // One form everywhere: the server's template, the site's versioned blank, and the old URL kept for existing links.
   const root = path.join(__dirname, '..', '..', '..');
   const siteVersion = (fs.readFileSync(path.join(root, 'client', 'src', 'components', 'acr', 'acrApi.js'), 'utf8').match(/ACR_FORM_VERSION = "([^"]+)"/) || [])[1];
-  ok(cfg.formVersion === siteVersion && /^\d+\.\d+$/.test(String(siteVersion)), `server reports the form version the site ships (server ${cfg.formVersion}, site ${siteVersion})`);
-  const copies = [path.join(root, 'server', 'acr-review', 'assets', 'ACR_practice_v3.pdf'), path.join(root, 'client', 'public', 'acr', `ACR_practice_v${siteVersion}.pdf`), path.join(root, 'client', 'public', 'acr', 'ACR_practice_v3.pdf')];
+  ok(cfg.formVersion === siteVersion && /^\d+\.\d+(?:\.\d+)?$/.test(String(siteVersion)), `server reports the form version the site ships (server ${cfg.formVersion}, site ${siteVersion})`);
+  const publicAcr = path.join(root, 'client', 'public', 'acr');
+  const copies = [path.join(root, 'server', 'acr-review', 'assets', 'ACR_practice_v3.pdf'), ...fs.readdirSync(publicAcr).filter((n) => /^ACR_practice_v.*\.pdf$/.test(n)).map((n) => path.join(publicAcr, n))];
   const hashes = copies.map((p) => (fs.existsSync(p) ? crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex') : 'missing'));
-  ok(hashes.every((h) => h !== 'missing' && h === hashes[0]), 'blank Practice ACR is identical on the server and the site');
+  const release = JSON.parse(fs.readFileSync(path.join(root, 'server/acr-review/assets/release.json'), 'utf8'));
+  ok(release.version === siteVersion && hashes[0] === release.sha256, 'installed template is byte-for-byte the approved release');
+  ok(fs.existsSync(path.join(publicAcr, `ACR_practice_v${siteVersion}.pdf`)) && hashes.every((h) => h !== 'missing' && h === hashes[0]), 'current blank and every legacy download URL contain the identical approved template');
+
+  // Release integration: preserve the repaired blank's scripts, appearances and editability when adding dispatch.
+  {
+    const blank = await PDFDocument.load(fs.readFileSync(copies[0]), { updateMetadata: false });
+    const filled = await PDFDocument.load(acrRes.body, { updateMetadata: false });
+    const script = (pdf) => pdf.catalog.lookup(PDFName.of('Names')).lookup(PDFName.of('JavaScript'))
+      .lookup(PDFName.of('Names')).lookup(1).lookup(PDFName.of('JS')).decodeText();
+    ok(script(blank) === fs.readFileSync(path.join(root, 'server/acr-review/vendor/acrChecker.js'), 'utf8'), 'server checker is the exact v3.6.1 document script');
+    ok(script(blank) === script(filled), 'pre-fill preserves the approved document script');
+    ok(acrRes.headers['x-acr-form-version'] === siteVersion && filled.getTitle() === blank.getTitle(), 'generated PDF title and response header identify the current patch version');
+    ok(filled.getForm().acroForm.dict.lookup(PDFName.of('NeedAppearances')).asBoolean() === false, 'pre-fill does not request an Acrobat-wide appearance rebuild');
+    const appearance = (pdf, value) => {
+      if (value instanceof PDFRawStream) return crypto.createHash('sha256').update(value.getContents()).digest('hex');
+      return value.entries().map(([k, v]) => [k.toString(), appearance(pdf, pdf.context.lookup(v))]);
+    };
+    const fingerprint = (pdf, field) => JSON.stringify({
+      flags: field.acroField.getFlags(), da: field.acroField.getDefaultAppearance(),
+      widgets: field.acroField.getWidgets().map((w) => ({
+        rect: w.getRectangle(), flags: w.getFlags(), da: w.getDefaultAppearance(),
+        ap: w.dict.has(PDFName.of('AP')) ? appearance(pdf, w.dict.lookup(PDFName.of('AP'))) : null,
+      })),
+    });
+    const dispatched = new Set(['Service Name', 'Service #', 'Call Number', 'Call Date', 'Pick-up Location or Sending Facility', 'Pickup Code', 'Dispatch #', 'Call Received HH  MM  SS']);
+    const changed = blank.getForm().getFields().filter((f) => !dispatched.has(f.getName()) &&
+      fingerprint(blank, f) !== fingerprint(filled, filled.getForm().getField(f.getName()))).map((f) => f.getName());
+    ok(changed.length === 0, `pre-fill preserves every untouched field's appearances, geometry and flags (${changed.join(', ') || 'all unchanged'})`);
+    const templateFields = (await extractAcr(fs.readFileSync(copies[0]))).fields;
+    const originalFields = JSON.stringify(templateFields);
+    templateFields['Treatment Row 27 - Reading/Code'].value = '5.8';
+    templateFields['Treatment Row 27 - Time'].value = '08:20';
+    const beforeCheck = JSON.stringify(templateFields);
+    const check = runChecker(templateFields);
+    ok(/Reading\/code: 5.8/.test(check.trend), 'v3.6.1 checker includes a glucose-only reassessment in the trend');
+    ok(JSON.stringify(templateFields) === beforeCheck && originalFields !== beforeCheck, 'document-open repairs do not mutate uploaded chart values');
+    for (const name of ['ACR_model_chest_pain.pdf', 'ACR_model_hypoglycemia_refusal.pdf', 'ACR_find_the_errors.pdf']) {
+      const sample = await PDFDocument.load(fs.readFileSync(T(name)), { updateMetadata: false });
+      ok(sample.getTitle() === blank.getTitle() && script(sample) === script(blank) &&
+        fs.readFileSync(T(name)).equals(fs.readFileSync(path.join(publicAcr, name))), `${name}: current template/script and identical public download`);
+    }
+  }
 
   // v3.6: a write-across line that carries on to the row below is one entry, not a row missing its time and code.
   // It only counts as carried on when the line above is full; under a short line it's a new entry and still flagged.

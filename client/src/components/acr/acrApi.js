@@ -3,7 +3,7 @@ import axios from "axios";
 export const API_BASE = process.env.REACT_APP_API_BASE_URL || "http://localhost:10000";
 // The Practice ACR version this site ships. The server reports the version it pre-fills from; if they differ,
 // the backend is running an older build (usually Render hasn't redeployed since the last merge).
-export const ACR_FORM_VERSION = "3.6";
+export const ACR_FORM_VERSION = "3.6.1";
 export const BLANK_ACR_URL = `/acr/ACR_practice_v${ACR_FORM_VERSION}.pdf`;
 const ACR = `${API_BASE}/api/acr-review`;
 

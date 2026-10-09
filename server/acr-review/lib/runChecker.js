@@ -27,9 +27,11 @@ function runChecker(fields) {
   const app = { alert: () => 4, response: () => null };
   const display = { visible: 0, hidden: 1, noPrint: 2, noView: 3 };
   const color = { transparent: ['T'], white: ['G', 1] };
-  const lib = new Function('app', 'display', 'color', SRC +
-    '\nreturn { acrCheckIssues, acrPromptsFor, acrCalcIntervals, acrCalcTrend, acrReadBack };')(app, display, color);
   const doc = makeDoc(fields);
+  // v3.6.1 runs document-open repairs at script load. Bind `this` to the in-memory Acrobat adapter,
+  // just as Acrobat binds it to the document. The uploaded field map remains unchanged.
+  const lib = new Function('app', 'display', 'color', SRC +
+    '\nreturn { acrCheckIssues, acrPromptsFor, acrCalcIntervals, acrCalcTrend, acrReadBack };').call(doc, app, display, color);
   return {
     issues: lib.acrCheckIssues(doc).map((i) => i.msg),
     issueDetails: lib.acrCheckIssues(doc).map((i) => ({ msg: i.msg, fields: i.fields, values: i.fields.map((f) => (fields[f] ? fields[f].value : '')) })),
