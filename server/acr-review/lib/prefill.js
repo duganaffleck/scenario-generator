@@ -12,7 +12,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const TEMPLATE = path.join(__dirname, '..', 'assets', 'ACR_practice_v3.pdf');
 export const LINK_FIELD = 'Scenario Link';
 
-// The version printed in the template's title ("Practice Ambulance Call Report v3.5"), read once.
+// The version printed in the template's title, including patch releases such as v3.6.1, read once.
 // Reported by /config and on every pre-filled ACR, so an out-of-date server shows up on screen.
 let versionPromise;
 export function templateVersion() {
@@ -34,6 +34,7 @@ async function prefillAcr(templateBytes, values, opts = {}) {
   const form = pdf.getForm();
   const unknown = [];
   const skipped = [];
+  const changed = [];
   for (const [name, value] of Object.entries(values)) {
     if (value === undefined || value === null || value === '') continue;
     let field;
@@ -48,6 +49,7 @@ async function prefillAcr(templateBytes, values, opts = {}) {
     else if (field instanceof PDFRadioGroup) field.select(String(value));
     else continue;
     if (opts.lock) field.enableReadOnly();
+    changed.push(field);
   }
   if (unknown.length) throw new Error(`Unknown ACR field name(s): ${unknown.join(', ')}.`);
 
@@ -56,18 +58,21 @@ async function prefillAcr(templateBytes, values, opts = {}) {
     link.setText(opts.scenarioToken);
     link.enableReadOnly();
     link.addToPage(pdf.getPage(0), { x: 0, y: 0, width: 1, height: 1, hidden: true, borderWidth: 0 });
+    changed.push(link);
   }
 
   const helv = await pdf.embedFont(StandardFonts.Helvetica);
-  form.updateFieldAppearances(helv);
+  // Only redraw what we filled. The approved template already has repaired appearances and scripts;
+  // rebuilding every blank field can change its layout and discard that work.
+  for (const field of changed) field.defaultUpdateAppearances(helv);
   // pdf-lib's appearances refer to the font as /Helvetica. Register it in the form's default resources so viewers that
-  // rebuild appearances can find it, and ask them to redraw in the form's own style.
+  // rebuild an edited field can find it. Existing appearances are complete, so don't request a global redraw.
   const dr = form.acroForm.dict.lookup(PDFName.of('DR'));
   if (dr) {
     const fonts = dr.lookup(PDFName.of('Font'));
     if (fonts && !fonts.has(PDFName.of('Helvetica'))) fonts.set(PDFName.of('Helvetica'), helv.ref);
   }
-  form.acroForm.dict.set(PDFName.of('NeedAppearances'), PDFBool.True);
+  form.acroForm.dict.set(PDFName.of('NeedAppearances'), PDFBool.False);
   const bytes = await pdf.save({ updateFieldAppearances: false });
   return { bytes, skipped };
 }

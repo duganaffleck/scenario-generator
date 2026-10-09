@@ -1,6 +1,6 @@
 # ACR Review
 
-Students upload a practice ACR (the Practice ACR v3.3 PDF) from a lab scenario and get feedback the way their instructor would give it after the scenario: what to fix first, what to keep doing, where the chart and the scenario don't line up, one question to think about, and a rubric score.
+Students upload a practice ACR (current form: **v3.6.1**) from a lab scenario and get feedback the way their instructor would give it after the scenario: what to fix first, what to keep doing, where the chart and the scenario don't line up, one question to think about, and a rubric score. Completed earlier v3 forms remain supported.
 
 Part of the Scenario Generator backend. A generated scenario can hand students a pre-filled ACR, and their upload finds its own scenario.
 
@@ -101,5 +101,24 @@ In `openai` mode the reviewer also reads the whole scenario, including case prog
 ## Limits
 
 - I couldn't reach the OpenAI API from where this was built, so `openai` mode is written but untested against a live model. Mock mode and everything around the model call is tested.
-- The checker updates when the PDF does. After rebuilding the Practice ACR, copy its document script over `vendor/acrChecker.js`.
+- The checker updates when the PDF does. `vendor/acrChecker.js` is the exact document script, including its document-open repairs; the server binds those to an in-memory document adapter.
 - Scanned or handwritten ACRs aren't supported. Fillable v3 PDFs only.
+
+## Updating the form release
+
+Use the approved release PDF, not a rebuilt approximation. From the repository root, run
+`python server/scripts/updateAcrRelease.py /absolute/path/ACR_practice_v3.6.1.pdf` (requires `pypdf`).
+This copies the approved blank unchanged to the server template and all existing download aliases,
+extracts its checker, and migrates the teaching examples while preserving their values and margin notes.
+The original v3.4 chest-pain chart stays in `test/fixtures/` for backward-compatibility testing.
+Update `ACR_FORM_VERSION` in `client/src/components/acr/acrApi.js`, the release manifest, and the standalone
+page label. Run `npm run test:acr` from `server/` and build the client before releasing.
+
+Scenario pre-fill redraws only its dispatch fields and hidden scenario link. It preserves every other
+field's appearance, geometry, flags and scripts, and keeps `/NeedAppearances` false. Do not restore a
+global `updateFieldAppearances()` or request a viewer-wide redraw: that would undo the repaired template.
+
+Deploy both the Vercel client and Render server. Verify `/api/acr-review/config` reports the same patch
+version as the site, download a new generated ACR, and upload it again to check the sealed scenario link.
+The site names the current form and still accepts completed earlier v3 charts; students should not have
+to retype existing work simply because the blank has changed.

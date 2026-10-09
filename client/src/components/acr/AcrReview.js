@@ -318,6 +318,7 @@ export default function AcrReview() {
       <div className="acr-panel acr-noprint">
         <h2 className="acr-h2">Practice ACR files</h2>
         <p className="acr-muted">Open them in Adobe Acrobat Reader. The buttons inside the form don't work in a browser or Preview.</p>
+        <p className="acr-muted">Use v{ACR_FORM_VERSION} for new charts. Save your completed PDF in Acrobat, close and reopen it to check your entries, then upload that saved file. Completed earlier v3 forms are still accepted.</p>
         <ul className="acr-resources">
           {RESOURCES.map((r) => (
             <li key={r.href}><a href={r.href} download>{r.label}</a><span className="acr-muted"> {r.note}</span></li>
